@@ -158,7 +158,7 @@ function Cart() {
                                   <img
                                     src={item?.products?.map(
                                       (product) =>
-                                        product?.product_Id?.product_Pic?.map((index) => index)
+                                        product?.product_Id?.product_Pic[0]
                                     )}
                                     className="img-fluid  lazyload"
                                     alt=""

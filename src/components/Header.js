@@ -15,6 +15,25 @@ function Header(props) {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestion, setSuggestion] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [showSale, setShowSale] = useState(false);
+
+  useEffect(() => {
+    const welcomeInterval = setInterval(() => {
+      setShowWelcome(true);
+      setShowSale(false);
+    }, 1000);
+
+    const saleInterval = setInterval(() => {
+      setShowWelcome(false);
+      setShowSale(true);
+    }, 2000);
+
+    return () => {
+      clearInterval(welcomeInterval);
+      clearInterval(saleInterval);
+    };
+  }, []);
 
   // const handleSearch = (e) => {
   //   e.preventDefault();
@@ -30,7 +49,6 @@ function Header(props) {
     try {
       const { data, error } = await ProductSearch(searchQuery);
       error ? console.log(error) : console.log("product search", data);
-      // props.setCategoryListData(data.results.productData);
       console.log("product list", data.results.productData);
       setSuggestion(data.results.productData);
     } catch (error) {
@@ -97,29 +115,42 @@ function Header(props) {
               <div className="col-xxl-6 col-lg-9 d-lg-block d-none">
                 <div className="header-offer">
                   <div className="notification-slider">
-                    <div>
-                      <div className="timer-notification">
-                        <h6>
-                          <strong className="me-1">
-                            Welcome to Techgropse eCommerce!
-                          </strong>
-                          Wrap new offers/gift every signle day on Weekends.
-                          <strong className="ms-1">
-                            New Coupon Code: Fast024
-                          </strong>
-                        </h6>
+                    {showWelcome && (
+                      <div>
+                        <div
+                          className={`timer-notification ${
+                            showWelcome ? "fade-in" : "fade-out"
+                          }`}
+                        >
+                          <h6>
+                            <strong className="me-1">
+                              Welcome to Techgropse eCommerce!
+                            </strong>
+                            Wrap new offers/gift every single day on Weekends.
+                            <strong className="ms-1">
+                              New Coupon Code: Fast024
+                            </strong>
+                          </h6>
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <div className="timer-notification">
-                        <h6>
-                          Something you love is now on sale!
-                          <Link to="/shop" className="text-white">
-                            Buy Now !
-                          </Link>
-                        </h6>
+                    )}
+
+                    {showSale && (
+                      <div>
+                        <div
+                          className={`timer-notification ${
+                            showSale ? "fade-in" : "fade-out"
+                          }`}
+                        >
+                          <h6>
+                            Something you love is now on sale!
+                            <Link to="/shop" className="text-white">
+                              Buy Now !
+                            </Link>
+                          </h6>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -494,7 +525,12 @@ function Header(props) {
                           >
                             <Link to="#" className="category-name">
                               <img src={item.categoryPic} alt="image" />
-                              <h6> {item?.categoryName_en ? item?.categoryName_en : item?.categoryName} </h6>
+                              <h6>
+                                {" "}
+                                {item?.categoryName_en
+                                  ? item?.categoryName_en
+                                  : item?.categoryName}{" "}
+                              </h6>
                               <i className="fa-solid fa-angle-right" />
                             </Link>
                             <div className="onhover-category-box">

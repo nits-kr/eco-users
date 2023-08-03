@@ -35606,4 +35606,15 @@ button.btn.btn-add-cart.addcart-button {
   list-style: disc !important;
   margin-left: 1em;
 }
+.timer-notification {
+  opacity: 0;
+  transition: opacity 2s ease;
+}
 
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+}
