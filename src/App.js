@@ -39,10 +39,10 @@ import Varification from "./components/Varification";
 import ResetPassword from "./components/ResetPassword";
 import MobileFixMenu from "./components/MobileFixMenu";
 import BreadCrumb from "./components/BreadCrumb";
-import LoadingBar from 'react-top-loading-bar'
+import LoadingBar from "react-top-loading-bar";
 
 function App() {
-  const [progress, setProgress] = useState(0)
+  const [progress, setProgress] = useState(0);
   useEffect(() => {
     const timeout = setTimeout(() => {
       // Increment the progress value
@@ -55,13 +55,9 @@ function App() {
   return (
     <>
       <BrowserRouter>
-      <LoadingBar
-         height={3}
-        color='#f11946'
-        progress={progress}
-        />
+        <LoadingBar height={3} color="#f11946" progress={progress} />
         <Routes>
-          <Route exact className="active" path="/login" element={<Login />} />
+          <Route exact className="active" path="/" element={<Login />} />
           <Route
             exact
             className="active"
@@ -80,7 +76,12 @@ function App() {
             path="/blog-details"
             element={<BlogDetails />}
           />
-          <Route exact className="active" path="/blog" element={<Blog setProgress={setProgress}/>} />
+          <Route
+            exact
+            className="active"
+            path="/blog"
+            element={<Blog setProgress={setProgress} />}
+          />
           <Route exact className="active" path="/cart" element={<Cart />} />
           <Route
             exact
@@ -102,7 +103,6 @@ function App() {
           />
           <Route
             exact
-            
             className="active"
             path="/contact-us"
             element={<ContactUs setProgress={setProgress} />}
@@ -115,7 +115,12 @@ function App() {
             path="/index-electronics"
             element={<IndexElectronics />}
           />
-          <Route exact className="active" path="*" element={<IndexGrocary setProgress={setProgress}/>} />
+          <Route
+            exact
+            className="active"
+            path="*"
+            element={<IndexGrocary setProgress={setProgress} />}
+          />
           <Route
             exact
             className="active"
@@ -164,7 +169,7 @@ function App() {
             exact
             className="active"
             path="/product"
-            element={<Product setProgress={setProgress}/>}
+            element={<Product setProgress={setProgress} />}
           />
           <Route exact className="active" path="/search" element={<Search />} />
           <Route
@@ -191,7 +196,12 @@ function App() {
             path="/seller-grid"
             element={<SellerGrid />}
           />
-          <Route exact className="active" path="/shop" element={<Shop setProgress={setProgress}/>} />
+          <Route
+            exact
+            className="active"
+            path="/shop"
+            element={<Shop setProgress={setProgress} />}
+          />
           <Route
             exact
             className="active"
@@ -220,16 +230,15 @@ function App() {
             exact
             className="active"
             path="/varification"
-            element={<Varification/>}
+            element={<Varification />}
           />
           <Route
             exact
             className="active"
             path="/reset-password"
             element={<ResetPassword />}
-            
           />
-          
+
           <Route
             exact
             className="active"

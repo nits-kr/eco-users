@@ -624,11 +624,11 @@ function Header(props) {
                               Shop
                             </Link>
                           </li>
-                          <li className="nav-item">
+                          {/* <li className="nav-item">
                             <Link className="nav-link" to="/product">
                               Product
                             </Link>
-                          </li>
+                          </li> */}
                           <li className="nav-item">
                             <Link
                               className="nav-link dropdown-toggle"

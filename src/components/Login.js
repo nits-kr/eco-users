@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import Swal from "sweetalert2";
+
 import Header from "./Header";
 import Footer from "./Footer";
 import { useUserLoginMutation } from "../services/Post";
@@ -10,24 +12,74 @@ import { useSendEmailMutation } from "../services/Post";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("");
   const [loginData, res] = useUserLoginMutation();
   const [sendMailData, re] = useSendEmailMutation();
+  const [userNameError, setUserNameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const navigate = useNavigate();
   console.log("login data", loginData);
-  const handleSaveChanges = (e) => {
+  // const handleSaveChanges = (e) => {
+  //   e.preventDefault();
+  //   const newAddress = {
+  //     userEmail: email,
+  //     password: password,
+  //   };
+  //   loginData(newAddress);
+  // };
+  useEffect(() => {
+    if (res.isSuccess) {
+      localStorage.setItem("loginId", res.data?.results?.login?._id);
+      Swal.fire({
+        title: "Login Successful!",
+        icon: "success",
+        text: "You have successfully logged in.",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("*");
+        }
+      });
+    } else if (res.isError && res.error?.data?.error) {
+      Swal.fire({
+        title: "Incorrect Password!",
+        icon: "error",
+        text: res.error?.data?.message || "Unknown error occurred.",
+      });
+    }
+  }, [res, navigate]);
+
+  const handleSaveChanges = async (e) => {
     e.preventDefault();
-    const newAddress = {
-      userEmail: email,
-      password: password,
-    };
-    loginData(newAddress);
+    setUserNameError("");
+    setPasswordError("");
+
+    if (userName.trim() === "") {
+      setUserNameError("Username is required.");
+      return;
+    }
+
+    if (password.trim() === "") {
+      setPasswordError("Password is required.");
+      return;
+    }
+
+    try {
+      const response = await loginData({
+        userEmail: userName,
+        password: password,
+      });
+      console.log("response login", response);
+    } catch (error) {
+      console.error("Login error:", error);
+      // Show a generic error message if something goes wrong
+      Swal.fire({
+        title: "Login Failed!",
+        icon: "error",
+        text: "An error occurred during login.",
+      });
+    }
   };
-  const handleSaveChanges1 = (e) => {
-    e.preventDefault();
-    const newAddress = {
-      userEmail: email,
-    };
-    sendMailData(newAddress);
-  };
+
   useEffect(() => {
     feather.replace();
   }, []);
@@ -123,9 +175,14 @@ function Login() {
                           className="form-control"
                           id="email"
                           placeholder="Email Address"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
+                          value={userName}
+                          onChange={(e) => setUserName(e.target.value)}
                         />
+                        {userNameError && (
+                          <span className="error-message text-danger">
+                            {userNameError}
+                          </span>
+                        )}
                         <label htmlFor="email">Email Address</label>
                       </div>
                     </div>
@@ -139,6 +196,11 @@ function Login() {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                         />
+                        {passwordError && (
+                          <span className="error-message text-danger">
+                            {passwordError}
+                          </span>
+                        )}
                         <label htmlFor="password">Password</label>
                       </div>
                     </div>
