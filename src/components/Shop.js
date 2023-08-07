@@ -1751,9 +1751,9 @@ function Shop(props) {
                             </div>
                             <div className="product-footer">
                               <div className="product-detail">
-                                <span className="span-name"> {item._id} </span>
+                                {/* <span className="span-name"> {item._id} </span> */}
                                 <Link to="/product">
-                                  <h5 className="name">{item.productName}</h5>
+                                  <h5 className="name">{item.productName_en}</h5>
                                 </Link>
                                 <p className="text-content mt-1 mb-2 product-content">
                                   Cheesy feet cheesy grin brie. Mascarpone
