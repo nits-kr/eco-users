@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { CategoryList, ProductSearch, SubCategoryList } from "./HttpServices";
@@ -17,7 +18,8 @@ function Header(props) {
   const [showModal, setShowModal] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSale, setShowSale] = useState(false);
-
+  axios.defaults.headers.common["x-auth-token-user"] =
+    localStorage.getItem("token");
   useEffect(() => {
     const welcomeInterval = setInterval(() => {
       setShowWelcome(true);
@@ -524,7 +526,7 @@ function Header(props) {
                             onMouseEnter={() => handleOnhover(item?._id)}
                           >
                             <Link to="#" className="category-name">
-                              <img src={item.categoryPic} alt="image" />
+                              <img src={item?.categoryPic} alt="image" />
                               <h6>
                                 {" "}
                                 {item?.categoryName_en
