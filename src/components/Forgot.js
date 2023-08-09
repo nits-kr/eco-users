@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -8,15 +9,44 @@ import Footer from "./Footer";
 import { useSendEmailMutation } from "../services/Post";
 
 function Forgot() {
-  const [sendMailData, re] = useSendEmailMutation();
+  const [sendMailData, { isLoading, isSuccess, isError }] =
+    useSendEmailMutation();
   const [email, setEmail] = useState("");
-  const handleSaveChanges = (e) => {
+  const navigate = useNavigate()
+
+  const handleSaveChanges = async (e) => {
     e.preventDefault();
     const newAddress = {
       userEmail: email,
     };
-    sendMailData(newAddress);
+
+    try {
+      await sendMailData(newAddress);
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
   };
+
+  if (isSuccess) {
+    Swal.fire({
+      title: "OTP Sent!",
+      icon: "success",
+      text: "The OTP has been sent in your Email successfully.",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/varification");
+        setTimeout(() => {
+          window?.location?.reload();
+        }, 500);
+      }
+    });
+  } else if (isError) {
+    Swal.fire({
+      title: "Email Sending Failed!",
+      icon: "error",
+      text: "An error occurred while sending the email.",
+    });
+  }
 
   console.log("sendMail", email);
   useEffect(() => {
@@ -107,7 +137,7 @@ function Forgot() {
                     <h4>Forgot your password</h4>
                   </div>
                   <div className="input-box">
-                    <form className="row g-4" onClick={handleSaveChanges}>
+                    <form className="row g-4">
                       <div className="col-12">
                         <div className="form-floating theme-form-floating log-in-form">
                           <input
@@ -126,7 +156,7 @@ function Forgot() {
                           <button
                             className="btn btn-animation w-100"
                             type="submit"
-                            // onClick={handleSaveChanges}
+                            onClick={handleSaveChanges}
                           >
                             Send OTP
                           </button>

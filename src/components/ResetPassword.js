@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -7,8 +8,53 @@ import Header from "./Header";
 import BreadCrumb from "./BreadCrumb";
 import MobileFixMenu from "./MobileFixMenu";
 import Footer from "./Footer";
+import { useResetPasswordMutation } from "../services/Post";
 
 function ResetPassword() {
+  const [reset, { isLoading, isSuccess, isError }] = useResetPasswordMutation();
+  const [password, setPassword] = useState([]);
+  const [resetPassword, setResetPassword] = useState([]);
+  const [userEmail, setUserEmail] = useState([]);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const navigate = useNavigate();
+  const handleSaveChanges = async (e) => {
+    e.preventDefault();
+    const newAddress = {
+      password: password,
+      confirm_Password: resetPassword,
+      userEmail: userEmail,
+    };
+
+    try {
+      await reset(newAddress);
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+  };
+
+  if (isSuccess) {
+    Swal.fire({
+      title: "Changed!",
+      icon: "success",
+      text: "Your Password Changed Successfully",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/");
+        setTimeout(() => {
+          window?.location?.reload();
+        }, 500);
+      }
+    });
+  } else if (isError) {
+    Swal.fire({
+      title: "Failed!",
+      icon: "error",
+      text: "Password Not Match.",
+    });
+  }
+  useEffect(() => {
+    feather.replace();
+  }, []);
   return (
     <>
       <Header />
@@ -38,12 +84,29 @@ function ResetPassword() {
                       <div className="col-12">
                         <div className="form-floating theme-form-floating log-in-form d-flex">
                           <input
-                            type="email"
+                            type="password"
                             className="form-control text-center"
-                            id="email"
+                            id="password"
                             placeholder="New Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                           />
                           <label htmlFor="email">New Password</label>
+                        </div>
+                      </div>
+                      <div className="col-12">
+                        <div className="form-floating theme-form-floating log-in-form d-flex">
+                          <input
+                            type="password"
+                            className="form-control text-center"
+                            id="passwordNew"
+                            placeholder="Confirm New Password"
+                            value={resetPassword}
+                            onChange={(e) => setResetPassword(e.target.value)}
+                          />
+                          <label htmlFor="passwordNew">
+                            Confirm New Password
+                          </label>
                         </div>
                       </div>
                       <div className="col-12">
@@ -52,15 +115,18 @@ function ResetPassword() {
                             type="email"
                             className="form-control text-center"
                             id="email"
-                            placeholder="Confirm New Password"
+                            placeholder="Enter Email"
+                            value={userEmail}
+                            onChange={(e) => setUserEmail(e.target.value)}
                           />
-                          <label htmlFor="email">Confirm New Password</label>
+                          <label htmlFor="passwordNew">Enter Email</label>
                         </div>
                       </div>
                       <div className="col-12">
                         <Link
                           to="#"
                           className="btn btn-animation w-100"
+                          onClick={handleSaveChanges}
                         >
                           Save
                         </Link>
@@ -73,7 +139,7 @@ function ResetPassword() {
           </div>
         </div>
       </section>
-      <Footer/>
+      <Footer />
     </>
   );
 }

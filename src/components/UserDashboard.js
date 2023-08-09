@@ -47,6 +47,7 @@ function UserDashboard() {
   const [deleteCard, deleteCardInfo] = useDeleteCardMutation();
   console.log("deleteAddress", deleteAddress);
   console.log("address list", addressList);
+  const storedId = localStorage?.getItem("loginId")
   const handleSaveChanges = () => {
     const newAddress = {
       title: title,
@@ -54,7 +55,7 @@ function UserDashboard() {
       locality: locality,
       city: city,
       country: country,
-      user_Id: "64703e0d4cdf95206d7271f2",
+      user_Id: storedId,
     };
     createAddress(newAddress);
   };

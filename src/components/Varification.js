@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -11,26 +12,13 @@ import BreadCrumb from "./BreadCrumb";
 import { useVarifyOtpMutation } from "../services/Post";
 
 function Varification() {
-  const [otp, setOtp] = useState([]);
+  const [otp, setOtp] = useState(["", "", "", ""]);
   const refs = [useRef(), useRef(), useRef(), useRef()];
   const [email, setEmail] = useState("");
+  const [otpVarify, { isLoading, isSuccess, isError }] = useVarifyOtpMutation();
   const [counter, setCounter] = useState(5);
   const [intervalId, setIntervalId] = useState(null);
-  const [otpVarify] = useVarifyOtpMutation();
-  console.log(" OTP varification", otpVarify);
-  const handleSaveChanges = (event) => {
-    event.preventDefault();
-    // const otp =
-    //   event.target[0].value +
-    //   event.target[1].value +
-    //   event.target[2].value +
-    //   event.target[3].value;
-    const newAddress = {
-      otp: otp,
-      userEmail: email,
-    };
-    otpVarify(newAddress);
-  };
+  const navigate = useNavigate();
   const handleInputChange = (event, index) => {
     const { value } = event.target;
     setOtp((prevOtp) => {
@@ -38,6 +26,7 @@ function Varification() {
       newOtp[index] = value;
       return newOtp;
     });
+
     if (value.length === 1 && index < 3) {
       refs[index + 1].current.focus();
     }
@@ -47,14 +36,53 @@ function Varification() {
       setCounter(null);
     }
   };
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setCounter((prevCounter) => prevCounter - 1);
-  //   }, 1000);
-  //   setIntervalId(interval);
-  //   return () => clearInterval(interval);
-  // }, []);
+  // const handleSaveChanges = (event) => {
+  //   event.preventDefault();
+  //   const otpString = otp.join(""); // Join the OTP array into a single string
+  //   const newAddress = {
+  //     otp: otpString,
+  //     userEmail: email,
+  //   };
+  //   otpVarify(newAddress);
+  // };
+  const handleSaveChanges = async (e) => {
+    e.preventDefault();
+    const otpString = otp.join("");
+    const newAddress = {
+      otp: otpString,
+      userEmail: email,
+    };
 
+    try {
+      await otpVarify(newAddress);
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+  };
+
+  if (isSuccess) {
+    Swal.fire({
+      title: "Verified!",
+      icon: "success",
+      text: "Verify Otp Successfully",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/reset-password");
+        setTimeout(() => {
+          window?.location?.reload();
+        }, 500);
+      }
+    });
+  } else if (isError) {
+    Swal.fire({
+      title: "OTP Sending Failed!",
+      icon: "error",
+      text: "An error occurred while sending the OTP.",
+    });
+  }
+  useEffect(() => {
+    feather.replace();
+  }, []);
   return (
     <>
       <Header />
@@ -82,10 +110,10 @@ function Varification() {
                     </h4>
                   </div>
                   <div className="input-box">
-                    <form className="row g-4" onClick={handleSaveChanges}>
+                    <form className="row g-4">
                       <div className="col-12">
                         <div className="form-floating theme-form-floating log-in-form d-flex">
-                          <input
+                          {/* <input
                             type="text"
                             className="form-control me-3 px-1 text-center"
                             maxLength="1"
@@ -128,14 +156,28 @@ function Varification() {
                             ref={refs[3]}
                             value={otp[3]}
                             onChange={(event) => handleInputChange(event, 3)}
-                          />
+                          /> */}
+                          {refs.map((ref, index) => (
+                            <input
+                              key={index}
+                              type="text"
+                              className="form-control me-3 px-1 text-center"
+                              maxLength="1"
+                              placeholder={(index + 1) * 2}
+                              ref={ref}
+                              value={otp[index]}
+                              onChange={(event) =>
+                                handleInputChange(event, index)
+                              }
+                            />
+                          ))}
                         </div>
                         <input
                           type="email"
                           className="form-control mt-3"
                           id="email"
                           placeholder="Email Address"
-                          value={email}
+                          // value={email}
                           onChange={(e) => setEmail(e.target.value)}
                         />
                         {/* <label htmlFor="email">Email Address</label> */}
@@ -159,6 +201,7 @@ function Varification() {
                           <button
                             className="btn btn-animation w-100"
                             type="submit"
+                            onClick={handleSaveChanges}
                           >
                             Confirm
                           </button>

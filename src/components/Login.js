@@ -46,7 +46,7 @@ function Login() {
         if (result.isConfirmed) {
           navigate("*");
           setTimeout(() => {
-            window?.location?.reload()
+            window?.location?.reload();
           }, 500);
         }
       });
@@ -164,7 +164,7 @@ function Login() {
                         <li>
                           <a
                             className="dropdown-item"
-                            href="javascript:void(0)"
+                            href="#"
                             id="english"
                           >
                             <img
@@ -178,7 +178,7 @@ function Login() {
                         <li>
                           <a
                             className="dropdown-item"
-                            href="javascript:void(0)"
+                            href="#"
                             id="france"
                           >
                             <img
@@ -192,7 +192,7 @@ function Login() {
                         <li>
                           <a
                             className="dropdown-item"
-                            href="javascript:void(0)"
+                            href="#"
                             id="chinese"
                           >
                             <img
@@ -225,7 +225,7 @@ function Login() {
                           <a
                             className="dropdown-item"
                             id="aud"
-                            href="javascript:void(0)"
+                            href="#"
                           >
                             AUD
                           </a>
@@ -234,7 +234,7 @@ function Login() {
                           <a
                             className="dropdown-item"
                             id="eur"
-                            href="javascript:void(0)"
+                            href="#"
                           >
                             EUR
                           </a>
@@ -243,7 +243,7 @@ function Login() {
                           <a
                             className="dropdown-item"
                             id="cny"
-                            href="javascript:void(0)"
+                            href="#"
                           >
                             CNY
                           </a>
@@ -377,7 +377,7 @@ function Login() {
                             <ul className="cart-list">
                               <li className="product-box-contain">
                                 <div className="drop-cart">
-                                  <a href="product.html" className="drop-image">
+                                  <a href="#" className="drop-image">
                                     <img
                                       src="../assets/images/vegetable/product/1.png"
                                       className=" lazyload"
@@ -385,7 +385,7 @@ function Login() {
                                     />
                                   </a>
                                   <div className="drop-contain">
-                                    <a href="product.html">
+                                    <a href="#">
                                       <h5>
                                         Fantasy Crunchy Choco Chip Cookies
                                       </h5>
@@ -401,7 +401,7 @@ function Login() {
                               </li>
                               <li className="product-box-contain">
                                 <div className="drop-cart">
-                                  <a href="product.html" className="drop-image">
+                                  <a href="#" className="drop-image">
                                     <img
                                       src="../assets/images/vegetable/product/2.png"
                                       className=" lazyload"
@@ -409,7 +409,7 @@ function Login() {
                                     />
                                   </a>
                                   <div className="drop-contain">
-                                    <a href="product.html">
+                                    <a href="#">
                                       <h5>
                                         Peanut Butter Bite Premium Butter
                                         Cookies 600 g
@@ -431,13 +431,13 @@ function Login() {
                             </div>
                             <div className="button-group">
                               <a
-                                href="cart.html"
+                                href="#"
                                 className="btn btn-sm cart-button"
                               >
                                 View Cart
                               </a>
                               <a
-                                href="checkout.html"
+                                href="#"
                                 className="btn btn-sm cart-button theme-bg-color
                                       text-white"
                               >
@@ -461,13 +461,16 @@ function Login() {
                           <ul className="user-box-name">
                             <li className="product-box-contain">
                               <i />
-                              <a href="login.html">Log In</a>
+                              <a href="#">Log In</a>
                             </li>
                             <li className="product-box-contain">
-                              <a href="sign-up.html">Register</a>
+                              <a href="/sign-up">Register</a>
                             </li>
                             <li className="product-box-contain">
-                              <a href="forgot.html">Forgot Password</a>
+                              <a href="/forgot">Forgot Password</a>
+                            </li>
+                            <li className="product-box-contain">
+                              <a href="/">Logout</a>
                             </li>
                           </ul>
                         </div>
@@ -500,7 +503,7 @@ function Login() {
                     </div>
                     <ul className="category-list">
                       <li className="onhover-category-list">
-                        <a href="javascript:void(0)" className="category-name">
+                        <a href="#" className="category-name">
                           <img src="../assets/svg/1/vegetable.svg" alt="" />
                           <h6>Vegetables &amp; Fruit</h6>
                           <i className="fa-solid fa-angle-right" />
@@ -512,40 +515,40 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Potato &amp; Tomato
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Cucumber &amp; Capsicum
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Leafy Vegetables
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Root Vegetables</a>
+                                <a href="#">Root Vegetables</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Beans &amp; Okra
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Cabbage &amp; Cauliflower
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Gourd &amp; Drumstick
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Specialty</a>
+                                <a href="#">Specialty</a>
                               </li>
                             </ul>
                           </div>
@@ -555,35 +558,35 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Banana &amp; Papaya
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Kiwi, Citrus Fruit
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Apples &amp; Pomegranate
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Seasonal Fruits</a>
+                                <a href="#">Seasonal Fruits</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Mangoes</a>
+                                <a href="#">Mangoes</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Fruit Baskets</a>
+                                <a href="#">Fruit Baskets</a>
                               </li>
                             </ul>
                           </div>
                         </div>
                       </li>
                       <li className="onhover-category-list">
-                        <a href="javascript:void(0)" className="category-name">
+                        <a href="#" className="category-name">
                           <img src="../assets/svg/1/cup.svg" alt="" />
                           <h6>Beverages</h6>
                           <i className="fa-solid fa-angle-right" />
@@ -595,40 +598,40 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Soda &amp; Cocktail Mix
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Soda &amp; Cocktail Mix
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Sports &amp; Energy Drinks
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Non Alcoholic Drinks
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Packaged Water</a>
+                                <a href="#">Packaged Water</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Spring Water</a>
+                                <a href="#">Spring Water</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Flavoured Water</a>
+                                <a href="#">Flavoured Water</a>
                               </li>
                             </ul>
                           </div>
                         </div>
                       </li>
                       <li className="onhover-category-list">
-                        <a href="javascript:void(0)" className="category-name">
+                        <a href="#" className="category-name">
                           <img src="../assets/svg/1/meats.svg" alt="" />
                           <h6>Meats &amp; Seafood</h6>
                           <i className="fa-solid fa-angle-right" />
@@ -640,16 +643,16 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="javascript:void(0)">Fresh Meat</a>
+                                <a href="#">Fresh Meat</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Frozen Meat</a>
+                                <a href="#">Frozen Meat</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Marinated Meat</a>
+                                <a href="#">Marinated Meat</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Fresh &amp; Frozen Meat
                                 </a>
                               </li>
@@ -661,40 +664,40 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Fresh Water Fish
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Dry Fish</a>
+                                <a href="#">Dry Fish</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Frozen Fish &amp; Seafood
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Marine Water Fish
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Canned Seafood</a>
+                                <a href="#">Canned Seafood</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Prawans &amp; Shrimps
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Other Seafood</a>
+                                <a href="#">Other Seafood</a>
                               </li>
                             </ul>
                           </div>
                         </div>
                       </li>
                       <li className="onhover-category-list">
-                        <a href="javascript:void(0)" className="category-name">
+                        <a href="#" className="category-name">
                           <img src="../assets/svg/1/breakfast.svg" alt="" />
                           <h6>Breakfast &amp; Dairy</h6>
                           <i className="fa-solid fa-angle-right" />
@@ -706,34 +709,34 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Oats &amp; Porridge
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Kids Cereal</a>
+                                <a href="#">Kids Cereal</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Muesli</a>
+                                <a href="#">Muesli</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Flakes</a>
+                                <a href="#">Flakes</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Granola &amp; Cereal Bars
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Instant Noodles</a>
+                                <a href="#">Instant Noodles</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Pasta &amp; Macaroni
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Frozen Non-Veg Snacks
                                 </a>
                               </li>
@@ -745,38 +748,38 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="javascript:void(0)">Milk</a>
+                                <a href="#">Milk</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Curd</a>
+                                <a href="#">Curd</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Paneer, Tofu &amp; Cream
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Butter &amp; Margarine
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Condensed, Powdered Milk
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Buttermilk &amp; Lassi
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Yogurt &amp; Shrikhand
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Flavoured, Soya Milk
                                 </a>
                               </li>
@@ -785,7 +788,7 @@ function Login() {
                         </div>
                       </li>
                       <li className="onhover-category-list">
-                        <a href="javascript:void(0)" className="category-name">
+                        <a href="#" className="category-name">
                           <img src="../assets/svg/1/frozen.svg" alt="" />
                           <h6>Frozen Foods</h6>
                           <i className="fa-solid fa-angle-right" />
@@ -797,26 +800,26 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="javascript:void(0)">Instant Noodles</a>
+                                <a href="#">Instant Noodles</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Hakka Noodles</a>
+                                <a href="#">Hakka Noodles</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Cup Noodles</a>
+                                <a href="#">Cup Noodles</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Vermicelli</a>
+                                <a href="#">Vermicelli</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Instant Pasta</a>
+                                <a href="#">Instant Pasta</a>
                               </li>
                             </ul>
                           </div>
                         </div>
                       </li>
                       <li className="onhover-category-list">
-                        <a href="javascript:void(0)" className="category-name">
+                        <a href="#" className="category-name">
                           <img src="../assets/svg/1/biscuit.svg" alt="" />
                           <h6>Biscuits &amp; Snacks</h6>
                           <i className="fa-solid fa-angle-right" />
@@ -828,25 +831,25 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="javascript:void(0)">Salted Biscuits</a>
+                                <a href="#">Salted Biscuits</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Marie, Health, Digestive
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Cream Biscuits &amp; Wafers
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Glucose &amp; Milk Biscuits
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Cookies</a>
+                                <a href="#">Cookies</a>
                               </li>
                             </ul>
                           </div>
@@ -856,22 +859,22 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Bread Sticks &amp; Lavash
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Cheese &amp; Garlic Bread
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Puffs, Patties, Sandwiches
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Breadcrumbs &amp; Croutons
                                 </a>
                               </li>
@@ -880,7 +883,7 @@ function Login() {
                         </div>
                       </li>
                       <li className="onhover-category-list">
-                        <a href="javascript:void(0)" className="category-name">
+                        <a href="#" className="category-name">
                           <img src="../assets/svg/1/grocery.svg" alt="" />
                           <h6>Grocery &amp; Staples</h6>
                           <i className="fa-solid fa-angle-right" />
@@ -892,22 +895,22 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Lemon, Ginger &amp; Garlic
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Indian &amp; Exotic Herbs
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Organic Vegetables
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Organic Fruits</a>
+                                <a href="#">Organic Fruits</a>
                               </li>
                             </ul>
                           </div>
@@ -917,40 +920,40 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Organic Dry Fruits
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Organic Dals &amp; Pulses
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Organic Millet &amp; Flours
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Organic Sugar, Jaggery
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Organic Masalas &amp; Spices
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Organic Rice, Other Rice
                                 </a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">Organic Flours</a>
+                                <a href="#">Organic Flours</a>
                               </li>
                               <li>
-                                <a href="javascript:void(0)">
+                                <a href="#">
                                   Organic Edible Oil, Ghee
                                 </a>
                               </li>
@@ -979,24 +982,24 @@ function Login() {
                       <div className="offcanvas-body">
                         <ul className="navbar-nav">
                           <li className="nav-item">
-                            <a className="nav-link" href="index-1-grocery.html">
+                            <a className="nav-link" href="#">
                               Home
                             </a>
                           </li>
                           <li className="nav-item">
-                            <a className="nav-link" href="shop.html">
+                            <a className="nav-link" href="#">
                               Shop
                             </a>
                           </li>
                           <li className="nav-item">
-                            <a className="nav-link" href="product.html">
+                            <a className="nav-link" href="#">
                               Product
                             </a>
                           </li>
                           <li className="nav-item">
                             <a
                               className="nav-link dropdown-toggle"
-                              href="about-us.html"
+                              href="#"
                             >
                               About Us
                             </a>
@@ -1004,7 +1007,7 @@ function Login() {
                           <li className="nav-item">
                             <a
                               className="nav-link dropdown-toggle"
-                              href="contact-us.html"
+                              href="#"
                             >
                               Contact Us
                             </a>
@@ -1012,7 +1015,7 @@ function Login() {
                           <li className="nav-item">
                             <a
                               className="nav-link dropdown-toggle"
-                              href="blog.html"
+                              href="#"
                             >
                               Blog
                             </a>
@@ -1043,31 +1046,31 @@ function Login() {
       <div className="mobile-menu d-md-none d-block mobile-cart">
         <ul>
           <li className="active">
-            <Link to="/indexgrocery">
+            <Link to="#">
               <i className="iconly-Home icli" />
               <span>Home</span>
             </Link>
           </li>
           <li className="mobile-category">
-            <Link to="#">
+            <Link to="/">
               <i className="iconly-Category icli js-link" />
               <span>Category</span>
             </Link>
           </li>
           <li>
-            <Link to="/search" className="search-box">
+            <Link to="/" className="search-box">
               <i className="iconly-Search icli" />
               <span>Search</span>
             </Link>
           </li>
           <li>
-            <Link to="/wishlist" className="notifi-wishlist">
+            <Link to="/" className="notifi-wishlist">
               <i className="iconly-Heart icli" />
               <span>My Wish</span>
             </Link>
           </li>
           <li>
-            <Link to="/cart">
+            <Link to="/">
               <i className="iconly-Bag-2 icli fly-cate" />
               <span>Cart</span>
             </Link>
@@ -1085,7 +1088,7 @@ function Login() {
                 <nav>
                   <ol className="breadcrumb mb-0">
                     <li className="breadcrumb-item">
-                      <Link to="/index">
+                      <Link to="/">
                         <i className="fa-solid fa-house" />
                       </Link>
                     </li>

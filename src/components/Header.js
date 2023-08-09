@@ -6,9 +6,14 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { CategoryList, ProductSearch, SubCategoryList } from "./HttpServices";
 import { Modal } from "react-bootstrap";
 // import "bootstrap/dist/css/bootstrap.min.css";
+import { useGetCategoryListQuery } from "../services/Post";
+import { useSubCategoryListMutation } from "../services/Post";
 
 function Header(props) {
-  console.log("product search items", props.productListItems);
+  // console.log("product search items", props.productListItems);
+  const categoryListItems = useGetCategoryListQuery();
+  const [subCategoryList, res] = useSubCategoryListMutation();
+  console.log(res);
   const [categoryListData, setCategoryListData] = useState([]);
   const [subCategoryListData, setSubCategoryListData] = useState([]);
   const [hoveredCategoryId, setHoveredCategoryId] = useState(null);
@@ -18,8 +23,44 @@ function Header(props) {
   const [showModal, setShowModal] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSale, setShowSale] = useState(false);
+  const [itemId, setItemId] = useState("");
+  console.log(itemId);
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
+    useEffect(() => {
+      const reversedList =
+      categoryListItems?.data?.results?.list?.slice().reverse() ?? [];
+      setCategoryListData(reversedList);
+    }, [categoryListItems]);
+    const handleOnhover = async (categoryId) => {
+      setItemId(categoryId)
+      // try {
+      //   const { data } = await SubCategoryList(categoryId);
+      //   setHoveredCategoryId(categoryId);
+      //   setSubCategoryItems(data);
+      //   console.log(categoryId);
+      //   getData();
+      // } catch (error) {
+      //   console.log(error);
+      // }
+      setTimeout(() => {
+        handleSaveChanges1()
+      }, 500);
+    };
+    useEffect(() => {
+      if (res) {
+        setSubCategoryItems(res?.data?.results?.listData);
+      }
+    }, [res]);
+
+    const handleSaveChanges1 = () => {
+      console.log("handleSaveChanges1", itemId);
+      const editAddress = {
+        id: itemId,
+      };
+      subCategoryList(editAddress);
+    };
+
   useEffect(() => {
     const welcomeInterval = setInterval(() => {
       setShowWelcome(true);
@@ -57,30 +98,20 @@ function Header(props) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    fetchData();
-  }, []);
-  const fetchData = async () => {
-    try {
-      const { data, error } = await CategoryList();
-      error ? console.log(error) : console.log(data);
-      setCategoryListData(data.results.list);
-      console.log(data.results.list);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const handleOnhover = async (categoryId) => {
-    try {
-      const { data } = await SubCategoryList(categoryId);
-      setHoveredCategoryId(categoryId);
-      setSubCategoryItems(data);
-      console.log(categoryId);
-      getData();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
+  // const fetchData = async () => {
+  //   try {
+  //     const { data, error } = await CategoryList();
+  //     error ? console.log(error) : console.log(data);
+  //     setCategoryListData(data.results.list);
+  //     console.log(data.results.list);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  
 
   const getData = async () => {
     try {
@@ -97,8 +128,8 @@ function Header(props) {
     }
   };
 
-  console.log("Data", categoryListData);
-  console.log("subData", subCategoryListData);
+  // console.log("Data", categoryListData);
+  // console.log("subData", subCategoryListData);
 
   return (
     <>
@@ -480,13 +511,16 @@ function Header(props) {
                           <ul className="user-box-name">
                             <li className="product-box-contain">
                               <i />
-                              <Link to="/login">Log In</Link>
+                              <Link to="/">Log In</Link>
                             </li>
                             <li className="product-box-contain">
                               <Link to="/sign-up">Register</Link>
                             </li>
                             <li className="product-box-contain">
                               <Link to="/forgot">Forgot Password</Link>
+                            </li>
+                            <li className="product-box-contain">
+                              <Link to="/">Logout</Link>
                             </li>
                           </ul>
                         </div>
@@ -541,7 +575,7 @@ function Header(props) {
                                   <h5>Organic Vegetables</h5>
                                 </div>
                                 <ul>
-                                  {(subCategoryListData || []).map(
+                                  {(subCategoryItems || []).map(
                                     (items, indexes) => {
                                       return (
                                         <li
@@ -553,12 +587,12 @@ function Header(props) {
                                             className="category-name"
                                           >
                                             <img
-                                              src={items.subCategoryPic}
+                                              src={items?.subCategoryPic}
                                               alt="image"
                                             />
                                             <Link to="#">
                                               {" "}
-                                              {items.subCategoryName}{" "}
+                                              {items?.subCategoryName_en}{" "}
                                             </Link>
                                           </Link>
                                         </li>

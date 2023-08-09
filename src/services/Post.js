@@ -17,6 +17,24 @@ export const PostApi = createApi({
         method: "post",
       }),
     }),
+    getCategoryList: builder.query({
+      query: (name) => ({
+        url: "/user/category/category/category-list",
+        method: "post",
+      }),
+    }),
+    subCategoryList: builder.mutation({
+      query: (body) => {
+        console.log("update address", body);
+        const { id } = body;
+        console.log("update address body data", id);
+        return {
+          url: `/user/category/category/category-subCategory/${id}`,
+          method: "post",
+          // body: data,
+        };
+      },
+    }),
     getTrendingProduct: builder.query({
       query: (name) => ({
         url: `user/product/product/tranding-product`,
@@ -145,6 +163,26 @@ export const PostApi = createApi({
         };
       },
     }),
+    userSignUp: builder.mutation({
+      query: (body) => {
+        console.log("update login data", body);
+        return {
+          url: "/user/user/user/signup",
+          method: "post",
+          body,
+        };
+      },
+    }),
+    resetPassword: builder.mutation({
+      query: (body) => {
+        console.log("update login data", body);
+        return {
+          url: "/user/user/user/change-password",
+          method: "post",
+          body,
+        };
+      },
+    }),
     sendEmail: builder.mutation({
       query: (body) => {
         console.log("update login data", body);
@@ -192,4 +230,8 @@ export const {
   useUserLoginMutation,
   useSendEmailMutation,
   useVarifyOtpMutation,
+  useUserSignUpMutation,
+  useResetPasswordMutation,
+  useGetCategoryListQuery,
+  useSubCategoryListMutation,
 } = PostApi;
