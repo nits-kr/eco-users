@@ -13,7 +13,7 @@ function Header(props) {
   // console.log("product search items", props.productListItems);
   const categoryListItems = useGetCategoryListQuery();
   const [subCategoryList, res] = useSubCategoryListMutation();
-  console.log(res);
+  // console.log(res);
   const [categoryListData, setCategoryListData] = useState([]);
   const [subCategoryListData, setSubCategoryListData] = useState([]);
   const [hoveredCategoryId, setHoveredCategoryId] = useState(null);
@@ -24,7 +24,7 @@ function Header(props) {
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSale, setShowSale] = useState(false);
   const [itemId, setItemId] = useState("");
-  console.log(itemId);
+  // console.log(itemId);
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
   useEffect(() => {
