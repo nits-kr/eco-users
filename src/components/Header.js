@@ -9,7 +9,7 @@ import { Modal } from "react-bootstrap";
 import { useGetCategoryListQuery } from "../services/Post";
 import { useSubCategoryListMutation } from "../services/Post";
 
-function Header(props) {
+function Header({ Dash }) {
   // console.log("product search items", props.productListItems);
   const categoryListItems = useGetCategoryListQuery();
   const [subCategoryList, res] = useSubCategoryListMutation();
@@ -647,12 +647,12 @@ function Header(props) {
                       <div className="offcanvas-body">
                         <ul className="navbar-nav">
                           <li className="nav-item">
-                            <Link className="nav-link" to="*">
+                            <Link className={Dash === "home" ? "nav-link active" : "nav-link"} aria-current="page" to="*">
                               Home
                             </Link>
                           </li>
                           <li className="nav-item">
-                            <Link className="nav-link" to="/shop">
+                            <Link className={Dash === "shop" ? "nav-link active" : "nav-link"} to="/shop">
                               Shop
                             </Link>
                           </li>
@@ -663,7 +663,8 @@ function Header(props) {
                           </li> */}
                           <li className="nav-item">
                             <Link
-                              className="nav-link dropdown-toggle"
+                              // className="nav-link dropdown-toggle"
+                              className={Dash === "about" ? "nav-link active" : "nav-link"}
                               to="/about-us"
                             >
                               About Us
@@ -671,7 +672,8 @@ function Header(props) {
                           </li>
                           <li className="nav-item">
                             <Link
-                              className="nav-link dropdown-toggle"
+                            className={Dash === "contact" ? "nav-link active" : "nav-link"}
+                              // className="nav-link dropdown-toggle"
                               to="/contact-us"
                             >
                               Contact Us
@@ -679,7 +681,8 @@ function Header(props) {
                           </li>
                           <li className="nav-item">
                             <Link
-                              className="nav-link dropdown-toggle"
+                              // className="nav-link dropdown-toggle"
+                              className={Dash === "blog" ? "nav-link active" : "nav-link"}
                               to="/blog"
                             >
                               Blog

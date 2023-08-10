@@ -27,6 +27,7 @@ import {
 import Star from "./Star";
 import { useGetCategoryListQuery } from "../services/Post";
 import { useGetAllPostQuery } from "../services/Post";
+import { useCreateOrderMutation } from "../services/Post";
 function IndexGrocary(props) {
   const categoryListItems = useGetCategoryListQuery();
   const trendingProduct = useGetTrendingProductQuery();
@@ -44,6 +45,7 @@ function IndexGrocary(props) {
   const [priceRange, setPriceRange] = useState([0, 11000]);
   const [categoryListData, setCategoryListData] = useState([]);
   const blog = useGetAllPostQuery();
+  const [createOrder, responseInfo] = useCreateOrderMutation();
   console.log("useGetAllPostQuery", blog);
 
   const [blogList, setBlogList] = useState();
@@ -209,6 +211,29 @@ function IndexGrocary(props) {
   const handleOkButtonClick = () => {
     HandleOkButtonClick();
   };
+
+  const handleSaveChanges = (id) => {
+    const newAddress = {
+      carts:[
+          {
+          product_Id:id,
+           quantity:"2"
+          },
+           {
+          product_Id:"6482b78584e5342a120adbb4",
+          quantity:"2"
+          }
+      ],
+      user_Id:"6479bd30adce522c085b2705",
+      address_Id:"6482c98e76841b2dc23c2241",
+      shippingPrice:"30",
+      taxPrice:"20",
+      deliverdBy:"64807a3f998cb060711aac1c",
+      orderStatus:"Delivered"
+     
+  }
+  createOrder(newAddress);
+  };
   const sliders = () => {
     return blogList?.map((item, index) => (
       <div key={index}>
@@ -232,118 +257,101 @@ function IndexGrocary(props) {
   };
   const sliders2 = () => {
     return trendingList?.map((item, index) => (
-       (
-        <div key={index}>
-          {console.log("nk")}
-          <div className="product-box-3 h-100 wow fadeInUp">
-            <div className="product-header">
-              <div className="product-image">
-                <Link to="/product">
-                  <img
-                    src={item?.product_Pic[0]}
-                    className="img-fluid  lazyload"
-                    alt=""
-                  />
-                </Link>
-                <ul className="product-option">
-                  <li
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    title="View"
+      <div key={index}>
+        {console.log("nk")}
+        <div className="product-box-3 h-100 wow fadeInUp">
+          <div className="product-header">
+            <div className="product-image">
+              <Link to="/product">
+                <img
+                  src={item?.product_Pic[0]}
+                  className="img-fluid  lazyload"
+                  alt=""
+                />
+              </Link>
+              <ul className="product-option">
+                <li
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="View"
+                >
+                  <Link
+                    to="#"
+                    data-bs-toggle="modal"
+                    data-bs-target="#view"
+                    onClick={() => handleViewClick(item)}
                   >
-                    <Link
-                      to="#"
-                      data-bs-toggle="modal"
-                      data-bs-target="#view"
-                      onClick={() => handleViewClick(item)}
-                    >
-                      <FontAwesomeIcon icon={faEye} />
-                    </Link>
-                  </li>
-                  <li
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    title="Compare"
-                    onClick={() => handleCompareClick(item)}
-                  >
-                    <Link to="/compare">
-                      <FontAwesomeIcon icon={faArrowsRotate} />
-                    </Link>
-                  </li>
-                  <li
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    title="Wishlist"
-                    onClick={() => handleWishClick(item)}
-                  >
-                    <Link to="/wishlist" className="notifi-wishlist">
-                      <FontAwesomeIcon icon={faHeart} />
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+                    <FontAwesomeIcon icon={faEye} />
+                  </Link>
+                </li>
+                <li
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="Compare"
+                  onClick={() => handleCompareClick(item)}
+                >
+                  <Link to="/compare">
+                    <FontAwesomeIcon icon={faArrowsRotate} />
+                  </Link>
+                </li>
+                <li
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="Wishlist"
+                  onClick={() => handleWishClick(item)}
+                >
+                  <Link to="/wishlist" className="notifi-wishlist">
+                    <FontAwesomeIcon icon={faHeart} />
+                  </Link>
+                </li>
+              </ul>
             </div>
-            <div className="product-footer">
-              <div className="product-detail">
-                <span className="span-name"> {item._id} </span>
-                <Link to="/product">
-                  <h5 className="name">{item.productName}</h5>
-                </Link>
-                <p className="text-content mt-1 mb-2 product-content">
-                  Cheesy feet cheesy grin brie. Mascarpone cheese and wine hard
-                  cheese the big cheese everyone loves smelly cheese macaroni
-                  cheese croque monsieur.
-                </p>
-                <div className="product-rating mt-2">
-                  <Star rating={item?.totalRating} />
-                  <span> In Stock </span>
-                </div>
-                <h6 className="unit">{item.stockQuantity} units </h6>
-                <h5 className="price">
-                  <span className="theme-color">${item.Price}</span>{" "}
-                  <del>${item.oldPrice} </del>
-                </h5>
-                <div className="add-to-cart-box bg-white">
+          </div>
+          <div className="product-footer">
+            <div className="product-detail">
+              {/* <span className="span-name"> {item.productName_en} </span> */}
+              <Link to="/product">
+                <h5 className="name">{item.productName_en}</h5>
+              </Link>
+              <p className="text-content mt-1 mb-2 product-content">
+                Cheesy feet cheesy grin brie. Mascarpone cheese and wine hard
+                cheese the big cheese everyone loves smelly cheese macaroni
+                cheese croque monsieur.
+              </p>
+              <div className="product-rating mt-2">
+                <Star rating={item?.totalRating} />
+                <span> In Stock </span>
+              </div>
+              <h6 className="unit">{item.stockQuantity} units </h6>
+              <h5 className="price">
+                <span className="theme-color">${item.Price}</span>{" "}
+                <del>${item.oldPrice} </del>
+              </h5>
+              <div className="add-to-cart-box bg-white">
+                <button className="btn btn-add-cart addcart-button">
+                  <Link to="/cart" onClick={() => handleAddToCart(item)}>
+                    Add
+                    <span className="add-icon bg-light-gray">
+                      <i className="fa-solid fa-plus" />
+                    </span>
+                  </Link>
+                </button>
+              </div>
+              <div className="add-to-cart-box bg-danger mt-2">
                   <button className="btn btn-add-cart addcart-button">
-                    <Link to="/cart" onClick={() => handleAddToCart(item)}>
-                      Add
-                      <span className="add-icon bg-light-gray">
-                        <i className="fa-solid fa-plus" />
-                      </span>
+                    <Link
+                      className="text-light"
+                      to="/cart"
+                      onClick={() => handleSaveChanges(item?._id)}
+                    >
+                      Buy Now
                     </Link>
                   </button>
-                  <div className="cart_qty qty-box">
-                    <div className="input-group bg-white">
-                      <button
-                        type="button"
-                        className="qty-left-minus bg-gray"
-                        data-type="minus"
-                        data-field=""
-                      >
-                        <i className="fa fa-minus" aria-hidden="true" />
-                      </button>
-                      <input
-                        className="form-control input-number qty-input"
-                        type="text"
-                        name="quantity"
-                        defaultValue={0}
-                      />
-                      <button
-                        type="button"
-                        className="qty-right-plus bg-gray"
-                        data-type="plus"
-                        data-field=""
-                      >
-                        <i className="fa fa-plus" aria-hidden="true" />
-                      </button>
-                    </div>
-                  </div>
                 </div>
-              </div>
             </div>
           </div>
         </div>
-      )
+      </div>
     ));
   };
 
@@ -351,7 +359,7 @@ function IndexGrocary(props) {
     <>
       {loading}
       {/* Header Start */}
-      <Header />
+      <Header Dash={"home"} />
       {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
@@ -847,45 +855,46 @@ function IndexGrocary(props) {
               ) : (
                 <>
                   <div className="col-12 wow fadeInUp">
-                  <div className="row g-sm-4 g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 product-list-section">
-                  <Slider {...settings1}>{sliders2()}</Slider>
-                  </div>
+                    <div className="row g-sm-4 g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 product-list-section heading11">
+                      <div className="heading11 mb-5">
+                        <Slider {...settings1}>{sliders2()}</Slider>
+                      </div>
                     </div>
-                  <nav className="custome-pagination">
-                      <ul className="pagination justify-content-center">
-                        <li className="page-item disabled">
-                          <Link
-                            className="page-link"
-                            to="#"
-                            tabIndex={-1}
-                            aria-disabled="true"
-                          >
-                            <i className="fa-solid fa-angles-left" />
-                          </Link>
-                        </li>
-                        <li className="page-item active">
-                          <Link className="page-link" to="#">
-                            1
-                          </Link>
-                        </li>
-                        <li className="page-item" aria-current="page">
-                          <Link className="page-link" to="#">
-                            2
-                          </Link>
-                        </li>
-                        <li className="page-item">
-                          <Link className="page-link" to="#">
-                            3
-                          </Link>
-                        </li>
-                        <li className="page-item">
-                          <Link className="page-link" to="#">
-                            <i className="fa-solid fa-angles-right" />
-                          </Link>
-                        </li>
-                      </ul>
-                    </nav>
-                    
+                  </div>
+                  {/* <nav className="custome-pagination">
+                    <ul className="pagination justify-content-center">
+                      <li className="page-item disabled">
+                        <Link
+                          className="page-link"
+                          to="#"
+                          tabIndex={-1}
+                          aria-disabled="true"
+                        >
+                          <i className="fa-solid fa-angles-left" />
+                        </Link>
+                      </li>
+                      <li className="page-item active">
+                        <Link className="page-link" to="#">
+                          1
+                        </Link>
+                      </li>
+                      <li className="page-item" aria-current="page">
+                        <Link className="page-link" to="#">
+                          2
+                        </Link>
+                      </li>
+                      <li className="page-item">
+                        <Link className="page-link" to="#">
+                          3
+                        </Link>
+                      </li>
+                      <li className="page-item">
+                        <Link className="page-link" to="#">
+                          <i className="fa-solid fa-angles-right" />
+                        </Link>
+                      </li>
+                    </ul>
+                  </nav> */}
                 </>
               )}
               <div className="title">

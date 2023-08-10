@@ -35,7 +35,7 @@ function Blog(props) {
     <>
       {loading}
       {/* Header Start */}
-      <Header />
+      <Header Dash={"blog"}/>
       {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">

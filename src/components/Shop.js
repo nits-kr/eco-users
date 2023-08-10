@@ -50,6 +50,7 @@ function Shop(props) {
   const [loading, setLoading] = useState(false);
   const [rating, setRating] = useState([])
   const [createOrder, responseInfo] = useCreateOrderMutation();
+  const storedId = localStorage.getItem("loginId")
   const handleSaveChanges = (id) => {
     const newAddress = {
       carts:[
@@ -62,7 +63,7 @@ function Shop(props) {
           quantity:"2"
           }
       ],
-      user_Id:"6479bd30adce522c085b2705",
+      user_Id:storedId,
       address_Id:"6482c98e76841b2dc23c2241",
       shippingPrice:"30",
       taxPrice:"20",
@@ -288,7 +289,7 @@ function Shop(props) {
     <>
       {loading}
       {/* Header Start */}
-      <Header setProductListItems={setProductListItems} />
+      <Header setProductListItems={setProductListItems} Dash={"shop"}/>
       {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
@@ -1826,22 +1827,10 @@ function Shop(props) {
                                       to="/cart"
                                       onClick={() => handleSaveChanges(item?._id)}
                                     >
-                                    {/* className="text-light"
-                                      to="/cart"
-                                      onClick={() => handleSaveChanges(item?._id,user_Id,
-                                      address_Id,
-                                      shippingPrice,
-                                      taxPrice,
-                                      deliverdBy,
-                                      orderStatus )}
-                                    > */}
                                       Buy Now
-                                      {/* <span className="add-icon bg-light-gray">
-                                        <i className="fa-solid fa-plus" />
-                                      </span> */}
                                     </Link>
                                   </button>
-                                  <div className="cart_qty qty-box">
+                                  {/* <div className="cart_qty qty-box">
                                     <div className="input-group bg-white">
                                       <button
                                         type="button"
@@ -1872,7 +1861,7 @@ function Shop(props) {
                                         />
                                       </button>
                                     </div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                             </div>

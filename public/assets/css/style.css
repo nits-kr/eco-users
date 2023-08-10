@@ -35624,3 +35624,9 @@ button.btn.btn-add-cart.addcart-button {
   flex: 0 0 auto;
   width: 25%;
 }
+
+.row-cols-xxl-4 > .heading11 {
+  flex: 0 0 auto;
+  width: 100%;
+}
+

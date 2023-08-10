@@ -23,7 +23,7 @@ export default function AboutUs() {
       </div> */}
       {/* Loader End */}
       {/* Header Start */}
-  <Header/>
+  <Header Dash={"about"}/>
       {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
