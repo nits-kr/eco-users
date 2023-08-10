@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import feather from "feather-icons";
+import axios from "axios";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Slider from "react-slick";
@@ -24,7 +25,10 @@ import {
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import Star from "./Star";
+import { useGetCategoryListQuery } from "../services/Post";
+import { useGetAllPostQuery } from "../services/Post";
 function IndexGrocary(props) {
+  const categoryListItems = useGetCategoryListQuery();
   const trendingProduct = useGetTrendingProductQuery();
   console.log("useGetTrendingProductQuery", trendingProduct);
   const [trendingList, setTrendingList] = useState([]);
@@ -38,8 +42,32 @@ function IndexGrocary(props) {
   const [cartListItems, setCartListItems] = useState([]);
   const [selectedWeight, setSelectedWeight] = useState("");
   const [priceRange, setPriceRange] = useState([0, 11000]);
+  const [categoryListData, setCategoryListData] = useState([]);
+  const blog = useGetAllPostQuery();
+  console.log("useGetAllPostQuery", blog);
+
+  const [blogList, setBlogList] = useState();
   console.log("price range", priceRange);
   console.log("selected weight", selectedWeight);
+  axios.defaults.headers.common["x-auth-token-user"] =
+    localStorage.getItem("token");
+  useEffect(() => {
+    feather.replace();
+    props.setProgress(10);
+    setLoading(true);
+    if (blog?.data?.results?.list) {
+      setBlogList(blog?.data?.results?.list);
+      props.setProgress(100);
+      setLoading(false);
+    } else {
+      setBlogList(blog?.data?.results?.list);
+    }
+  }, [blog]);
+  useEffect(() => {
+    const reversedList =
+      categoryListItems?.data?.results?.list?.slice().reverse() ?? [];
+    setCategoryListData(reversedList);
+  }, [categoryListItems]);
 
   useEffect(() => {
     cartData();
@@ -163,6 +191,14 @@ function IndexGrocary(props) {
     autoplay: true,
     slidesToScroll: 1,
   };
+  const settings1 = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    autoplay: true,
+  };
   useEffect(() => {
     feather.replace();
   }, []);
@@ -172,6 +208,143 @@ function IndexGrocary(props) {
 
   const handleOkButtonClick = () => {
     HandleOkButtonClick();
+  };
+  const sliders = () => {
+    return blogList?.map((item, index) => (
+      <div key={index}>
+        <div className="blog-box">
+          <div className="blog-box-image">
+            <Link to="/blog" className="blog-image">
+              <img
+                src="../assets/images/vegetable/blog/1.jpg"
+                className="bg-img  lazyload"
+                alt=""
+              />
+            </Link>
+          </div>
+          <Link to="/blog" className="blog-detail">
+            <h6>20 March, 2022</h6>
+            <h5>Fresh Vegetable Online</h5>
+          </Link>
+        </div>
+      </div>
+    ));
+  };
+  const sliders2 = () => {
+    return trendingList?.map((item, index) => (
+       (
+        <div key={index}>
+          {console.log("nk")}
+          <div className="product-box-3 h-100 wow fadeInUp">
+            <div className="product-header">
+              <div className="product-image">
+                <Link to="/product">
+                  <img
+                    src={item?.product_Pic[0]}
+                    className="img-fluid  lazyload"
+                    alt=""
+                  />
+                </Link>
+                <ul className="product-option">
+                  <li
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="View"
+                  >
+                    <Link
+                      to="#"
+                      data-bs-toggle="modal"
+                      data-bs-target="#view"
+                      onClick={() => handleViewClick(item)}
+                    >
+                      <FontAwesomeIcon icon={faEye} />
+                    </Link>
+                  </li>
+                  <li
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Compare"
+                    onClick={() => handleCompareClick(item)}
+                  >
+                    <Link to="/compare">
+                      <FontAwesomeIcon icon={faArrowsRotate} />
+                    </Link>
+                  </li>
+                  <li
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Wishlist"
+                    onClick={() => handleWishClick(item)}
+                  >
+                    <Link to="/wishlist" className="notifi-wishlist">
+                      <FontAwesomeIcon icon={faHeart} />
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="product-footer">
+              <div className="product-detail">
+                <span className="span-name"> {item._id} </span>
+                <Link to="/product">
+                  <h5 className="name">{item.productName}</h5>
+                </Link>
+                <p className="text-content mt-1 mb-2 product-content">
+                  Cheesy feet cheesy grin brie. Mascarpone cheese and wine hard
+                  cheese the big cheese everyone loves smelly cheese macaroni
+                  cheese croque monsieur.
+                </p>
+                <div className="product-rating mt-2">
+                  <Star rating={item?.totalRating} />
+                  <span> In Stock </span>
+                </div>
+                <h6 className="unit">{item.stockQuantity} units </h6>
+                <h5 className="price">
+                  <span className="theme-color">${item.Price}</span>{" "}
+                  <del>${item.oldPrice} </del>
+                </h5>
+                <div className="add-to-cart-box bg-white">
+                  <button className="btn btn-add-cart addcart-button">
+                    <Link to="/cart" onClick={() => handleAddToCart(item)}>
+                      Add
+                      <span className="add-icon bg-light-gray">
+                        <i className="fa-solid fa-plus" />
+                      </span>
+                    </Link>
+                  </button>
+                  <div className="cart_qty qty-box">
+                    <div className="input-group bg-white">
+                      <button
+                        type="button"
+                        className="qty-left-minus bg-gray"
+                        data-type="minus"
+                        data-field=""
+                      >
+                        <i className="fa fa-minus" aria-hidden="true" />
+                      </button>
+                      <input
+                        className="form-control input-number qty-input"
+                        type="text"
+                        name="quantity"
+                        defaultValue={0}
+                      />
+                      <button
+                        type="button"
+                        className="qty-right-plus bg-gray"
+                        data-type="plus"
+                        data-field=""
+                      >
+                        <i className="fa fa-plus" aria-hidden="true" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    ));
   };
 
   return (
@@ -224,7 +397,7 @@ function IndexGrocary(props) {
             <div className="col-xl-8 ratio_65">
               <div className="home-contain h-100">
                 <div
-                  className="h-100 bg-size blur-up lazyloaded"
+                  className="h-100 bg-size  lazyloaded"
                   style={{
                     backgroundImage:
                       'url("../assets/images/vegetable/banner/1.jpg")',
@@ -236,7 +409,7 @@ function IndexGrocary(props) {
                 >
                   <img
                     src="../assets/images/vegetable/banner/1.jpg"
-                    className="bg-img blur-up lazyloaded"
+                    className="bg-img  lazyloaded"
                     alt=""
                     style={{ display: "none" }}
                   />
@@ -270,7 +443,7 @@ function IndexGrocary(props) {
               <div className="row g-4">
                 <div className="col-xl-12 col-md-6">
                   <div
-                    className="home-contain bg-size blur-up lazyloaded"
+                    className="home-contain bg-size  lazyloaded"
                     style={{
                       backgroundImage:
                         'url("../assets/images/vegetable/banner/2.jpg")',
@@ -282,7 +455,7 @@ function IndexGrocary(props) {
                   >
                     <img
                       src="../assets/images/vegetable/banner/2.jpg"
-                      className="bg-img blur-up lazyloaded"
+                      className="bg-img  lazyloaded"
                       alt=""
                       style={{ display: "none" }}
                     />
@@ -304,7 +477,7 @@ function IndexGrocary(props) {
                 </div>
                 <div className="col-xl-12 col-md-6">
                   <div
-                    className="home-contain bg-size blur-up lazyloaded"
+                    className="home-contain bg-size  lazyloaded"
                     style={{
                       backgroundImage:
                         'url("../assets/images/vegetable/banner/3.jpg")',
@@ -316,7 +489,7 @@ function IndexGrocary(props) {
                   >
                     <img
                       src="../assets/images/vegetable/banner/3.jpg"
-                      className="bg-img blur-up lazyloaded"
+                      className="bg-img  lazyloaded"
                       alt=""
                       style={{ display: "none" }}
                     />
@@ -438,126 +611,22 @@ function IndexGrocary(props) {
                 <div className="category-menu">
                   <h3>Category</h3>
                   <ul>
-                    <li>
-                      <div className="category-list">
-                        <img
-                          src="../assets/svg/1/vegetable.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>
-                          <Link to="/shop">Vegetables &amp; Fruit</Link>
-                        </h5>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="category-list">
-                        <img
-                          src="../assets/svg/1/cup.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>
-                          <Link to="/shop">Beverages</Link>
-                        </h5>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="category-list">
-                        <img
-                          src="../assets/svg/1/meats.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>
-                          <Link to="/shop">Meats &amp; Seafood</Link>
-                        </h5>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="category-list">
-                        <img
-                          src="../assets/svg/1/breakfast.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>
-                          <Link to="/shop">Breakfast &amp; Dairy</Link>
-                        </h5>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="category-list">
-                        <img
-                          src="../assets/svg/1/frozen.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>
-                          <Link to="/shop">Frozen Foods</Link>
-                        </h5>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="category-list">
-                        <img
-                          src="../assets/svg/1/biscuit.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>
-                          <Link to="/shop">Biscuits &amp; Snacks</Link>
-                        </h5>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="category-list">
-                        <img
-                          src="../assets/svg/1/grocery.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>
-                          <Link to="/shop">Grocery &amp; Staples</Link>
-                        </h5>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="category-list">
-                        <img
-                          src="../assets/svg/1/drink.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>
-                          <Link to="/shop">Wines &amp; Alcohol Drinks</Link>
-                        </h5>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="category-list">
-                        <img
-                          src="../assets/svg/1/milk.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>
-                          <Link to="/shop">Milk &amp; Dairies</Link>
-                        </h5>
-                      </div>
-                    </li>
-                    <li className="pb-30">
-                      <div className="category-list">
-                        <img
-                          src="../assets/svg/1/pet.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>
-                          <Link to="/shop">Pet Foods</Link>
-                        </h5>
-                      </div>
-                    </li>
+                    {categoryListData.map((item, index) => {
+                      return (
+                        <li key={index}>
+                          <div className="category-list">
+                            <img
+                              src={item?.categoryPic}
+                              className=" lazyload"
+                              alt=""
+                            />
+                            <h5>
+                              <Link to="/shop"> {item?.categoryName_en} </Link>
+                            </h5>
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
                   <ul className="value-list">
                     <li>
@@ -669,7 +738,7 @@ function IndexGrocary(props) {
                                         className="text-title"
                                       >
                                         <h6 className="name">
-                                          {item?.productName}
+                                          {item?.productName_en}
                                         </h6>
                                       </Link>
                                       <span> {item?.stockQuantity} left </span>
@@ -778,144 +847,11 @@ function IndexGrocary(props) {
               ) : (
                 <>
                   <div className="col-12 wow fadeInUp">
-                    <div className="row g-sm-4 g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 product-list-section">
-                      {discountProduct?.map((item, index) => {
-                        return (
-                          <div key={index}>
-                            <div className="product-box-3 h-100 wow fadeInUp">
-                              <div className="product-header">
-                                <div className="product-image">
-                                  <Link to="/product">
-                                    <img
-                                      src={item.product_Pic[0]}
-                                      className="img-fluid  lazyload"
-                                      alt=""
-                                    />
-                                  </Link>
-                                  <ul className="product-option">
-                                    <li
-                                      data-bs-toggle="tooltip"
-                                      data-bs-placement="top"
-                                      title="View"
-                                    >
-                                      <Link
-                                        to="#"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#view"
-                                        onClick={() => handleViewClick(item)}
-                                      >
-                                        <FontAwesomeIcon icon={faEye} />
-                                      </Link>
-                                    </li>
-                                    <li
-                                      data-bs-toggle="tooltip"
-                                      data-bs-placement="top"
-                                      title="Compare"
-                                      onClick={() => handleCompareClick(item)}
-                                    >
-                                      <Link to="/compare">
-                                        <FontAwesomeIcon
-                                          icon={faArrowsRotate}
-                                        />
-                                      </Link>
-                                    </li>
-                                    <li
-                                      data-bs-toggle="tooltip"
-                                      data-bs-placement="top"
-                                      title="Wishlist"
-                                      onClick={() => handleWishClick(item)}
-                                    >
-                                      <Link
-                                        to="/wishlist"
-                                        className="notifi-wishlist"
-                                      >
-                                        <FontAwesomeIcon icon={faHeart} />
-                                      </Link>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                              <div className="product-footer">
-                                <div className="product-detail">
-                                  <span className="span-name">
-                                    {" "}
-                                    {item._id}{" "}
-                                  </span>
-                                  <Link to="/product">
-                                    <h5 className="name">{item.productName}</h5>
-                                  </Link>
-                                  <p className="text-content mt-1 mb-2 product-content">
-                                    Cheesy feet cheesy grin brie. Mascarpone
-                                    cheese and wine hard cheese the big cheese
-                                    everyone loves smelly cheese macaroni cheese
-                                    croque monsieur.
-                                  </p>
-                                  <div className="product-rating mt-2">
-                                    <Star rating={item?.totalRating} />
-                                    <span> In Stock </span>
-                                  </div>
-                                  <h6 className="unit">
-                                    {item.stockQuantity} units{" "}
-                                  </h6>
-                                  <h5 className="price">
-                                    <span className="theme-color">
-                                      ${item.Price}
-                                    </span>{" "}
-                                    <del>${item.oldPrice} </del>
-                                  </h5>
-                                  <div className="add-to-cart-box bg-white">
-                                    <button className="btn btn-add-cart addcart-button">
-                                      <Link
-                                        to="/cart"
-                                        onClick={() => handleAddToCart(item)}
-                                      >
-                                        Add
-                                        <span className="add-icon bg-light-gray">
-                                          <i className="fa-solid fa-plus" />
-                                        </span>
-                                      </Link>
-                                    </button>
-                                    <div className="cart_qty qty-box">
-                                      <div className="input-group bg-white">
-                                        <button
-                                          type="button"
-                                          className="qty-left-minus bg-gray"
-                                          data-type="minus"
-                                          data-field=""
-                                        >
-                                          <i
-                                            className="fa fa-minus"
-                                            aria-hidden="true"
-                                          />
-                                        </button>
-                                        <input
-                                          className="form-control input-number qty-input"
-                                          type="text"
-                                          name="quantity"
-                                          defaultValue={0}
-                                        />
-                                        <button
-                                          type="button"
-                                          className="qty-right-plus bg-gray"
-                                          data-type="plus"
-                                          data-field=""
-                                        >
-                                          <i
-                                            className="fa fa-plus"
-                                            aria-hidden="true"
-                                          />
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                  <div className="row g-sm-4 g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 product-list-section">
+                  <Slider {...settings1}>{sliders2()}</Slider>
+                  </div>
                     </div>
-                    <nav className="custome-pagination">
+                  <nav className="custome-pagination">
                       <ul className="pagination justify-content-center">
                         <li className="page-item disabled">
                           <Link
@@ -949,7 +885,7 @@ function IndexGrocary(props) {
                         </li>
                       </ul>
                     </nav>
-                  </div>
+                    
                 </>
               )}
               <div className="title">
@@ -1062,11 +998,6 @@ function IndexGrocary(props) {
                         display: "block",
                       }}
                     >
-                      {/* <img
-                                                src="../assets/images/vegetable/banner/9.jpg"
-                                                className="bg-img  lazyload"
-                                                alt=""
-                                            /> */}
                       <div className="banner-details p-center-left p-4">
                         <div>
                           <h3 className="text-exo">50% offer</h3>
@@ -1169,7 +1100,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={-1}>
                                   <img
                                     src="../assets/images/vegetable/product/3.png"
-                                    className="img-fluid blur-up lazyloaded"
+                                    className="img-fluid  lazyloaded"
                                     alt=""
                                   />
                                 </Link>
@@ -1427,7 +1358,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={-1}>
                                   <img
                                     src="../assets/images/vegetable/product/4.png"
-                                    className="img-fluid blur-up lazyloaded"
+                                    className="img-fluid  lazyloaded"
                                     alt=""
                                   />
                                 </Link>
@@ -1685,7 +1616,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={-1}>
                                   <img
                                     src="../assets/images/vegetable/product/5.png"
-                                    className="img-fluid blur-up lazyloaded"
+                                    className="img-fluid  lazyloaded"
                                     alt=""
                                   />
                                 </Link>
@@ -1943,7 +1874,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={-1}>
                                   <img
                                     src="../assets/images/vegetable/product/4.png"
-                                    className="img-fluid blur-up lazyloaded"
+                                    className="img-fluid  lazyloaded"
                                     alt=""
                                   />
                                 </Link>
@@ -2200,7 +2131,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={0}>
                                   <img
                                     src="../assets/images/vegetable/product/1.png"
-                                    className="img-fluid blur-up lazyloaded"
+                                    className="img-fluid  lazyloaded"
                                     alt=""
                                   />
                                 </Link>
@@ -2457,7 +2388,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={0}>
                                   <img
                                     src="../assets/images/vegetable/product/2.png"
-                                    className="img-fluid blur-up lazyloaded"
+                                    className="img-fluid  lazyloaded"
                                     alt=""
                                   />
                                 </Link>
@@ -2714,7 +2645,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={0}>
                                   <img
                                     src="../assets/images/vegetable/product/3.png"
-                                    className="img-fluid blur-up lazyloaded"
+                                    className="img-fluid  lazyloaded"
                                     alt=""
                                   />
                                 </Link>
@@ -2971,7 +2902,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={0}>
                                   <img
                                     src="../assets/images/vegetable/product/4.png"
-                                    className="img-fluid blur-up lazyloaded"
+                                    className="img-fluid  lazyloaded"
                                     alt=""
                                   />
                                 </Link>
@@ -3228,7 +3159,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={-1}>
                                   <img
                                     src="../assets/images/vegetable/product/5.png"
-                                    className="img-fluid blur-up lazyloaded"
+                                    className="img-fluid  lazyloaded"
                                     alt=""
                                   />
                                 </Link>
@@ -3485,7 +3416,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={-1}>
                                   <img
                                     src="../assets/images/vegetable/product/4.png"
-                                    className="img-fluid blur-up lazyloaded"
+                                    className="img-fluid  lazyloaded"
                                     alt=""
                                   />
                                 </Link>
@@ -3743,7 +3674,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={-1}>
                                   <img
                                     src="../assets/images/vegetable/product/1.png"
-                                    className="img-fluid blur-up lazyloaded"
+                                    className="img-fluid  lazyloaded"
                                     alt=""
                                   />
                                 </Link>
@@ -4001,7 +3932,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={-1}>
                                   <img
                                     src="../assets/images/vegetable/product/2.png"
-                                    className="img-fluid blur-up lazyload"
+                                    className="img-fluid  lazyload"
                                     alt=""
                                   />
                                 </Link>
@@ -4259,7 +4190,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={-1}>
                                   <img
                                     src="../assets/images/vegetable/product/3.png"
-                                    className="img-fluid blur-up lazyload"
+                                    className="img-fluid  lazyload"
                                     alt=""
                                   />
                                 </Link>
@@ -4517,7 +4448,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={-1}>
                                   <img
                                     src="../assets/images/vegetable/product/4.png"
-                                    className="img-fluid blur-up lazyload"
+                                    className="img-fluid  lazyload"
                                     alt=""
                                   />
                                 </Link>
@@ -4775,7 +4706,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={-1}>
                                   <img
                                     src="../assets/images/vegetable/product/5.png"
-                                    className="img-fluid blur-up lazyload"
+                                    className="img-fluid  lazyload"
                                     alt=""
                                   />
                                 </Link>
@@ -5033,7 +4964,7 @@ function IndexGrocary(props) {
                                 <Link to="/product" tabIndex={-1}>
                                   <img
                                     src="../assets/images/vegetable/product/4.png"
-                                    className="img-fluid blur-up lazyload"
+                                    className="img-fluid  lazyload"
                                     alt=""
                                   />
                                 </Link>
@@ -5691,76 +5622,7 @@ function IndexGrocary(props) {
                 <p>A virtual assistant collects the products from your list</p>
               </div>
               <div className="slider-3-blog ratio_65 no-arrow product-wrapper">
-                <Slider {...settings}>
-                  <div>
-                    <div className="blog-box">
-                      <div className="blog-box-image">
-                        <Link to="/blog" className="blog-image">
-                          <img
-                            src="../assets/images/vegetable/blog/1.jpg"
-                            className="bg-img  lazyload"
-                            alt=""
-                          />
-                        </Link>
-                      </div>
-                      <Link to="/blog" className="blog-detail">
-                        <h6>20 March, 2022</h6>
-                        <h5>Fresh Vegetable Online</h5>
-                      </Link>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="blog-box">
-                      <div className="blog-box-image">
-                        <Link to="/blog" className="blog-image">
-                          <img
-                            src="../assets/images/vegetable/blog/2.jpg"
-                            className="bg-img  lazyload"
-                            alt=""
-                          />
-                        </Link>
-                      </div>
-                      <Link to="/blog" className="blog-detail">
-                        <h6>10 April, 2022</h6>
-                        <h5>Fresh Combo Fruit</h5>
-                      </Link>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="blog-box">
-                      <div className="blog-box-image">
-                        <Link to="/blog" className="blog-image">
-                          <img
-                            src="../assets/images/vegetable/blog/3.jpg"
-                            className="bg-img  lazyload"
-                            alt=""
-                          />
-                        </Link>
-                      </div>
-                      <Link to="/blog" className="blog-detail">
-                        <h6>10 April, 2022</h6>
-                        <h5>Nuts to Eat for Better Health</h5>
-                      </Link>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="blog-box">
-                      <div className="blog-box-image">
-                        <Link to="/blog" className="blog-image">
-                          <img
-                            src="../assets/images/vegetable/blog/1.jpg"
-                            className="bg-img  lazyload"
-                            alt=""
-                          />
-                        </Link>
-                      </div>
-                      <Link to="/blog" className="blog-detail">
-                        <h6>20 March, 2022</h6>
-                        <h5>Fresh Vegetable Online</h5>
-                      </Link>
-                    </div>
-                  </div>
-                </Slider>
+                <Slider {...settings1}>{sliders()}</Slider>
               </div>
             </div>
           </div>
