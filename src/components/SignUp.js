@@ -1166,7 +1166,7 @@ function SignUp() {
                 <div className="other-log-in">{/* <h6 /> */}</div>
                 <div className="sign-up-box">
                   <h4>Already have an account?</h4>
-                  <Link to="/login">Log In</Link>
+                  <Link to="/">Log In</Link>
                 </div>
               </div>
             </div>

@@ -27,39 +27,39 @@ function Header(props) {
   console.log(itemId);
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
-    useEffect(() => {
-      const reversedList =
+  useEffect(() => {
+    const reversedList =
       categoryListItems?.data?.results?.list?.slice().reverse() ?? [];
-      setCategoryListData(reversedList);
-    }, [categoryListItems]);
-    const handleOnhover = async (categoryId) => {
-      setItemId(categoryId)
-      // try {
-      //   const { data } = await SubCategoryList(categoryId);
-      //   setHoveredCategoryId(categoryId);
-      //   setSubCategoryItems(data);
-      //   console.log(categoryId);
-      //   getData();
-      // } catch (error) {
-      //   console.log(error);
-      // }
-      setTimeout(() => {
-        handleSaveChanges1()
-      }, 500);
-    };
-    useEffect(() => {
-      if (res) {
-        setSubCategoryItems(res?.data?.results?.listData);
-      }
-    }, [res]);
+    setCategoryListData(reversedList);
+  }, [categoryListItems]);
+  const handleOnhover = async (categoryId) => {
+    setItemId(categoryId);
+    // try {
+    //   const { data } = await SubCategoryList(categoryId);
+    //   setHoveredCategoryId(categoryId);
+    //   setSubCategoryItems(data);
+    //   console.log(categoryId);
+    //   getData();
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    setTimeout(() => {
+      handleSaveChanges1();
+    }, 500);
+  };
+  useEffect(() => {
+    if (res) {
+      setSubCategoryItems(res?.data?.results?.listData);
+    }
+  }, [res]);
 
-    const handleSaveChanges1 = () => {
-      console.log("handleSaveChanges1", itemId);
-      const editAddress = {
-        id: itemId,
-      };
-      subCategoryList(editAddress);
+  const handleSaveChanges1 = () => {
+    console.log("handleSaveChanges1", itemId);
+    const editAddress = {
+      id: itemId,
     };
+    subCategoryList(editAddress);
+  };
 
   useEffect(() => {
     const welcomeInterval = setInterval(() => {
@@ -111,7 +111,6 @@ function Header(props) {
   //     console.log(error);
   //   }
   // };
-  
 
   const getData = async () => {
     try {
