@@ -32,48 +32,6 @@ function SignUp() {
   }, []);
   console.log(longitude);
   console.log(latitude);
-  // const handleSignUp = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     const { data, error } = await UserSignUp(fullName, email, password);
-  //     if (error) {
-  //       console.log(error);
-  //     } else {
-  //       console.log(data);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   if (res.isSuccess) {
-  //     // localStorage.setItem("loginId", res.data?.results?.verifyUser?._id);
-  //     // localStorage.setItem("token", res.data?.results?.token);
-  //     // dispatch(
-  //     //   setCredentials({ user: email, token: res.data?.results?.token })
-  //     // );
-  //     console.log(res.data?.results?.token);
-  //     Swal.fire({
-  //       title: "SignUp Successful!",
-  //       icon: "success",
-  //       text: "You have successfully Sign Up.",
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         navigate("*");
-  //         setTimeout(() => {
-  //           window?.location?.reload();
-  //         }, 500);
-  //       }
-  //     });
-  //   } else if (res.isError && res.error?.data?.error) {
-  //     Swal.fire({
-  //       title: "Incorrect Password!",
-  //       icon: "error",
-  //       text: res.error?.data?.message || "Unknown error occurred.",
-  //     });
-  //   }
-  // }, [res, navigate]);
   useEffect(() => {
     if (res.isSuccess) {
       Swal.fire({

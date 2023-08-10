@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -47,9 +48,24 @@ function UserDashboard() {
   const [deleteCard, deleteCardInfo] = useDeleteCardMutation();
   console.log("deleteAddress", deleteAddress);
   console.log("address list", addressList);
-  const storedId = localStorage?.getItem("loginId")
-  const handleSaveChanges = () => {
-    const newAddress = {
+  const storedId = localStorage?.getItem("loginId");
+  const [newAddress, setNewAddress] = useState([]);
+  // useEffect(() => {
+  //   const reversedList =
+  //     addressList?.data?.results?.addressData?.slice().reverse() ?? [];
+  //   setNewAddress(reversedList);
+  // }, [addressList]);
+  // Define the reversedList function
+  const getReversedList = (list) => {
+    return list?.data?.results?.addressData?.slice().reverse() ?? [];
+  };
+  useEffect(() => {
+    const reversedList = getReversedList(addressList);
+    setNewAddress(reversedList);
+  }, [addressList]);
+
+  const handleSaveChanges = async () => {
+    const newAddressData = {
       title: title,
       address: address,
       locality: locality,
@@ -57,7 +73,37 @@ function UserDashboard() {
       country: country,
       user_Id: storedId,
     };
-    createAddress(newAddress);
+
+    try {
+      const createdAddress = await createAddress(newAddressData);
+      setNewAddress([createdAddress, ...newAddress]);
+    } catch (error) {}
+  };
+
+  const handleRemoveAddress = (addressId) => {
+    Swal.fire({
+      title: "Confirm Deletion",
+      text: "Are you sure you want to delete this address?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "No, cancel",
+      customClass: {
+        confirmButton: "btn btn-danger me-2",
+        cancelButton: "btn btn-primary ms-2",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteAddress(addressId)
+          .then(() => {
+            const updatedList = newAddress.filter(
+              (address) => address._id !== addressId
+            );
+            setNewAddress(updatedList);
+          })
+          .catch((error) => {});
+      }
+    });
   };
   const handleSaveCards = () => {
     const newAddress = {
@@ -1282,86 +1328,84 @@ function UserDashboard() {
                         </button>
                       </div>
                       <div className="row g-sm-4 g-3">
-                        {addressList?.data?.results?.addressData?.map(
-                          (item, index) => {
-                            return (
-                              <div
-                                className="col-xxl-4 col-xl-6 col-lg-12 col-md-6"
-                                key={index}
-                              >
-                                <div className="address-box">
-                                  <div>
-                                    <div className="form-check">
-                                      <input
-                                        className="form-check-input"
-                                        type="radio"
-                                        name="jack"
-                                        id="flexRadioDefault2"
-                                        defaultChecked=""
-                                      />
-                                    </div>
-                                    <div className="label">
-                                      <label> {item?.title} </label>
-                                    </div>
-                                    <div className="table-responsive address-table">
-                                      <table className="table">
-                                        <tbody>
-                                          <tr>
-                                            <td colSpan={2}>Jack Jennas</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Address :</td>
-                                            <td>
-                                              <p>{item?.address}</p>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td>Locality :</td>
-                                            <td> {item?.locality} </td>
-                                          </tr>
-                                          <tr>
-                                            <td>City :</td>
-                                            <td> {item?.city} </td>
-                                          </tr>
-                                          <tr>
-                                            <td>Country :</td>
-                                            <td> {item?.country} </td>
-                                          </tr>
-                                          <tr>
-                                            <td>Phone :</td>
-                                            <td>+ 812-710-3798</td>
-                                          </tr>
-                                        </tbody>
-                                      </table>
-                                    </div>
+                        {newAddress?.map((item, index) => {
+                          return (
+                            <div
+                              className="col-xxl-4 col-xl-6 col-lg-12 col-md-6"
+                              key={index}
+                            >
+                              <div className="address-box">
+                                <div>
+                                  <div className="form-check">
+                                    <input
+                                      className="form-check-input"
+                                      type="radio"
+                                      name="jack"
+                                      id="flexRadioDefault2"
+                                      defaultChecked=""
+                                    />
                                   </div>
-                                  <div className="button-group">
-                                    <button
-                                      className="btn btn-sm add-button w-100"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#editProfile"
-                                      onClick={() => setItemId(item?._id)}
-                                    >
-                                      <i data-feather="edit" />
-                                      Edit
-                                    </button>
-                                    <button
-                                      className="btn btn-sm add-button w-100"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#removeProfile"
-                                      onClick={() => {
-                                        deleteAddress(item?._id);
-                                      }}
-                                    >
-                                      <i data-feather="trash-2" />
-                                      Remove
-                                    </button>
+                                  <div className="label">
+                                    <label> {item?.title} </label>
+                                  </div>
+                                  <div className="table-responsive address-table">
+                                    <table className="table">
+                                      <tbody>
+                                        <tr>
+                                          <td colSpan={2}>Jack Jennas</td>
+                                        </tr>
+                                        <tr>
+                                          <td>Address :</td>
+                                          <td>
+                                            <p>{item?.address}</p>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td>Locality :</td>
+                                          <td> {item?.locality} </td>
+                                        </tr>
+                                        <tr>
+                                          <td>City :</td>
+                                          <td> {item?.city} </td>
+                                        </tr>
+                                        <tr>
+                                          <td>Country :</td>
+                                          <td> {item?.country} </td>
+                                        </tr>
+                                        <tr>
+                                          <td>Phone :</td>
+                                          <td>+ 812-710-3798</td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
                                   </div>
                                 </div>
+                                <div className="button-group">
+                                  <button
+                                    className="btn btn-sm add-button w-100"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editProfile"
+                                    onClick={() => setItemId(item?._id)}
+                                  >
+                                    <i data-feather="edit" />
+                                    Edit
+                                  </button>
+                                  <button
+                                    className="btn btn-sm add-button w-100"
+                                    // data-bs-toggle="modal"
+                                    // data-bs-target="#removeProfile"
+                                    onClick={() => {
+                                      handleRemoveAddress(item?._id);
+                                    }}
+                                  >
+                                    <i data-feather="trash-2" />
+                                    Remove
+                                  </button>
+                                </div>
                               </div>
-                            );
-                          }
-                        )}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
