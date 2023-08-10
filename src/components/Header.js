@@ -32,34 +32,31 @@ function Header(props) {
       categoryListItems?.data?.results?.list?.slice().reverse() ?? [];
     setCategoryListData(reversedList);
   }, [categoryListItems]);
-  const handleOnhover = async (categoryId) => {
-    setItemId(categoryId);
-    // try {
-    //   const { data } = await SubCategoryList(categoryId);
-    //   setHoveredCategoryId(categoryId);
-    //   setSubCategoryItems(data);
-    //   console.log(categoryId);
-    //   getData();
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    setTimeout(() => {
-      handleSaveChanges1();
-    }, 500);
-  };
-  useEffect(() => {
-    if (res) {
-      setSubCategoryItems(res?.data?.results?.listData);
-    }
-  }, [res]);
 
-  const handleSaveChanges1 = () => {
-    console.log("handleSaveChanges1", itemId);
-    const editAddress = {
-      id: itemId,
-    };
-    subCategoryList(editAddress);
+  const handleOnhover = (categoryId) => {
+    handleSaveChanges1(categoryId);
   };
+  
+  const handleSaveChanges1 = async (categoryId) => {
+    console.log("handleSaveChanges1", categoryId);
+    setItemId(categoryId);  // Update the itemId immediately
+    const editAddress = {
+      id: categoryId,
+    };
+    const result = await subCategoryList(editAddress);  // Assuming subCategoryList is an async function
+    if (result) {
+      setSubCategoryItems(result.data?.results?.listData);
+    }
+  };
+  
+
+  // const handleSaveChanges1 = () => {
+  //   console.log("handleSaveChanges1", itemId);
+  //   const editAddress = {
+  //     id: itemId,
+  //   };
+  //   subCategoryList(editAddress);
+  // };
 
   useEffect(() => {
     const welcomeInterval = setInterval(() => {
