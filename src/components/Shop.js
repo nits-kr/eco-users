@@ -82,28 +82,6 @@ function Shop(props) {
     }
   };
 
-  const handleSaveChanges = (id) => {
-    const newAddress = {
-      carts: [
-        {
-          product_Id: id,
-          quantity: "2",
-        },
-        {
-          product_Id: "6482b78584e5342a120adbb4",
-          quantity: "2",
-        },
-      ],
-      user_Id: storedId,
-      address_Id: "6482c98e76841b2dc23c2241",
-      shippingPrice: "30",
-      taxPrice: "20",
-      deliverdBy: "64807a3f998cb060711aac1c",
-      orderStatus: "Delivered",
-    };
-    createOrder(newAddress);
-  };
-
   const handleChange = async (event) => {
     const newValue = parseInt(event.target.value, 10);
     setCurrentValue(newValue);
@@ -1480,7 +1458,7 @@ function Shop(props) {
               </div>
             </div>
             {loading ? (
-              <div className="" style={{ marginTop: "-1000px" }}>
+              <div className="" style={{ marginTop: "-1000px", marginLeft:"150px" }}>
                 {" "}
                 <Spinner />
               </div>
@@ -1762,9 +1740,7 @@ function Shop(props) {
                                     <Link
                                       className="text-light"
                                       to="/cart"
-                                      onClick={() =>
-                                        handleSaveChanges(item?._id)
-                                      }
+                                      onClick={() => handleAddToCart(item)}
                                     >
                                       Buy Now
                                     </Link>

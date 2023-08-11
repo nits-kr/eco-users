@@ -12,6 +12,7 @@ import TapToTop from "./TapToTop";
 
 function Cart() {
   const [cartListItems, setCartListItems] = useState([]);
+  const [itemCounts, setItemCounts] = useState({});
   const [coupan, setCoupan] = useState([]);
   const [coupanCode, setCoupanCode] = useState("25753411");
   const [count, setCount] = useState(0);
@@ -44,7 +45,7 @@ function Cart() {
   };
 
   const deleteCartItem = (_id) => {
-    alert(_id);
+    // alert(_id);
     deleteData(_id);
   };
   const deleteData = async (_id) => {
@@ -171,7 +172,7 @@ function Cart() {
                                         <Link
                                           to={`/product`}
                                         >
-                                          {product?.product_Id?.productName}
+                                          <strong>{product?.product_Id?.productName_en}</strong>
                                         </Link>
                                       ))}
                                     </li>
@@ -325,7 +326,7 @@ function Cart() {
                     <h6 className="text-content mb-2">Coupon Apply</h6>
                     <div className="mb-3 coupon-box input-group">
                       <input
-                        type="email"
+                        type="text"
                         className="form-control"
                         id="coupanCode"
                         name="coupanCode"
@@ -362,14 +363,12 @@ function Cart() {
                 <div className="button-group cart-button">
                   <ul>
                     <li>
-                      <button
-                        onClick={() => {
-                          window.location.href = "/check-out";
-                        }}
+                      <Link
+                      to="/check-out"
                         className="btn btn-animation proceed-btn fw-bold"
                       >
                         Process To Checkout
-                      </button>
+                      </Link>
                     </li>
                     <li>
                       <button
