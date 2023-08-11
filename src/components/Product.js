@@ -15,6 +15,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { useGetRelatedProductQuery } from "../services/Post";
 import Spinner from "./Spinner";
+import { useGetTrendingProductQuery } from "../services/Post";
 
 function Product(props) {
   const relatedProduct = useGetRelatedProductQuery();
@@ -22,12 +23,20 @@ function Product(props) {
   const [searchKey, setSearchKey] = useState("");
   const [productData, setProductData] = useState([]);
   const [productDetail, setProductDetail] = useState("");
+  const trendingProduct = useGetTrendingProductQuery();
+  console.log("useGetTrendingProductQuery", trendingProduct);
+  const [trendingList, setTrendingList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const {id} = useParams();
+  const { id } = useParams();
   console.log(id);
   const ratings = 4.5;
   console.log("useGetRelatedProductQuery", relatedProduct);
-    console.log("product detail", productDetail);
+  console.log("product detail", productDetail);
+  useEffect(() => {
+    if (trendingProduct?.data?.results?.productlist) {
+      setTrendingList(trendingProduct?.data?.results?.productlist);
+    }
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,7 +104,7 @@ function Product(props) {
     <>
       {loading}
       {/* Header Start */}
-      <Header />
+      <Header Dash={"details"} />
       {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
@@ -173,125 +182,23 @@ function Product(props) {
                         <div className="row g-2">
                           <div className="col-12">
                             <div className="product-main-1 no-arrow">
-                              <div>
-                                <div className="slider-image">
-                                  <img
-                                    src="../assets/images/product/category/1.jpg"
-                                    id="img-1"
-                                    data-zoom-image="../assets/images/product/category/1.jpg"
-                                    className="img-fluid image_zoom_cls-0  lazyload"
-                                    alt=""
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <div className="slider-image">
-                                  <img
-                                    src="../assets/images/product/category/2.jpg"
-                                    data-zoom-image="../assets/images/product/category/2.jpg"
-                                    className="img-fluid image_zoom_cls-1  lazyload"
-                                    alt=""
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <div className="slider-image">
-                                  <img
-                                    src="../assets/images/product/category/3.jpg"
-                                    data-zoom-image="../assets/images/product/category/3.jpg"
-                                    className="img-fluid image_zoom_cls-2  lazyload"
-                                    alt=""
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <div className="slider-image">
-                                  <img
-                                    src="../assets/images/product/category/4.jpg"
-                                    data-zoom-image="../assets/images/product/category/4.jpg"
-                                    className="img-fluid image_zoom_cls-3  lazyload"
-                                    alt=""
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <div className="slider-image">
-                                  <img
-                                    src="../assets/images/product/category/5.jpg"
-                                    data-zoom-image="../assets/images/product/category/5.jpg"
-                                    className="img-fluid image_zoom_cls-4  lazyload"
-                                    alt=""
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <div className="slider-image">
-                                  <img
-                                    src="../assets/images/product/category/6.jpg"
-                                    data-zoom-image="../assets/images/product/category/6.jpg"
-                                    className="img-fluid image_zoom_cls-5  lazyload"
-                                    alt=""
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-12">
-                            <div className="bottom-slider-image left-slider no-arrow slick-top">
-                              <div>
-                                <div className="sidebar-image">
-                                  <img
-                                    src="../assets/images/product/category/1.jpg"
-                                    className="img-fluid  lazyload"
-                                    alt=""
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <div className="sidebar-image">
-                                  <img
-                                    src="../assets/images/product/category/2.jpg"
-                                    className="img-fluid  lazyload"
-                                    alt=""
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <div className="sidebar-image">
-                                  <img
-                                    src="../assets/images/product/category/3.jpg"
-                                    className="img-fluid  lazyload"
-                                    alt=""
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <div className="sidebar-image">
-                                  <img
-                                    src="../assets/images/product/category/4.jpg"
-                                    className="img-fluid  lazyload"
-                                    alt=""
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <div className="sidebar-image">
-                                  <img
-                                    src="../assets/images/product/category/5.jpg"
-                                    className="img-fluid  lazyload"
-                                    alt=""
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <div className="sidebar-image">
-                                  <img
-                                    src="../assets/images/product/category/6.jpg"
-                                    className="img-fluid  lazyload"
-                                    alt=""
-                                  />
-                                </div>
-                              </div>
+                              {productDetail?.product_Pic?.map(
+                                (item, index) => {
+                                  return (
+                                    <div key={index}>
+                                      <div className="slider-image">
+                                        <img
+                                          src={item}
+                                          id="img-1"
+                                          data-zoom-image="../assets/images/product/category/1.jpg"
+                                          className="img-fluid image_zoom_cls-0  lazyload"
+                                          alt=""
+                                        />
+                                      </div>
+                                    </div>
+                                  );
+                                }
+                              )}
                             </div>
                           </div>
                         </div>
@@ -302,20 +209,38 @@ function Product(props) {
                       data-wow-delay="0.1s"
                     >
                       <div className="right-box-contain">
-                        <h6 className="offer-top">30% Off</h6>
-                        <h2 className="name">{productDetail?.productName_en}</h2>
+                        <div class="row align-items-center mb-4">
+                          <div class="col-6">
+                            <h6 class="offer-top mb-0">30% Off</h6>
+                          </div>
+                          <div class="col-6 text-end">
+                            <a
+                              class="report_btns"
+                              data-bs-toggle="modal"
+                              data-bs-target="#report_modal"
+                              href="javascript:;"
+                            >
+                              <img src="../assets/images/report.svg" alt="" />
+                            </a>
+                          </div>
+                        </div>
+                        <h2 className="name">
+                          {productDetail?.productName_en}
+                        </h2>
                         <div className="price-rating">
                           <h3 className="theme-color price">
-                            ${productDetail?.Price} <del className="text-content">${productDetail?.oldPrice} </del>{" "}
+                            ${productDetail?.Price}{" "}
+                            <del className="text-content">
+                              ${productDetail?.oldPrice}{" "}
+                            </del>{" "}
                             <span className="offer theme-color">(8% off)</span>
                           </h3>
-                          
-                          <Star rating={productDetail?.rating} /><span> {productDetail?.totalRating} reviews </span>
+
+                          <Star rating={productDetail?.rating} />
+                          <span> {productDetail?.totalRating} reviews </span>
                         </div>
                         <div className="procuct-contain">
-                          <p>
-                            {productDetail.Description}
-                          </p>
+                          <p>{productDetail.Description}</p>
                         </div>
                         <div className="product-packege">
                           <div className="product-title">
@@ -1275,11 +1200,13 @@ function Product(props) {
                       <div className="category-menu">
                         <h3>Trending Products</h3>
                         <ul className="product-list product-right-sidebar border-0 p-0">
+                        {trendingList.map((item, index) => {
+                            return (
                           <li>
                             <div className="offer-product">
                               <Link to="/product" className="offer-image">
                                 <img
-                                  src="../assets/images/vegetable/product/23.png"
+                                  src={item?.product_Pic[0]}
                                   className="img-fluid  lazyload"
                                   alt=""
                                 />
@@ -1288,81 +1215,17 @@ function Product(props) {
                                 <div>
                                   <Link to="/product">
                                     <h6 className="name">
-                                      Meatigo Premium Goat Curry
+                                      {item?.productName_en}
                                     </h6>
                                   </Link>
-                                  <span>450 G</span>
-                                  <h6 className="price theme-color">$ 70.00</h6>
+                                  <span> {item?.weight} </span>
+                                  <h6 className="price theme-color">${item?.Price} </h6>
                                 </div>
                               </div>
                             </div>
                           </li>
-                          <li>
-                            <div className="offer-product">
-                              <Link to="/product" className="offer-image">
-                                <img
-                                  src="../assets/images/vegetable/product/24.png"
-                                  className=" lazyload"
-                                  alt=""
-                                />
-                              </Link>
-                              <div className="offer-detail">
-                                <div>
-                                  <Link to="/product">
-                                    <h6 className="name">
-                                      Dates Medjoul Premium Imported
-                                    </h6>
-                                  </Link>
-                                  <span>450 G</span>
-                                  <h6 className="price theme-color">$ 40.00</h6>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li>
-                            <div className="offer-product">
-                              <Link to="/product" className="offer-image">
-                                <img
-                                  src="../assets/images/vegetable/product/25.png"
-                                  className=" lazyload"
-                                  alt=""
-                                />
-                              </Link>
-                              <div className="offer-detail">
-                                <div>
-                                  <Link to="/product">
-                                    <h6 className="name">
-                                      Good Life Walnut Kernels
-                                    </h6>
-                                  </Link>
-                                  <span>200 G</span>
-                                  <h6 className="price theme-color">$ 52.00</h6>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li className="mb-0">
-                            <div className="offer-product">
-                              <Link to="/product" className="offer-image">
-                                <img
-                                  src="../assets/images/vegetable/product/26.png"
-                                  className=" lazyload"
-                                  alt=""
-                                />
-                              </Link>
-                              <div className="offer-detail">
-                                <div>
-                                  <Link to="/product">
-                                    <h6 className="name">
-                                      Apple Red Premium Imported
-                                    </h6>
-                                  </Link>
-                                  <span>1 KG</span>
-                                  <h6 className="price theme-color">$ 80.00</h6>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
+                           );
+                          })}
                         </ul>
                       </div>
                     </div>
@@ -2142,6 +2005,87 @@ function Product(props) {
       {/* Sticky Cart Box End */}
       {/* Bg overlay Start */}
       <div className="bg-overlay" />
+      <div
+  className="modal fade report_modal"
+  id="report_modal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabIndex={-1}
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div className="modal-dialog modal-dialog-centered">
+    <div className="modal-content">
+      <div className="modal-body">
+        <button
+          type="button"
+          className="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        />
+        <div className="report_modal_inner">
+          <h3>Report Product</h3>
+          <form className="form_design row px-2 mx-0" action="">
+            <div className="form-group col-12 mb-3">
+              <div className="checkbox_new d-inline-block">
+                <input
+                  type="radio"
+                  defaultChecked=""
+                  id="r1"
+                  name="r1"
+                  className="d-none"
+                />
+                <label htmlFor="r1">Inppropriate</label>
+              </div>
+            </div>
+            <div className="form-group col-12 mb-3">
+              <div className="checkbox_new d-inline-block">
+                <input
+                  type="radio"
+                  defaultChecked=""
+                  id="r2"
+                  name="r1"
+                  className="d-none"
+                />
+                <label htmlFor="r2">Spam</label>
+              </div>
+            </div>
+            <div className="form-group col-12 mb-3">
+              <div className="checkbox_new d-inline-block">
+                <input
+                  type="radio"
+                  defaultChecked=""
+                  id="r3"
+                  name="r1"
+                  className="d-none"
+                />
+                <label htmlFor="r3">None of the Above</label>
+              </div>
+            </div>
+            <div className="form-group col-12 mb-3">
+              <textarea
+                className="form-control"
+                name=""
+                id=""
+                style={{ height: 100 }}
+                defaultValue={""}
+              />
+            </div>
+            <div className="form-group col-12 mb-0">
+              <a
+                className="btn btn-animation btn-sm mx-auto"
+                href="javascript:;"
+              >
+                Send
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
     </>
   );
 }

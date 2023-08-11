@@ -136,6 +136,12 @@ export const PostApi = createApi({
         method: "post",
       }),
     }),
+    subSubProduct: builder.mutation({
+      query: (id) => ({
+        url: `/user/category/category/subCategory-product/${id}`,
+        method: "post",
+      }),
+    }),
     updateAddress: builder.mutation({
       query: (body) => {
         console.log("update address", body);
@@ -175,6 +181,16 @@ export const PostApi = createApi({
         console.log("update login data", body);
         return {
           url: "/user/user/user/signup",
+          method: "post",
+          body,
+        };
+      },
+    }),
+    filterPrice: builder.mutation({
+      query: (body) => {
+        console.log("update login data", body);
+        return {
+          url: "/user/product/product/price",
           method: "post",
           body,
         };
@@ -242,4 +258,6 @@ export const {
   useGetCategoryListQuery,
   useSubCategoryListMutation,
   useShowProductRatingMutation,
+  useSubSubProductMutation,
+  useFilterPriceMutation,
 } = PostApi;

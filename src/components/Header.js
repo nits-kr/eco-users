@@ -579,14 +579,14 @@ function Header({ Dash }) {
                                           key={indexes}
                                         >
                                           <Link
-                                            to="#"
+                                            to={`/shop/${items._id}`}
                                             className="category-name"
                                           >
                                             <img
                                               src={items?.subCategoryPic}
                                               alt="image"
                                             />
-                                            <Link to="#">
+                                            <Link to={`/shop/${items._id}`}>
                                               {" "}
                                               {items?.subCategoryName_en}{" "}
                                             </Link>
@@ -652,7 +652,7 @@ function Header({ Dash }) {
                             </Link>
                           </li>
                           <li className="nav-item">
-                            <Link className={Dash === "shop" ? "nav-link active" : "nav-link"} to="/shop">
+                            <Link className={Dash === "shop" ? "nav-link active" : "nav-link"} to="/shop/:id">
                               Shop
                             </Link>
                           </li>

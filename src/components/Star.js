@@ -15,16 +15,16 @@ function Star({ rating, totalRating }) {
           <FontAwesomeIcon
             key={index}
             icon={faStar}
-            style={{ color: "#fca103" }}
+            style={{ color: "#fca103", fontSize:"15px" }}
           />
         ) : rating >= number ? (
           <FontAwesomeIcon
             key={index}
             icon={faStarHalfStroke}
-            style={{ color: "#fca103" }}
+            style={{ color: "#fca103", fontSize:"15px" }}
           />
         ) : (
-          <AiOutlineStar key={index} style={{ color: "#fca103" , fontSize:"20px"}} />
+          <AiOutlineStar key={index} style={{ color: "#fca103" , fontSize:"18px"}} />
         )}
       </span>
     );

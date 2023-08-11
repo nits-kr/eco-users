@@ -201,6 +201,14 @@ function IndexGrocary(props) {
     slidesToScroll: 1,
     autoplay: true,
   };
+  const settings2 = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    autoplay: true,
+  };
   useEffect(() => {
     feather.replace();
   }, []);
@@ -241,7 +249,7 @@ function IndexGrocary(props) {
           <div className="blog-box-image">
             <Link to="/blog" className="blog-image">
               <img
-                src="../assets/images/vegetable/blog/1.jpg"
+                src="../../assets/images/vegetable/blog/1.jpg"
                 className="bg-img  lazyload"
                 alt=""
               />
@@ -407,7 +415,7 @@ function IndexGrocary(props) {
                   className="h-100 bg-size  lazyloaded"
                   style={{
                     backgroundImage:
-                      'url("../assets/images/vegetable/banner/1.jpg")',
+                      'url("../../assets/images/vegetable/banner/1.jpg")',
                     backgroundSize: "cover",
                     backgroundPosition: "center center",
                     backgroundRepeat: "no-repeat",
@@ -415,7 +423,7 @@ function IndexGrocary(props) {
                   }}
                 >
                   <img
-                    src="../assets/images/vegetable/banner/1.jpg"
+                    src="../../assets/images/vegetable/banner/1.jpg"
                     className="bg-img  lazyloaded"
                     alt=""
                     style={{ display: "none" }}
@@ -453,7 +461,7 @@ function IndexGrocary(props) {
                     className="home-contain bg-size  lazyloaded"
                     style={{
                       backgroundImage:
-                        'url("../assets/images/vegetable/banner/2.jpg")',
+                        'url("../../assets/images/vegetable/banner/2.jpg")',
                       backgroundSize: "cover",
                       backgroundPosition: "center center",
                       backgroundRepeat: "no-repeat",
@@ -461,7 +469,7 @@ function IndexGrocary(props) {
                     }}
                   >
                     <img
-                      src="../assets/images/vegetable/banner/2.jpg"
+                      src="../../assets/images/vegetable/banner/2.jpg"
                       className="bg-img  lazyloaded"
                       alt=""
                       style={{ display: "none" }}
@@ -487,7 +495,7 @@ function IndexGrocary(props) {
                     className="home-contain bg-size  lazyloaded"
                     style={{
                       backgroundImage:
-                        'url("../assets/images/vegetable/banner/3.jpg")',
+                        'url("../../assets/images/vegetable/banner/3.jpg")',
                       backgroundSize: "cover",
                       backgroundPosition: "center center",
                       backgroundRepeat: "no-repeat",
@@ -495,7 +503,7 @@ function IndexGrocary(props) {
                     }}
                   >
                     <img
-                      src="../assets/images/vegetable/banner/3.jpg"
+                      src="../../assets/images/vegetable/banner/3.jpg"
                       className="bg-img  lazyloaded"
                       alt=""
                       style={{ display: "none" }}
@@ -530,7 +538,7 @@ function IndexGrocary(props) {
             <Slider {...settings}>
               <div className="banner-contain hover-effect ">
                 <img
-                  src="../assets/images/vegetable/banner/4.jpg"
+                  src="../../assets/images/vegetable/banner/4.jpg"
                   className="bg-img  lazyload"
                   alt=""
                 />
@@ -550,7 +558,7 @@ function IndexGrocary(props) {
               <div>
                 <div className="banner-contain hover-effect">
                   <img
-                    src="../assets/images/vegetable/banner/5.jpg"
+                    src="../../assets/images/vegetable/banner/5.jpg"
                     className="bg-img  lazyload"
                     alt=""
                   />
@@ -569,7 +577,7 @@ function IndexGrocary(props) {
               <div>
                 <div className="banner-contain hover-effect">
                   <img
-                    src="../assets/images/vegetable/banner/6.jpg"
+                    src="../../assets/images/vegetable/banner/6.jpg"
                     className="bg-img  lazyload"
                     alt=""
                   />
@@ -588,7 +596,7 @@ function IndexGrocary(props) {
               <div>
                 <div className="banner-contain hover-effect">
                   <img
-                    src="../assets/images/vegetable/banner/7.jpg"
+                    src="../../assets/images/vegetable/banner/7.jpg"
                     className="bg-img  lazyload"
                     alt=""
                   />
@@ -662,7 +670,7 @@ function IndexGrocary(props) {
                 <div className="ratio_156 section-t-space">
                   <div className="home-contain hover-effect">
                     <img
-                      src="../assets/images/vegetable/banner/8.jpg"
+                      src="../../assets/images/vegetable/banner/8.jpg"
                       className="bg-img  lazyload w-100"
                       alt=""
                     />
@@ -690,7 +698,7 @@ function IndexGrocary(props) {
                 <div className="ratio_medium section-t-space">
                   <div className="home-contain hover-effect">
                     <img
-                      src="../assets/images/vegetable/banner/11.jpg"
+                      src="../../assets/images/vegetable/banner/11.jpg"
                       className="img-fluid  lazyload"
                       alt=""
                     />
@@ -781,7 +789,7 @@ function IndexGrocary(props) {
                       <div className="review-profile">
                         <div className="review-image">
                           <img
-                            src="../assets/images/vegetable/review/1.jpg"
+                            src="../../assets/images/vegetable/review/1.jpg"
                             className="img-fluid  lazyload"
                             alt=""
                           />
@@ -911,7 +919,7 @@ function IndexGrocary(props) {
                     <Link to="/shop" className="category-box category-dark">
                       <div>
                         <img
-                          src="../assets/svg/1/vegetable.svg"
+                          src="../../assets/svg/1/vegetable.svg"
                           className=" lazyload"
                           alt=""
                         />
@@ -923,7 +931,7 @@ function IndexGrocary(props) {
                     <Link to="/shop" className="category-box category-dark">
                       <div>
                         <img
-                          src="../assets/svg/1/cup.svg"
+                          src="../../assets/svg/1/cup.svg"
                           className=" lazyload"
                           alt=""
                         />
@@ -935,7 +943,7 @@ function IndexGrocary(props) {
                     <Link to="/shop" className="category-box category-dark">
                       <div>
                         <img
-                          src="../assets/svg/1/meats.svg"
+                          src="../../assets/svg/1/meats.svg"
                           className=" lazyload"
                           alt=""
                         />
@@ -947,7 +955,7 @@ function IndexGrocary(props) {
                     <Link to="/shop" className="category-box category-dark">
                       <div>
                         <img
-                          src="../assets/svg/1/breakfast.svg"
+                          src="../../assets/svg/1/breakfast.svg"
                           className=" lazyload"
                           alt=""
                         />
@@ -959,7 +967,7 @@ function IndexGrocary(props) {
                     <Link to="/shop" className="category-box category-dark">
                       <div>
                         <img
-                          src="../assets/svg/1/frozen.svg"
+                          src="../../assets/svg/1/frozen.svg"
                           className=" lazyload"
                           alt=""
                         />
@@ -971,7 +979,7 @@ function IndexGrocary(props) {
                     <Link to="/shop" className="category-box category-dark">
                       <div>
                         <img
-                          src="../assets/svg/1/milk.svg"
+                          src="../../assets/svg/1/milk.svg"
                           className=" lazyload"
                           alt=""
                         />
@@ -983,7 +991,7 @@ function IndexGrocary(props) {
                     <Link to="/shop" className="category-box category-dark">
                       <div>
                         <img
-                          src="../assets/svg/1/pet.svg"
+                          src="../../assets/svg/1/pet.svg"
                           className=" lazyload"
                           alt=""
                         />
@@ -999,7 +1007,7 @@ function IndexGrocary(props) {
                     <div
                       className="banner-contain hover-effect"
                       style={{
-                        backgroundImage: `url(../assets/images/vegetable/banner/9.jpg) `,
+                        backgroundImage: `url(../../assets/images/vegetable/banner/9.jpg) `,
                         backgroundSize: "cover",
                         backgroundPosition: "center center",
                         backgroundRepeat: "no-repeat",
@@ -1029,7 +1037,7 @@ function IndexGrocary(props) {
                     <div
                       className="banner-contain hover-effect"
                       style={{
-                        backgroundImage: `url(../assets/images/vegetable/banner/10.jpg) `,
+                        backgroundImage: `url(../../assets/images/vegetable/banner/10.jpg) `,
                         backgroundSize: "cover",
                         backgroundPosition: "center center",
                         backgroundRepeat: "no-repeat",
@@ -1037,7 +1045,7 @@ function IndexGrocary(props) {
                       }}
                     >
                       {/* <img
-                                                src="../assets/images/vegetable/banner/10.jpg"
+                                                src="../../assets/images/vegetable/banner/10.jpg"
                                                 className="bg-img  lazyload"
                                                 alt=""
                                             /> */}
@@ -1066,7 +1074,7 @@ function IndexGrocary(props) {
                 <h2>Food Cupboard</h2>
                 <span className="title-leaf">
                   <svg className="icon-width">
-                    <use xlinkHref="../assets/svg/leaf.svg#leaf" />
+                    <use xlinkHref="../../assets/svg/leaf.svg#leaf" />
                   </svg>
                 </span>
                 <p>A virtual assistant collects the products from your list</p>
@@ -1107,7 +1115,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={-1}>
                                   <img
-                                    src="../assets/images/vegetable/product/3.png"
+                                    src="../../assets/images/vegetable/product/3.png"
                                     className="img-fluid  lazyloaded"
                                     alt=""
                                   />
@@ -1365,7 +1373,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={-1}>
                                   <img
-                                    src="../assets/images/vegetable/product/4.png"
+                                    src="../../assets/images/vegetable/product/4.png"
                                     className="img-fluid  lazyloaded"
                                     alt=""
                                   />
@@ -1623,7 +1631,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={-1}>
                                   <img
-                                    src="../assets/images/vegetable/product/5.png"
+                                    src="../../assets/images/vegetable/product/5.png"
                                     className="img-fluid  lazyloaded"
                                     alt=""
                                   />
@@ -1881,7 +1889,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={-1}>
                                   <img
-                                    src="../assets/images/vegetable/product/4.png"
+                                    src="../../assets/images/vegetable/product/4.png"
                                     className="img-fluid  lazyloaded"
                                     alt=""
                                   />
@@ -2138,7 +2146,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={0}>
                                   <img
-                                    src="../assets/images/vegetable/product/1.png"
+                                    src="../../assets/images/vegetable/product/1.png"
                                     className="img-fluid  lazyloaded"
                                     alt=""
                                   />
@@ -2395,7 +2403,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={0}>
                                   <img
-                                    src="../assets/images/vegetable/product/2.png"
+                                    src="../../assets/images/vegetable/product/2.png"
                                     className="img-fluid  lazyloaded"
                                     alt=""
                                   />
@@ -2652,7 +2660,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={0}>
                                   <img
-                                    src="../assets/images/vegetable/product/3.png"
+                                    src="../../assets/images/vegetable/product/3.png"
                                     className="img-fluid  lazyloaded"
                                     alt=""
                                   />
@@ -2909,7 +2917,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={0}>
                                   <img
-                                    src="../assets/images/vegetable/product/4.png"
+                                    src="../../assets/images/vegetable/product/4.png"
                                     className="img-fluid  lazyloaded"
                                     alt=""
                                   />
@@ -3166,7 +3174,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={-1}>
                                   <img
-                                    src="../assets/images/vegetable/product/5.png"
+                                    src="../../assets/images/vegetable/product/5.png"
                                     className="img-fluid  lazyloaded"
                                     alt=""
                                   />
@@ -3423,7 +3431,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={-1}>
                                   <img
-                                    src="../assets/images/vegetable/product/4.png"
+                                    src="../../assets/images/vegetable/product/4.png"
                                     className="img-fluid  lazyloaded"
                                     alt=""
                                   />
@@ -3681,7 +3689,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={-1}>
                                   <img
-                                    src="../assets/images/vegetable/product/1.png"
+                                    src="../../assets/images/vegetable/product/1.png"
                                     className="img-fluid  lazyloaded"
                                     alt=""
                                   />
@@ -3939,7 +3947,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={-1}>
                                   <img
-                                    src="../assets/images/vegetable/product/2.png"
+                                    src="../../assets/images/vegetable/product/2.png"
                                     className="img-fluid  lazyload"
                                     alt=""
                                   />
@@ -4197,7 +4205,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={-1}>
                                   <img
-                                    src="../assets/images/vegetable/product/3.png"
+                                    src="../../assets/images/vegetable/product/3.png"
                                     className="img-fluid  lazyload"
                                     alt=""
                                   />
@@ -4455,7 +4463,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={-1}>
                                   <img
-                                    src="../assets/images/vegetable/product/4.png"
+                                    src="../../assets/images/vegetable/product/4.png"
                                     className="img-fluid  lazyload"
                                     alt=""
                                   />
@@ -4713,7 +4721,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={-1}>
                                   <img
-                                    src="../assets/images/vegetable/product/5.png"
+                                    src="../../assets/images/vegetable/product/5.png"
                                     className="img-fluid  lazyload"
                                     alt=""
                                   />
@@ -4971,7 +4979,7 @@ function IndexGrocary(props) {
                               <div className="product-image">
                                 <Link to="/product" tabIndex={-1}>
                                   <img
-                                    src="../assets/images/vegetable/product/4.png"
+                                    src="../../assets/images/vegetable/product/4.png"
                                     className="img-fluid  lazyload"
                                     alt=""
                                   />
@@ -5231,7 +5239,7 @@ function IndexGrocary(props) {
                 <div
                   className="banner-contain"
                   style={{
-                    backgroundImage: `url(../assets/images/vegetable/banner/15.jpg) `,
+                    backgroundImage: `url(../../assets/images/vegetable/banner/15.jpg) `,
                     backgroundSize: "cover",
                     backgroundPosition: "center center",
                     backgroundRepeat: "no-repeat",
@@ -5254,7 +5262,7 @@ function IndexGrocary(props) {
                     <div
                       className="banner-contain hover-effect"
                       style={{
-                        backgroundImage: `url(../assets/images/vegetable/banner/12.jpg) `,
+                        backgroundImage: `url(../../assets/images/vegetable/banner/12.jpg) `,
                         backgroundSize: "cover",
                         backgroundPosition: "center center",
                         backgroundRepeat: "no-repeat",
@@ -5289,7 +5297,7 @@ function IndexGrocary(props) {
                       to="/shop"
                       className="banner-contain hover-effect h-100"
                       style={{
-                        backgroundImage: `url(../assets/images/vegetable/banner/13.jpg) `,
+                        backgroundImage: `url(../../assets/images/vegetable/banner/13.jpg) `,
                         backgroundSize: "cover",
                         backgroundPosition: "center center",
                         backgroundRepeat: "no-repeat",
@@ -5332,7 +5340,7 @@ function IndexGrocary(props) {
                         <div className="offer-product">
                           <Link to="/product" className="offer-image">
                             <img
-                              src="../assets/images/vegetable/product/11.png"
+                              src="../../assets/images/vegetable/product/11.png"
                               className=" lazyload"
                               alt=""
                             />
@@ -5354,7 +5362,7 @@ function IndexGrocary(props) {
                         <div className="offer-product">
                           <Link to="/product" className="offer-image">
                             <img
-                              src="../assets/images/vegetable/product/12.png"
+                              src="../../assets/images/vegetable/product/12.png"
                               className=" lazyload"
                               alt=""
                             />
@@ -5374,7 +5382,7 @@ function IndexGrocary(props) {
                         <div className="offer-product">
                           <Link to="/product" className="offer-image">
                             <img
-                              src="../assets/images/vegetable/product/13.png"
+                              src="../../assets/images/vegetable/product/13.png"
                               className=" lazyload"
                               alt=""
                             />
@@ -5394,7 +5402,7 @@ function IndexGrocary(props) {
                         <div className="offer-product">
                           <Link to="/product" className="offer-image">
                             <img
-                              src="../assets/images/vegetable/product/14.png"
+                              src="../../assets/images/vegetable/product/14.png"
                               className=" lazyload"
                               alt=""
                             />
@@ -5418,7 +5426,7 @@ function IndexGrocary(props) {
                         <div className="offer-product">
                           <Link to="/product" className="offer-image">
                             <img
-                              src="../assets/images/vegetable/product/15.png"
+                              src="../../assets/images/vegetable/product/15.png"
                               className=" lazyload"
                               alt=""
                             />
@@ -5440,7 +5448,7 @@ function IndexGrocary(props) {
                         <div className="offer-product">
                           <Link to="/product" className="offer-image">
                             <img
-                              src="../assets/images/vegetable/product/16.png"
+                              src="../../assets/images/vegetable/product/16.png"
                               className=" lazyload"
                               alt=""
                             />
@@ -5460,7 +5468,7 @@ function IndexGrocary(props) {
                         <div className="offer-product">
                           <Link to="/product" className="offer-image">
                             <img
-                              src="../assets/images/vegetable/product/17.png"
+                              src="../../assets/images/vegetable/product/17.png"
                               className=" lazyload"
                               alt=""
                             />
@@ -5480,7 +5488,7 @@ function IndexGrocary(props) {
                         <div className="offer-product">
                           <Link to="/product" className="offer-image">
                             <img
-                              src="../assets/images/vegetable/product/18.png"
+                              src="../../assets/images/vegetable/product/18.png"
                               className=" lazyload"
                               alt=""
                             />
@@ -5504,7 +5512,7 @@ function IndexGrocary(props) {
                         <div className="offer-product">
                           <Link to="/product" className="offer-image">
                             <img
-                              src="../assets/images/vegetable/product/19.png"
+                              src="../../assets/images/vegetable/product/19.png"
                               className=" lazyload"
                               alt=""
                             />
@@ -5526,7 +5534,7 @@ function IndexGrocary(props) {
                         <div className="offer-product">
                           <Link to="/product" className="offer-image">
                             <img
-                              src="../assets/images/vegetable/product/20.png"
+                              src="../../assets/images/vegetable/product/20.png"
                               className=" lazyload"
                               alt=""
                             />
@@ -5546,7 +5554,7 @@ function IndexGrocary(props) {
                         <div className="offer-product">
                           <Link to="/product" className="offer-image">
                             <img
-                              src="../assets/images/vegetable/product/21.png"
+                              src="../../assets/images/vegetable/product/21.png"
                               className=" lazyload"
                               alt=""
                             />
@@ -5568,7 +5576,7 @@ function IndexGrocary(props) {
                         <div className="offer-product">
                           <Link to="/product" className="offer-image">
                             <img
-                              src="../assets/images/vegetable/product/22.png"
+                              src="../../assets/images/vegetable/product/22.png"
                               className=" lazyload"
                               alt=""
                             />
@@ -5592,7 +5600,7 @@ function IndexGrocary(props) {
                 <div
                   className="banner-contain hover-effect"
                   style={{
-                    backgroundImage: `url(../assets/images/vegetable/banner/14.jpg) `,
+                    backgroundImage: `url(../../assets/images/vegetable/banner/14.jpg) `,
                     backgroundSize: "cover",
                     backgroundPosition: "center center",
                     backgroundRepeat: "no-repeat",
@@ -5624,13 +5632,13 @@ function IndexGrocary(props) {
                 <h2>Featured Blog</h2>
                 <span className="title-leaf">
                   <svg className="icon-width">
-                    <use xlinkHref="../assets/svg/leaf.svg#leaf" />
+                    <use xlinkHref="../../assets/svg/leaf.svg#leaf" />
                   </svg>
                 </span>
                 <p>A virtual assistant collects the products from your list</p>
               </div>
               <div className="slider-3-blog ratio_65 no-arrow product-wrapper">
-                <Slider {...settings1}>{sliders()}</Slider>
+                <Slider {...settings2}>{sliders()}</Slider>
               </div>
             </div>
           </div>
@@ -5699,7 +5707,7 @@ function IndexGrocary(props) {
                 <div className="col-lg-6">
                   <div className="slider-image">
                     <img
-                      src="../assets/images/vegetable/product/5.png"
+                      src="../../assets/images/vegetable/product/5.png"
                       className="img-fluid  lazyload"
                       alt=""
                     />
@@ -5918,7 +5926,7 @@ function IndexGrocary(props) {
         <div className="cookie-box">
           <div className="cookie-image">
             <img
-              src="../assets/images/cookie-bar.png"
+              src="../../assets/images/cookie-bar.png"
               className="lazyload"
               alt=""
             />
@@ -5971,7 +5979,7 @@ function IndexGrocary(props) {
                     <div className="deal-offer-contain">
                       <Link to="/shop" className="deal-image">
                         <img
-                          src="../assets/images/vegetable/product/10.png"
+                          src="../../assets/images/vegetable/product/10.png"
                           className=" lazyload"
                           alt=""
                         />
@@ -5988,7 +5996,7 @@ function IndexGrocary(props) {
                     <div className="deal-offer-contain">
                       <Link to="/shop" className="deal-image">
                         <img
-                          src="../assets/images/vegetable/product/11.png"
+                          src="../../assets/images/vegetable/product/11.png"
                           className=" lazyload"
                           alt=""
                         />
@@ -6005,7 +6013,7 @@ function IndexGrocary(props) {
                     <div className="deal-offer-contain">
                       <Link to="/shop" className="deal-image">
                         <img
-                          src="../assets/images/vegetable/product/12.png"
+                          src="../../assets/images/vegetable/product/12.png"
                           className=" lazyload"
                           alt=""
                         />
@@ -6022,7 +6030,7 @@ function IndexGrocary(props) {
                     <div className="deal-offer-contain">
                       <Link to="/shop" className="deal-image">
                         <img
-                          src="../assets/images/vegetable/product/13.png"
+                          src="../../assets/images/vegetable/product/13.png"
                           className=" lazyload"
                           alt=""
                         />

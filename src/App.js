@@ -40,6 +40,7 @@ import ResetPassword from "./components/ResetPassword";
 import MobileFixMenu from "./components/MobileFixMenu";
 import BreadCrumb from "./components/BreadCrumb";
 import LoadingBar from "react-top-loading-bar";
+import OrderTracking from "./components/OrderTracking";
 
 function App() {
   const [progress, setProgress] = useState(0);
@@ -164,6 +165,13 @@ function App() {
             path="/order-success"
             element={<OrderSuccess />}
           />
+          <Route
+            exact
+            className="active"
+            path="/order-tracking"
+            element={<OrderTracking/>}
+          />
+          
           <Route exact className="active" path="/otp" element={<Otp />} />
           <Route
             exact
@@ -199,7 +207,7 @@ function App() {
           <Route
             exact
             className="active"
-            path="/shop"
+            path="/shop/:id"
             element={<Shop setProgress={setProgress} />}
           />
           <Route

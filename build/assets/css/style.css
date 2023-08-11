@@ -35630,3 +35630,65 @@ button.btn.btn-add-cart.addcart-button {
   width: 100%;
 }
 
+.report_btns img {
+    max-width: 28px;
+}
+.report_modal_inner h3 {
+    font-weight: 700;
+    margin: 0;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+.form_design {
+    border-radius: 8px;
+    padding: 15px 70px 10px;
+}
+.checkbox_new label {
+    font-size: 14px !important;
+    padding-inline-start: 30px;
+    position: relative;
+    margin: 0 !important;
+    font-weight: 500;
+}
+.checkbox_new label::before {
+    position: absolute;
+    content: "";
+    top: 4px;
+    inset-inline-start: 3px;
+    opacity: 0;
+    height: 14px;
+    width: 14px;
+    background-color: #144881;
+    border-radius: 50px;
+}
+.checkbox_new label::after {
+    position: absolute;
+    content: "";
+    top: 1px;
+    inset-inline-start: 0;
+    height: 20px;
+    width: 20px;
+    border: 1px solid #234476;
+    border-radius: 50px;
+}
+.checkbox_new input:checked ~ label::before {
+    opacity: 1;
+}
+.form_design .form-group .form-control {
+    border-radius: 10px;
+    height: 50px;
+    font-size: 14px;
+    padding: 11px 18px;
+    box-shadow: unset;
+}
+.report_modal .btn-close {
+    position: absolute;
+    inset-inline-end: 10px;
+    font-size: 12px;
+    opacity: 1;
+    top: 10px;
+}
+.report_modal .modal-content {
+    border: 0;
+    border-radius: 10px;
+}

@@ -13,7 +13,7 @@ function Footer() {
                   <div className="service-box">
                     <div className="service-image">
                       <img
-                        src="../assets/svg/product.svg"
+                        src="../../assets/svg/product.svg"
                         className=" lazyload"
                         alt=""
                       />
@@ -25,7 +25,7 @@ function Footer() {
                   <div className="service-box">
                     <div className="service-image">
                       <img
-                        src="../assets/svg/delivery.svg"
+                        src="../../assets/svg/delivery.svg"
                         className=" lazyload"
                         alt=""
                       />
@@ -37,7 +37,7 @@ function Footer() {
                   <div className="service-box">
                     <div className="service-image">
                       <img
-                        src="../assets/svg/discount.svg"
+                        src="../../assets/svg/discount.svg"
                         className=" lazyload"
                         alt=""
                       />
@@ -49,7 +49,7 @@ function Footer() {
                   <div className="service-box">
                     <div className="service-image">
                       <img
-                        src="../assets/svg/market.svg"
+                        src="../../assets/svg/market.svg"
                         className=" lazyload"
                         alt=""
                       />
@@ -69,7 +69,7 @@ function Footer() {
                   <div className="theme-logo">
                     <Link to="/index">
                       <img
-                        src="../assets/images/logo/logo.png"
+                        src="../../assets/images/logo/logo.png"
                         className=" lazyload"
                         alt=""
                       />
@@ -238,7 +238,7 @@ function Footer() {
                             target="_blank"
                           >
                             <img
-                              src="../assets/images/playstore.svg"
+                              src="../../assets/images/playstore.svg"
                               className=" lazyload"
                               alt=""
                             />
@@ -250,7 +250,7 @@ function Footer() {
                             target="_blank"
                           >
                             <img
-                              src="../assets/images/appstore.svg"
+                              src="../../assets/images/appstore.svg"
                               className=" lazyload"
                               alt=""
                             />
@@ -271,7 +271,7 @@ function Footer() {
             </div>
             <div className="payment">
               <img
-                src="../assets/images/payment/1.png"
+                src="../../assets/images/payment/1.png"
                 className=" lazyload"
                 alt=""
               />
