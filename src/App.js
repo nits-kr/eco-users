@@ -168,7 +168,7 @@ function App() {
           <Route
             exact
             className="active"
-            path="/product"
+            path="/product/:id"
             element={<Product setProgress={setProgress} />}
           />
           <Route exact className="active" path="/search" element={<Search />} />

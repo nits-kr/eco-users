@@ -35,6 +35,7 @@ import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import Spinner from "./Spinner";
 import { useCreateOrderMutation } from "../services/Post";
+import { useShowProductRatingMutation } from "../services/Post";
 
 function Shop(props) {
   const [productListItems, setProductListItems] = useState([]);
@@ -48,30 +49,30 @@ function Shop(props) {
   const [selectedWeight, setSelectedWeight] = useState("");
   const [priceRange, setPriceRange] = useState([0, 11000]); // Initial price range
   const [loading, setLoading] = useState(false);
-  const [rating, setRating] = useState([])
+  const [rating, setRating] = useState([]);
   const [createOrder, responseInfo] = useCreateOrderMutation();
-  const storedId = localStorage.getItem("loginId")
+  const [showRating, res] = useShowProductRatingMutation();
+  const storedId = localStorage.getItem("loginId");
   const handleSaveChanges = (id) => {
     const newAddress = {
-      carts:[
-          {
-          product_Id:id,
-           quantity:"2"
-          },
-           {
-          product_Id:"6482b78584e5342a120adbb4",
-          quantity:"2"
-          }
+      carts: [
+        {
+          product_Id: id,
+          quantity: "2",
+        },
+        {
+          product_Id: "6482b78584e5342a120adbb4",
+          quantity: "2",
+        },
       ],
-      user_Id:storedId,
-      address_Id:"6482c98e76841b2dc23c2241",
-      shippingPrice:"30",
-      taxPrice:"20",
-      deliverdBy:"64807a3f998cb060711aac1c",
-      orderStatus:"Delivered"
-     
-  }
-  createOrder(newAddress);
+      user_Id: storedId,
+      address_Id: "6482c98e76841b2dc23c2241",
+      shippingPrice: "30",
+      taxPrice: "20",
+      deliverdBy: "64807a3f998cb060711aac1c",
+      orderStatus: "Delivered",
+    };
+    createOrder(newAddress);
   };
 
   const handleChange = (e) => {
@@ -146,6 +147,7 @@ function Shop(props) {
   };
   const handleViewClick = (item) => {
     setSelectedProduct(item);
+    console.log(item?._id);
   };
   const handleWishClick = async (item) => {
     try {
@@ -269,10 +271,6 @@ function Shop(props) {
     }
   };
 
-  console.log("productList", productListItems);
-  console.log("productListDetails", productListDetails);
-  console.log("createWish", CreateWishItems);
-  console.log("cart list item new", cartListItems);
   var w = window.innerWidth;
   useEffect(() => {
     feather.replace();
@@ -289,7 +287,7 @@ function Shop(props) {
     <>
       {loading}
       {/* Header Start */}
-      <Header setProductListItems={setProductListItems} Dash={"shop"}/>
+      <Header setProductListItems={setProductListItems} Dash={"shop"} />
       {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
@@ -1754,7 +1752,9 @@ function Shop(props) {
                               <div className="product-detail">
                                 {/* <span className="span-name"> {item._id} </span> */}
                                 <Link to="/product">
-                                  <h5 className="name">{item.productName_en}</h5>
+                                  <h5 className="name">
+                                    {item.productName_en}
+                                  </h5>
                                 </Link>
                                 <p className="text-content mt-1 mb-2 product-content">
                                   Cheesy feet cheesy grin brie. Mascarpone
@@ -1763,7 +1763,10 @@ function Shop(props) {
                                   croque monsieur.
                                 </p>
                                 <div className="product-rating mt-2">
-                                  <Star rating={item?.totalRating} />
+                                  <Star
+                                    rating={item?.ratings}
+                                    totalRating={item.totalRating}
+                                  />
                                   <span> {item.totalRating} reviews </span>
                                 </div>
                                 <h6 className="unit">
@@ -1823,9 +1826,11 @@ function Shop(props) {
                                 <div className="add-to-cart-box bg-danger mt-2">
                                   <button className="btn btn-add-cart addcart-button">
                                     <Link
-                                    className="text-light"
+                                      className="text-light"
                                       to="/cart"
-                                      onClick={() => handleSaveChanges(item?._id)}
+                                      onClick={() =>
+                                        handleSaveChanges(item?._id)
+                                      }
                                     >
                                       Buy Now
                                     </Link>
@@ -1917,6 +1922,7 @@ function Shop(props) {
       {/* Quick View Modal Box Start */}
 
       {selectedProduct && (
+       
         <div
           className="modal fade theme-modal view-modal"
           id="view"
@@ -1924,6 +1930,7 @@ function Shop(props) {
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
         >
+           {console.log(selectedProduct._id)}
           <div className="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-sm-down">
             <div className="modal-content">
               <div className="modal-header p-0">
@@ -1951,11 +1958,11 @@ function Shop(props) {
                     <div className="right-sidebar-modal">
                       <div>
                         <h4 className="title-name">
-                          {selectedProduct.productName}
+                          {selectedProduct?.productName_en}
                         </h4>
                         <h4 className="price">${selectedProduct.Price} </h4>
                         <div className="product-rating">
-                          <Star rating={selectedProduct?.totalRating} />
+                          <Star rating={selectedProduct?.ratings} />
                           <span className="ms-2">
                             {selectedProduct.totalRating} Reviews
                           </span>
@@ -1965,7 +1972,7 @@ function Shop(props) {
                         </div>
                         <div className="product-detail">
                           <h4>Product Details :</h4>
-                          <p>{selectedProduct.Description}</p>
+                          <p>{selectedProduct?.Description}</p>
                         </div>
                         <ul className="brand-list">
                           <li>
@@ -1988,7 +1995,7 @@ function Shop(props) {
                           </li>
                         </ul>
                         <div className="select-size">
-                          <h4>Cake Size :</h4>
+                          <h4>Size :</h4>
                           <select
                             className="form-select select-form-size"
                             value={selectedWeight}
@@ -2009,14 +2016,12 @@ function Shop(props) {
                               Add To Cart
                             </button>
                           </Link>
-                          <button
-                            onClick={() => {
-                              window.location.href = "/product-left";
-                            }}
+                          <Link
+                            to={`/product/${selectedProduct._id}`}
                             className="btn theme-bg-color view-button icon text-white fw-bold btn-md"
                           >
                             View More Details
-                          </button>
+                          </Link>
                         </div>
                       </div>
                     </div>

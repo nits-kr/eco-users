@@ -258,7 +258,6 @@ function IndexGrocary(props) {
   const sliders2 = () => {
     return trendingList?.map((item, index) => (
       <div key={index}>
-        {console.log("nk")}
         <div className="product-box-3 h-100 wow fadeInUp">
           <div className="product-header">
             <div className="product-image">
@@ -730,7 +729,7 @@ function IndexGrocary(props) {
                         <ul className="product-list border-0 p-0 d-block">
                           {trendingList.map((item, index) => {
                             return (
-                              <li>
+                              <li key={index}>
                                 <div className="offer-product">
                                   <Link to="/product" className="offer-image">
                                     <img

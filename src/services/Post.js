@@ -104,6 +104,13 @@ export const PostApi = createApi({
         body,
       }),
     }),
+    showProductRating: builder.mutation({
+      query: (body) => ({
+        url: "/user/product/product/product-rating",
+        method: "post",
+        body,
+      }),
+    }),
     addToCart: builder.mutation({
       query: (body) => ({
         url: `user/carts/carts/add-cart`,
@@ -234,4 +241,5 @@ export const {
   useResetPasswordMutation,
   useGetCategoryListQuery,
   useSubCategoryListMutation,
+  useShowProductRatingMutation,
 } = PostApi;

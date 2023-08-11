@@ -1,47 +1,41 @@
-import React, { useState, useEffect } from "react";
-import { ProductRating } from "./HttpServices";
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar, faStarHalfStroke } from "@fortawesome/free-solid-svg-icons";
+import { AiOutlineStar } from "react-icons/ai";
 
-const Star = ({ rating }) => {
-  const renderStars = () => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-
-    const stars = [];
-
-    // Render full stars
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <i key={i} className="fas fa-star" style={{ color: "#fdaf08" }}></i>
-      );
-    }
-
-    // Render half star if applicable
-    if (hasHalfStar) {
-      stars.push(
-        <i
-          key={fullStars}
-          className="fas fa-star-half-alt"
-          style={{ color: "#fdaf08" }}
-        ></i>
-      );
-    }
-
-    // Render empty stars
-    const remainingStars = 5 - stars.length;
-    for (let i = 0; i < remainingStars; i++) {
-      stars.push(
-        <i
-          key={fullStars + i + 1}
-          className="far fa-star"
-          style={{ color: "#fdaf08" }}
-        ></i>
-      );
-    }
-
-    return stars;
-  };
-
-  return <div className="star-rating">{renderStars()}</div>;
-};
+function Star({ rating, totalRating }) {
+  console.log(rating);
+  console.log(totalRating);
+  const ratingStar = Array.from({ length: 5 }, (item, index) => {
+    let number = index + 0.5;
+    // debugger;
+    return (
+      <span key={index}>
+        {rating >= index + 1 ? (
+          <FontAwesomeIcon
+            key={index}
+            icon={faStar}
+            style={{ color: "#fca103" }}
+          />
+        ) : rating >= number ? (
+          <FontAwesomeIcon
+            key={index}
+            icon={faStarHalfStroke}
+            style={{ color: "#fca103" }}
+          />
+        ) : (
+          <AiOutlineStar key={index} style={{ color: "#fca103" , fontSize:"20px"}} />
+        )}
+      </span>
+    );
+  });
+  return (
+    <>
+      {ratingStar}
+      {/* <FontAwesomeIcon icon={faStar} style={{ color: "#fca103" }} />
+      <FontAwesomeIcon icon={faStarHalfStroke} style={{ color: "#fca103" }} /> */}
+    </>
+  );
+}
 
 export default Star;

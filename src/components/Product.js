@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -23,6 +23,8 @@ function Product(props) {
   const [productData, setProductData] = useState([]);
   const [productDetail, setProductDetail] = useState("");
   const [loading, setLoading] = useState(false);
+  const {id} = useParams();
+  console.log(id);
   const ratings = 4.5;
   console.log("useGetRelatedProductQuery", relatedProduct);
     console.log("product detail", productDetail);
@@ -32,13 +34,10 @@ function Product(props) {
       try {
         props.setProgress(10);
         setLoading(true);
-        //const details = productDetail?.results?.details?._id ?? '';
-        const id = "6482ba3484e5342a120adbc1";
-        //const id = productDetail?.data?.results?.details?._id ;
         console.log(id);
         const { data, error } = await ProductDetails(id);
         error ? console.log(error) : console.log(data);
-        setProductDetail(data.results.details);
+        setProductDetail(data?.results?.details);
         props.setProgress(50);
       } catch (error) {
         console.log(error);
@@ -55,18 +54,18 @@ function Product(props) {
     }
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await ProductSearch(searchKey);
-        console.log(data);
-        setProductData(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, [searchKey]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const { data } = await ProductSearch(searchKey);
+  //       console.log(data);
+  //       setProductData(data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [searchKey]);
   const handleSearch = () => {
     setSearchKey(searchKey);
   };
@@ -304,14 +303,14 @@ function Product(props) {
                     >
                       <div className="right-box-contain">
                         <h6 className="offer-top">30% Off</h6>
-                        <h2 className="name">{productDetail?.productName}</h2>
+                        <h2 className="name">{productDetail?.productName_en}</h2>
                         <div className="price-rating">
                           <h3 className="theme-color price">
-                            $49.50 <del className="text-content">$58.46</del>{" "}
+                            ${productDetail?.Price} <del className="text-content">${productDetail?.oldPrice} </del>{" "}
                             <span className="offer theme-color">(8% off)</span>
                           </h3>
                           
-                          <Star rating={ratings} />
+                          <Star rating={productDetail?.rating} /><span> {productDetail?.totalRating} reviews </span>
                         </div>
                         <div className="procuct-contain">
                           <p>
