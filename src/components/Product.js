@@ -315,10 +315,6 @@ function Product(props) {
                         <div className="procuct-contain">
                           <p>
                             {productDetail.Description}
-                            Lollipop cake chocolate chocolate cake dessert
-                            jujubes. Shortbread sugar plum dessert powder cookie
-                            sweet brownie. Cake cookie apple pie dessert sugar
-                            plum muffin cheesecake.
                           </p>
                         </div>
                         <div className="product-packege">
