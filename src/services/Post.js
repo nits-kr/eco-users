@@ -73,7 +73,7 @@ export const PostApi = createApi({
     }),
     getAddressList: builder.query({
       query: (name) => ({
-        url: `user/address/address/address-list`,
+        url: "/user/address/address/address-list",
         method: "post",
       }),
     }),
@@ -99,7 +99,7 @@ export const PostApi = createApi({
     }),
     createOrder: builder.mutation({
       query: (body) => ({
-        url: `user/order/order/create-order`,
+        url: "/user/order/order/create-order",
         method: "post",
         body,
       }),
@@ -136,11 +136,29 @@ export const PostApi = createApi({
         method: "post",
       }),
     }),
+    cancelOrder: builder.mutation({
+      query: (id) => ({
+        url: `/user/order/order/user-cancelled-order/${id}`,
+        method: "post",
+      }),
+    }),
     subSubProduct: builder.mutation({
       query: (id) => ({
         url: `/user/category/category/subCategory-product/${id}`,
         method: "post",
       }),
+    }),
+    orderDetails: builder.mutation({
+      query: (body) => {
+        console.log("update address", body);
+        const { id } = body;
+        console.log("update address body data", id);
+        return {
+          url: `/user/order/order/order-Details/${id}`,
+          method: "post",
+          // body: data,
+        };
+      },
     }),
     updateAddress: builder.mutation({
       query: (body) => {
@@ -171,6 +189,16 @@ export const PostApi = createApi({
         console.log("update login data", body);
         return {
           url: `user/user/user/login`,
+          method: "post",
+          body,
+        };
+      },
+    }),
+    createReport: builder.mutation({
+      query: (body) => {
+        console.log("update login data", body);
+        return {
+          url: "/user/reports",
           method: "post",
           body,
         };
@@ -260,4 +288,7 @@ export const {
   useShowProductRatingMutation,
   useSubSubProductMutation,
   useFilterPriceMutation,
+  useCancelOrderMutation,
+  useOrderDetailsMutation,
+  useCreateReportMutation,
 } = PostApi;

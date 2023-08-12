@@ -64,6 +64,11 @@ function Shop(props) {
   );
   const storedId = localStorage.getItem("loginId");
   const { id } = useParams();
+  const totalRatings = selectedProduct.ratings.reduce(
+    (sum, rating) => sum + rating.star,
+    0
+  );
+  const averageRating = totalRatings / selectedProduct.ratings.length;
   console.log(id);
   useEffect(() => {
     handleSubSubProduct();
@@ -1872,9 +1877,9 @@ function Shop(props) {
                         </h4>
                         <h4 className="price">${selectedProduct.Price} </h4>
                         <div className="product-rating">
-                          <Star rating={selectedProduct?.ratings} />
+                          <Star rating={averageRating} />
                           <span className="ms-2">
-                            {selectedProduct.totalRating} Reviews
+                            {selectedProduct.ratings.length} Reviews
                           </span>
                           <span className="ms-2 text-danger">
                             6 sold in last 16 hours

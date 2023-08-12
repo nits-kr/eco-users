@@ -1,23 +1,46 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Header from "./Header";
 import Footer from "./Footer";
 import { OrderSummary } from "./HttpServices";
+import { useCreateOrderMutation } from "../services/Post";
+import { useGetAddressListQuery } from "../services/Post";
 
 function CheckOut() {
   const [orderItemSummary, setOrderItemSummary] = useState([]);
   const [orderItemSummaryPrice, setOrderItemSummaryPrice] = useState([]);
+  const [createOrder, response] = useCreateOrderMutation();
+  const [newAddress, setNewAddress] = useState([]);
+  const addressList = useGetAddressListQuery();
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const userId = localStorage.getItem("loginId");
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleAddressSelection = (addressId) => {
+    setSelectedAddressId(addressId);
+  };
+
+  const getReversedList = (list) => {
+    return list?.data?.results?.addressData?.slice().reverse() ?? [];
+  };
+  useEffect(() => {
+    const reversedList = getReversedList(addressList);
+    setNewAddress(reversedList);
+  }, [addressList]);
+
   const fetchData = async () => {
     try {
       const { data, error } = await OrderSummary();
       error ? console.log(error) : console.log(data);
-      setOrderItemSummary(data.results.product);
+      setOrderItemSummary(data?.results?.product);
       setOrderItemSummaryPrice(data.results);
       console.log(data.results.product);
     } catch (error) {
@@ -27,6 +50,58 @@ function CheckOut() {
   useEffect(() => {
     feather.replace();
   }, []);
+
+  const placeOrder = async () => {
+    const orderList = orderItemSummary?.map((order) => ({
+      product_Id: order.products[0].product_Id._id,
+      quantity: order.products[0].quantity,
+    }));
+    const newOrderData = {
+      carts: orderList,
+      user_Id: userId,
+      address_Id: selectedAddressId,
+      // shippingPrice: "30",
+      // taxPrice: "20",
+      // deliverdBy: "64997c95488af9cf3dfb8d69",
+    };
+    const confirmationResult = await Swal.fire({
+      title: "Place Order Confirmation",
+      text: "Are you sure you want to place the order?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Place Order",
+      cancelButtonText: "Cancel",
+      customClass: {
+        confirmButton: "custom-confirm-button-class m-3",
+      },
+    });
+
+    if (confirmationResult.isConfirmed) {
+      try {
+        const createNewOrder = await createOrder(newOrderData);
+        console.log(createNewOrder);
+        await Swal.fire({
+          title: "Order Placed!",
+          text: "Your order has been placed successfully.",
+          icon: "success",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/shop/:id");
+          }
+        });
+      } catch (error) {
+        // Show error alert
+        await Swal.fire({
+          title: "Error",
+          text: "An error occurred while placing the order.",
+          icon: "error",
+        });
+      }
+    }
+  };
+
   return (
     <>
       {/* Loader Start */}
@@ -127,101 +202,96 @@ function CheckOut() {
                         </div>
                         <div className="checkout-detail">
                           <div className="row g-4">
-                            <div className="col-xxl-6 col-lg-12 col-md-6">
-                              <div className="delivery-address-box">
-                                <div>
-                                  <div className="form-check">
-                                    <input
-                                      className="form-check-input"
-                                      type="radio"
-                                      name="jack"
-                                      id="flexRadioDefault1"
-                                    />
+                            {newAddress?.map((item, index) => {
+                              return (
+                                <div className="col-xxl-6 col-lg-12 col-md-6" key={item._id}>
+                                  <div className="delivery-address-box">
+                                    <div>
+                                      <div className="form-check">
+                                        <input
+                                          className="form-check-input"
+                                          type="radio"
+                                          name="address"
+                                          id={`addressRadio-${item._id}`}
+                                          checked={
+                                            selectedAddressId === item._id
+                                          }
+                                          onChange={() =>
+                                            handleAddressSelection(item._id)
+                                          }
+                                        />
+                                      </div>
+                                      <div className="label">
+                                        <label> {item?.title} </label>
+                                      </div>
+                                      <ul className="delivery-address-detail">
+                                        <li>
+                                          <h4 className="fw-500">
+                                            Jack Jennas
+                                          </h4>
+                                        </li>
+                                        <li>
+                                          <p className="text-content">
+                                            <span className="text-title">
+                                              Address :{" "}
+                                            </span>
+                                            {item?.address}
+                                          </p>
+                                        </li>
+                                        <li>
+                                          <p className="text-content">
+                                            <span className="text-title">
+                                              Mobile Number :{" "}
+                                            </span>
+                                            {item?.mobileNumber}
+                                          </p>
+                                        </li>
+                                        <li>
+                                          <p className="text-content">
+                                            <span className="text-title">
+                                              Locality :{" "}
+                                            </span>
+                                            {item?.locality}
+                                          </p>
+                                        </li>
+                                        <li>
+                                          <p className="text-content">
+                                            <span className="text-title">
+                                              City :{" "}
+                                            </span>
+                                            {item?.city}
+                                          </p>
+                                        </li>
+                                        <li>
+                                          <h6 className="text-content">
+                                            <span className="text-title">
+                                              Pin Code :
+                                            </span>{" "}
+                                            {item?.pinCode}
+                                          </h6>
+                                        </li>
+                                        <li>
+                                          <h6 className="text-content">
+                                            <span className="text-title">
+                                              Country :
+                                            </span>{" "}
+                                            {item?.country}
+                                          </h6>
+                                        </li>
+                                        <li>
+                                          <h6 className="text-content mb-0">
+                                            <span className="text-title">
+                                              Phone :
+                                            </span>{" "}
+                                            + 380 (0564) 53 - 29 - 68
+                                          </h6>
+                                        </li>
+                                      </ul>
+                                    </div>
                                   </div>
-                                  <div className="label">
-                                    <label>Home</label>
-                                  </div>
-                                  <ul className="delivery-address-detail">
-                                    <li>
-                                      <h4 className="fw-500">Jack Jennas</h4>
-                                    </li>
-                                    <li>
-                                      <p className="text-content">
-                                        <span className="text-title">
-                                          Address :{" "}
-                                        </span>
-                                        8424 James Lane South San Francisco, CA
-                                        94080
-                                      </p>
-                                    </li>
-                                    <li>
-                                      <h6 className="text-content">
-                                        <span className="text-title">
-                                          Pin Code :
-                                        </span>{" "}
-                                        +380
-                                      </h6>
-                                    </li>
-                                    <li>
-                                      <h6 className="text-content mb-0">
-                                        <span className="text-title">
-                                          Phone :
-                                        </span>{" "}
-                                        + 380 (0564) 53 - 29 - 68
-                                      </h6>
-                                    </li>
-                                  </ul>
                                 </div>
-                              </div>
-                            </div>
-                            <div className="col-xxl-6 col-lg-12 col-md-6">
-                              <div className="delivery-address-box">
-                                <div>
-                                  <div className="form-check">
-                                    <input
-                                      className="form-check-input"
-                                      type="radio"
-                                      name="jack"
-                                      id="flexRadioDefault2"
-                                      defaultChecked="checked"
-                                    />
-                                  </div>
-                                  <div className="label">
-                                    <label>Office</label>
-                                  </div>
-                                  <ul className="delivery-address-detail">
-                                    <li>
-                                      <h4 className="fw-500">Jack Jennas</h4>
-                                    </li>
-                                    <li>
-                                      <p className="text-content">
-                                        <span className="text-title">
-                                          Address :
-                                        </span>
-                                        Nakhimovskiy R-N / Lastovaya Ul., bld.
-                                        5/A, appt. 12
-                                      </p>
-                                    </li>
-                                    <li>
-                                      <h6 className="text-content">
-                                        <span className="text-title">
-                                          Pin Code :
-                                        </span>
-                                        +380
-                                      </h6>
-                                    </li>
-                                    <li>
-                                      <h6 className="text-content mb-0">
-                                        <span className="text-title">
-                                          Phone :
-                                        </span>{" "}
-                                        + 380 (0564) 53 - 29 - 68
-                                      </h6>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
+                              );
+                            })}
                           </div>
                         </div>
                       </div>
@@ -805,39 +875,49 @@ function CheckOut() {
                     <h3>Order Summery</h3>
                   </div>
                   <ul className="summery-contain">
-                    {orderItemSummary.map((item, index) => {
+                    {orderItemSummary.map((order, index) => {
                       return (
                         <li key={index}>
                           <img
-                            src="../assets/images/vegetable/product/1.png"
-                            className="img-fluid  lazyloaded checkout-image"
+                            src={
+                              order.products[0]?.product_Id?.product_Pic[0] ||
+                              ""
+                            }
+                            className="img-fluid lazyloaded checkout-image"
                             alt=""
                           />
                           <h4>
-                            Bell pepper <span>X 1</span>
+                            {order.products[0]?.product_Id?.productName_en}{" "}
+                            <span>X {order.products[0]?.quantity}</span>
                           </h4>
-                          <h4 className="price">$32.34</h4>
+                          <h4 className="price">${order.cartsTotal}</h4>
                         </li>
                       );
                     })}
-                   
                   </ul>
                   <ul className="summery-total">
                     <li>
                       <h4>Subtotal</h4>
-                      <h4 className="price">${orderItemSummaryPrice.subtotal}</h4>
+                      <h4 className="price">
+                        ${orderItemSummaryPrice.subtotal}
+                      </h4>
                     </li>
                     <li>
                       <h4>Shipping</h4>
-                      <h4 className="price"> ${orderItemSummaryPrice.shipping} </h4>
+                      <h4 className="price">
+                        {" "}
+                        ${orderItemSummaryPrice.shipping}{" "}
+                      </h4>
                     </li>
                     <li>
                       <h4>Tax</h4>
-                      <h4 className="price">${orderItemSummaryPrice.Tax}  </h4>
+                      <h4 className="price">${orderItemSummaryPrice.Tax} </h4>
                     </li>
                     <li>
                       <h4>Coupon/Code</h4>
-                      <h4 className="price">$-{orderItemSummaryPrice.DiscountType} </h4>
+                      <h4 className="price">
+                        $-{orderItemSummaryPrice.DiscountType}{" "}
+                      </h4>
                     </li>
                     <li className="list-total">
                       <h4>Total (USD)</h4>
@@ -874,7 +954,10 @@ function CheckOut() {
                     </li>
                   </ul>
                 </div>
-                <button className="btn theme-bg-color text-white btn-md w-100 mt-4 fw-bold">
+                <button
+                  className="btn theme-bg-color text-white btn-md w-100 mt-4 fw-bold"
+                  onClick={placeOrder}
+                >
                   Place Order
                 </button>
               </div>

@@ -168,7 +168,7 @@ function App() {
           <Route
             exact
             className="active"
-            path="/order-tracking"
+            path="/order-tracking/:id"
             element={<OrderTracking/>}
           />
           

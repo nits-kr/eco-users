@@ -16,6 +16,7 @@ function Cart() {
   const [coupan, setCoupan] = useState([]);
   const [coupanCode, setCoupanCode] = useState("25753411");
   const [count, setCount] = useState(0);
+  const [counts, setCounts] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -169,10 +170,13 @@ function Cart() {
                                   <ul>
                                     <li className="name">
                                       {item?.products?.map((product) => (
-                                        <Link
-                                          to={`/product`}
-                                        >
-                                          <strong>{product?.product_Id?.productName_en}</strong>
+                                        <Link to={`/product`}>
+                                          <strong>
+                                            {
+                                              product?.product_Id
+                                                ?.productName_en
+                                            }
+                                          </strong>
                                         </Link>
                                       ))}
                                     </li>
@@ -234,10 +238,25 @@ function Cart() {
                                 Price
                               </h4>
                               <h5>
-                              ${item?.products?.map((product) => (product?.product_Id?.Price))}{" "}
-                                <del className="text-content"> ${item?.products?.map((product) => (product?.product_Id?.oldPrice))}{" "}</del>
+                                $
+                                {item?.products?.map(
+                                  (product) => product?.product_Id?.Price
+                                )}{" "}
+                                <del className="text-content">
+                                  {" "}
+                                  $
+                                  {item?.products?.map(
+                                    (product) => product?.product_Id?.oldPrice
+                                  )}{" "}
+                                </del>
                               </h5>
-                              <h6 className="theme-color"> ${item?.products?.map((product) => (product?.product_Id?.Discount))}{" "}</h6>
+                              <h6 className="theme-color">
+                                {" "}
+                                $
+                                {item?.products?.map(
+                                  (product) => product?.product_Id?.Discount
+                                )}{" "}
+                              </h6>
                             </td>
                             <td className="quantity">
                               <h4 className="table-title text-content">Qty</h4>
@@ -250,7 +269,7 @@ function Cart() {
                                       data-type="minus"
                                       data-field=""
                                       onClick={() => {
-                                        setCount(count - 1);
+                                        setCount(item?.quantity(count - 1));
                                       }}
                                     >
                                       <i
@@ -303,7 +322,6 @@ function Cart() {
                                 className="remove close_button"
                                 to="#"
                                 onClick={() => deleteCartItem(item._id)}
-                                // onClick={() => deleteCartItem(item?.products?.map((product) => product?.product_Id?._id))}
                               >
                                 Remove
                               </Link>
@@ -364,7 +382,7 @@ function Cart() {
                   <ul>
                     <li>
                       <Link
-                      to="/check-out"
+                        to="/check-out"
                         className="btn btn-animation proceed-btn fw-bold"
                       >
                         Process To Checkout

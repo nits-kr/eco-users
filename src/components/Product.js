@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -16,13 +17,15 @@ import Footer from "./Footer";
 import { useGetRelatedProductQuery } from "../services/Post";
 import Spinner from "./Spinner";
 import { useGetTrendingProductQuery } from "../services/Post";
+import { useCreateReportMutation } from "../services/Post";
 
 function Product(props) {
   const relatedProduct = useGetRelatedProductQuery();
   const [relatedProductItems, setRelatedProductItems] = useState([]);
   const [searchKey, setSearchKey] = useState("");
-  const [productData, setProductData] = useState([]);
+  const [reportData, res] = useCreateReportMutation();
   const [productDetail, setProductDetail] = useState("");
+  console.log(productDetail);
   const trendingProduct = useGetTrendingProductQuery();
   console.log("useGetTrendingProductQuery", trendingProduct);
   const [trendingList, setTrendingList] = useState([]);
@@ -32,6 +35,46 @@ function Product(props) {
   const ratings = 4.5;
   console.log("useGetRelatedProductQuery", relatedProduct);
   console.log("product detail", productDetail);
+  const userId = localStorage.getItem("loginId");
+  const [formData, setFormData] = useState({
+    r1: "",
+    description: "",
+  });
+  const totalRatings = productDetail?.ratings?.reduce(
+    (sum, rating) => sum + rating.star,
+    0
+  );
+  const averageRating = totalRatings / productDetail?.ratings?.length;
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
+  const handleSaveReport = () => {
+    Swal.fire({
+      title: "Confirm",
+      text: "Are you sure you want to save this report?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      customClass: {
+        confirmButton: "btn btn-primary mx-2",
+        cancelButton: "btn btn-secondary mx-2",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const newAddress = {
+          reason: formData.r1,
+          description: formData.description,
+          user_Id: userId,
+          product_Id: id,
+        };
+        reportData(newAddress);
+      }
+    });
+  };
+
   useEffect(() => {
     if (trendingProduct?.data?.results?.productlist) {
       setTrendingList(trendingProduct?.data?.results?.productlist);
@@ -209,19 +252,19 @@ function Product(props) {
                       data-wow-delay="0.1s"
                     >
                       <div className="right-box-contain">
-                        <div class="row align-items-center mb-4">
-                          <div class="col-6">
-                            <h6 class="offer-top mb-0">30% Off</h6>
+                        <div className="row align-items-center mb-4">
+                          <div className="col-6">
+                            <h6 className="offer-top mb-0">30% Off</h6>
                           </div>
-                          <div class="col-6 text-end">
-                            <a
-                              class="report_btns"
+                          <div className="col-6 text-end">
+                            <Link
+                              className="report_btns"
                               data-bs-toggle="modal"
                               data-bs-target="#report_modal"
-                              href="javascript:;"
+                              to="#"
                             >
                               <img src="../assets/images/report.svg" alt="" />
-                            </a>
+                            </Link>
                           </div>
                         </div>
                         <h2 className="name">
@@ -236,8 +279,13 @@ function Product(props) {
                             <span className="offer theme-color">(8% off)</span>
                           </h3>
 
-                          <Star rating={productDetail?.rating} />
-                          <span> {productDetail?.totalRating} reviews </span>
+                          <div>
+                            <Star rating={averageRating} />
+                            <span className="ms-1">
+                              {" "}
+                              {productDetail?.ratings?.length} reviews{" "}
+                            </span>
+                          </div>
                         </div>
                         <div className="procuct-contain">
                           <p>{productDetail.Description}</p>
@@ -1200,31 +1248,33 @@ function Product(props) {
                       <div className="category-menu">
                         <h3>Trending Products</h3>
                         <ul className="product-list product-right-sidebar border-0 p-0">
-                        {trendingList.map((item, index) => {
+                          {trendingList.map((item, index) => {
                             return (
-                          <li>
-                            <div className="offer-product">
-                              <Link to="/product" className="offer-image">
-                                <img
-                                  src={item?.product_Pic[0]}
-                                  className="img-fluid  lazyload"
-                                  alt=""
-                                />
-                              </Link>
-                              <div className="offer-detail">
-                                <div>
-                                  <Link to="/product">
-                                    <h6 className="name">
-                                      {item?.productName_en}
-                                    </h6>
+                              <li key={index}>
+                                <div className="offer-product">
+                                  <Link to="/product" className="offer-image">
+                                    <img
+                                      src={item?.product_Pic[0]}
+                                      className="img-fluid  lazyload"
+                                      alt=""
+                                    />
                                   </Link>
-                                  <span> {item?.weight} </span>
-                                  <h6 className="price theme-color">${item?.Price} </h6>
+                                  <div className="offer-detail">
+                                    <div>
+                                      <Link to="/product">
+                                        <h6 className="name">
+                                          {item?.productName_en}
+                                        </h6>
+                                      </Link>
+                                      <span> {item?.weight} </span>
+                                      <h6 className="price theme-color">
+                                        ${item?.Price}{" "}
+                                      </h6>
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          </li>
-                           );
+                              </li>
+                            );
                           })}
                         </ul>
                       </div>
@@ -1284,7 +1334,7 @@ function Product(props) {
                     <Slider {...settings}>
                       {relatedProductItems?.map((item, index) => {
                         return (
-                          <div>
+                          <div key={index}>
                             <div className="product-box-3 wow fadeInUp">
                               <div className="product-header">
                                 <div className="product-image">
@@ -2006,86 +2056,94 @@ function Product(props) {
       {/* Bg overlay Start */}
       <div className="bg-overlay" />
       <div
-  className="modal fade report_modal"
-  id="report_modal"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabIndex={-1}
-  aria-labelledby="staticBackdropLabel"
-  aria-hidden="true"
->
-  <div className="modal-dialog modal-dialog-centered">
-    <div className="modal-content">
-      <div className="modal-body">
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        />
-        <div className="report_modal_inner">
-          <h3>Report Product</h3>
-          <form className="form_design row px-2 mx-0" action="">
-            <div className="form-group col-12 mb-3">
-              <div className="checkbox_new d-inline-block">
-                <input
-                  type="radio"
-                  defaultChecked=""
-                  id="r1"
-                  name="r1"
-                  className="d-none"
-                />
-                <label htmlFor="r1">Inppropriate</label>
-              </div>
-            </div>
-            <div className="form-group col-12 mb-3">
-              <div className="checkbox_new d-inline-block">
-                <input
-                  type="radio"
-                  defaultChecked=""
-                  id="r2"
-                  name="r1"
-                  className="d-none"
-                />
-                <label htmlFor="r2">Spam</label>
-              </div>
-            </div>
-            <div className="form-group col-12 mb-3">
-              <div className="checkbox_new d-inline-block">
-                <input
-                  type="radio"
-                  defaultChecked=""
-                  id="r3"
-                  name="r1"
-                  className="d-none"
-                />
-                <label htmlFor="r3">None of the Above</label>
-              </div>
-            </div>
-            <div className="form-group col-12 mb-3">
-              <textarea
-                className="form-control"
-                name=""
-                id=""
-                style={{ height: 100 }}
-                defaultValue={""}
+        className="modal fade report_modal"
+        id="report_modal"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabIndex={-1}
+        aria-labelledby="staticBackdropLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-body">
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
               />
+              <div className="report_modal_inner">
+                <h3>Report Product</h3>
+                <form className="form_design row px-2 mx-0" action="">
+                  <div className="form-group col-12 mb-3">
+                    <div className="checkbox_new d-inline-block">
+                      <input
+                        type="radio"
+                        defaultChecked=""
+                        id="r1"
+                        name="r1"
+                        className="d-none"
+                        value="Inppropriate"
+                        onChange={handleInputChange}
+                      />
+                      <label htmlFor="r1">Inppropriate</label>
+                    </div>
+                  </div>
+                  <div className="form-group col-12 mb-3">
+                    <div className="checkbox_new d-inline-block">
+                      <input
+                        type="radio"
+                        defaultChecked=""
+                        id="r2"
+                        name="r1"
+                        className="d-none"
+                        value="spam"
+                        onChange={handleInputChange}
+                      />
+                      <label htmlFor="r2">Spam</label>
+                    </div>
+                  </div>
+                  <div className="form-group col-12 mb-3">
+                    <div className="checkbox_new d-inline-block">
+                      <input
+                        type="radio"
+                        defaultChecked=""
+                        id="r3"
+                        name="r1"
+                        className="d-none"
+                        value="None of the Above"
+                        onChange={handleInputChange}
+                      />
+                      <label htmlFor="r3">None of the Above</label>
+                    </div>
+                  </div>
+                  <div className="form-group col-12 mb-3">
+                    <textarea
+                      className="form-control"
+                      name="description"
+                      id="description"
+                      style={{ height: 100 }}
+                      // defaultValue={""}
+                      value={formData.description}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="form-group col-12 mb-0">
+                    <Link
+                      className="btn btn-animation btn-sm mx-auto"
+                      to="#"
+                      onClick={handleSaveReport}
+                    >
+                      Send
+                    </Link>
+                  </div>
+                </form>
+              </div>
             </div>
-            <div className="form-group col-12 mb-0">
-              <a
-                className="btn btn-animation btn-sm mx-auto"
-                href="javascript:;"
-              >
-                Send
-              </a>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-
     </>
   );
 }

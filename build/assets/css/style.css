@@ -35692,3 +35692,139 @@ button.btn.btn-add-cart.addcart-button {
     border: 0;
     border-radius: 10px;
 }
+
+.step-progress {
+}
+
+.step-progress .step-slider {
+  width: 100%;
+
+  background-color: #f8f8f8;
+  border-radius: 100px;
+}
+
+.step-progress .step-slider .step-slider-item {
+  width: 20%;
+  height: 5px;
+  position: relative;
+  float: left;
+  background-color: #e0e0e0;
+}
+
+.step-progress .step-slider .step-slider-item .Title {
+  font-size: 10px;
+    text-align: center;
+    width: 125px;
+    /* white-space: pre; */
+    word-break: break-word;
+    line-height: 10px;
+    font-weight: 600;
+    top: 17px;
+    position: absolute;
+    left: 25px;
+    color: #9d9d9d;
+}
+
+.step-progress .step-slider .step-slider-item:after {
+  content: "";
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  top: -11px;
+  left: 75px;
+  background-color: #fafafa;
+  border: 3px solid #e0e0e0;
+  border-radius: 50%;
+  z-index: 2;
+  transition: all 0.3s ease-out 0.5s;
+  -webkit-transition: all 0.3s ease-out 0.5s;
+}
+
+.step-progress .step-slider .step-slider-item:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 5px;
+  background-color: #b0bec5;
+  z-index: 1;
+  -webkit-transition: all 0.5s ease-out;
+}
+
+.step-progress .step-slider .step-slider-item.active:before {
+  width: 100%;
+  /* background-color: #aeb2ff; */
+  background-color: var(--theme-color);
+}
+
+.step-progress .step-slider .step-slider-item.active:after {
+  border-color: #aeb2ff;
+  /* background-color: #4e55d7; */
+  background-color: var(--theme-color);
+}
+
+.step-content {
+  padding: 16px 0;
+}
+
+.step-content .step-content-foot {
+  text-align: right;
+}
+
+.step-content .step-content-foot button {
+  border: 0;
+  padding: 8px 16px;
+  background-color: #cfd8dc;
+  font-size: 14px;
+  border-radius: 3px;
+  outline: 0;
+}
+
+.step-content .step-content-foot button:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.step-content .step-content-foot button.out {
+  display: none;
+}
+
+.step-content .step-content-foot button.disable {
+  background-color: #eceff1;
+}
+
+.step-content .step-content-foot button.active {
+  background-color: #5058dd;
+  color: white;
+  font-size: 14px;
+  padding: 10px 20px;
+}
+
+.step-content .step-content-body {
+  padding: 16px 0;
+}
+
+.step-content .step-content-body.out {
+  display: none;
+}
+
+/* .StepsHeader {
+  overflow: auto;
+  height: 80px;
+  margin-top: 20px;
+  padding: 30px 30px 10px 30px;
+  background-color: #f8f8f8;
+  border: #d9d9d9;
+  border-radius: 150px;
+  border: 1px solid #d9d9d9;
+} */
+.StepsHeader {
+  overflow: auto;
+  height: 103px;
+  margin-top: 20px;
+  padding: 30px 30px 10px 30px;
+  /* background-color: #f8f8f8; */
+  border: #d9d9d9;
+  /* border-radius: 150px; */
+  /* border: 1px solid #d9d9d9; */
+}

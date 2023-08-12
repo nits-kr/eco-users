@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -9,8 +10,10 @@ import { CompareList } from "./HttpServices";
 import { useGetCompareListQuery } from "../services/Post";
 import { useDeleteCompareMutation } from "../services/Post";
 import { useAddToCartMutation } from "../services/Post";
+import Star from "./Star";
 function Compare() {
   const [deleteCompare, responseInfo] = useDeleteCompareMutation();
+  const [newCompare, setNewCompare] = useState([]);
   // const [itemId, setItemId] = useState("")
   // const [quantity, setQuantity] = useState("")
   const compareItems = useGetCompareListQuery();
@@ -27,6 +30,33 @@ function Compare() {
     };
     addToCart(newAddress);
   };
+
+  const handleRemoveAddress = (addressId) => {
+    Swal.fire({
+      title: "Confirm Deletion",
+      text: "Are you sure you want to delete this address?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "No, cancel",
+      customClass: {
+        confirmButton: "btn btn-danger me-2",
+        cancelButton: "btn btn-primary ms-2",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteCompare(addressId)
+          .then(() => {
+            const updatedList = newCompare.filter(
+              (address) => address._id !== addressId
+            );
+            setNewCompare(updatedList);
+          })
+          .catch((error) => {});
+      }
+    });
+  };
+
   useEffect(() => {
     feather.replace();
   }, []);
@@ -111,7 +141,7 @@ function Compare() {
                           return (
                             <td key={index}>
                               <Link className="text-title" to="/product">
-                                {item?.product_Id?.productName}
+                                {item?.product_Id?.productName_en}
                               </Link>
                             </td>
                           );
@@ -143,7 +173,7 @@ function Compare() {
                           return (
                             <td className="text-content" key={index}>
                               {" "}
-                              {item?.product_Id?.brandName}{" "}
+                              {item?.product_Id?.brand_Id}{" "}
                             </td>
                           );
                         }
@@ -185,11 +215,13 @@ function Compare() {
                             stockStatus === "In Stock" ? "success" : "danger";
                           return (
                             <td key={index}>
-                              <button
-                                className={`btn btn-sm w-60 ms-4 align-items-center d-flex justify-content-center text-content text-light bg-${backgroundColor}`}
-                              >
-                                {stockStatus}
-                              </button>
+                              <div style={{display:"flex", alignItems:"center", justifyContent:"center"}}>
+                                <button
+                                  className={`btn btn-sm w-60 ms-4 text-light bg-${backgroundColor}`}
+                                >
+                                  {stockStatus}
+                                </button>
+                              </div>
                             </td>
                           );
                         }
@@ -199,28 +231,23 @@ function Compare() {
                       <th>Rating</th>
                       {compareItems?.data?.results?.comparelist?.map(
                         (item, index) => {
+                          const totalRatings = item?.product_Id?.ratings.reduce(
+                            (sum, rating) => sum + rating.star,
+                            0
+                          );
+                          const averageRating =
+                            totalRatings / item?.product_Id?.ratings?.length;
                           return (
                             <td key={index}>
                               <div className="compare-rating">
                                 <ul className="rating">
-                                  <li>
-                                    <i data-feather="star" className="fill" />
-                                  </li>
-                                  <li>
-                                    <i data-feather="star" className="fill" />
-                                  </li>
-                                  <li>
-                                    <i data-feather="star" className="fill" />
-                                  </li>
-                                  <li>
-                                    <i data-feather="star" className="fill" />
-                                  </li>
-                                  <li>
-                                    <i data-feather="star" />
-                                  </li>
+                                  <Star
+                                    rating={averageRating || 0}
+                                    totalRating={item.totalRating}
+                                  />
                                 </ul>
                                 <span className="text-content">
-                                  {item?.product_Id?.totalRating}
+                                  {item?.product_Id?.ratings?.length}
                                 </span>
                               </div>
                             </td>
@@ -274,7 +301,7 @@ function Compare() {
                                 to="#"
                                 className="text-content remove_column"
                                 onClick={() => {
-                                  deleteCompare(item?._id);
+                                  handleRemoveAddress(item?._id);
                                 }}
                               >
                                 <i className="fa-solid fa-trash-can me-2" />{" "}
