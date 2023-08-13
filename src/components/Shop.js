@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useLocation  } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -46,16 +48,17 @@ function Shop(props) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [CreateWishItems, setCreateWishItems] = useState([]);
   const [addCompareItems, setAddCompareItems] = useState([]);
-  const [addCart, setAddCart] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
   const [selectedWeight, setSelectedWeight] = useState("");
   const [priceRange, setPriceRange] = useState([0, 11000]); // Initial price range
   const [loading, setLoading] = useState(false);
-  const [rating, setRating] = useState([]);
-  const [createOrder, responseInfo] = useCreateOrderMutation();
-  const [showRating, res] = useShowProductRatingMutation();
   const [subSubProduct, r] = useSubSubProductMutation();
   const [filterProduct, re] = useFilterPriceMutation();
+  // const [searchQuery, setSearchQuery] = useState("");
+  axios.defaults.headers.common["x-auth-token-user"] =
+    localStorage.getItem("token");
+    const location = useLocation();
+    const searchQuery = new URLSearchParams(location.search).get("query");
   console.log("const [filterProduct, re] = useFilterPriceMutation();", re);
   const [currentValue, setCurrentValue] = useState(0);
   console.log(
@@ -303,6 +306,52 @@ function Shop(props) {
     setTimeout(() => {
       window.location.reload();
     }, 1000);
+  };
+  useEffect(() => {
+    handleSearch1();
+  }, [searchQuery]);
+
+  const handleSearch1 = async () => {
+    try {
+      const url1 =
+        searchQuery !== ""
+          ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/search-product"
+          : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/list";
+      const response = await axios.post(url1, {
+        productName_en: searchQuery,
+      });
+      const { error, results } = response.data;
+      if (error) {
+        throw new Error("Error searching for products. Data is not found.");
+      } else {
+        setProductListItems(
+          searchQuery !== "" ? results?.productData : results?.list?.reverse()
+        );
+      }
+    } catch (error) {
+      if (error.response) {
+        Swal.fire({
+          title: "Error!",
+          text: error.response.data,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      } else if (error.request) {
+        Swal.fire({
+          title: "Error!",
+          text: "Network error. Please try again later.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: error.message,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    }
   };
   return (
     <>
@@ -1463,7 +1512,10 @@ function Shop(props) {
               </div>
             </div>
             {loading ? (
-              <div className="" style={{ marginTop: "-1000px", marginLeft:"150px" }}>
+              <div
+                className=""
+                style={{ marginTop: "-1000px", marginLeft: "150px" }}
+              >
                 {" "}
                 <Spinner />
               </div>

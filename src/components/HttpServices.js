@@ -369,7 +369,7 @@ export async function ProductSearch(searchQuery) {
 
     const { data } = await UserHttpService.post(
       `${process.env.REACT_APP_APIENDPOINT}user/product/product/search-product`,
-      { productName: searchQuery }
+      { productName_en: searchQuery }
     );
     console.log(data);
     if (data?.error) {

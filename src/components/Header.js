@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEye,
+  faHeart,
+  faPhoneVolume,
+} from "@fortawesome/free-solid-svg-icons";
 import { CategoryList, ProductSearch, SubCategoryList } from "./HttpServices";
+import { ApplyCoupan, CartList, DeleteCartProduct } from "./HttpServices";
+
 import { Modal } from "react-bootstrap";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import { useGetCategoryListQuery } from "../services/Post";
 import { useSubCategoryListMutation } from "../services/Post";
+import { useGetCartListQuery } from "../services/Post";
 
 function Header({ Dash }) {
   // console.log("product search items", props.productListItems);
@@ -15,18 +24,34 @@ function Header({ Dash }) {
   const [subCategoryList, res] = useSubCategoryListMutation();
   // console.log(res);
   const [categoryListData, setCategoryListData] = useState([]);
+  const [cartListItems, setCartListItems] = useState([]);
   const [subCategoryListData, setSubCategoryListData] = useState([]);
   const [hoveredCategoryId, setHoveredCategoryId] = useState(null);
   const [subCategoryItems, setSubCategoryItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestion, setSuggestion] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSale, setShowSale] = useState(false);
   const [itemId, setItemId] = useState("");
-  // console.log(itemId);
+  const {
+    data: cartListQuery,
+    error,
+    isLoading,
+    isSuccess,
+  } = useGetCartListQuery();
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
+  const navigate = useNavigate();
+  const fetchCartListData = () => {
+    if (isSuccess) {
+      setCartListItems(cartListQuery?.results?.list);
+    }
+  };
+  useEffect(() => {
+    fetchCartListData();
+  }, [cartListQuery]);
   useEffect(() => {
     const reversedList =
       categoryListItems?.data?.results?.list?.slice().reverse() ?? [];
@@ -36,27 +61,18 @@ function Header({ Dash }) {
   const handleOnhover = (categoryId) => {
     handleSaveChanges1(categoryId);
   };
-  
+
   const handleSaveChanges1 = async (categoryId) => {
     console.log("handleSaveChanges1", categoryId);
-    setItemId(categoryId);  // Update the itemId immediately
+    setItemId(categoryId); // Update the itemId immediately
     const editAddress = {
       id: categoryId,
     };
-    const result = await subCategoryList(editAddress);  // Assuming subCategoryList is an async function
+    const result = await subCategoryList(editAddress); // Assuming subCategoryList is an async function
     if (result) {
       setSubCategoryItems(result.data?.results?.listData);
     }
   };
-  
-
-  // const handleSaveChanges1 = () => {
-  //   console.log("handleSaveChanges1", itemId);
-  //   const editAddress = {
-  //     id: itemId,
-  //   };
-  //   subCategoryList(editAddress);
-  // };
 
   useEffect(() => {
     const welcomeInterval = setInterval(() => {
@@ -75,58 +91,45 @@ function Header({ Dash }) {
     };
   }, []);
 
-  // const handleSearch = (e) => {
-  //   e.preventDefault();
-  //   searchData();
-  // };
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setShowModal(true);
-    searchData();
-  };
-
   const searchData = async () => {
     try {
-      const { data, error } = await ProductSearch(searchQuery);
-      error ? console.log(error) : console.log("product search", data);
-      console.log("product list", data.results.productData);
-      setSuggestion(data.results.productData);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
-  // const fetchData = async () => {
-  //   try {
-  //     const { data, error } = await CategoryList();
-  //     error ? console.log(error) : console.log(data);
-  //     setCategoryListData(data.results.list);
-  //     console.log(data.results.list);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  const getData = async () => {
-    try {
-      const id = hoveredCategoryId;
-      const { data, error } = await SubCategoryList(id);
+      const { data, error } = await ProductSearch(searchQuery); // Replace with your API call
       if (error) {
         console.log(error);
       } else {
-        console.log(data?.results?.listData);
-        setSubCategoryListData(data?.results?.listData);
+        console.log("product search", data);
+        console.log("product list", data?.results?.productData);
+        setSuggestions(data?.results?.productData);
+        setShowModal(true); // Show modal after fetching suggestions
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  // console.log("Data", categoryListData);
-  // console.log("subData", subCategoryListData);
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    setSearchQuery(inputValue);
+    searchData(); // Fetch suggestions as the user types
+    // navigate(`/shop?query=${inputValue}`);
+  };
 
+  const deleteCartItem = (_id) => {
+    // alert(_id);
+    deleteData(_id);
+  };
+  const deleteData = async (_id) => {
+    try {
+      const { data, error } = await DeleteCartProduct(_id);
+      error ? console.log(error) : console.log(data);
+      setCartListItems((prevCartList) =>
+        prevCartList.filter((item) => item._id !== _id)
+      );
+      console.log(data.results.deleteDta);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <header className="pb-md-4 pb-0">
@@ -313,7 +316,7 @@ function Header({ Dash }) {
                         <i className="fas fa-angle-down" />
                       </button>
                     </div>
-                    {/* <form onSubmit={handleSearch}>
+                    <form>
                       <div className="search-box">
                         <div className="input-group">
                           <input
@@ -323,66 +326,70 @@ function Header({ Dash }) {
                             aria-label="Recipient's username"
                             aria-describedby="button-addon2"
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                          />
-                          
-                          <button
-                            className="btn"
-                            type="button"
-                            id="button-addon2"
-                          >
-                            <i data-feather="search" />
-                          </button>
-                        </div>
-                        {suggestion && (
-                            <ul className="suggestion-list">
-                              {suggestion.map((product) => (
-                                <li key={product._id}>{product.productName}</li>
-                              ))}
-                            </ul>
-                          )}
-                      </div>
-                    </form> */}
-                    <form onSubmit={handleSearch}>
-                      <div className="search-box">
-                        <div className="input-group">
-                          <input
-                            type="search"
-                            className="form-control"
-                            placeholder="I'm searching for..."
-                            aria-label="Recipient's username"
-                            aria-describedby="button-addon2"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={handleInputChange}
                           />
                           <button
                             className="btn"
                             type="button"
                             id="button-addon2"
-                            onClick={handleSearch}
+                            onClick={searchData}
                           >
                             Search
                           </button>
                         </div>
+                        {suggestions.length > 0 && (
+                          <div
+                            className="suggestion-list"
+                            style={{
+                              borderRadius: "0 0 2px 2px",
+                              borderTop: "1px solid var(--color-grey-grade2)",
+                              position: "absolute",
+                              backgroundColor: "var(--color-gray-bg)",
+                              color: "var(--color-black)",
+                              zIndex: 9,
+                              top: "55px",
+                              boxShadow: "2px 3px 5px -1px rgba(0, 0, 0, .5)",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              width: "44%",
+                            }}
+                          >
+                            <ul
+                              className="suggestion-ul"
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                backgroundColor: "white",
+                              }}
+                            >
+                              {suggestions.map((product) => (
+                                <li
+                                  key={product._id}
+                                  className="suggestion-li ms-2"
+                                >
+                                  <Link
+                                    to={`/shop/:id?query=${searchQuery}`}
+                                    className="suggestion-item"
+                                  >
+                                    <div className="product-image">
+                                      <img
+                                        src={product.product_Pic[0]}
+                                        alt={product.productName_en}
+                                        width={20}
+                                        height={20}
+                                      />
+                                    </div>
+                                    <div className="product-name">
+                                      {product.productName_en}
+                                    </div>
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </div>
                     </form>
-
-                    <Modal show={showModal} onHide={() => setShowModal(false)}>
-                      <Modal.Header closeButton>
-                        <Modal.Title>Suggestions</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <ul className="dot-list">
-                          {suggestion.map((product) => (
-                            <li key={product._id}>
-                              <Link to={`/product/${product._id}`}>
-                                {product.productName}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </Modal.Body>
-                    </Modal>
                   </div>
                   <div className="rightside-box">
                     <div className="search-full">
@@ -411,10 +418,13 @@ function Header({ Dash }) {
                         </div>
                       </li>
                       <li className="right-side">
-                        <Link to="/contact-us" className="delivery-login-box">
-                          <div className="delivery-icon">
-                            <i data-feather="phone-call" />
-                          </div>
+                        <Link to="#" className="delivery-login-box">
+                          <Link to="/contact-us" className="delivery-icon">
+                            <FontAwesomeIcon
+                              icon={faPhoneVolume}
+                              style={{ fontSize: "20px" }}
+                            />
+                          </Link>
                           <div className="delivery-detail">
                             <h6>24/7 Delivery</h6>
                             <h5>+91 888 104 2340</h5>
@@ -425,8 +435,24 @@ function Header({ Dash }) {
                         <Link
                           to="/wishlist"
                           className="btn p-0 position-relative header-wishlist"
+                          title2="Wishlist"
                         >
-                          <i data-feather="heart" />
+                          <FontAwesomeIcon
+                            icon={faHeart}
+                            style={{
+                              fontSize: "20px",
+                              color: "var(--theme-color)",
+                            }}
+                            data-tip="Add to Wishlist" // Tooltip content
+                            data-for="wishlist-tooltip" // Unique ID for the tooltip
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = "red";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color =
+                                "var(--theme-color)";
+                            }}
+                          />
                         </Link>
                       </li>
                       <li className="right-side">
@@ -435,45 +461,92 @@ function Header({ Dash }) {
                             type="button"
                             className="btn p-0 position-relative header-wishlist"
                           >
-                            <i data-feather="shopping-cart" />
+                            <i
+                              data-feather="shopping-cart"
+                              style={{ color: "var(--theme-color)" }}
+                            />
                             <span className="position-absolute top-0 start-100 translate-middle badge">
-                              2
+                              {cartListItems?.length}
                               <span className="visually-hidden">
                                 unread messages
                               </span>
                             </span>
                           </button>
-                          <div className="onhover-div">
-                            <ul className="cart-list">
-                              <li className="product-box-contain">
-                                <div className="drop-cart">
-                                  <Link to="/product" className="drop-image">
-                                    <img
-                                      src="../assets/images/vegetable/product/5.png"
-                                      className=" lazyload"
-                                      alt=""
-                                    />
-                                  </Link>
-                                  <div className="drop-contain">
-                                    <Link to="/product">
-                                      <h5>
-                                        Yumitos Chilli Sprinkled Potato Chips
-                                        100 g
-                                      </h5>
-                                    </Link>
-                                    <h6>
-                                      <span>1 x</span> $80.58
-                                    </h6>
-                                    <button className="close-button close_button">
-                                      <i className="fa-solid fa-xmark" />
-                                    </button>
-                                  </div>
-                                </div>
-                              </li>
+                          <div className="onhover-div overflow-container">
+                            <ul className="cart-list overflow">
+                              {cartListItems?.map((item, index) => {
+                                return (
+                                  <li
+                                    className="product-box-contain"
+                                    key={index}
+                                  >
+                                    <div className="drop-cart">
+                                      <Link
+                                        to="/product"
+                                        className="drop-image"
+                                      >
+                                        <img
+                                          src={item?.products?.map(
+                                            (product) =>
+                                              product?.product_Id
+                                                ?.product_Pic[0]
+                                          )}
+                                          className="img-fluid  lazyload"
+                                          alt=""
+                                        />
+                                      </Link>
+                                      <div className="drop-contain">
+                                        <Link to="/product">
+                                          <h5>
+                                            {item?.products?.map(
+                                              (product, index) => (
+                                                <Link
+                                                  to={`/product`}
+                                                  key={index}
+                                                >
+                                                  <strong>
+                                                    {
+                                                      product?.product_Id
+                                                        ?.productName_en
+                                                    }{" "}
+                                                    {
+                                                      product?.product_Id
+                                                        ?.weight
+                                                    }
+                                                  </strong>
+                                                </Link>
+                                              )
+                                            )}
+                                          </h5>
+                                        </Link>
+                                        <h6>
+                                          {item?.products?.map((product) => (
+                                            <span key={product?.product_Id?.id}>
+                                              {product?.quantity || 0} x $
+                                              {product?.product_Id?.Price}
+                                            </span>
+                                          ))}
+                                        </h6>
+
+                                        <button
+                                          className="close-button close_button me-2"
+                                          onClick={() =>
+                                            deleteCartItem(item._id)
+                                          }
+                                        >
+                                          <i className="fa-solid fa-xmark" />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </li>
+                                );
+                              })}
                             </ul>
                             <div className="price-box">
                               <h5>Total :</h5>
-                              <h4 className="theme-color fw-bold">$106.58</h4>
+                              <h4 className="theme-color fw-bold">
+                                ${cartListItems?.cartsTotal}{" "}
+                              </h4>
                             </div>
                             <div className="button-group">
                               <Link
@@ -483,7 +556,7 @@ function Header({ Dash }) {
                                 View Cart
                               </Link>
                               <Link
-                                to="/checkout"
+                                to="/check-out"
                                 className="btn btn-sm cart-button theme-bg-color
                                        text-white"
                               >
@@ -496,7 +569,10 @@ function Header({ Dash }) {
                       <li className="right-side onhover-dropdown">
                         <div className="delivery-login-box">
                           <div className="delivery-icon">
-                            <i data-feather="user" />
+                            <i
+                              data-feather="user"
+                              style={{ color: "var(--theme-color)" }}
+                            />
                           </div>
                           <div className="delivery-detail">
                             <h6>Hello,</h6>
@@ -647,12 +723,23 @@ function Header({ Dash }) {
                       <div className="offcanvas-body">
                         <ul className="navbar-nav">
                           <li className="nav-item">
-                            <Link className={Dash === "home" ? "nav-link active" : "nav-link"} aria-current="page" to="*">
+                            <Link
+                              className={
+                                Dash === "home" ? "nav-link active" : "nav-link"
+                              }
+                              aria-current="page"
+                              to="*"
+                            >
                               Home
                             </Link>
                           </li>
                           <li className="nav-item">
-                            <Link className={Dash === "shop" ? "nav-link active" : "nav-link"} to="/shop/:id">
+                            <Link
+                              className={
+                                Dash === "shop" ? "nav-link active" : "nav-link"
+                              }
+                              to="/shop/:id"
+                            >
                               Shop
                             </Link>
                           </li>
@@ -664,7 +751,11 @@ function Header({ Dash }) {
                           <li className="nav-item">
                             <Link
                               // className="nav-link dropdown-toggle"
-                              className={Dash === "about" ? "nav-link active" : "nav-link"}
+                              className={
+                                Dash === "about"
+                                  ? "nav-link active"
+                                  : "nav-link"
+                              }
                               to="/about-us"
                             >
                               About Us
@@ -672,7 +763,11 @@ function Header({ Dash }) {
                           </li>
                           <li className="nav-item">
                             <Link
-                            className={Dash === "contact" ? "nav-link active" : "nav-link"}
+                              className={
+                                Dash === "contact"
+                                  ? "nav-link active"
+                                  : "nav-link"
+                              }
                               // className="nav-link dropdown-toggle"
                               to="/contact-us"
                             >
@@ -682,7 +777,9 @@ function Header({ Dash }) {
                           <li className="nav-item">
                             <Link
                               // className="nav-link dropdown-toggle"
-                              className={Dash === "blog" ? "nav-link active" : "nav-link"}
+                              className={
+                                Dash === "blog" ? "nav-link active" : "nav-link"
+                              }
                               to="/blog"
                             >
                               Blog

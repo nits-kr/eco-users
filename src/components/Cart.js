@@ -9,6 +9,9 @@ import { ApplyCoupan, CartList, DeleteCartProduct } from "./HttpServices";
 import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import TapToTop from "./TapToTop";
+import { useGetCartListQuery } from "../services/Post";
+import { useDispatch, useSelector } from "react-redux";
+import { increment, decrement, selectCartCount } from "../app/slice/CartSlice";
 
 function Cart() {
   const [cartListItems, setCartListItems] = useState([]);
@@ -16,21 +19,25 @@ function Cart() {
   const [coupan, setCoupan] = useState([]);
   const [coupanCode, setCoupanCode] = useState("25753411");
   const [count, setCount] = useState(0);
-  const [counts, setCounts] = useState([]);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-  const fetchData = async () => {
-    try {
-      const { data, error } = await CartList();
-      error ? console.log(error) : console.log(data);
-      setCartListItems(data.results.list);
-      console.log(data.results.list);
-    } catch (error) {
-      console.log(error);
+  // const cartListQuery = useGetCartListQuery();
+  const {
+    data: cartListQuery,
+    error,
+    isLoading,
+    isSuccess,
+  } = useGetCartListQuery();
+  console.log(cartListQuery);
+  const dispatch = useDispatch();
+  const counts = useSelector(selectCartCount);
+  const fetchCartListData = () => {
+    if (isSuccess) {
+      setCartListItems(cartListQuery?.results?.list);
     }
   };
+  useEffect(() => {
+    fetchCartListData();
+  }, [cartListQuery]);
+
   useEffect(() => {
     getData();
   }, []);
@@ -49,6 +56,7 @@ function Cart() {
     // alert(_id);
     deleteData(_id);
   };
+
   const deleteData = async (_id) => {
     try {
       const { data, error } = await DeleteCartProduct(_id);
@@ -151,7 +159,7 @@ function Cart() {
                 <div className="table-responsive-xl">
                   <table className="table">
                     <tbody>
-                      {cartListItems.map((item, index) => {
+                      {cartListItems?.map((item, index) => {
                         return (
                           <tr className="product-box-contain" key={index}>
                             <td className="product-detail">
@@ -169,8 +177,8 @@ function Cart() {
                                 <div className="product-detail">
                                   <ul>
                                     <li className="name">
-                                      {item?.products?.map((product) => (
-                                        <Link to={`/product`}>
+                                      {item?.products?.map((product, index) => (
+                                        <Link to={`/product`} key={index}>
                                           <strong>
                                             {
                                               product?.product_Id
@@ -258,53 +266,76 @@ function Cart() {
                                 )}{" "}
                               </h6>
                             </td>
+
                             <td className="quantity">
-                              <h4 className="table-title text-content">Qty</h4>
-                              <div className="quantity-price">
-                                <div className="cart_qty">
-                                  <div className="input-group">
-                                    <button
-                                      type="button"
-                                      className="btn qty-left-minus"
-                                      data-type="minus"
-                                      data-field=""
-                                      onClick={() => {
-                                        setCount(item?.quantity(count - 1));
-                                      }}
-                                    >
-                                      <i
-                                        className="fa fa-minus ms-0"
-                                        aria-hidden="true"
-                                      />
-                                    </button>
-                                    <input
-                                      className="form-control input-number qty-input"
-                                      type="text"
-                                      name="quantity"
-                                      defaultValue=""
-                                    />{" "}
-                                    <strong className="mt-2 me-1">
-                                      {" "}
-                                      {count}
-                                    </strong>{" "}
-                                    <button
-                                      type="button"
-                                      className="btn qty-right-plus"
-                                      data-type="plus"
-                                      data-field=""
-                                      onClick={() => {
-                                        setCount(count + 1);
-                                      }}
-                                    >
-                                      <i
-                                        className="fa fa-plus ms-0"
-                                        aria-hidden="true"
-                                      />
-                                    </button>
+                              {item?.products?.map((product, index) => (
+                                <div className="quantity-price" key={index}>
+                                  <div className="cart_qty">
+                                    <div className="input-group">
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                        }}
+                                      >
+                                        <div className="table-title text-content">
+                                          Qty
+                                        </div>
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                          }}
+                                        >
+                                          <div>
+                                            <button
+                                              type="button"
+                                              className="btn qty-left-minus me-2"
+                                              data-type="minus"
+                                              data-field=""
+                                              onClick={() =>
+                                                dispatch(decrement(product._id))
+                                              }
+                                            >
+                                              <i
+                                                className="fa fa-minus ms-0"
+                                                aria-hidden="true"
+                                              />
+                                            </button>
+                                          </div>
+                                          <div>
+                                            {counts
+                                              ? counts
+                                              : product?.quantity || 0}
+                                          </div>
+                                          <div>
+                                            <button
+                                              type="button"
+                                              className="btn qty-right-plus ms-2"
+                                              data-type="plus"
+                                              data-field=""
+                                              onClick={() =>
+                                                dispatch(increment(product._id))
+                                              }
+                                            >
+                                              <i
+                                                className="fa fa-plus ms-0"
+                                                aria-hidden="true"
+                                              />
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
+                              ))}
                             </td>
+
                             <td className="subtotal">
                               <h4 className="table-title text-content">
                                 Total

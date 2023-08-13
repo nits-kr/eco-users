@@ -10,7 +10,6 @@ import Footer from "./Footer";
 import { useUserLoginMutation } from "../services/Post";
 import { useSendEmailMutation } from "../services/Post";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "../app/slice/AuthSlice";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

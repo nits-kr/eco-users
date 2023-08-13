@@ -71,6 +71,12 @@ export const PostApi = createApi({
         method: "post",
       }),
     }),
+    getCartList: builder.query({
+      query: (name) => ({
+        url: "/user/carts/carts/carts-list",
+        method: "post",
+      }),
+    }),
     getAddressList: builder.query({
       query: (name) => ({
         url: "/user/address/address/address-list",
@@ -291,4 +297,5 @@ export const {
   useCancelOrderMutation,
   useOrderDetailsMutation,
   useCreateReportMutation,
+  useGetCartListQuery,
 } = PostApi;
