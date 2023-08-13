@@ -183,7 +183,7 @@ function Footer() {
                       </Link>
                     </li>
                     <li>
-                      <Link to="/order-tracking" className="text-content">
+                      <Link to="/order-success" className="text-content">
                         Track Order
                       </Link>
                     </li>

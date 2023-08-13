@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import Star from "./Star";
 
 function IndexFurniture() {
   useEffect(() => {
@@ -4692,21 +4693,7 @@ function IndexFurniture() {
                     <h4 className="price">$36.99</h4>
                     <div className="product-rating">
                       <ul className="rating">
-                        <li>
-                          <i data-feather="star" className="fill" />
-                        </li>
-                        <li>
-                          <i data-feather="star" className="fill" />
-                        </li>
-                        <li>
-                          <i data-feather="star" className="fill" />
-                        </li>
-                        <li>
-                          <i data-feather="star" className="fill" />
-                        </li>
-                        <li>
-                          <i data-feather="star" />
-                        </li>
+                        <Star />
                       </ul>
                       <span className="ms-2">8 Reviews</span>
                       <span className="ms-2 text-danger">
