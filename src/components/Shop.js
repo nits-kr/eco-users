@@ -64,11 +64,11 @@ function Shop(props) {
   );
   const storedId = localStorage.getItem("loginId");
   const { id } = useParams();
-  const totalRatings = selectedProduct.ratings.reduce(
+  const totalRatings = selectedProduct?.ratings?.reduce(
     (sum, rating) => sum + rating.star,
     0
   );
-  const averageRating = totalRatings / selectedProduct.ratings.length;
+  const averageRating = totalRatings / selectedProduct?.ratings?.length;
   console.log(id);
   useEffect(() => {
     handleSubSubProduct();
