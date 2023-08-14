@@ -58,7 +58,7 @@ function Shop(props) {
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
     const location = useLocation();
-    const searchQuery = new URLSearchParams(location.search).get("query");
+    // const searchQuery = new URLSearchParams(location.search).get("query");
   console.log("const [filterProduct, re] = useFilterPriceMutation();", re);
   const [currentValue, setCurrentValue] = useState(0);
   console.log(
@@ -66,6 +66,7 @@ function Shop(props) {
     currentValue
   );
   const storedId = localStorage.getItem("loginId");
+  const searchQuery = localStorage?.getItem("productSearch")
   const { id } = useParams();
   const totalRatings = selectedProduct?.ratings?.reduce(
     (sum, rating) => sum + rating.star,
@@ -1792,7 +1793,7 @@ function Shop(props) {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="add-to-cart-box bg-danger mt-2">
+                                {/* <div className="add-to-cart-box bg-danger mt-2">
                                   <button className="btn btn-add-cart addcart-button">
                                     <Link
                                       className="text-light"
@@ -1802,39 +1803,7 @@ function Shop(props) {
                                       Buy Now
                                     </Link>
                                   </button>
-                                  {/* <div className="cart_qty qty-box">
-                                    <div className="input-group bg-white">
-                                      <button
-                                        type="button"
-                                        className="qty-left-minus bg-gray"
-                                        data-type="minus"
-                                        data-field=""
-                                      >
-                                        <i
-                                          className="fa fa-minus"
-                                          aria-hidden="true"
-                                        />
-                                      </button>
-                                      <input
-                                        className="form-control input-number qty-input"
-                                        type="text"
-                                        name="quantity"
-                                        defaultValue={0}
-                                      />
-                                      <button
-                                        type="button"
-                                        className="qty-right-plus bg-gray"
-                                        data-type="plus"
-                                        data-field=""
-                                      >
-                                        <i
-                                          className="fa fa-plus"
-                                          aria-hidden="true"
-                                        />
-                                      </button>
-                                    </div>
-                                  </div> */}
-                                </div>
+                                </div> */}
                               </div>
                             </div>
                           </div>

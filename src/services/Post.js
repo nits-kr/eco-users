@@ -35,6 +35,18 @@ export const PostApi = createApi({
         };
       },
     }),
+    AddToWislistList: builder.mutation({
+      query: (body) => {
+        console.log("update address", body);
+        const { id } = body;
+        console.log("update address body data", id);
+        return {
+          url: `user/wish/wish/add-wish?product_Id=${id}`,
+          method: "post",
+          // body: data,
+        };
+      },
+    }),
     getTrendingProduct: builder.query({
       query: (name) => ({
         url: `user/product/product/tranding-product`,
@@ -298,4 +310,5 @@ export const {
   useOrderDetailsMutation,
   useCreateReportMutation,
   useGetCartListQuery,
+  useAddToWislistListMutation,
 } = PostApi;

@@ -9049,7 +9049,7 @@ header .onhover-category-list .onhover-category-box {
   box-shadow: 0 0 8px #ddd;
   padding: 20px 25px;
   border-radius: 5px;
-  width: 520px;
+  width: 320px;
   height: 100%;
   overflow: auto;
   display: grid;
@@ -35846,6 +35846,46 @@ button.btn.btn-add-cart.addcart-button {
 }
 
 .btn[title2="Wishlist"]:hover:before {
+  visibility: visible;
+  opacity: 1;
+}
+.btn[title3="Wishlist"]:before {
+  content: "Add To Wishlist";
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: red;
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s, visibility 0.2s;
+}
+
+.btn[title3="Wishlist"]:hover:before {
+  visibility: visible;
+  opacity: 1;
+}
+.btn[title4="Wishlist"]:before {
+  content: "Remove";
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: red;
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s, visibility 0.2s;
+}
+
+.btn[title4="Wishlist"]:hover:before {
   visibility: visible;
   opacity: 1;
 }

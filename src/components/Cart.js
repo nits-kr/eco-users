@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faTrash, faHeart } from "@fortawesome/free-solid-svg-icons";
 import Header from "./Header";
 import Footer from "./Footer";
 import { ApplyCoupan, CartList, DeleteCartProduct } from "./HttpServices";
@@ -11,11 +13,13 @@ import DealBoxModel from "./DealBoxModel";
 import TapToTop from "./TapToTop";
 import { useGetCartListQuery } from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
-import { increment, decrement, selectCartCount } from "../app/slice/CartSlice";
+// import { increment, decrement, selectCartCount } from "../app/slice/CartSlice";
+import { useAddToWislistListMutation } from "../services/Post";
+import { selectCartCount } from "../app/slice/CartSlice";
 
 function Cart() {
   const [cartListItems, setCartListItems] = useState([]);
-  const [itemCounts, setItemCounts] = useState({});
+  const [wishAdd, response] = useAddToWislistListMutation();
   const [coupan, setCoupan] = useState([]);
   const [coupanCode, setCoupanCode] = useState("25753411");
   const [count, setCount] = useState(0);
@@ -38,10 +42,7 @@ function Cart() {
     fetchCartListData();
   }, [cartListQuery]);
 
-  useEffect(() => {
-    getData();
-  }, []);
-  const getData = async () => {
+  const handleCoupan = async () => {
     try {
       const { data, error } = await ApplyCoupan(coupanCode);
       error ? console.log(error) : console.log(data);
@@ -52,12 +53,7 @@ function Cart() {
     }
   };
 
-  const deleteCartItem = (_id) => {
-    // alert(_id);
-    deleteData(_id);
-  };
-
-  const deleteData = async (_id) => {
+  const deleteCartItem = async (_id) => {
     try {
       const { data, error } = await DeleteCartProduct(_id);
       error ? console.log(error) : console.log(data);
@@ -69,11 +65,25 @@ function Cart() {
       console.log(error);
     }
   };
+  const handleWishClick = async (item) => {
+    const wishId = {
+      id: item?._id,
+    };
+    const result = await wishAdd(wishId);
+    console.log(result);
+  };
 
   console.log("coupan", coupan);
   useEffect(() => {
     feather.replace();
   }, []);
+const handleDecrease = (item) => {
+console.log(item);
+}
+const handleIncrease = (item) => {
+console.log(item);
+}
+  
   return (
     <>
       {/* Loader Start */}
@@ -266,7 +276,6 @@ function Cart() {
                                 )}{" "}
                               </h6>
                             </td>
-
                             <td className="quantity">
                               {item?.products?.map((product, index) => (
                                 <div className="quantity-price" key={index}>
@@ -291,36 +300,53 @@ function Cart() {
                                             justifyContent: "space-between",
                                           }}
                                         >
-                                          <div>
-                                            <button
-                                              type="button"
-                                              className="btn qty-left-minus me-2"
-                                              data-type="minus"
-                                              data-field=""
-                                              onClick={() =>
-                                                dispatch(decrement(product._id))
-                                              }
-                                            >
-                                              <i
-                                                className="fa fa-minus ms-0"
-                                                aria-hidden="true"
-                                              />
-                                            </button>
-                                          </div>
-                                          <div>
-                                            {counts
-                                              ? counts
-                                              : product?.quantity || 0}
-                                          </div>
+                                          {" "}
+                                          {product?.quantity === 1 ? (
+                                            <div>
+                                              <button
+                                                type="button"
+                                                className="btn qty-left-minus me-2"
+                                                data-type="minus"
+                                                data-field=""
+                                                style={{
+                                                  cursor: "not-allowed",
+                                                  filter: "blur(0.7px)",
+                                                  background: "light",
+                                                  color: "darkgray",
+                                                }}
+                                                disabled
+                                              >
+                                                <i
+                                                  className="fa fa-minus ms-0"
+                                                  aria-hidden="true"
+                                                  
+                                                />
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            <div>
+                                              <button
+                                                type="button"
+                                                className="btn qty-left-minus me-2"
+                                                data-type="minus"
+                                                data-field=""
+                                                onClick={() => handleDecrease(product)}
+                                              >
+                                                <i
+                                                  className="fa fa-minus ms-0"
+                                                  aria-hidden="true" 
+                                                />
+                                              </button>
+                                            </div>
+                                          )}
+                                          <div>{product?.quantity}</div>
                                           <div>
                                             <button
                                               type="button"
                                               className="btn qty-right-plus ms-2"
                                               data-type="plus"
                                               data-field=""
-                                              onClick={() =>
-                                                dispatch(increment(product._id))
-                                              }
+                                              onClick={() => handleIncrease(product)}
                                             >
                                               <i
                                                 className="fa fa-plus ms-0"
@@ -346,16 +372,46 @@ function Cart() {
                               <h4 className="table-title text-content">
                                 Action
                               </h4>
-                              <Link className="save notifi-wishlist" to="#">
-                                Save for later
-                              </Link>
-                              <Link
-                                className="remove close_button"
-                                to="#"
-                                onClick={() => deleteCartItem(item._id)}
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                }}
                               >
-                                Remove
-                              </Link>
+                                <Link
+                                  className="btn p-0 position-relative header-wishlist me-2"
+                                  to="#"
+                                  title3="Wishlist"
+                                  onClick={() => handleWishClick(item)}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faHeart}
+                                    style={{
+                                      fontSize: "20px",
+                                      color: "black",
+                                    }}
+                                    data-tip="Add to Wishlist"
+                                    data-for="wishlist-tooltip"
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.color = "red";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.color = "black";
+                                    }}
+                                  />
+                                </Link>
+                                <Link
+                                  className="btn p-0 position-relative header-wishlist ms-2"
+                                  to="#"
+                                  title4="Wishlist"
+                                  onClick={() => deleteCartItem(item._id)}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faTrash}
+                                    style={{ color: "#fa0000" }}
+                                  />
+                                </Link>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -383,7 +439,12 @@ function Cart() {
                         value={coupanCode}
                         onChange={(e) => setCoupanCode(e.target.value)}
                       />
-                      <button className="btn-apply">Apply</button>
+                      <button
+                        className="btn-apply"
+                        onClick={() => handleCoupan()}
+                      >
+                        Apply
+                      </button>
                     </div>
                   </div>
                   <ul>
@@ -393,7 +454,7 @@ function Cart() {
                     </li>
                     <li>
                       <h4>Coupon Discount</h4>
-                      <h4 className="price"> - {coupan.DiscountType} </h4>
+                      <h4 className="price"> - ${coupan.DiscountType} </h4>
                     </li>
                     <li className="align-items-start">
                       <h4>Shipping</h4>

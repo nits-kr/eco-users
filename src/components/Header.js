@@ -43,6 +43,7 @@ function Header({ Dash }) {
   } = useGetCartListQuery();
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
+  localStorage?.setItem("productSearch", searchQuery);
   const navigate = useNavigate();
   const fetchCartListData = () => {
     if (isSuccess) {
@@ -368,7 +369,7 @@ function Header({ Dash }) {
                                   className="suggestion-li ms-2"
                                 >
                                   <Link
-                                    to={`/shop/:id?query=${searchQuery}`}
+                                    to="/shop/:id"
                                     className="suggestion-item"
                                   >
                                     <div className="product-image">
@@ -644,7 +645,7 @@ function Header({ Dash }) {
                             <div className="onhover-category-box">
                               <div className="list-1">
                                 <div className="category-title-box">
-                                  <h5>Organic Vegetables</h5>
+                                  {/* <h5>Organic Vegetables</h5> */}
                                 </div>
                                 <ul>
                                   {(subCategoryItems || []).map(
@@ -671,31 +672,6 @@ function Header({ Dash }) {
                                       );
                                     }
                                   )}
-                                </ul>
-                              </div>
-                              <div className="list-2">
-                                <div className="category-title-box">
-                                  <h5>Fresh Fruit</h5>
-                                </div>
-                                <ul>
-                                  <li>
-                                    <Link to="#">Banana &amp; Papaya</Link>
-                                  </li>
-                                  <li>
-                                    <Link to="#">Kiwi, Citrus Fruit</Link>
-                                  </li>
-                                  <li>
-                                    <Link to="#">Apples &amp; Pomegranate</Link>
-                                  </li>
-                                  <li>
-                                    <Link to="#">Seasonal Fruits</Link>
-                                  </li>
-                                  <li>
-                                    <Link to="#">Mangoes</Link>
-                                  </li>
-                                  <li>
-                                    <Link to="#">Fruit Baskets</Link>
-                                  </li>
                                 </ul>
                               </div>
                             </div>

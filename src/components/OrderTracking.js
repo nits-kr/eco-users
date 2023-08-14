@@ -275,9 +275,7 @@ function OrderTracking({ orderStatus }) {
                     <div className="card  StaticCard">
                       <div className="card-body"> */}
                 {order?.orderStatus == "Cancelled" ? (
-                  <strong
-                    className="fs-5"
-                  >
+                  <strong className="fs-5">
                     <div
                       style={{
                         display: "flex",
@@ -311,64 +309,73 @@ function OrderTracking({ orderStatus }) {
                   </strong>
                 ) : (
                   <div className="step-progress">
-                    {/* <div className="StepsHeader"> */}
                     <div className="step-slider mt-3">
                       <div
                         data-id="step1"
                         className={
-                          page >= 1
+                          order?.orderStatus == "pending" ||
+                          order?.orderStatus == "packed" ||
+                          order?.orderStatus == "Shipped" ||
+                          order?.orderStatus == "Inprogress" ||
+                          order?.orderStatus == "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
                         }
                       >
                         <div className="Title">
-                          <h5 className="text-dark">Order Processing</h5>
+                          <h5 className="text-dark">pending</h5>
                           <h6 className="text-dark">05:43 AM</h6>
                         </div>
                       </div>
                       <div
                         data-id="step2"
                         className={
-                          page >= 2
+                          order?.orderStatus == "packed" ||
+                          order?.orderStatus == "Shipped" ||
+                          order?.orderStatus == "Inprogress" ||
+                          order?.orderStatus == "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
                         }
                       >
                         <div className="Title">
-                          <h5 className="text-dark">Pre-Production</h5>
+                          <h5 className="text-dark">packed</h5>
                           <h6 className="text-dark">01:21 PM</h6>
                         </div>
                       </div>
                       <div
                         data-id="step3"
                         className={
-                          page >= 3
-                            ? "step-slider-item active"
-                            : "step-slider-item"
-                        }
-                      >
-                        <div className="Title">
-                          <h5 className="text-dark">In Production</h5>
-                          <h6 className="text-dark">Processing</h6>
-                        </div>
-                      </div>
-                      <div
-                        data-id="step4"
-                        className={
-                          page >= 4
+                          order?.orderStatus == "Shipped" ||
+                          order?.orderStatus == "Inprogress" ||
+                          order?.orderStatus == "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
                         }
                       >
                         <div className="Title">
                           <h5 className="text-dark">Shipped</h5>
+                          <h6 className="text-dark">Processing</h6>
+                        </div>
+                      </div>
+                      <div
+                        data-id="step4"
+                        className={
+                          order?.orderStatus == "Inprogress" ||
+                          order?.orderStatus == "Delivered"
+                            ? "step-slider-item active"
+                            : "step-slider-item"
+                        }
+                      >
+                        <div className="Title">
+                          <h5 className="text-dark">Inprogress</h5>
                           <h6 className="text-dark">Pending</h6>
                         </div>
                       </div>
                       <div
                         data-id="step5"
                         className={
-                          page >= 5
+                          order?.orderStatus == "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
                         }
@@ -379,44 +386,8 @@ function OrderTracking({ orderStatus }) {
                         </div>
                       </div>
                     </div>
-                    {/* </div> */}
                     <div className="step-content">
-                      <div className="step-content-foot">
-                        <button
-                          type="button "
-                          className="float-start active mt-5"
-                          onClick={() => {
-                            page <= 1 ? setPage(1) : setPage(page - 1);
-                          }}
-                          name="prev"
-                        >
-                          Prev
-                        </button>
-                        <button
-                          type="button"
-                          className="active mt-5"
-                          name="next"
-                          onClick={() => {
-                            page === 5 ? setPage(5) : setPage(page + 1);
-                          }}
-                        >
-                          Next
-                        </button>
-                        <button
-                          type="button"
-                          className="active out"
-                          name="finish"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          type="button"
-                          className="active out bg-danger"
-                          name="finish"
-                        >
-                          Reject
-                        </button>
-                      </div>
+                      <div className="step-content-foot"></div>
                     </div>
                   </div>
                 )}

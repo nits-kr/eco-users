@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import IndexPage from "./components/IndexPage";
 import IndexElectronics from "./components/IndexElectronics";
 import SellerGrid from "./components/SellerGrid";
@@ -41,6 +43,7 @@ import MobileFixMenu from "./components/MobileFixMenu";
 import BreadCrumb from "./components/BreadCrumb";
 import LoadingBar from "react-top-loading-bar";
 import OrderTracking from "./components/OrderTracking";
+import Shop2 from "./components/Shop2";
 
 function App() {
   const [progress, setProgress] = useState(0);
@@ -56,6 +59,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
+        <ToastContainer />
         <LoadingBar height={3} color="#f11946" progress={progress} />
         <Routes>
           <Route exact className="active" path="/" element={<Login />} />
@@ -169,9 +173,9 @@ function App() {
             exact
             className="active"
             path="/order-tracking/:id"
-            element={<OrderTracking/>}
+            element={<OrderTracking />}
           />
-          
+
           <Route exact className="active" path="/otp" element={<Otp />} />
           <Route
             exact
@@ -209,6 +213,12 @@ function App() {
             className="active"
             path="/shop/:id"
             element={<Shop setProgress={setProgress} />}
+          />
+          <Route
+            exact
+            className="active"
+            path="/shop"
+            element={<Shop2 setProgress={setProgress} />}
           />
           <Route
             exact
