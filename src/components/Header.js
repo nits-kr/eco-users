@@ -92,34 +92,48 @@ function Header({ Dash }) {
     };
   }, []);
 
+  // const searchData = async () => {
+  //   try {
+  //     const { data, error } = await ProductSearch(searchQuery); // Replace with your API call
+  //     if (error) {
+  //       console.log(error);
+  //     } else {
+  //       console.log("product search", data);
+  //       console.log("product list", data?.results?.productData);
+  //       setSuggestions(data?.results?.productData);
+  //       setShowModal(true); // Show modal after fetching suggestions
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   const searchData = async () => {
     try {
-      const { data, error } = await ProductSearch(searchQuery); // Replace with your API call
+      const { data, error } = await ProductSearch(searchQuery);
       if (error) {
         console.log(error);
       } else {
         console.log("product search", data);
         console.log("product list", data?.results?.productData);
         setSuggestions(data?.results?.productData);
-        setShowModal(true); // Show modal after fetching suggestions
+        setShowModal(true);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+  const hideSuggestions = () => {
+    setSuggestions([]);
+  };
+
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     setSearchQuery(inputValue);
-    searchData(); // Fetch suggestions as the user types
-    // navigate(`/shop?query=${inputValue}`);
+    searchData();
   };
 
-  const deleteCartItem = (_id) => {
-    // alert(_id);
-    deleteData(_id);
-  };
-  const deleteData = async (_id) => {
+  const deleteCartItem = async (_id) => {
     try {
       const { data, error } = await DeleteCartProduct(_id);
       error ? console.log(error) : console.log(data);
@@ -339,22 +353,7 @@ function Header({ Dash }) {
                           </button>
                         </div>
                         {suggestions.length > 0 && (
-                          <div
-                            className="suggestion-list"
-                            style={{
-                              borderRadius: "0 0 2px 2px",
-                              borderTop: "1px solid var(--color-grey-grade2)",
-                              position: "absolute",
-                              backgroundColor: "var(--color-gray-bg)",
-                              color: "var(--color-black)",
-                              zIndex: 9,
-                              top: "55px",
-                              boxShadow: "2px 3px 5px -1px rgba(0, 0, 0, .5)",
-                              overflow: "hidden",
-                              whiteSpace: "nowrap",
-                              width: "44%",
-                            }}
-                          >
+                          <div className="suggestion-list shadow">
                             <ul
                               className="suggestion-ul"
                               style={{
@@ -371,6 +370,7 @@ function Header({ Dash }) {
                                   <Link
                                     to="/shop/:id"
                                     className="suggestion-item"
+                                    onClick={hideSuggestions} // Added this line
                                   >
                                     <div className="product-image">
                                       <img

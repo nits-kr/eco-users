@@ -13,9 +13,18 @@ import DealBoxModel from "./DealBoxModel";
 import TapToTop from "./TapToTop";
 import { useGetCartListQuery } from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
-// import { increment, decrement, selectCartCount } from "../app/slice/CartSlice";
+import {
+  increment,
+  decrement,
+  selectCartCount,
+  addToCart,
+  clearCart,
+  decreaseCart,
+  getTotals,
+  removeFromCart,
+} from "../app/slice/CartSlice";
 import { useAddToWislistListMutation } from "../services/Post";
-import { selectCartCount } from "../app/slice/CartSlice";
+// import { selectCartCount } from "../app/slice/CartSlice";
 
 function Cart() {
   const [cartListItems, setCartListItems] = useState([]);
@@ -77,13 +86,15 @@ function Cart() {
   useEffect(() => {
     feather.replace();
   }, []);
-const handleDecrease = (item) => {
-console.log(item);
-}
-const handleIncrease = (item) => {
-console.log(item);
-}
-  
+  const handleDecrease = (item) => {
+    dispatch(decreaseCart(item));
+    console.log(item);
+  };
+  const handleIncrease = (item) => {
+    dispatch(addToCart(item));
+    console.log(item);
+  };
+
   return (
     <>
       {/* Loader Start */}
@@ -319,7 +330,6 @@ console.log(item);
                                                 <i
                                                   className="fa fa-minus ms-0"
                                                   aria-hidden="true"
-                                                  
                                                 />
                                               </button>
                                             </div>
@@ -330,11 +340,13 @@ console.log(item);
                                                 className="btn qty-left-minus me-2"
                                                 data-type="minus"
                                                 data-field=""
-                                                onClick={() => handleDecrease(product)}
+                                                onClick={() =>
+                                                  handleDecrease(product)
+                                                }
                                               >
                                                 <i
                                                   className="fa fa-minus ms-0"
-                                                  aria-hidden="true" 
+                                                  aria-hidden="true"
                                                 />
                                               </button>
                                             </div>
@@ -346,7 +358,9 @@ console.log(item);
                                               className="btn qty-right-plus ms-2"
                                               data-type="plus"
                                               data-field=""
-                                              onClick={() => handleIncrease(product)}
+                                              onClick={() =>
+                                                handleIncrease(product)
+                                              }
                                             >
                                               <i
                                                 className="fa fa-plus ms-0"

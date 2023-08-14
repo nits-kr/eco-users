@@ -43,7 +43,7 @@ const cartSlice = createSlice({
       if (state.cartItems[itemIndex].cartQuantity > 1) {
         state.cartItems[itemIndex].cartQuantity -= 1;
 
-        toast.info("Decreased product quantity", {
+        toast.info(`Decreased ${action.payload.name} product quantity`, {
           position: "bottom-left",
         });
       } else if (state.cartItems[itemIndex].cartQuantity === 1) {
