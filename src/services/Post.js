@@ -131,7 +131,7 @@ export const PostApi = createApi({
     }),
     addToCart: builder.mutation({
       query: (body) => ({
-        url: `user/carts/carts/add-cart`,
+        url: "user/carts/carts/add-cart",
         method: "post",
         body,
       }),

@@ -25,13 +25,9 @@ function Header({ Dash }) {
   // console.log(res);
   const [categoryListData, setCategoryListData] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
-  const [subCategoryListData, setSubCategoryListData] = useState([]);
-  const [hoveredCategoryId, setHoveredCategoryId] = useState(null);
   const [subCategoryItems, setSubCategoryItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [suggestion, setSuggestion] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
-  const [showModal, setShowModal] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSale, setShowSale] = useState(false);
   const [itemId, setItemId] = useState("");
@@ -92,21 +88,6 @@ function Header({ Dash }) {
     };
   }, []);
 
-  // const searchData = async () => {
-  //   try {
-  //     const { data, error } = await ProductSearch(searchQuery); // Replace with your API call
-  //     if (error) {
-  //       console.log(error);
-  //     } else {
-  //       console.log("product search", data);
-  //       console.log("product list", data?.results?.productData);
-  //       setSuggestions(data?.results?.productData);
-  //       setShowModal(true); // Show modal after fetching suggestions
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   const searchData = async () => {
     try {
       const { data, error } = await ProductSearch(searchQuery);
@@ -116,7 +97,6 @@ function Header({ Dash }) {
         console.log("product search", data);
         console.log("product list", data?.results?.productData);
         setSuggestions(data?.results?.productData);
-        setShowModal(true);
       }
     } catch (error) {
       console.log(error);
@@ -370,7 +350,7 @@ function Header({ Dash }) {
                                   <Link
                                     to="/shop/:id"
                                     className="suggestion-item"
-                                    onClick={hideSuggestions} // Added this line
+                                    onClick={hideSuggestions}
                                   >
                                     <div className="product-image">
                                       <img
@@ -444,8 +424,8 @@ function Header({ Dash }) {
                               fontSize: "20px",
                               color: "var(--theme-color)",
                             }}
-                            data-tip="Add to Wishlist" // Tooltip content
-                            data-for="wishlist-tooltip" // Unique ID for the tooltip
+                            data-tip="Add to Wishlist" 
+                            data-for="wishlist-tooltip"
                             onMouseEnter={(e) => {
                               e.currentTarget.style.color = "red";
                             }}

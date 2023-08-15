@@ -17,7 +17,7 @@ const cartSlice = createSlice({
       const existingIndex = state.cartItems.findIndex(
         (item) => item.id === action.payload.id
       );
-
+      console.log(action.payload);
       if (existingIndex >= 0) {
         state.cartItems[existingIndex] = {
           ...state.cartItems[existingIndex],
@@ -108,7 +108,7 @@ const cartSlice = createSlice({
 export const { addToCart, decreaseCart, removeFromCart, getTotals, clearCart } =
   cartSlice.actions;
 
-export const selectCartItems = (state) => state.cart.items;
-export const selectCartCount = (state) => state.cart.count;
+export const selectCartItems = (state) => state.cart.cartItems; // Corrected selector
+export const selectCartCount = (state) => state.cart.cartTotalQuantity; // Corrected selector
 
 export default cartSlice.reducer;

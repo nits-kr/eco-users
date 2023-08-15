@@ -288,7 +288,7 @@ function Product(props) {
                           </div>
                         </div>
                         <div className="procuct-contain">
-                          <p>{productDetail.Description}</p>
+                          <p>{productDetail?.Description}</p>
                         </div>
                         <div className="product-packege">
                           <div className="product-title">
@@ -386,14 +386,13 @@ function Product(props) {
                               </button>
                             </div>
                           </div>
-                          <button
-                            onClick={() => {
-                              window.location.href = "/cart";
-                            }}
+                          <Link
+                            to="/cart"
+                            // onClick={() => handleAddToCart(item)}
                             className="btn btn-md bg-dark cart-button text-white w-100"
                           >
                             Add To Cart
-                          </button>
+                          </Link>
                         </div>
                         <div className="buy-box">
                           <Link to="/wishlist">
@@ -422,25 +421,25 @@ function Product(props) {
                                 Type : <Link to="#">Black Forest</Link>
                               </li>
                               <li>
-                                SKU : <Link to="#"> {productDetail.SKU} </Link>
+                                SKU : <Link to="#"> {productDetail?.SKU} </Link>
                               </li>
                               <li>
                                 MFG :{" "}
                                 <Link to="#">
                                   {" "}
-                                  {productDetail.publishDate}{" "}
+                                  {productDetail?.publishDate}{" "}
                                 </Link>
                               </li>
                               <li>
                                 Stock :{" "}
                                 <Link to="#">
                                   {" "}
-                                  {productDetail.stockQuantity}{" "}
+                                  {productDetail?.stockQuantity}{" "}
                                 </Link>
                               </li>
                               <li>
                                 Tags :{" "}
-                                <Link to="#"> {productDetail.Tags} </Link>{" "}
+                                <Link to="#"> {productDetail?.Tags} </Link>{" "}
                               </li>
                             </ul>
                           </div>

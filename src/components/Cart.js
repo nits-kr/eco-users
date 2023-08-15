@@ -25,13 +25,17 @@ import {
 } from "../app/slice/CartSlice";
 import { useAddToWislistListMutation } from "../services/Post";
 // import { selectCartCount } from "../app/slice/CartSlice";
+import { useAddToCartMutation } from "../services/Post";
+import { AddToCart } from "./HttpServices";
 
 function Cart() {
   const [cartListItems, setCartListItems] = useState([]);
   const [wishAdd, response] = useAddToWislistListMutation();
+  const [addItem, res] = useAddToCartMutation();
   const [coupan, setCoupan] = useState([]);
   const [coupanCode, setCoupanCode] = useState("25753411");
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(1);
+  const [count1, setCount1] = useState(0);
   // const cartListQuery = useGetCartListQuery();
   const {
     data: cartListQuery,
@@ -42,6 +46,9 @@ function Cart() {
   console.log(cartListQuery);
   const dispatch = useDispatch();
   const counts = useSelector(selectCartCount);
+  const cart = useSelector((state) => state.cart);
+  console.log(cart);
+
   const fetchCartListData = () => {
     if (isSuccess) {
       setCartListItems(cartListQuery?.results?.list);
@@ -81,19 +88,33 @@ function Cart() {
     const result = await wishAdd(wishId);
     console.log(result);
   };
+  const handleDecrease = async (item) => {
+    count > 1 ? setCount(count -1) : setCount(1)
+  };
+  // const handleAddToCart = async (item) => {
+  //   try {
+  //     const { data, error } = await AddToCart(item._id, item?.stockQuantity);
+  //     if (error) {
+  //       console.log(error);
+  //       return;
+  //     }
+  //     const newCartItems = [...cartListItems, data];
+  //     setCartListItems(newCartItems);
+  //     console.log("prevCartItems", newCartItems);
+  //     console.log("New cart items", cartListItems);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  //   dispatch(addToCart(item));
+  // };
+  const handleIncrease = async (item) => {
+    
+  };
 
   console.log("coupan", coupan);
   useEffect(() => {
     feather.replace();
   }, []);
-  const handleDecrease = (item) => {
-    dispatch(decreaseCart(item));
-    console.log(item);
-  };
-  const handleIncrease = (item) => {
-    dispatch(addToCart(item));
-    console.log(item);
-  };
 
   return (
     <>
@@ -313,16 +334,17 @@ function Cart() {
                                         >
                                           {" "}
                                           {product?.quantity === 1 ? (
-                                            <div>
+                                            <div style={{
+                                              cursor: "not-allowed",
+                                            }}>
                                               <button
                                                 type="button"
                                                 className="btn qty-left-minus me-2"
                                                 data-type="minus"
                                                 data-field=""
                                                 style={{
-                                                  cursor: "not-allowed",
                                                   filter: "blur(0.7px)",
-                                                  background: "light",
+                                                  background: "lightgray",
                                                   color: "darkgray",
                                                 }}
                                                 disabled

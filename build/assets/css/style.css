@@ -35949,5 +35949,5 @@ button.btn.btn-add-cart.addcart-button {
 .suggestion-ul {
   overflow-y: auto;
   overflow-x: hidden;
-  height: 440px;
+  height: auto;
 }

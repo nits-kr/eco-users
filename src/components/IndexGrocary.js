@@ -27,30 +27,22 @@ import {
 import Star from "./Star";
 import { useGetCategoryListQuery } from "../services/Post";
 import { useGetAllPostQuery } from "../services/Post";
-import { useCreateOrderMutation } from "../services/Post";
 function IndexGrocary(props) {
   const categoryListItems = useGetCategoryListQuery();
   const trendingProduct = useGetTrendingProductQuery();
-  console.log("useGetTrendingProductQuery", trendingProduct);
   const [trendingList, setTrendingList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [discountProduct, setDiscountProduct] = useState([]);
-  console.log("discountProduct", discountProduct);
   const [productListDetails, setProductListDetails] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [CreateWishItems, setCreateWishItems] = useState([]);
   const [addCompareItems, setAddCompareItems] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
-  const [selectedWeight, setSelectedWeight] = useState("");
-  const [priceRange, setPriceRange] = useState([0, 11000]);
   const [categoryListData, setCategoryListData] = useState([]);
   const blog = useGetAllPostQuery();
-  const [createOrder, responseInfo] = useCreateOrderMutation();
   console.log("useGetAllPostQuery", blog);
 
   const [blogList, setBlogList] = useState();
-  console.log("price range", priceRange);
-  console.log("selected weight", selectedWeight);
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
   useEffect(() => {
@@ -79,7 +71,6 @@ function IndexGrocary(props) {
       const { data, error } = await CartList();
       error ? console.log(error) : console.log(data);
       setCartListItems(data.results.list);
-      console.log(data.results.list);
     } catch (error) {
       console.log(error);
     }
@@ -96,7 +87,6 @@ function IndexGrocary(props) {
       setDiscountProduct(data?.results?.productData);
       setLoading(true);
       props.setProgress(50);
-      console.log(data?.results?.productData);
     } catch (error) {
       console.log(error);
     }
@@ -110,11 +100,11 @@ function IndexGrocary(props) {
     try {
       props.setProgress(70);
       setLoading(true);
-      const ids = discountProduct.map((item) => item._id); // Get all _id values
-      const promises = ids.map((id) => ProductDetails(id)); // Create an array of promises
-      const results = await Promise.all(promises); // Wait for all promises to resolve
+      const ids = discountProduct.map((item) => item._id);
+      const promises = ids.map((id) => ProductDetails(id));
+      const results = await Promise.all(promises);
 
-      const details = results.map((result) => result?.data?.results?.details); // Extract details from each result
+      const details = results.map((result) => result?.data?.results?.details);
       setProductListDetails(details);
       props.setProgress(100);
       setLoading(false);
@@ -135,7 +125,6 @@ function IndexGrocary(props) {
       }
       const newCreateWishItems = [...CreateWishItems, data];
       setCreateWishItems(newCreateWishItems);
-      console.log(newCreateWishItems);
     } catch (error) {
       console.log(error);
     }
@@ -149,7 +138,6 @@ function IndexGrocary(props) {
       }
       const newCreateCompareItems = [...addCompareItems, data];
       setAddCompareItems(newCreateCompareItems);
-      console.log("newCreateCompareItems", newCreateCompareItems);
     } catch (error) {
       console.log(error);
     }
@@ -163,17 +151,13 @@ function IndexGrocary(props) {
       }
       const newCartItems = [...cartListItems, data];
       setCartListItems(newCartItems);
-      console.log("prevCartItems", newCartItems);
-      console.log("New cart items", cartListItems);
     } catch (error) {
       console.log(error);
     }
+    setTimeout(() => {
+      window?.location?.reload();
+    }, 500);
   };
-
-  console.log("productList", discountProduct);
-  console.log("productListDetails", productListDetails);
-  console.log("createWish", CreateWishItems);
-  console.log("cart list item new", cartListItems);
   useEffect(() => {
     props.setProgress(10);
     setLoading(true);
@@ -183,6 +167,11 @@ function IndexGrocary(props) {
       setLoading(false);
     }
   });
+  const handleViewDetails = () => {
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  };
 
   var w = window.innerWidth;
   var settings = {
@@ -190,7 +179,7 @@ function IndexGrocary(props) {
     infinite: true,
     speed: 500,
     slidesToShow: w > 500 ? 3 : 1,
-    autoplay: true,
+    // autoplay: true,
     slidesToScroll: 1,
   };
   const settings1 = {
@@ -220,27 +209,6 @@ function IndexGrocary(props) {
     HandleOkButtonClick();
   };
 
-  const handleSaveChanges = (id) => {
-    const newAddress = {
-      carts: [
-        {
-          product_Id: id,
-          quantity: "2",
-        },
-        {
-          product_Id: "6482b78584e5342a120adbb4",
-          quantity: "2",
-        },
-      ],
-      user_Id: "6479bd30adce522c085b2705",
-      address_Id: "6482c98e76841b2dc23c2241",
-      shippingPrice: "30",
-      taxPrice: "20",
-      deliverdBy: "64807a3f998cb060711aac1c",
-      orderStatus: "Delivered",
-    };
-    createOrder(newAddress);
-  };
   const sliders = () => {
     return blogList?.map((item, index) => (
       <div key={index}>
@@ -340,17 +308,6 @@ function IndexGrocary(props) {
                     <span className="add-icon bg-light-gray">
                       <i className="fa-solid fa-plus" />
                     </span>
-                  </Link>
-                </button>
-              </div>
-              <div className="add-to-cart-box bg-danger mt-2">
-                <button className="btn btn-add-cart addcart-button">
-                  <Link
-                    className="text-light"
-                    to="/cart"
-                    onClick={() => handleSaveChanges(item?._id)}
-                  >
-                    Buy Now
                   </Link>
                 </button>
               </div>
@@ -914,90 +871,24 @@ function IndexGrocary(props) {
               </div>
               <div className="category-slider-2 product-wrapper no-arrow">
                 <Slider {...settings}>
-                  <div>
-                    <Link to="/shop" className="category-box category-dark">
+                  {categoryListData.map((item, index) => {
+                    return (
                       <div>
-                        <img
-                          src="../../assets/svg/1/vegetable.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>Vegetables &amp; Fruit</h5>
+                        <Link to="/shop" className="category-box category-dark">
+                          <div className="heading12">
+                            <div key={index}>
+                              <img
+                                src={item?.categoryPic}
+                                className=" lazyload"
+                                alt=""
+                              />
+                              <h5> {item?.categoryName_en} </h5>
+                            </div>
+                          </div>
+                        </Link>
                       </div>
-                    </Link>
-                  </div>
-                  <div>
-                    <Link to="/shop" className="category-box category-dark">
-                      <div>
-                        <img
-                          src="../../assets/svg/1/cup.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>Beverages</h5>
-                      </div>
-                    </Link>
-                  </div>
-                  <div>
-                    <Link to="/shop" className="category-box category-dark">
-                      <div>
-                        <img
-                          src="../../assets/svg/1/meats.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>Meats &amp; Seafood</h5>
-                      </div>
-                    </Link>
-                  </div>
-                  <div>
-                    <Link to="/shop" className="category-box category-dark">
-                      <div>
-                        <img
-                          src="../../assets/svg/1/breakfast.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>Breakfast</h5>
-                      </div>
-                    </Link>
-                  </div>
-                  <div>
-                    <Link to="/shop" className="category-box category-dark">
-                      <div>
-                        <img
-                          src="../../assets/svg/1/frozen.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>Frozen Foods</h5>
-                      </div>
-                    </Link>
-                  </div>
-                  <div>
-                    <Link to="/shop" className="category-box category-dark">
-                      <div>
-                        <img
-                          src="../../assets/svg/1/milk.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>Milk &amp; Dairies</h5>
-                      </div>
-                    </Link>
-                  </div>
-                  <div>
-                    <Link to="/shop" className="category-box category-dark">
-                      <div>
-                        <img
-                          src="../../assets/svg/1/pet.svg"
-                          className=" lazyload"
-                          alt=""
-                        />
-                        <h5>Pet Food</h5>
-                      </div>
-                    </Link>
-                  </div>
+                    );
+                  })}
                 </Slider>
               </div>
               <div className="section-t-space section-b-space">
@@ -3765,7 +3656,7 @@ function IndexGrocary(props) {
                 <div className="col-lg-6">
                   <div className="slider-image">
                     <img
-                      src="../../assets/images/vegetable/product/5.png"
+                      src={selectedProduct?.product_Pic[0]}
                       className="img-fluid  lazyload"
                       alt=""
                     />
@@ -3774,26 +3665,12 @@ function IndexGrocary(props) {
                 <div className="col-lg-6">
                   <div className="right-sidebar-modal">
                     <h4 className="title-name">
-                      Yumitos Chilli Sprinkled Potato Chips 100 g{" "}
+                      {selectedProduct?.productName_en}
                     </h4>
-                    <h4 className="price">$36.99</h4>
+                    <h4 className="price">${selectedProduct?.Price} </h4>
                     <div className="product-rating">
                       <ul className="rating">
-                        <li>
-                          <i data-feather="star" className="fill" />
-                        </li>
-                        <li>
-                          <i data-feather="star" className="fill" />
-                        </li>
-                        <li>
-                          <i data-feather="star" className="fill" />
-                        </li>
-                        <li>
-                          <i data-feather="star" className="fill" />
-                        </li>
-                        <li>
-                          <i data-feather="star" />
-                        </li>
+                        <Star />
                       </ul>
                       <span className="ms-2">8 Reviews</span>
                       <span className="ms-2 text-danger">
@@ -3802,14 +3679,7 @@ function IndexGrocary(props) {
                     </div>
                     <div className="product-detail">
                       <h4>Product Details :</h4>
-                      <p>
-                        Candy canes sugar plum tart cotton candy chupa chups
-                        sugar plum chocolate I love. Caramels marshmallow icing
-                        dessert candy canes I love soufflé I love toffee.
-                        Marshmallow pie sweet sweet roll sesame snaps tiramisu
-                        jelly bear claw. Bonbon muffin I love carrot cake sugar
-                        plum dessert bonbon.
-                      </p>
+                      <p>{selectedProduct?.Description}</p>
                     </div>
                     <ul className="brand-list">
                       <li>
@@ -3846,22 +3716,20 @@ function IndexGrocary(props) {
                       </select>
                     </div>
                     <div className="modal-button">
-                      <button
-                        onClick={() => {
-                          window.location.href = "/cart";
-                        }}
+                      <Link
+                        to="/cart"
                         className="btn btn-md add-cart-button icon"
+                        onClick={() => handleAddToCart(selectedProduct)}
                       >
                         Add To Cart
-                      </button>
-                      <button
-                        onClick={() => {
-                          window.location.href = "/product-left";
-                        }}
+                      </Link>
+                      <Link
+                        to={`/product/${selectedProduct?._id}`}
                         className="btn theme-bg-color view-button icon text-white fw-bold btn-md"
+                        onClick={handleViewDetails}
                       >
                         View More Details
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>

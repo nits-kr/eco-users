@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams, useLocation  } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import feather from "feather-icons";
@@ -40,6 +40,8 @@ import { useCreateOrderMutation } from "../services/Post";
 import { useShowProductRatingMutation } from "../services/Post";
 import { useSubSubProductMutation } from "../services/Post";
 import { useFilterPriceMutation } from "../services/Post";
+import { addToCart } from "../app/slice/CartSlice";
+import { useDispatch } from "react-redux";
 
 function Shop(props) {
   const [productListItems, setProductListItems] = useState([]);
@@ -57,8 +59,9 @@ function Shop(props) {
   // const [searchQuery, setSearchQuery] = useState("");
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
-    const location = useLocation();
-    // const searchQuery = new URLSearchParams(location.search).get("query");
+  const location = useLocation();
+  const dispatch = useDispatch();
+  // const searchQuery = new URLSearchParams(location.search).get("query");
   console.log("const [filterProduct, re] = useFilterPriceMutation();", re);
   const [currentValue, setCurrentValue] = useState(0);
   console.log(
@@ -66,7 +69,7 @@ function Shop(props) {
     currentValue
   );
   const storedId = localStorage.getItem("loginId");
-  const searchQuery = localStorage?.getItem("productSearch")
+  const searchQuery = localStorage?.getItem("productSearch");
   const { id } = useParams();
   const totalRatings = selectedProduct?.ratings?.reduce(
     (sum, rating) => sum + rating.star,
@@ -208,6 +211,7 @@ function Shop(props) {
     } catch (error) {
       console.log(error);
     }
+    dispatch(addToCart(item));
   };
   const handleTranding = async () => {
     try {
@@ -301,9 +305,7 @@ function Shop(props) {
     slidesToScroll: 1,
   };
   const handleViewDetails = () => {
-    // Redirect to the product page
-    // Reload the page
-    window.location.href = `/product/${selectedProduct._id}`;
+    // window.location.href = `/product/${selectedProduct._id}`;
     setTimeout(() => {
       window.location.reload();
     }, 1000);
@@ -1858,7 +1860,7 @@ function Shop(props) {
       {/* Footer Section End */}
       {/* Quick View Modal Box Start */}
 
-      {selectedProduct && (
+      
         <div
           className="modal fade theme-modal view-modal"
           id="view"
@@ -1866,7 +1868,6 @@ function Shop(props) {
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
         >
-          {console.log(selectedProduct._id)}
           <div className="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-sm-down">
             <div className="modal-content">
               <div className="modal-header p-0">
@@ -1884,7 +1885,7 @@ function Shop(props) {
                   <div className="col-lg-6">
                     <div className="slider-image">
                       <img
-                        src={selectedProduct.product_Pic[0]}
+                        src={selectedProduct?.product_Pic[0]}
                         className="img-fluid lazyload"
                         alt=""
                       />
@@ -1896,11 +1897,11 @@ function Shop(props) {
                         <h4 className="title-name">
                           {selectedProduct?.productName_en}
                         </h4>
-                        <h4 className="price">${selectedProduct.Price} </h4>
+                        <h4 className="price">${selectedProduct?.Price} </h4>
                         <div className="product-rating">
                           <Star rating={averageRating} />
                           <span className="ms-2">
-                            {selectedProduct.ratings.length} Reviews
+                            {selectedProduct?.ratings?.length} Reviews
                           </span>
                           <span className="ms-2 text-danger">
                             6 sold in last 16 hours
@@ -1953,7 +1954,7 @@ function Shop(props) {
                             </button>
                           </Link>
                           <Link
-                            to={`/product/${selectedProduct._id}`}
+                            to={`/product/${selectedProduct?._id}`}
                             className="btn theme-bg-color view-button icon text-white fw-bold btn-md"
                             onClick={handleViewDetails}
                           >
@@ -1968,7 +1969,7 @@ function Shop(props) {
             </div>
           </div>
         </div>
-      )}
+
       {/* Quick View Modal Box End */}
       {/* Location Modal Start */}
       <LocationModel />
