@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar, faTrash, faHeart } from "@fortawesome/free-solid-svg-icons";
 import Header from "./Header";
 import Footer from "./Footer";
 import { useGetOrderListQuery } from "../services/Post";
@@ -12,7 +14,7 @@ function OrderSuccess() {
   const orderList = useGetOrderListQuery();
   console.log("order list", orderList);
   const [newOrder, setNewOrder] = useState([]);
-  localStorage?.setItem("totalOrder", newOrder?.length)
+  localStorage?.setItem("totalOrder", newOrder?.length);
   const [cancelOrder, re] = useCancelOrderMutation();
   const getReversedList = (list) => {
     return list?.data?.results?.orderList?.slice().reverse() ?? [];
@@ -46,7 +48,7 @@ function OrderSuccess() {
 
   const handleRate = (id) => {
     console.log(id);
-  }
+  };
 
   useEffect(() => {
     feather.replace();
@@ -290,15 +292,19 @@ function OrderSuccess() {
                                 >
                                   <strong>Cancelled</strong>{" "}
                                 </Link>
-                              ) : item?.orderStatus === "delivered" ? (
+                              ) : item?.orderStatus === "Delivered" ? (
                                 <Link
-                                to=""
-                                  className="text-danger"
-                                  onClick={() => {
-                                    handleRate(item?._id);
-                                  }}
+                                  to={`/product/${item?.products[0]?.product_Id?._id}`}
+                                  className="text-primary"
+                                  // onClick={() => {
+                                  //   handleRate(item?._id);
+                                  // }}
                                 >
-                                  Rate This Product{" "}
+                                  <div className="text-danger">Delivered</div>
+                                  <FontAwesomeIcon
+                                    icon={faStar}
+                                  />
+                                  Rate Product{" "}
                                 </Link>
                               ) : (
                                 <Link

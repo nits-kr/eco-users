@@ -54,11 +54,19 @@ function Shop(props) {
   const [subSubProduct, r] = useSubSubProductMutation();
   const [filterProduct, re] = useFilterPriceMutation();
   const [quantity, setQuantity] = useState([]);
+  const [count, setCount] = useState([]);
 
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
   const location = useLocation();
   const dispatch = useDispatch();
+
+  const handleCountChange = (index, newCount) => {
+    const newCounts = [...count];
+    newCounts[index] = newCount >= 0 ? newCount : 0;
+    setCount(newCounts);
+  };
+
   console.log("const [filterProduct, re] = useFilterPriceMutation();", re);
   const [currentValue, setCurrentValue] = useState(0);
   console.log(
@@ -193,13 +201,9 @@ function Shop(props) {
       console.log(error);
     }
   };
-  const handleAddToCart = async (item) => {
+  const handleAddToCart = async (item, index) => {
     try {
-      const { data, error } = await AddToCart(
-        item._id,
-        item?.stockQuantity,
-        quantity
-      );
+      const { data, error } = await AddToCart(item._id, count[index]);
       if (error) {
         console.log(error);
         return;
@@ -1747,14 +1751,15 @@ function Shop(props) {
                                   style={{
                                     display: "flex",
                                     justifyContent: "space-between",
+                                    alignItems:"center"
                                   }}
                                 >
                                   <div>
-                                    <h6 className="unit">
+                                    <h6 className="unit" style={{margin:"0px", fontSize:"15px"}}>
                                       {item?.stockQuantity} units{" "}
                                     </h6>
                                   </div>
-                                  <div className=" mt-2">
+                                  {/* <div className=" mt-2">
                                     <form>
                                       <div className="form-floating ">
                                         <select
@@ -1793,9 +1798,49 @@ function Shop(props) {
                                           <option value="19">19</option>
                                           <option value="20">20</option>
                                         </select>
-                                        {/* <label htmlFor="floatingSelect12">Quantity</label> */}
                                       </div>
                                     </form>
+                                  </div> */}
+                                  <div className="">
+                                    <div className="cart_qty qty-box product-qty">
+                                      <div className="input-group">
+                                        <button
+                                          type="button"
+                                          className="qty-right-plus"
+                                          data-type="plus"
+                                          data-field=""
+                                          onClick={() =>
+                                            handleCountChange(
+                                              index,
+                                              count[index] + 1
+                                            )
+                                          }
+                                        >
+                                          <i
+                                            className="fa fa-plus"
+                                            aria-hidden="true"
+                                          />
+                                        </button>
+                                        <div className="m-2"> {count[index] ? count[index] : "1"}</div>
+                                        <button
+                                          type="button"
+                                          className="qty-left-minus"
+                                          data-type="minus"
+                                          data-field=""
+                                          onClick={() =>
+                                            handleCountChange(
+                                              index,
+                                              count[index] - 1
+                                            )
+                                          }
+                                        >
+                                          <i
+                                            className="fa fa-minus"
+                                            aria-hidden="true"
+                                          />
+                                        </button>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                                 <h5 className="price">
@@ -1804,16 +1849,18 @@ function Shop(props) {
                                   </span>{" "}
                                   <del>${item.oldPrice} </del>
                                 </h5>
-                                <div className="add-to-cart-box bg-white">
+                                <div className="add-to-cart-box bg-white mt-2">
                                   <button className="btn btn-add-cart addcart-button">
                                     <Link
                                       to="/cart"
-                                      onClick={() => handleAddToCart(item)}
+                                      onClick={() =>
+                                        handleAddToCart(item, index)
+                                      }
                                     >
-                                      Add
-                                      <span className="add-icon bg-light-gray">
+                                      Add To Cart
+                                      {/* <span className="add-icon bg-light-gray">
                                         <i className="fa-solid fa-plus" />
-                                      </span>
+                                      </span> */}
                                     </Link>
                                   </button>
                                   <div className="cart_qty qty-box">

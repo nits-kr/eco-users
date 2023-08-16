@@ -18,9 +18,13 @@ import { useGetRelatedProductQuery } from "../services/Post";
 import Spinner from "./Spinner";
 import { useGetTrendingProductQuery } from "../services/Post";
 import { useCreateReportMutation } from "../services/Post";
+import { AddToCart } from "./HttpServices";
+import { useAddReviewMutation } from "../services/Post";
+import GetStar from "./GetStar";
 
 function Product(props) {
   const relatedProduct = useGetRelatedProductQuery();
+  const [addReview, response] = useAddReviewMutation();
   const [relatedProductItems, setRelatedProductItems] = useState([]);
   const [searchKey, setSearchKey] = useState("");
   const [reportData, res] = useCreateReportMutation();
@@ -32,10 +36,17 @@ function Product(props) {
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
   console.log(id);
-  const ratings = 4.5;
+  // const ratings = 4.5;
   console.log("useGetRelatedProductQuery", relatedProduct);
   console.log("product detail", productDetail);
   const userId = localStorage.getItem("loginId");
+  const [name, setName] = useState([]);
+  const [email, setEmail] = useState([]);
+  const [website, setWebsite] = useState([]);
+  const [title, setTitle] = useState([]);
+  const [comment, setComment] = useState([]);
+  const [count, setCount] = useState(1);
+
   const [formData, setFormData] = useState({
     r1: "",
     description: "",
@@ -46,9 +57,52 @@ function Product(props) {
   );
   const averageRating = totalRatings / productDetail?.ratings?.length;
 
+  const ratings = productDetail?.ratings;
+  const totalRating = ratings?.length;
+  let starCounts = [0, 0, 0, 0, 0];
+
+  ratings?.forEach((rating) => {
+    starCounts[rating?.star - 1]++;
+  });
+
+  const percentages = starCounts?.map((count) => (count / totalRating) * 100);
+  const fiveStar = percentages[4];
+  const fourStar = percentages[3];
+  const threeStar = percentages[2];
+  const twoStar = percentages[1];
+  const oneStar = percentages[0];
+  console.log(fourStar);
+  console.log(percentages);
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const userRating = localStorage?.getItem("userRating");
+  const handleCreateReview = async (e) => {
+    e.preventDefault();
+    const newContactData = {
+      yourName: name,
+      Email: email,
+      website: website,
+      reviewTitle: title,
+      comment: comment,
+      rating: userRating,
+      product_Id: id,
+      user_Id: userId,
+    };
+    try {
+      const createdReview = await addReview(newContactData);
+      console.log("Review created successfully:", createdReview);
+      Swal.fire({
+        title: "Review Created!",
+        text: "Your review has been successfully created.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      console.error("Error creating contact:", error);
+    }
   };
   const handleSaveReport = () => {
     Swal.fire({
@@ -106,18 +160,23 @@ function Product(props) {
     }
   });
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const { data } = await ProductSearch(searchKey);
-  //       console.log(data);
-  //       setProductData(data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [searchKey]);
+  const handleAddToCart = async (item, index) => {
+    try {
+      const { data, error } = await AddToCart(id, count);
+      if (error) {
+        console.log(error);
+        return;
+      }
+      // const newCartItems = [...cartListItems, data];
+      // setCartListItems(newCartItems);
+    } catch (error) {
+      console.log(error);
+    }
+    // setTimeout(() => {
+    //   window?.location?.reload();
+    // }, 500);
+  };
+
   const handleSearch = () => {
     setSearchKey(searchKey);
   };
@@ -367,6 +426,7 @@ function Product(props) {
                                 className="qty-right-plus"
                                 data-type="plus"
                                 data-field=""
+                                onClick={() => setCount(count + 1)}
                               >
                                 <i className="fa fa-plus" aria-hidden="true" />
                               </button>
@@ -374,22 +434,25 @@ function Product(props) {
                                 className="form-control input-number qty-input"
                                 type="text"
                                 name="quantity"
-                                defaultValue={0}
+                                value={count}
                               />
+                              {/* {count} */}
                               <button
                                 type="button"
                                 className="qty-left-minus"
                                 data-type="minus"
                                 data-field=""
+                                onClick={() => setCount(count - 1)}
                               >
                                 <i className="fa fa-minus" aria-hidden="true" />
                               </button>
                             </div>
                           </div>
                           <Link
-                            to="/cart"
+                            // to="/cart"
                             // onClick={() => handleAddToCart(item)}
                             className="btn btn-md bg-dark cart-button text-white w-100"
+                            onClick={() => handleAddToCart()}
                           >
                             Add To Cart
                           </Link>
@@ -427,7 +490,10 @@ function Product(props) {
                                 MFG :{" "}
                                 <Link to="#">
                                   {" "}
-                                  {productDetail?.publishDate}{" "}
+                                  {productDetail?.publishDate?.slice(
+                                    0,
+                                    10
+                                  )}{" "}
                                 </Link>
                               </li>
                               <li>
@@ -625,11 +691,6 @@ function Product(props) {
                                   display: "block",
                                 }}
                               >
-                                {/* <img
-                                                            src="../assets/images/vegetable/banner/14.jpg"
-                                                            className="bg-img  lazyload"
-                                                            alt=""
-                                                        /> */}
                                 <div className="banner-details p-center banner-b-space w-100 text-center">
                                   <div>
                                     <h6 className="ls-expanded theme-color mb-sm-3 mb-1">
@@ -775,49 +836,59 @@ function Product(props) {
                                   <div className="d-flex">
                                     <div className="product-rating">
                                       <ul className="rating">
-                                        <li>
-                                          <i
-                                            data-feather="star"
-                                            className="fill"
-                                          />
-                                        </li>
-                                        <li>
-                                          <i
-                                            data-feather="star"
-                                            className="fill"
-                                          />
-                                        </li>
-                                        <li>
-                                          <i
-                                            data-feather="star"
-                                            className="fill"
-                                          />
-                                        </li>
-                                        <li>
-                                          <i data-feather="star" />
-                                        </li>
-                                        <li>
-                                          <i data-feather="star" />
-                                        </li>
+                                        <Star rating={averageRating} />
                                       </ul>
                                     </div>
-                                    <h6 className="ms-3">4.2 Out Of 5</h6>
+                                    <h6 className="ms-3">
+                                      {averageRating} Out Of 5
+                                    </h6>
                                   </div>
+
                                   <div className="rating-box">
                                     <ul>
                                       <li>
                                         <div className="rating-list">
                                           <h5>5 Star</h5>
-                                          <div className="progress">
+
+                                          {/* <div
+                                            className="progress"
+                                            role="progressbar"
+                                            aria-label="Basic example"
+                                            aria-valuenow={100}
+                                            aria-valuemin={0}
+                                            aria-valuemax={100}
+                                          >
+                                            <div
+                                              className="progress-bar"
+                                              style={{ width: "100%" }}
+                                            />
+                                          </div> */}
+                                          {/* <div className="progress">
                                             <div
                                               className="progress-bar"
                                               role="progressbar"
-                                              style={{ width: "68%" }}
+                                              style={{ width: {`${fiveStar}%`} }}
                                               aria-valuenow={100}
                                               aria-valuemin={0}
                                               aria-valuemax={100}
                                             >
-                                              68%
+                                              100%
+                                            </div>
+                                          </div> */}
+                                          <div className="progress">
+                                            <div
+                                              className="progress-bar"
+                                              role="progressbar"
+                                              style={{
+                                                width: `${fiveStar.toFixed(
+                                                  2
+                                                )}%`,
+                                              }}
+                                              aria-valuenow={fiveStar}
+                                              aria-valuemin={0}
+                                              aria-valuemax={100}
+                                            >
+                                              {`${fiveStar.toFixed(2)}%`}
                                             </div>
                                           </div>
                                         </div>
@@ -829,31 +900,78 @@ function Product(props) {
                                             <div
                                               className="progress-bar"
                                               role="progressbar"
-                                              style={{ width: "67%" }}
-                                              aria-valuenow={100}
+                                              style={{
+                                                width: `${fourStar.toFixed(
+                                                  2
+                                                )}%`,
+                                              }}
+                                              aria-valuenow={fourStar}
                                               aria-valuemin={0}
                                               aria-valuemax={100}
                                             >
-                                              67%
+                                              {`${fourStar.toFixed(2)}%`}
                                             </div>
                                           </div>
+                                          {/* <div
+                                            className="progress"
+                                            role="progressbar"
+                                            aria-label="Basic example"
+                                            aria-valuenow={75}
+                                            aria-valuemin={0}
+                                            aria-valuemax={100}
+                                          >
+                                            <div
+                                              className="progress-bar"
+                                              style={{ width: "75%" }}
+                                            />
+                                          </div> */}
                                         </div>
                                       </li>
                                       <li>
                                         <div className="rating-list">
                                           <h5>3 Star</h5>
-                                          <div className="progress">
+                                          {/* <div className="progress">
                                             <div
                                               className="progress-bar"
                                               role="progressbar"
-                                              style={{ width: "42%" }}
+                                              style={{ width: `${threeStar?.slice(0,5)}%` }}
                                               aria-valuenow={100}
                                               aria-valuemin={0}
                                               aria-valuemax={100}
                                             >
-                                              42%
+                                              {`${threeStar}%`}
+                                            </div>
+                                          </div> */}
+                                          <div className="progress">
+                                            <div
+                                              className="progress-bar"
+                                              role="progressbar"
+                                              style={{
+                                                width: `${threeStar.toFixed(
+                                                  2
+                                                )}%`,
+                                              }}
+                                              aria-valuenow={threeStar}
+                                              aria-valuemin={0}
+                                              aria-valuemax={100}
+                                            >
+                                              {`${threeStar.toFixed(2)}%`}
                                             </div>
                                           </div>
+
+                                          {/* <div
+                                            className="progress"
+                                            role="progressbar"
+                                            aria-label="Basic example"
+                                            aria-valuenow={50}
+                                            aria-valuemin={0}
+                                            aria-valuemax={100}
+                                          >
+                                            <div
+                                              className="progress-bar"
+                                              style={{ width: "50%" }}
+                                            />
+                                          </div> */}
                                         </div>
                                       </li>
                                       <li>
@@ -863,14 +981,29 @@ function Product(props) {
                                             <div
                                               className="progress-bar"
                                               role="progressbar"
-                                              style={{ width: "30%" }}
+                                              style={{
+                                                width: `${twoStar.toFixed(2)}%`,
+                                              }}
                                               aria-valuenow={100}
                                               aria-valuemin={0}
                                               aria-valuemax={100}
                                             >
-                                              30%
+                                              {`${twoStar.toFixed(2)}%`}
                                             </div>
                                           </div>
+                                          {/* <div
+                                            className="progress"
+                                            role="progressbar"
+                                            aria-label="Basic example"
+                                            aria-valuenow={25}
+                                            aria-valuemin={0}
+                                            aria-valuemax={100}
+                                          >
+                                            <div
+                                              className="progress-bar"
+                                              style={{ width: "25%" }}
+                                            />
+                                          </div> */}
                                         </div>
                                       </li>
                                       <li>
@@ -880,13 +1013,28 @@ function Product(props) {
                                             <div
                                               className="progress-bar"
                                               role="progressbar"
-                                              style={{ width: "24%" }}
+                                              style={{
+                                                width: `${oneStar.toFixed(2)}%`,
+                                              }}
                                               aria-valuenow={100}
                                               aria-valuemin={0}
                                               aria-valuemax={100}
                                             >
-                                              24%
+                                              {`${oneStar.toFixed(2)}%`}
                                             </div>
+                                            {/* <div
+                                              className="progress"
+                                              role="progressbar"
+                                              aria-label="Basic example"
+                                              aria-valuenow={0}
+                                              aria-valuemin={0}
+                                              aria-valuemax={100}
+                                            >
+                                              <div
+                                                className="progress-bar"
+                                                style={{ width: "0%" }}
+                                              />
+                                            </div> */}
                                           </div>
                                         </div>
                                       </li>
@@ -897,6 +1045,10 @@ function Product(props) {
                                   <div className="review-title">
                                     <h4 className="fw-500">Add a review</h4>
                                   </div>
+                                  <div className="m-3">
+                                    <GetStar />
+                                  </div>
+
                                   <div className="row g-4">
                                     <div className="col-md-6">
                                       <div className="form-floating theme-form-floating">
@@ -905,6 +1057,9 @@ function Product(props) {
                                           className="form-control"
                                           id="name"
                                           placeholder="Name"
+                                          onChange={(e) =>
+                                            setName(e.target.value)
+                                          }
                                         />
                                         <label htmlFor="name">Your Name</label>
                                       </div>
@@ -916,6 +1071,9 @@ function Product(props) {
                                           className="form-control"
                                           id="email"
                                           placeholder="Email Address"
+                                          onChange={(e) =>
+                                            setEmail(e.target.value)
+                                          }
                                         />
                                         <label htmlFor="email">
                                           Email Address
@@ -929,6 +1087,9 @@ function Product(props) {
                                           className="form-control"
                                           id="website"
                                           placeholder="Website"
+                                          onChange={(e) =>
+                                            setWebsite(e.target.value)
+                                          }
                                         />
                                         <label htmlFor="website">Website</label>
                                       </div>
@@ -940,6 +1101,9 @@ function Product(props) {
                                           className="form-control"
                                           id="review1"
                                           placeholder="Give your review a title"
+                                          onChange={(e) =>
+                                            setTitle(e.target.value)
+                                          }
                                         />
                                         <label htmlFor="review1">
                                           Review Title
@@ -951,15 +1115,26 @@ function Product(props) {
                                         <textarea
                                           className="form-control"
                                           placeholder="Leave a comment here"
-                                          id="floatingTextarea2"
+                                          name="comment"
+                                          id="comment"
                                           style={{ height: 150 }}
                                           defaultValue={""}
+                                          onChange={(e) =>
+                                            setComment(e.target.value)
+                                          }
                                         />
                                         <label htmlFor="floatingTextarea2">
                                           Write Your Comment
                                         </label>
                                       </div>
                                     </div>
+                                    <button
+                                      className="btn btn-animation btn-md fw-bold ms-auto"
+                                      type="submit"
+                                      onClick={handleCreateReview}
+                                    >
+                                      Send Reviews
+                                    </button>
                                   </div>
                                 </div>
                                 <div className="col-12">

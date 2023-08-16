@@ -40,6 +40,14 @@ function IndexGrocary(props) {
   const [cartListItems, setCartListItems] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
   const [quantity, setQuantity] = useState([]);
+  const [count, setCount] = useState([]);
+  console.log("count", count);
+  const handleCountChange = (index, newCount) => {
+    const newCounts = [...count];
+    newCounts[index] = newCount >= 0 ? newCount : 0;
+    setCount(newCounts);
+  };
+  console.log(count);
   const blog = useGetAllPostQuery();
   console.log("useGetAllPostQuery", blog);
 
@@ -117,7 +125,6 @@ function IndexGrocary(props) {
   const handleViewClick = (item) => {
     setSelectedProduct(item);
   };
-
   const handleWishClick = async (item) => {
     try {
       const { data, error } = await CreateWish(item._id);
@@ -144,13 +151,9 @@ function IndexGrocary(props) {
       console.log(error);
     }
   };
-  const handleAddToCart = async (item) => {
+  const handleAddToCart = async (item, index) => {
     try {
-      const { data, error } = await AddToCart(
-        item._id,
-        item?.stockQuantity,
-        quantity
-      );
+      const { data, error } = await AddToCart(item._id, count[index]);
       if (error) {
         console.log(error);
         return;
@@ -194,7 +197,7 @@ function IndexGrocary(props) {
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
-    autoplay: true,
+    // autoplay: true,
   };
   const settings2 = {
     dots: true,
@@ -309,50 +312,39 @@ function IndexGrocary(props) {
                 <Star rating={averageRating} />
                 <span> In Stock </span>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", justifyContent: "space-between" , alignItems:"center"}}>
                 <div>
-                  <h6 className="unit">{item?.stockQuantity} units </h6>
+                  <h6 className="unit" style={{margin:"0px", fontSize:"15px"}}>{item?.stockQuantity} units </h6>
                 </div>
-                <div className=" mt-2">
-                  <form>
-                    <div className="form-floating ">
-                      <select
-                        className="form-select"
-                        id="floatingSelect12"
-                        aria-label="  select example"
-                        defaultValue=" "
-                        style={{
-                          height: "26px",
-                          width: "104px",
-                          padding: "5px",
-                        }}
-                        onChange={(e) => setQuantity(e.target.value)}
+                <div className=" mt-3">
+                  <div className="cart_qty qty-box product-qty">
+                    <div className="input-group" style={{alignItems:"center"}}>
+                      <button
+                        type="button"
+                        className="qty-right-plus"
+                        data-type="plus"
+                        data-field=""
+                        onClick={() =>
+                          handleCountChange(index, count[index] + 1)
+                        }
                       >
-                        <option value="">Quantity</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="15">15</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="20">20</option>
-                      </select>
-                      {/* <label htmlFor="floatingSelect12">Quantity</label> */}
+                        <i className="fa fa-plus" aria-hidden="true" />
+                      </button>
+                      <div className="m-2"> {count[index] ? count[index] : "1"}</div>
+                     
+                      <button
+                        type="button"
+                        className="qty-left-minus"
+                        data-type="minus"
+                        data-field=""
+                        onClick={() =>
+                          handleCountChange(index, count[index] - 1)
+                        }
+                      >
+                        <i className="fa fa-minus" aria-hidden="true" />
+                      </button>
                     </div>
-                  </form>
+                  </div>
                 </div>
               </div>
               <h5 className="price">
@@ -362,11 +354,11 @@ function IndexGrocary(props) {
 
               <div className="add-to-cart-box bg-white mt-2">
                 <button className="btn btn-add-cart addcart-button">
-                  <Link to="/cart" onClick={() => handleAddToCart(item)}>
-                    Add
-                    <span className="add-icon bg-light-gray">
+                  <Link to="/cart" onClick={() => handleAddToCart(item, index)}>
+                    Add To Cart
+                    {/* <span className="add-icon bg-light-gray">
                       <i className="fa-solid fa-plus" />
-                    </span>
+                    </span> */}
                   </Link>
                 </button>
               </div>

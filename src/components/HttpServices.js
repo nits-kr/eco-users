@@ -754,7 +754,7 @@ export async function HighDiscountList() {
     return error;
   }
 }
-export async function AddToCart(id, stockQuantity, quantity) {
+export async function AddToCart(id, quantity) {
   try {
     const { data } = await UserHttpService.post(
       `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/add-cart`,

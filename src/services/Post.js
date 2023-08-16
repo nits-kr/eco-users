@@ -232,6 +232,16 @@ export const PostApi = createApi({
         };
       },
     }),
+    addReview: builder.mutation({
+      query: (body) => {
+        console.log("update login data", body);
+        return {
+          url: "/user/review/review/add-review",
+          method: "post",
+          body,
+        };
+      },
+    }),
     userSignUp: builder.mutation({
       query: (body) => {
         console.log("update login data", body);
@@ -322,4 +332,5 @@ export const {
   useGetCartListQuery,
   useAddToWislistListMutation,
   useCreateContactMutation,
+  useAddReviewMutation,
 } = PostApi;

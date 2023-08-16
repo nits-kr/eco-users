@@ -18417,7 +18417,7 @@ header .offcanvas-backdrop {
 }
 
 .qty-box {
-  margin-top: 10px;
+  margin-top: 0px;
   width: 100%;
   max-width: 250px;
 }

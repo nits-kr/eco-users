@@ -19,25 +19,29 @@ function WishList() {
   localStorage?.setItem("totalWish", wishList?.length)
   const [cartListItems, setCartListItems] = useState([]);
   const [quantity, setQuantity] = useState([]);
+  const [count, setCount] = useState([]);
 
-  const handleAddToCart = async (item) => {
+  const handleCountChange = (index, newCount) => {
+    const newCounts = [...count];
+    newCounts[index] = newCount >= 0 ? newCount : 0;
+    setCount(newCounts);
+  };
+
+  const handleAddToCart = async (item, index) => {
     try {
-      const { data, error } = await AddToCart(
-        item?.product_Id?._id,
-        item?.stockQuantity,
-        quantity
-      );
+      const { data, error } = await AddToCart(item?.product_Id?._id, count[index]);
       if (error) {
         console.log(error);
         return;
       }
-      const newCartItems = [...cartListItems, data];
-      setCartListItems(newCartItems);
-      console.log("prevCartItems", newCartItems);
-      console.log("New cart items", cartListItems);
+      // const newCartItems = [...wishList, data];
+      // setWishList(newCartItems);
     } catch (error) {
       console.log(error);
     }
+    setTimeout(() => {
+      window?.location?.reload();
+    }, 500);
   };
 
   useEffect(() => {
@@ -223,47 +227,47 @@ function WishList() {
                               {item?.product_Id?.stockQuantity} units{" "}
                             </h6>
                           </div>
-                          <div className=" mt-2">
-                            <form>
-                              <div className="form-floating ">
-                                <select
-                                  className="form-select"
-                                  id="floatingSelect12"
-                                  aria-label="  select example"
-                                  defaultValue=" "
-                                  style={{
-                                    height: "26px",
-                                    width: "104px",
-                                    padding: "5px",
-                                  }}
-                                  onChange={(e) => setQuantity(e.target.value)}
-                                >
-                                  <option value="">Quantity</option>
-                                  <option value="1">1</option>
-                                  <option value="2">2</option>
-                                  <option value="3">3</option>
-                                  <option value="4">4</option>
-                                  <option value="5">5</option>
-                                  <option value="6">6</option>
-                                  <option value="7">7</option>
-                                  <option value="8">8</option>
-                                  <option value="9">9</option>
-                                  <option value="10">10</option>
-                                  <option value="11">11</option>
-                                  <option value="12">12</option>
-                                  <option value="13">13</option>
-                                  <option value="14">14</option>
-                                  <option value="15">15</option>
-                                  <option value="16">16</option>
-                                  <option value="17">17</option>
-                                  <option value="18">18</option>
-                                  <option value="19">19</option>
-                                  <option value="20">20</option>
-                                </select>
-                                {/* <label htmlFor="floatingSelect12">Quantity</label> */}
-                              </div>
-                            </form>
-                          </div>
+                          <div className="">
+                                    <div className="cart_qty qty-box product-qty">
+                                      <div className="input-group">
+                                        <button
+                                          type="button"
+                                          className="qty-right-plus"
+                                          data-type="plus"
+                                          data-field=""
+                                          onClick={() =>
+                                            handleCountChange(
+                                              index,
+                                              count[index] + 1
+                                            )
+                                          }
+                                        >
+                                          <i
+                                            className="fa fa-plus"
+                                            aria-hidden="true"
+                                          />
+                                        </button>
+                                        <div className="m-2"> {count[index] ? count[index] : "1"}</div>
+                                        <button
+                                          type="button"
+                                          className="qty-left-minus"
+                                          data-type="minus"
+                                          data-field=""
+                                          onClick={() =>
+                                            handleCountChange(
+                                              index,
+                                              count[index] - 1
+                                            )
+                                          }
+                                        >
+                                          <i
+                                            className="fa fa-minus"
+                                            aria-hidden="true"
+                                          />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
                         </div>
                         <h5 className="price">
                           <span className="theme-color">
@@ -275,12 +279,12 @@ function WishList() {
                           <Link
                             className="btn btn-add-cart addcart-button"
                             to="/cart"
-                            onClick={() => handleAddToCart(item)}
+                            onClick={() => handleAddToCart(item,index)}
                           >
-                            Add
-                            <span className="add-icon bg-light-gray">
+                            Add To Cart
+                            {/* <span className="add-icon bg-light-gray">
                               <i className="fa-solid fa-plus" />
-                            </span>
+                            </span> */}
                           </Link>
                           <div className="cart_qty qty-box">
                             <div className="input-group bg-white">

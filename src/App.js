@@ -44,6 +44,7 @@ import BreadCrumb from "./components/BreadCrumb";
 import LoadingBar from "react-top-loading-bar";
 import OrderTracking from "./components/OrderTracking";
 import Shop2 from "./components/Shop2";
+import GetStar from "./components/GetStar";
 
 function App() {
   const [progress, setProgress] = useState(0);
@@ -226,6 +227,13 @@ function App() {
             path="/sign-up"
             element={<SignUp />}
           />
+          <Route
+            exact
+            className="active"
+            path="/get-star"
+            element={<GetStar/>}
+          />
+          
           <Route
             exact
             className="active"
