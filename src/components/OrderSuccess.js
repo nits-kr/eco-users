@@ -12,6 +12,7 @@ function OrderSuccess() {
   const orderList = useGetOrderListQuery();
   console.log("order list", orderList);
   const [newOrder, setNewOrder] = useState([]);
+  localStorage?.setItem("totalOrder", newOrder?.length)
   const [cancelOrder, re] = useCancelOrderMutation();
   const getReversedList = (list) => {
     return list?.data?.results?.orderList?.slice().reverse() ?? [];
@@ -36,12 +37,17 @@ function OrderSuccess() {
       if (result.isConfirmed) {
         cancelOrder(orderId)
           .then(() => {
-            setNewOrder(orderList?.data?.results?.orderList)
+            setNewOrder(orderList?.data?.results?.orderList);
           })
           .catch((error) => {});
       }
     });
   };
+
+  const handleRate = (id) => {
+    console.log(id);
+  }
+
   useEffect(() => {
     feather.replace();
   }, []);
@@ -277,12 +283,22 @@ function OrderSuccess() {
                                   style={{
                                     cursor: "not-allowed",
                                     filter: "blur(0.7px)",
-                                    background: "light",
+                                    background: "lightgray",
                                     color: "darkgray",
                                   }}
                                   disabled
                                 >
                                   <strong>Cancelled</strong>{" "}
+                                </Link>
+                              ) : item?.orderStatus === "delivered" ? (
+                                <Link
+                                to=""
+                                  className="text-danger"
+                                  onClick={() => {
+                                    handleRate(item?._id);
+                                  }}
+                                >
+                                  Rate This Product{" "}
                                 </Link>
                               ) : (
                                 <Link

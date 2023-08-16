@@ -39,6 +39,7 @@ function IndexGrocary(props) {
   const [addCompareItems, setAddCompareItems] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
+  const [quantity, setQuantity] = useState([]);
   const blog = useGetAllPostQuery();
   console.log("useGetAllPostQuery", blog);
 
@@ -116,6 +117,7 @@ function IndexGrocary(props) {
   const handleViewClick = (item) => {
     setSelectedProduct(item);
   };
+
   const handleWishClick = async (item) => {
     try {
       const { data, error } = await CreateWish(item._id);
@@ -144,7 +146,11 @@ function IndexGrocary(props) {
   };
   const handleAddToCart = async (item) => {
     try {
-      const { data, error } = await AddToCart(item._id, item?.stockQuantity);
+      const { data, error } = await AddToCart(
+        item._id,
+        item?.stockQuantity,
+        quantity
+      );
       if (error) {
         console.log(error);
         return;
@@ -213,23 +219,30 @@ function IndexGrocary(props) {
     return blogList?.map((item, index) => (
       <div key={index}>
         <div className="blog-box">
-          <div className="blog-box-image">
-            <Link to="/blog" className="blog-image">
-              <img
-                src="../../assets/images/vegetable/blog/1.jpg"
-                className="bg-img  lazyload"
-                alt=""
-              />
+          <div className="product-header">
+            <div className="blog-box-image">
+              <Link to="/blog" className="blog-image">
+                <img
+                  src="../../assets/images/vegetable/blog/1.jpg"
+                  className="bg-img  lazyload"
+                  alt=""
+                />
+              </Link>
+            </div>
+            <Link to="/blog" className="blog-detail">
+              <h6>20 March, 2022</h6>
+              <h5>Fresh Vegetable Online</h5>
             </Link>
           </div>
-          <Link to="/blog" className="blog-detail">
-            <h6>20 March, 2022</h6>
-            <h5>Fresh Vegetable Online</h5>
-          </Link>
         </div>
       </div>
     ));
   };
+  const totalRatings = selectedProduct?.ratings?.reduce(
+    (sum, rating) => sum + rating.star,
+    0
+  );
+  const averageRating = totalRatings / selectedProduct?.ratings?.length;
   const sliders2 = () => {
     return trendingList?.map((item, index) => (
       <div key={index}>
@@ -285,7 +298,7 @@ function IndexGrocary(props) {
             <div className="product-detail">
               {/* <span className="span-name"> {item.productName_en} </span> */}
               <Link to="/product">
-                <h5 className="name">{item.productName_en}</h5>
+                <h5 className="name">{item?.productName_en}</h5>
               </Link>
               <p className="text-content mt-1 mb-2 product-content">
                 Cheesy feet cheesy grin brie. Mascarpone cheese and wine hard
@@ -293,15 +306,61 @@ function IndexGrocary(props) {
                 cheese croque monsieur.
               </p>
               <div className="product-rating mt-2">
-                <Star rating={item?.totalRating} />
+                <Star rating={averageRating} />
                 <span> In Stock </span>
               </div>
-              <h6 className="unit">{item.stockQuantity} units </h6>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div>
+                  <h6 className="unit">{item?.stockQuantity} units </h6>
+                </div>
+                <div className=" mt-2">
+                  <form>
+                    <div className="form-floating ">
+                      <select
+                        className="form-select"
+                        id="floatingSelect12"
+                        aria-label="  select example"
+                        defaultValue=" "
+                        style={{
+                          height: "26px",
+                          width: "104px",
+                          padding: "5px",
+                        }}
+                        onChange={(e) => setQuantity(e.target.value)}
+                      >
+                        <option value="">Quantity</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                      </select>
+                      {/* <label htmlFor="floatingSelect12">Quantity</label> */}
+                    </div>
+                  </form>
+                </div>
+              </div>
               <h5 className="price">
-                <span className="theme-color">${item.Price}</span>{" "}
-                <del>${item.oldPrice} </del>
+                <span className="theme-color">${item?.Price}</span>{" "}
+                <del>${item?.oldPrice} </del>
               </h5>
-              <div className="add-to-cart-box bg-white">
+
+              <div className="add-to-cart-box bg-white mt-2">
                 <button className="btn btn-add-cart addcart-button">
                   <Link to="/cart" onClick={() => handleAddToCart(item)}>
                     Add

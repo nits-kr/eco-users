@@ -222,6 +222,16 @@ export const PostApi = createApi({
         };
       },
     }),
+    createContact: builder.mutation({
+      query: (body) => {
+        console.log("update login data", body);
+        return {
+          url: "/user/contact/contact/create-contact",
+          method: "post",
+          body,
+        };
+      },
+    }),
     userSignUp: builder.mutation({
       query: (body) => {
         console.log("update login data", body);
@@ -311,4 +321,5 @@ export const {
   useCreateReportMutation,
   useGetCartListQuery,
   useAddToWislistListMutation,
+  useCreateContactMutation,
 } = PostApi;

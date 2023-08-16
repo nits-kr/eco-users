@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
@@ -28,15 +29,14 @@ function UserDashboard() {
   const [cardHolder, setCardHolder] = useState("");
   const [cardValid, setCardValid] = useState("");
   const [cvv, setCvv] = useState("");
-  console.log("city", city);
-  console.log("country", country);
+  const [cardNumbers1, setCardNumbers1] = useState("");
+  const [cardHolder1, setCardHolder1] = useState("");
+  const [cardValid1, setCardValid1] = useState("");
+  const [cvv1, setCvv1] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [editedAddress, setEditedAddress] = useState("");
-  console.log("selectedCountry", selectedCountry);
-  console.log("setSelectedCity", selectedCity);
   const [itemId, setItemId] = useState("");
-  console.log("item id", itemId);
   const [createAddress, responseInfo] = useCreateAddressMutation();
   const [updateAddress, res] = useUpdateAddressMutation();
   const [updateCard, re] = useUpdateCardMutation();
@@ -46,16 +46,18 @@ function UserDashboard() {
   const cardList = useGetCardListQuery();
   const [deleteAddress, deleteAddressInfo] = useDeleteAddressMutation();
   const [deleteCard, deleteCardInfo] = useDeleteCardMutation();
-  console.log("deleteAddress", deleteAddress);
-  console.log("address list", addressList);
-  const storedId = localStorage?.getItem("loginId");
   const [newAddress, setNewAddress] = useState([]);
-  // useEffect(() => {
-  //   const reversedList =
-  //     addressList?.data?.results?.addressData?.slice().reverse() ?? [];
-  //   setNewAddress(reversedList);
-  // }, [addressList]);
-  // Define the reversedList function
+  const [newCard, setNewCard] = useState([]);
+  const [isSaveCardDisabled, setIsSaveCardDisabled] = useState(false);
+  const [formData, setFormData] = useState([]);
+
+  const [selectedImage1, setSelectedImage1] = useState(null);
+  const storedId = localStorage.getItem("loginId");
+  const storedPic = localStorage.getItem("profilePic");
+  const storedOrder = localStorage?.getItem("totalOrder")
+  const storedWish = localStorage?.getItem("totalWish")
+  const navigate = useNavigate();
+
   const getReversedList = (list) => {
     return list?.data?.results?.addressData?.slice().reverse() ?? [];
   };
@@ -63,6 +65,42 @@ function UserDashboard() {
     const reversedList = getReversedList(addressList);
     setNewAddress(reversedList);
   }, [addressList]);
+  const getNewCardList = (list) => {
+    return list?.data?.results?.list?.slice().reverse() ?? [];
+  };
+  useEffect(() => {
+    const reversedList = getNewCardList(cardList);
+    setNewCard(reversedList);
+  }, [cardList]);
+
+  const handleDeleteCard = (cardId) => {
+    Swal.fire({
+      title: "Confirm Deletion",
+      text: "Are you sure you want to delete this address?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "No, cancel",
+      customClass: {
+        confirmButton: "btn btn-danger me-2",
+        cancelButton: "btn btn-primary ms-2",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteCard(cardId)
+          .then(() => {
+            const updatedList = newCard.filter((card) => card._id !== cardId);
+            setNewCard(updatedList);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    });
+  };
+
+  localStorage?.setItem("addressId", newAddress[0]?._id);
+  const addressId = localStorage?.getItem("addressId");
 
   const handleSaveChanges = async () => {
     const newAddressData = {
@@ -105,6 +143,7 @@ function UserDashboard() {
       }
     });
   };
+
   const handleSaveCards = () => {
     const newAddress = {
       cardNumber: cardNumbers,
@@ -112,8 +151,20 @@ function UserDashboard() {
       validTime: cardValid,
       cvv: cvv,
     };
-    createCard(newAddress);
+    createCard(newAddress).then(() => {
+      Swal.fire({
+        title: "Card Created!",
+        text: "Your card has been successfully created.",
+        icon: "success",
+        confirmButtonText: "OK",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setIsSaveCardDisabled(true);
+        }
+      });
+    });
   };
+
   const handleSaveChanges1 = () => {
     console.log("handleSaveChanges1", itemId);
     const editAddress = {
@@ -124,19 +175,70 @@ function UserDashboard() {
     };
     updateAddress(editAddress);
   };
+  const handleItem = (item) => {
+    console.log(item);
+    setCardNumbers1(item?.cardNumber);
+    setCardHolder1(item?.cardHolderName);
+    setCvv1(item?.cvv);
+    setCardValid1(item?.validTime);
+  };
   const handleSaveChanges2 = () => {
     console.log("handleSaveChanges1", itemId);
     const editCard = {
       id: itemId,
-      firstName: "ankit",
-      lastName: "sharma",
+      cardNumber: cardNumbers,
+      cardHolderName: cardHolder,
+      validTime: cardValid,
+      cvv: cvv,
+      cardType: "master",
     };
     updateCard(editCard);
   };
-
   useEffect(() => {
     feather.replace();
   }, []);
+  const handleImageUpload1 = (event) => {
+    const file = event.target.files[0];
+    setSelectedImage1(URL.createObjectURL(file));
+    setFormData({ ...formData, uploadImage: event.target.files[0] });
+    // setImageUrl1(URL.createObjectURL(file));
+  };
+  const handleOnSave = () => {
+    const data = new FormData();
+    data.append("address_Id", addressId);
+    // data.append("password", "userEmail");
+    // data.append("mobileNumber", "userName");
+    // data.append("gender", "userEmail");
+    // data.append("birthDay", "userEmail");
+    data.append("profile_Pic", formData.uploadImage);
+    axios
+      .post(
+        `http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/user/user/edit-profile/${storedId}`,
+        data
+      )
+      .then((response) => {
+        setFormData(response.data.results);
+        localStorage.setItem(
+          "profilePic",
+          response?.data?.results?.profile?.profile_Pic
+        );
+        console.log(response.data.results);
+        Swal.fire({
+          title: "Profile Updated!",
+          text: "Your Profile has been updated successfully.",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/dashboard");
+          }
+        });
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
+  };
   return (
     <>
       {/* Loader End */}
@@ -226,14 +328,38 @@ function UserDashboard() {
                   <div className="profile-contain">
                     <div className="profile-image">
                       <div className="position-relative">
-                        <img
+                        {/* <img
                           src="../assets/images/inner-page/user/1.jpg"
                           className=" lazyload update_img"
                           alt=""
-                        />
+                        /> */}
+                        {selectedImage1 ? (
+                          <img
+                            src={selectedImage1}
+                            alt=""
+                            style={{ height: "150px" }}
+                          />
+                        ) : storedPic ? (
+                          <img src={storedPic} alt="" />
+                        ) : (
+                          <img
+                            src="../assets/images/inner-page/user/1.jpg"
+                            alt=""
+                          />
+                        )}
                         <div className="cover-icon">
                           <i className="fa-solid fa-pen">
-                            <input type="file" onChange="readURL(this,0)" />
+                            {/* <input type="file" onChange="readURL(this,0)" /> */}
+                            <input
+                              className="file-upload"
+                              type="file"
+                              accept="image/*"
+                              name="upload-image"
+                              id="upload-image"
+                              onChange={(e) =>
+                                handleImageUpload1(e, "uploadImage")
+                              }
+                            />
                           </i>
                         </div>
                       </div>
@@ -404,7 +530,7 @@ function UserDashboard() {
                               />
                               <div className="totle-detail">
                                 <h5>Total Order</h5>
-                                <h3>3658</h3>
+                                <h3>{storedOrder}</h3>
                               </div>
                             </div>
                           </div>
@@ -440,7 +566,7 @@ function UserDashboard() {
                               />
                               <div className="totle-detail">
                                 <h5>Total Wishlist</h5>
-                                <h3>32158</h3>
+                                <h3> {storedWish} </h3>
                               </div>
                             </div>
                           </div>
@@ -1435,7 +1561,7 @@ function UserDashboard() {
                         </button>
                       </div>
                       <div className="row g-4">
-                        {cardList?.data?.results?.list?.map((item, index) => {
+                        {newCard?.map((item, index) => {
                           return (
                             <div
                               className="col-xxl-4 col-xl-6 col-lg-12 col-sm-6"
@@ -1485,17 +1611,21 @@ function UserDashboard() {
                                     data-bs-toggle="modal"
                                     data-bs-target="#editCard1"
                                     to="#"
-                                    onClick={() => setItemId(item?._id)}
+                                    onClick={() => {
+                                      setItemId(item?._id);
+                                      handleItem(item);
+                                    }}
                                   >
                                     <i className="far fa-edit" /> edit
                                   </Link>
                                   <Link
                                     to="#"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#removeProfile"
-                                    onClick={() => {
-                                      deleteCard(item?._id);
-                                    }}
+                                    // data-bs-toggle="modal"
+                                    // data-bs-target="#removeProfile"
+                                    // onClick={() => {
+                                    //   deleteCard(item?._id);
+                                    // }}
+                                    onClick={() => handleDeleteCard(item._id)}
                                   >
                                     <i className="far fa-minus-square" /> delete
                                   </Link>
@@ -2379,7 +2509,7 @@ function UserDashboard() {
                 type="button"
                 data-bs-dismiss="modal"
                 className="btn theme-bg-color btn-md fw-bold text-light"
-                onClick={handleSaveChanges1}
+                onClick={handleOnSave}
               >
                 Save changes
               </button>
@@ -2490,7 +2620,10 @@ function UserDashboard() {
                 </div>
               </div>
             </div>
-            <div className="modal-footer">
+            <div
+              className="modal-footer"
+              style={{ cursor: isSaveCardDisabled ? "not-allowed" : "pointer" }}
+            >
               <button
                 type="button"
                 className="btn btn-animation btn-md fw-bold"
@@ -2502,6 +2635,8 @@ function UserDashboard() {
                 type="button"
                 className="btn theme-bg-color btn-md fw-bold text-light"
                 onClick={handleSaveCards}
+                disabled={isSaveCardDisabled}
+                // style={{ cursor: isSaveCardDisabled ? 'not-allowed' : 'pointer' }}
               >
                 Save Card
               </button>
@@ -2541,7 +2676,7 @@ function UserDashboard() {
                         type="text"
                         className="form-control"
                         id="finame"
-                        value={cardHolder}
+                        defaultValue={cardHolder1}
                         onChange={(e) => setCardHolder(e.target.value)}
                       />
                       <label htmlFor="finame">Card Holder Name</label>
@@ -2555,7 +2690,7 @@ function UserDashboard() {
                         type="text"
                         className="form-control"
                         id="laname"
-                        value={cardNumbers}
+                        defaultValue={cardNumbers1}
                         onChange={(e) => setCardNumbers(e.target.value)}
                       />
                       <label htmlFor="laname">Card Number</label>
@@ -2569,7 +2704,7 @@ function UserDashboard() {
                         type="text"
                         className="form-control"
                         id="laname"
-                        value={cardValid}
+                        defaultValue={cardValid1}
                         onChange={(e) => setCardValid(e.target.value)}
                       />
                       <label htmlFor="laname">Valid UpTo</label>
@@ -2583,7 +2718,7 @@ function UserDashboard() {
                         type="text"
                         className="form-control"
                         id="laname"
-                        value={cvv}
+                        defaultValue={cvv1}
                         onChange={(e) => setCvv(e.target.value)}
                       />
                       <label htmlFor="laname"> CVV </label>

@@ -26,30 +26,6 @@ function OrderTracking({ orderStatus }) {
     };
     orderDetails(newAddress);
   };
-  useEffect(() => {
-    switch (orderStatus) {
-      case "pending":
-        setPage(1);
-        break;
-      case "processing":
-        setPage(2);
-        break;
-      case "pre-production":
-        setPage(3);
-        break;
-      case "in-production":
-        setPage(4);
-        break;
-      case "shipped":
-        setPage(5);
-        break;
-      case "delivered":
-        setPage(6);
-        break;
-      default:
-        setPage(1);
-    }
-  }, [orderStatus]);
 
   useEffect(() => {
     feather.replace();
@@ -137,7 +113,7 @@ function OrderTracking({ orderStatus }) {
             <div className="col-xxl-3 col-xl-4 col-lg-6">
               <div className="order-image">
                 <img
-                  src="../assets/images/vegetable/product/6.png"
+                  src={order?.products[0]?.product_Id?.product_Pic[0]} 
                   className="img-fluid  lazyload"
                   alt=""
                 />

@@ -1,79 +1,122 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Swal from 'sweetalert2';
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from "google-maps-react";
-import { CreateContact } from "./HttpServices";
+// import { CreateContact } from "./HttpServices";
 import Header from "./Header";
 import Footer from "./Footer";
 import Spinner from "./Spinner";
+import { useCreateContactMutation } from "../services/Post";
 
 function ContactUs(props) {
   const [firstName, setFirstName] = useState("");
+  const [CreateContact, res] = useCreateContactMutation();
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [message, setMessage] = useState("");
   const [currentLocation, setCurrentLocation] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [longitude, setLongitude] = useState(null);
+  const [latitude, setLatitude] = useState(null);
 
   useEffect(() => {
-    // Get current location using Geolocation API
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setCurrentLocation({ latitude, longitude });
-        },
-        (error) => {
-          console.error("Error getting current location:", error);
-        }
-      );
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-    }
+    navigator.geolocation.getCurrentPosition(function (position) {
+      console.log("Latitude is :", position.coords.latitude);
+      console.log("Longitude is :", position.coords.longitude);
+      setLatitude(position.coords.latitude);
+      setLongitude(position.coords.longitude);
+    });
   }, []);
+  console.log(longitude);
+  console.log(latitude);
+
+  // useEffect(() => {
+  //   // Get current location using Geolocation API
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       (position) => {
+  //         const { latitude, longitude } = position.coords;
+  //         setCurrentLocation({ latitude, longitude });
+  //       },
+  //       (error) => {
+  //         console.error("Error getting current location:", error);
+  //       }
+  //     );
+  //   } else {
+  //     console.error("Geolocation is not supported by this browser.");
+  //   }
+  // }, []);
+
+  // const handleCreateContact = async (e) => {
+  //   e.preventDefault();
+
+  //   if (currentLocation) {
+  //     const { latitude, longitude } = currentLocation;
+  //     try {
+  //       props.setProgress(50);
+  //       setLoading(true);
+  //       const { data, error } = await CreateContact({
+  //         firstName: firstName,
+  //         lastName: lastName,
+  //         Email: email,
+  //         mobileNumber: phoneNumber,
+  //         message: message,
+  //         longitude:latitude,
+  //         latitude:longitude,
+  //       });
+  //       setLoading(false);
+  //       props.setProgress(100);
+  //       if (error) {
+  //         console.log(error);
+  //       } else {
+  //         console.log(data);
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   } else {
+  //     console.error("Current location is not available.");
+  //   }
+  // };
 
   const handleCreateContact = async (e) => {
     e.preventDefault();
-
-    if (currentLocation) {
-      const { latitude, longitude } = currentLocation;
-      try {
-        props.setProgress(50);
-        setLoading(true)
-        const { data, error } = await CreateContact(
-          firstName,
-          lastName,
-          email,
-          phoneNumber,
-          message,
-          latitude,
-          longitude
-        );
-        setLoading(false)
-        props.setProgress(100);
-        if (error) {
-          console.log(error);
-        } else {
-          console.log(data);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      console.error("Current location is not available.");
+    const newContactData = {
+      firstName: firstName,
+      lastName: lastName,
+      Email: email,
+      mobileNumber: phoneNumber,
+      message: message,
+    };
+  
+    try {
+      const createdContact = await CreateContact(newContactData);
+      console.log('Contact created successfully:', createdContact);
+      Swal.fire({
+        title: 'Contact Created!',
+        text: 'Your contact has been successfully created.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    } catch (error) {
+      console.error('Error creating contact:', error);
     }
   };
+  
+  
+  
 
   useEffect(() => {
     feather.replace();
   }, []);
   return (
     <>
-    {loading && <Spinner />}
+      {loading && <Spinner />}
       {/* Loader Start */}
       {/* <div className="fullpage-loader">
      <span />
@@ -85,7 +128,7 @@ function ContactUs(props) {
    </div> */}
       {/* Loader End */}
       {/* Header Start */}
-      <Header Dash={"contact"}/>
+      <Header Dash={"contact"} />
       {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
@@ -233,7 +276,7 @@ function ContactUs(props) {
                 <h2>Contact Us</h2>
               </div>
               <div className="right-sidebar-box">
-                <form onSubmit={handleCreateContact}>
+                <form>
                   <div className="row">
                     <div className="col-xxl-6 col-lg-12 col-sm-6">
                       <div className="mb-md-4 mb-3 custom-form">
@@ -246,7 +289,7 @@ function ContactUs(props) {
                             className="form-control"
                             id="firstName"
                             placeholder="Enter First Name"
-                            value={firstName}
+                            // value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
                           />
                           <i className="fa-solid fa-user" />
@@ -264,7 +307,7 @@ function ContactUs(props) {
                             className="form-control"
                             id="lastName"
                             placeholder="Enter Last Name"
-                            value={lastName}
+                            // value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                           />
                           <i className="fa-solid fa-user" />
@@ -282,7 +325,7 @@ function ContactUs(props) {
                             className="form-control"
                             id="email"
                             placeholder="Enter Email Address"
-                            value={email}
+                            // value={email}
                             onChange={(e) => setEmail(e.target.value)}
                           />
                           <i className="fa-solid fa-envelope" />
@@ -301,7 +344,7 @@ function ContactUs(props) {
                             id="phoneNumber"
                             placeholder="Enter Your Phone Number"
                             maxLength={10}
-                            value={phoneNumber}
+                            // value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value)}
                             onInput={(e) => {
                               if (e.target.value.length > e.target.maxLength) {
@@ -327,7 +370,7 @@ function ContactUs(props) {
                             id="message"
                             placeholder="Enter Your Message"
                             rows={6}
-                            value={message}
+                            // value={message}
                             onChange={(e) => setMessage(e.target.value)}
                           />
                           <i className="fa-solid fa-message" />
@@ -338,6 +381,7 @@ function ContactUs(props) {
                   <button
                     className="btn btn-animation btn-md fw-bold ms-auto"
                     type="submit"
+                    onClick={handleCreateContact}
                   >
                     Send Message
                   </button>
@@ -352,9 +396,9 @@ function ContactUs(props) {
       <section className="map-section">
         <div className="container-fluid p-0">
           <div className="map-box">
-            {currentLocation ? (
+            {latitude !== null && longitude !== null ? (
               <iframe
-                src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d0!2d${currentLocation.longitude}!3d${currentLocation.latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z${currentLocation.latitude}%2C${currentLocation.longitude}!5e0!3m2!1sen!2sin!4v1652217109535!5m2!1sen!2sin`}
+                src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d0!2d${longitude}!3d${latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z${latitude}%2C${longitude}!5e0!3m2!1sen!2sin!4v1652217109535!5m2!1sen!2sin`}
                 style={{ border: 0 }}
                 allowFullScreen=""
                 loading="lazy"

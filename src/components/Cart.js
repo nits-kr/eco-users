@@ -83,9 +83,12 @@ function Cart() {
   };
   const handleWishClick = async (item) => {
     const wishId = {
-      id: item?._id,
+      id: item?.products[0]?.product_Id?._id,
     };
     const result = await wishAdd(wishId);
+    setTimeout(() => {
+      window?.location?.reload();
+    }, 500);
     console.log(result);
   };
   const handleDecrease = async (item) => {
@@ -416,7 +419,7 @@ function Cart() {
                               >
                                 <Link
                                   className="btn p-0 position-relative header-wishlist me-2"
-                                  to="#"
+                                  to="/wishlist"
                                   title3="Wishlist"
                                   onClick={() => handleWishClick(item)}
                                 >

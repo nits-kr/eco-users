@@ -193,7 +193,7 @@ function Footer() {
                       </Link>
                     </li>
                     <li>
-                      <Link to="/search" className="text-content">
+                      <Link to="/shop/:id" className="text-content">
                         Search
                       </Link>
                     </li>

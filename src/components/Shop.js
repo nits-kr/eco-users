@@ -22,9 +22,7 @@ import {
   DescendingProduct,
   TrandingProduct,
   DiscountProduct,
-  FilterPrice,
   AddCompare,
-  ProductRating,
 } from "./HttpServices";
 import Star from "./Star";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -52,16 +50,15 @@ function Shop(props) {
   const [addCompareItems, setAddCompareItems] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
   const [selectedWeight, setSelectedWeight] = useState("");
-  const [priceRange, setPriceRange] = useState([0, 11000]); // Initial price range
   const [loading, setLoading] = useState(false);
   const [subSubProduct, r] = useSubSubProductMutation();
   const [filterProduct, re] = useFilterPriceMutation();
-  // const [searchQuery, setSearchQuery] = useState("");
+  const [quantity, setQuantity] = useState([]);
+
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
   const location = useLocation();
   const dispatch = useDispatch();
-  // const searchQuery = new URLSearchParams(location.search).get("query");
   console.log("const [filterProduct, re] = useFilterPriceMutation();", re);
   const [currentValue, setCurrentValue] = useState(0);
   console.log(
@@ -88,7 +85,6 @@ function Shop(props) {
         return;
       }
       setProductListItems(data?.results?.listData);
-      console.log("low to high setProductListItems", data);
     } catch (error) {
       console.log(error);
     }
@@ -134,7 +130,7 @@ function Shop(props) {
       setLoading(true);
       const { data, error } = await ProductList();
       error ? console.log(error) : console.log(data);
-      setProductListItems(data?.results?.list);
+      setProductListItems(data?.results?.list?.reverse());
       setLoading(true);
       props.setProgress(50);
       console.log(data?.results?.list);
@@ -199,7 +195,11 @@ function Shop(props) {
   };
   const handleAddToCart = async (item) => {
     try {
-      const { data, error } = await AddToCart(item._id, item?.stockQuantity);
+      const { data, error } = await AddToCart(
+        item._id,
+        item?.stockQuantity,
+        quantity
+      );
       if (error) {
         console.log(error);
         return;
@@ -305,7 +305,6 @@ function Shop(props) {
     slidesToScroll: 1,
   };
   const handleViewDetails = () => {
-    // window.location.href = `/product/${selectedProduct._id}`;
     setTimeout(() => {
       window.location.reload();
     }, 1000);
@@ -1741,9 +1740,64 @@ function Shop(props) {
                                   />
                                   <span> {item?.ratings?.length} reviews </span>
                                 </div>
-                                <h6 className="unit">
+                                {/* <h6 className="unit">
                                   {item.stockQuantity} units{" "}
-                                </h6>
+                                </h6> */}
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <div>
+                                    <h6 className="unit">
+                                      {item?.stockQuantity} units{" "}
+                                    </h6>
+                                  </div>
+                                  <div className=" mt-2">
+                                    <form>
+                                      <div className="form-floating ">
+                                        <select
+                                          className="form-select"
+                                          id="floatingSelect12"
+                                          aria-label="  select example"
+                                          defaultValue=" "
+                                          style={{
+                                            height: "26px",
+                                            width: "104px",
+                                            padding: "5px",
+                                          }}
+                                          onChange={(e) =>
+                                            setQuantity(e.target.value)
+                                          }
+                                        >
+                                          <option value="">Quantity</option>
+                                          <option value="1">1</option>
+                                          <option value="2">2</option>
+                                          <option value="3">3</option>
+                                          <option value="4">4</option>
+                                          <option value="5">5</option>
+                                          <option value="6">6</option>
+                                          <option value="7">7</option>
+                                          <option value="8">8</option>
+                                          <option value="9">9</option>
+                                          <option value="10">10</option>
+                                          <option value="11">11</option>
+                                          <option value="12">12</option>
+                                          <option value="13">13</option>
+                                          <option value="14">14</option>
+                                          <option value="15">15</option>
+                                          <option value="16">16</option>
+                                          <option value="17">17</option>
+                                          <option value="18">18</option>
+                                          <option value="19">19</option>
+                                          <option value="20">20</option>
+                                        </select>
+                                        {/* <label htmlFor="floatingSelect12">Quantity</label> */}
+                                      </div>
+                                    </form>
+                                  </div>
+                                </div>
                                 <h5 className="price">
                                   <span className="theme-color">
                                     ${item.Price}
@@ -1860,107 +1914,105 @@ function Shop(props) {
       {/* Footer Section End */}
       {/* Quick View Modal Box Start */}
 
-      
-        <div
-          className="modal fade theme-modal view-modal"
-          id="view"
-          tabIndex={-1}
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-sm-down">
-            <div className="modal-content">
-              <div className="modal-header p-0">
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <i className="fa-solid fa-xmark" />
-                </button>
-              </div>
-              <div className="modal-body">
-                <div className="row g-sm-4 g-2">
-                  <div className="col-lg-6">
-                    <div className="slider-image">
-                      <img
-                        src={selectedProduct?.product_Pic[0]}
-                        className="img-fluid lazyload"
-                        alt=""
-                      />
-                    </div>
+      <div
+        className="modal fade theme-modal view-modal"
+        id="view"
+        tabIndex={-1}
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-sm-down">
+          <div className="modal-content">
+            <div className="modal-header p-0">
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              >
+                <i className="fa-solid fa-xmark" />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="row g-sm-4 g-2">
+                <div className="col-lg-6">
+                  <div className="slider-image">
+                    <img
+                      src={selectedProduct?.product_Pic[0]}
+                      className="img-fluid lazyload"
+                      alt=""
+                    />
                   </div>
-                  <div className="col-lg-6">
-                    <div className="right-sidebar-modal">
-                      <div>
-                        <h4 className="title-name">
-                          {selectedProduct?.productName_en}
-                        </h4>
-                        <h4 className="price">${selectedProduct?.Price} </h4>
-                        <div className="product-rating">
-                          <Star rating={averageRating} />
-                          <span className="ms-2">
-                            {selectedProduct?.ratings?.length} Reviews
-                          </span>
-                          <span className="ms-2 text-danger">
-                            6 sold in last 16 hours
-                          </span>
-                        </div>
-                        <div className="product-detail">
-                          <h4>Product Details :</h4>
-                          <p>{selectedProduct?.Description}</p>
-                        </div>
-                        <ul className="brand-list">
-                          <li>
-                            <div className="brand-box">
-                              <h5>Brand Name:</h5>
-                              <h6> {selectedProduct?.brandName} </h6>
-                            </div>
-                          </li>
-                          <li>
-                            <div className="brand-box">
-                              <h5>Product Code:</h5>
-                              <h6>{selectedProduct?.SKU} </h6>
-                            </div>
-                          </li>
-                          <li>
-                            <div className="brand-box">
-                              <h5>Product Type:</h5>
-                              <h6>{selectedProduct?.Tags} </h6>
-                            </div>
-                          </li>
-                        </ul>
-                        <div className="select-size">
-                          <h4>Size :</h4>
-                          <select
-                            className="form-select select-form-size"
-                            value={selectedWeight}
-                            onChange={(e) => setSelectedWeight(e.target.value)}
+                </div>
+                <div className="col-lg-6">
+                  <div className="right-sidebar-modal">
+                    <div>
+                      <h4 className="title-name">
+                        {selectedProduct?.productName_en}
+                      </h4>
+                      <h4 className="price">${selectedProduct?.Price} </h4>
+                      <div className="product-rating">
+                        <Star rating={averageRating} />
+                        <span className="ms-2">
+                          {selectedProduct?.ratings?.length} Reviews
+                        </span>
+                        <span className="ms-2 text-danger">
+                          6 sold in last 16 hours
+                        </span>
+                      </div>
+                      <div className="product-detail">
+                        <h4>Product Details :</h4>
+                        <p>{selectedProduct?.Description}</p>
+                      </div>
+                      <ul className="brand-list">
+                        <li>
+                          <div className="brand-box">
+                            <h5>Brand Name:</h5>
+                            <h6> {selectedProduct?.brandName} </h6>
+                          </div>
+                        </li>
+                        <li>
+                          <div className="brand-box">
+                            <h5>Product Code:</h5>
+                            <h6>{selectedProduct?.SKU} </h6>
+                          </div>
+                        </li>
+                        <li>
+                          <div className="brand-box">
+                            <h5>Product Type:</h5>
+                            <h6>{selectedProduct?.Tags} </h6>
+                          </div>
+                        </li>
+                      </ul>
+                      <div className="select-size">
+                        <h4>Size :</h4>
+                        <select
+                          className="form-select select-form-size"
+                          value={selectedWeight}
+                          onChange={(e) => setSelectedWeight(e.target.value)}
+                        >
+                          <option value="">Select Size</option>
+                          <option value="0.5">1/2 KG</option>
+                          <option value="1">1 KG</option>
+                          <option value="1.5">1.5 KG</option>
+                        </select>
+                      </div>
+                      <div className="modal-button">
+                        <Link to="/cart">
+                          <button
+                            className="btn btn-md add-cart-button icon"
+                            onClick={() => handleAddToCart(selectedProduct)}
                           >
-                            <option value="">Select Size</option>
-                            <option value="0.5">1/2 KG</option>
-                            <option value="1">1 KG</option>
-                            <option value="1.5">1.5 KG</option>
-                          </select>
-                        </div>
-                        <div className="modal-button">
-                          <Link to="/cart">
-                            <button
-                              className="btn btn-md add-cart-button icon"
-                              onClick={() => handleAddToCart(selectedProduct)}
-                            >
-                              Add To Cart
-                            </button>
-                          </Link>
-                          <Link
-                            to={`/product/${selectedProduct?._id}`}
-                            className="btn theme-bg-color view-button icon text-white fw-bold btn-md"
-                            onClick={handleViewDetails}
-                          >
-                            View More Details
-                          </Link>
-                        </div>
+                            Add To Cart
+                          </button>
+                        </Link>
+                        <Link
+                          to={`/product/${selectedProduct?._id}`}
+                          className="btn theme-bg-color view-button icon text-white fw-bold btn-md"
+                          onClick={handleViewDetails}
+                        >
+                          View More Details
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -1969,6 +2021,7 @@ function Shop(props) {
             </div>
           </div>
         </div>
+      </div>
 
       {/* Quick View Modal Box End */}
       {/* Location Modal Start */}

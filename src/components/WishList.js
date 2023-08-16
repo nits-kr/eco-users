@@ -7,12 +7,39 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { DeleteWishList, WishListItems } from "./HttpServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faXmark} from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import BreadCrumb from "./BreadCrumb";
+import Star from "./Star";
+import {
+  AddToCart,
+} from "./HttpServices";
 
 function WishList() {
   const [wishList, setWishList] = useState([]);
-  const [deleteWishListItems, setDeleteWishListItems] = useState([])
+  localStorage?.setItem("totalWish", wishList?.length)
+  const [cartListItems, setCartListItems] = useState([]);
+  const [quantity, setQuantity] = useState([]);
+
+  const handleAddToCart = async (item) => {
+    try {
+      const { data, error } = await AddToCart(
+        item?.product_Id?._id,
+        item?.stockQuantity,
+        quantity
+      );
+      if (error) {
+        console.log(error);
+        return;
+      }
+      const newCartItems = [...cartListItems, data];
+      setCartListItems(newCartItems);
+      console.log("prevCartItems", newCartItems);
+      console.log("New cart items", cartListItems);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -28,14 +55,15 @@ function WishList() {
   };
   console.log("wishlist", wishList);
   const deleteWishList = (_id) => {
-   // alert(_id)
-    deleteData(_id)
-  }
+    deleteData(_id);
+  };
   const deleteData = async (_id) => {
     try {
       const { data, error } = await DeleteWishList(_id);
       error ? console.log(error) : console.log(data);
-      setWishList((prevWishList) => prevWishList.filter((item) => item._id !== _id));
+      setWishList((prevWishList) =>
+        prevWishList.filter((item) => item._id !== _id)
+      );
       console.log(data.results.deleteDta);
     } catch (error) {
       console.log(error);
@@ -125,8 +153,17 @@ function WishList() {
         <div className="container-fluid-lg">
           <div className="row g-sm-3 g-2">
             {wishList.map((item, index) => {
+              const totalRatings = item?.product_Id?.ratings?.reduce(
+                (sum, rating) => sum + rating?.star,
+                0
+              );
+              const averageRating =
+                totalRatings / item?.product_Id?.ratings?.length;
               return (
-                <div className="col-xxl-2 col-lg-3 col-md-4 col-6 product-box-contain" key={index}>
+                <div
+                  className="col-xxl-2 col-lg-3 col-md-4 col-6 product-box-contain"
+                  key={index}
+                >
                   <div className="product-box-3 h-100">
                     <div className="product-header">
                       <div className="product-image">
@@ -138,33 +175,113 @@ function WishList() {
                           />
                         </Link>
                         <div className="product-header-top">
-                          <button className="btn wishlist-button close_button" onClick={() => deleteWishList(item._id)}>
-                            {/* <i data-feather="x" /> */}
+                          <button
+                            className="btn wishlist-button close_button"
+                            onClick={() => deleteWishList(item._id)}
+                          >
                             <FontAwesomeIcon icon={faXmark} />
                           </button>
                         </div>
                       </div>
                     </div>
                     <div className="product-footer">
+                      <Link to="/product">
+                        <h5 className="name">
+                          {item?.product_Id?.productName_en}
+                        </h5>
+                      </Link>
                       <div className="product-detail">
-                        <span className="span-name">Vegetable</span>
-                        <Link to="/product">
+                        {/* <span className="span-name">
+                          {item?.product_Id?.productName_en}
+                        </span> */}
+                        {/* <Link to="/product">
                           <h5 className="name">
-                          {item?.product_Id?.productName}
+                            {item?.product_Id?.productName_en}
                           </h5>
-                        </Link>
-                        <h6 className="unit mt-1">250 ml</h6>
+                        </Link> */}
+                        <div className="product-rating mt-2">
+                          <Star
+                            rating={averageRating || 0}
+                            totalRating={item?.totalRating}
+                          />
+                          <span>
+                            {" "}
+                            {item?.product_Id?.ratings?.length} reviews{" "}
+                          </span>
+                        </div>
+                        <h6 className="unit mt-1">
+                          {item?.product_Id?.weight}
+                        </h6>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <div>
+                            <h6 className="unit">
+                              {item?.product_Id?.stockQuantity} units{" "}
+                            </h6>
+                          </div>
+                          <div className=" mt-2">
+                            <form>
+                              <div className="form-floating ">
+                                <select
+                                  className="form-select"
+                                  id="floatingSelect12"
+                                  aria-label="  select example"
+                                  defaultValue=" "
+                                  style={{
+                                    height: "26px",
+                                    width: "104px",
+                                    padding: "5px",
+                                  }}
+                                  onChange={(e) => setQuantity(e.target.value)}
+                                >
+                                  <option value="">Quantity</option>
+                                  <option value="1">1</option>
+                                  <option value="2">2</option>
+                                  <option value="3">3</option>
+                                  <option value="4">4</option>
+                                  <option value="5">5</option>
+                                  <option value="6">6</option>
+                                  <option value="7">7</option>
+                                  <option value="8">8</option>
+                                  <option value="9">9</option>
+                                  <option value="10">10</option>
+                                  <option value="11">11</option>
+                                  <option value="12">12</option>
+                                  <option value="13">13</option>
+                                  <option value="14">14</option>
+                                  <option value="15">15</option>
+                                  <option value="16">16</option>
+                                  <option value="17">17</option>
+                                  <option value="18">18</option>
+                                  <option value="19">19</option>
+                                  <option value="20">20</option>
+                                </select>
+                                {/* <label htmlFor="floatingSelect12">Quantity</label> */}
+                              </div>
+                            </form>
+                          </div>
+                        </div>
                         <h5 className="price">
-                          <span className="theme-color">${item?.product_Id?.Price} </span>
+                          <span className="theme-color">
+                            ${item?.product_Id?.Price}{" "}
+                          </span>
                           <del>${item?.product_Id?.oldPrice}</del>
                         </h5>
                         <div className="add-to-cart-box bg-white mt-2">
-                          <button className="btn btn-add-cart addcart-button">
+                          <Link
+                            className="btn btn-add-cart addcart-button"
+                            to="/cart"
+                            onClick={() => handleAddToCart(item)}
+                          >
                             Add
                             <span className="add-icon bg-light-gray">
                               <i className="fa-solid fa-plus" />
                             </span>
-                          </button>
+                          </Link>
                           <div className="cart_qty qty-box">
                             <div className="input-group bg-white">
                               <button
@@ -196,9 +313,8 @@ function WishList() {
                     </div>
                   </div>
                 </div>
-              )
+              );
             })}
-
           </div>
         </div>
       </section>
