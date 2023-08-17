@@ -338,26 +338,8 @@ export async function ProductDetails(id) {
       `${process.env.REACT_APP_APIENDPOINT}user/product/product/details/${id}`
     );
     console.log(data);
-    // if (data?.error) {
-    //     Swal.fire({
-    //         title: data?.message,
-    //         icon: "error",
-    //         confirmButtonText: "ok",
-    //         confirmButtonColor: "red"
-    //     })
-    // }
     return { data };
   } catch (error) {
-    // if (error.response) {
-    //     console.log(error?.response?.data.message);
-    //     Swal.fire({
-    //         title: error?.response?.data.message,
-    //         text: "",
-    //         icon: "error",
-    //         confirmButtonText: "ok",
-    //         confirmButtonColor: "red"
-    //     })
-    // }
     return error;
   }
 }
@@ -395,10 +377,10 @@ export async function ProductSearch(searchQuery) {
     return error;
   }
 }
-export async function RelatedProduct() {
+export async function RelatedProduct(id) {
   try {
     const { data } = await UserHttpService.post(
-      `${process.env.REACT_APP_APIENDPOINT}user/product/product/releted-product/644f499f26d12cdc4b7278bb`
+      `${process.env.REACT_APP_APIENDPOINT}user/product/product/releted-product/${id}`
     );
     console.log(data);
     if (data?.error) {

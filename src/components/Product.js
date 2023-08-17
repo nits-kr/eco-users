@@ -22,9 +22,11 @@ import { useCreateReportMutation } from "../services/Post";
 import { AddToCart } from "./HttpServices";
 import { useAddReviewMutation } from "../services/Post";
 import GetStar from "./GetStar";
+import { useRelatedProductDetailsMutation } from "../services/Post";
 
 function Product(props) {
   const relatedProduct = useGetRelatedProductQuery();
+  const [relatedDetails, respons] = useRelatedProductDetailsMutation()
   const [addReview, response] = useAddReviewMutation();
   const [relatedProductItems, setRelatedProductItems] = useState([]);
   const [searchKey, setSearchKey] = useState("");
@@ -48,7 +50,7 @@ function Product(props) {
   const [website, setWebsite] = useState([]);
   const [title, setTitle] = useState([]);
   const [comment, setComment] = useState([]);
-  const [count, setCount] = useState(1);
+  const [count, setCount] = useState(0);
 
   const [formData, setFormData] = useState({
     r1: "",
@@ -108,6 +110,18 @@ function Product(props) {
     } catch (error) {
       console.error("Error creating contact:", error);
     }
+  };
+  useEffect(() => {
+    related()
+  }, [id])
+  const relatedProductDetail = respons?.data?.results?.productData;
+  console.log(relatedProductDetail);
+  console.log(respons);
+  const related = () => {
+    const newAddress = {
+      id: id
+    };
+    relatedDetails(newAddress);
   };
   const handleSaveReport = () => {
     Swal.fire({
@@ -177,9 +191,9 @@ function Product(props) {
     } catch (error) {
       console.log(error);
     }
-    // setTimeout(() => {
-    //   window?.location?.reload();
-    // }, 500);
+    setTimeout(() => {
+      window?.location?.reload();
+    }, 500);
   };
   const fetchCartListData = () => {
     if (isSuccess) {
@@ -214,6 +228,108 @@ function Product(props) {
   }, []);
   var deadline = new Date(Date.parse(new Date()) + 15 * 24 * 60 * 60 * 1000);
   UseCountdownTimer(deadline);
+
+  const sliders2 = () => {
+    return relatedProductDetail?.map((item, index) => (
+      <div key={index}>
+        <div className="product-box-3 wow fadeInUp">
+          <div className="product-header">
+            <div className="product-image">
+              <Link to="/product-left-2">
+                <img
+                  src={item?.product_Pic?.map((index) => index)}
+                  className="img-fluid  lazyload"
+                  alt=""
+                />
+              </Link>
+              <ul className="product-option">
+                <li
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="View"
+                >
+                  <Link to="#" data-bs-toggle="modal" data-bs-target="#view">
+                    <i data-feather="eye" />
+                  </Link>
+                </li>
+                <li
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="Compare"
+                >
+                  <Link to="/compare">
+                    <i data-feather="refresh-cw" />
+                  </Link>
+                </li>
+                <li
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="Wishlist"
+                >
+                  <Link to="/wishlist" className="notifi-wishlist">
+                    <i data-feather="heart" />
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="product-footer">
+            <div className="product-detail">
+              <span className="span-name"> {item?.productName} </span>
+              <Link to="/product">
+                <h5 className="name">Chocolate Chip Cookies 250 g</h5>
+              </Link>
+              <div className="product-rating mt-2">
+                <ul className="rating">
+                  <Star />
+                </ul>
+                <span>(5.0)</span>
+              </div>
+              <h6 className="unit">500 G</h6>
+              <h5 className="price">
+                <span className="theme-color"> ${item?.Price} </span>{" "}
+                <del> ${item?.oldPrice} </del>
+              </h5>
+              <div className="add-to-cart-box bg-white">
+                <button className="btn btn-add-cart addcart-button">
+                  Add
+                  <span className="add-icon bg-light-gray">
+                    <i className="fa-solid fa-plus" />
+                  </span>
+                </button>
+                <div className="cart_qty qty-box">
+                  <div className="input-group bg-white">
+                    <button
+                      type="button"
+                      className="qty-left-minus bg-gray"
+                      data-type="minus"
+                      data-field=""
+                    >
+                      <i className="fa fa-minus" aria-hidden="true" />
+                    </button>
+                    <input
+                      className="form-control input-number qty-input"
+                      type="text"
+                      name="quantity"
+                      defaultValue={0}
+                    />
+                    <button
+                      type="button"
+                      className="qty-right-plus bg-gray"
+                      data-type="plus"
+                      data-field=""
+                    >
+                      <i className="fa fa-plus" aria-hidden="true" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ));
+  };
 
   return (
     <>
@@ -434,6 +550,23 @@ function Product(props) {
                         <div className="note-box product-packege">
                           <div className="cart_qty qty-box product-qty">
                             <div className="input-group">
+                            <button
+                                type="button"
+                                className="qty-left-minus"
+                                data-type="minus"
+                                data-field=""
+                                onClick={() => setCount(count - 1)}
+                              >
+                                <i className="fa fa-minus" aria-hidden="true" />
+                              </button>
+                              <input
+                                className="form-control input-number qty-input"
+                                type="text"
+                                name="quantity"
+                                value={count}
+                              />
+                              {/* {count} */}
+                              
                               <button
                                 type="button"
                                 className="qty-right-plus"
@@ -443,26 +576,10 @@ function Product(props) {
                               >
                                 <i className="fa fa-plus" aria-hidden="true" />
                               </button>
-                              <input
-                                className="form-control input-number qty-input"
-                                type="text"
-                                name="quantity"
-                                value={count}
-                              />
-                              {/* {count} */}
-                              <button
-                                type="button"
-                                className="qty-left-minus"
-                                data-type="minus"
-                                data-field=""
-                                onClick={() => setCount(count - 1)}
-                              >
-                                <i className="fa fa-minus" aria-hidden="true" />
-                              </button>
                             </div>
                           </div>
                           <Link
-                            // to="/cart"
+                            to="/cart"
                             // onClick={() => handleAddToCart(item)}
                             className="btn btn-md bg-dark cart-button text-white w-100"
                             onClick={() => handleAddToCart()}
@@ -653,20 +770,7 @@ function Product(props) {
                           >
                             <div className="product-description">
                               <div className="nav-desh">
-                                <p>
-                                  Jelly beans carrot cake icing biscuit oat cake
-                                  gummi bears tart. Lemon drops carrot cake
-                                  pudding sweet gummi bears. Chocolate cake tart
-                                  cupcake donut topping liquorice sugar plum
-                                  chocolate bar. Jelly beans tiramisu caramels
-                                  jujubes biscuit liquorice chocolate. Pudding
-                                  toffee jujubes oat cake sweet roll. Lemon
-                                  drops dessert croissant danish cake cupcake.
-                                  Sweet roll candy chocolate toffee jelly sweet
-                                  roll halvah brownie topping. Marshmallow
-                                  powder candy sesame snaps jelly beans candy
-                                  canes marshmallow gingerbread pie.
-                                </p>
+                                <p>{productDetail?.Description}</p>
                               </div>
                               <div className="nav-desh">
                                 <div className="desh-title">
@@ -805,6 +909,7 @@ function Product(props) {
                             aria-labelledby="care-tab"
                           >
                             <div className="information-box">
+                              {productDetail?.careInstuctions}
                               <ul>
                                 <li>
                                   Store cream cakes in a refrigerator. Fondant
@@ -1539,8 +1644,8 @@ function Product(props) {
               <div className="row">
                 <div className="col-12">
                   <div className="slider-6_1 product-wrapper">
-                    <Slider {...settings}>
-                      {relatedProductItems?.map((item, index) => {
+                    <Slider {...settings}>{sliders2()}
+                      {/* {relatedProductItems?.map((item, index) => {
                         return (
                           <div key={index}>
                             <div className="product-box-3 wow fadeInUp">
@@ -1606,36 +1711,7 @@ function Product(props) {
                                   </Link>
                                   <div className="product-rating mt-2">
                                     <ul className="rating">
-                                      <li>
-                                        <i
-                                          data-feather="star"
-                                          className="fill"
-                                        />
-                                      </li>
-                                      <li>
-                                        <i
-                                          data-feather="star"
-                                          className="fill"
-                                        />
-                                      </li>
-                                      <li>
-                                        <i
-                                          data-feather="star"
-                                          className="fill"
-                                        />
-                                      </li>
-                                      <li>
-                                        <i
-                                          data-feather="star"
-                                          className="fill"
-                                        />
-                                      </li>
-                                      <li>
-                                        <i
-                                          data-feather="star"
-                                          className="fill"
-                                        />
-                                      </li>
+                                      <Star />
                                     </ul>
                                     <span>(5.0)</span>
                                   </div>
@@ -1692,7 +1768,7 @@ function Product(props) {
                             </div>
                           </div>
                         );
-                      })}
+                      })} */}
                     </Slider>
                   </div>
                 </div>

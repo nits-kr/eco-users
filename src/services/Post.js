@@ -178,6 +178,18 @@ export const PostApi = createApi({
         };
       },
     }),
+    relatedProductDetails: builder.mutation({
+      query: (body) => {
+        console.log("update address", body);
+        const { id } = body;
+        console.log("update address body data", id);
+        return {
+          url: `/user/product/product/releted-product/${id}`,
+          method: "post",
+          // body: data,
+        };
+      },
+    }),
     updateAddress: builder.mutation({
       query: (body) => {
         console.log("update address", body);
@@ -333,4 +345,5 @@ export const {
   useAddToWislistListMutation,
   useCreateContactMutation,
   useAddReviewMutation,
+  useRelatedProductDetailsMutation,
 } = PostApi;

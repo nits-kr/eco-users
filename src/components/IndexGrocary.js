@@ -319,19 +319,7 @@ function IndexGrocary(props) {
                 <div className=" mt-3">
                   <div className="cart_qty qty-box product-qty">
                     <div className="input-group" style={{alignItems:"center"}}>
-                      <button
-                        type="button"
-                        className="qty-right-plus"
-                        data-type="plus"
-                        data-field=""
-                        onClick={() =>
-                          handleCountChange(index, count[index] + 1)
-                        }
-                      >
-                        <i className="fa fa-plus" aria-hidden="true" />
-                      </button>
-                      <div className="m-2"> {count[index] ? count[index] : "1"}</div>
-                     
+                      
                       <button
                         type="button"
                         className="qty-left-minus"
@@ -342,6 +330,18 @@ function IndexGrocary(props) {
                         }
                       >
                         <i className="fa fa-minus" aria-hidden="true" />
+                      </button>
+                      <div className="m-2"> {count[index] ? count[index] : "0"}</div>
+                      <button
+                        type="button"
+                        className="qty-right-plus"
+                        data-type="plus"
+                        data-field=""
+                        onClick={() =>
+                          handleCountChange(index, count[index] + 1)
+                        }
+                      >
+                        <i className="fa fa-plus" aria-hidden="true" />
                       </button>
                     </div>
                   </div>

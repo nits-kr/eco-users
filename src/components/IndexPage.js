@@ -77,20 +77,14 @@ function IndexPage() {
                   backgroundRepeat: "no-repeat",
                   display: "block",
                 }}
-              >
-                
-              </div>
+              ></div>
               <div
                 className="home-contain"
                 style={{ display: "flex", textAlign: "center" }}
               >
                 <h1>
                   MULTI-PURPOSE TECHGROPSE{" "}
-                  <span className="theme-color">
-                   
-                    ECOMMERCE
-                  </span>{" "}
-                  TEMPLATE
+                  <span className="theme-color">ECOMMERCE</span> TEMPLATE
                 </h1>
               </div>
               <div className="home-image">
@@ -134,7 +128,7 @@ function IndexPage() {
                 data-wow-delay="0.35s"
               >
                 <div className="layout-image">
-                  <Link target="_blank" to="/index-food">
+                  <Link target="_blank" to="/shop/:id">
                     <img
                       src="assets/images/landing-image/theme/front-end/Food.png"
                       className="w-100"
@@ -142,7 +136,7 @@ function IndexPage() {
                     />
                   </Link>
                 </div>
-                <Link target="_blank" to="/index-food" className="layout-name">
+                <Link target="_blank" to="/shop/:id" className="layout-name">
                   <h4 style={{ textAlign: "center", color: "grey" }}>Food</h4>
                 </Link>
               </div>
@@ -153,7 +147,7 @@ function IndexPage() {
                 data-wow-delay="0.35s"
               >
                 <div className="layout-image">
-                  <Link target="_blank" to="/index-jwellary">
+                  <Link target="" to="#">
                     <img
                       src="assets/images/landing-image/theme/front-end/jewelry.png"
                       className="w-100"
@@ -162,8 +156,8 @@ function IndexPage() {
                   </Link>
                 </div>
                 <Link
-                  target="_blank"
-                  to="/index-jwellary"
+                  // target="_blank"
+                  // to="/index-jwellary"
                   className="layout-name"
                 >
                   <h4 style={{ textAlign: "center", color: "grey" }}>
@@ -178,7 +172,7 @@ function IndexPage() {
                 data-wow-delay="0.35s"
               >
                 <div className="layout-image">
-                  <Link target="_blank" to="/index-flower-business">
+                  <Link target="" to="#">
                     <img
                       src="assets/images/landing-image/theme/front-end/flower-business.png"
                       className="w-100"
@@ -187,8 +181,8 @@ function IndexPage() {
                   </Link>
                 </div>
                 <Link
-                  target="_blank"
-                  to="/index-flower-business"
+                  // target="_blank"
+                  // to="/index-flower-business"
                   className="layout-name"
                 >
                   <h4 style={{ textAlign: "center", color: "grey" }}>
@@ -200,7 +194,7 @@ function IndexPage() {
             <div className="col-lg-4 col-sm-6">
               <div className="layout-page-box wow fadeIn" data-wow-delay="0.4s">
                 <div className="layout-image">
-                  <Link target="_blank" to="/index-general-things">
+                  <Link target="" to="#">
                     <img
                       src="assets/images/landing-image/theme/front-end/General-Things.png"
                       className="w-100"
@@ -209,8 +203,8 @@ function IndexPage() {
                   </Link>
                 </div>
                 <Link
-                  target="_blank"
-                  to="/index-general-things"
+                  // target="_blank"
+                  // to="/index-general-things"
                   className="layout-name"
                 >
                   <h4 style={{ textAlign: "center", color: "grey" }}>
@@ -225,7 +219,7 @@ function IndexPage() {
                 data-wow-delay="0.25s"
               >
                 <div className="layout-image">
-                  <Link target="_blank" to="/index-furniture">
+                  <Link target="" to="#">
                     <img
                       src="assets/images/landing-image/theme/front-end/Furniture.png"
                       className="w-100"
@@ -234,8 +228,8 @@ function IndexPage() {
                   </Link>
                 </div>
                 <Link
-                  target="_blank"
-                  to="/index-furniture"
+                  // target="_blank"
+                  // to="/index-furniture"
                   className="layout-name"
                 >
                   <h4 style={{ textAlign: "center", color: "grey" }}>
@@ -250,7 +244,7 @@ function IndexPage() {
                 data-wow-delay="0.05s"
               >
                 <div className="layout-image">
-                  <Link target="_blank" to="/index-lifestyle">
+                  <Link target="" to="#">
                     <img
                       src="assets/images/landing-image/theme/front-end/Lifestyle.png"
                       className="w-100"
@@ -259,8 +253,8 @@ function IndexPage() {
                   </Link>
                 </div>
                 <Link
-                  target="_blank"
-                  to="/index-lifestyle"
+                  // target="_blank"
+                  // to="/index-lifestyle"
                   className="layout-name"
                 >
                   <h4 style={{ textAlign: "center", color: "grey" }}>
@@ -275,7 +269,7 @@ function IndexPage() {
                 data-wow-delay="0.45s"
               >
                 <div className="layout-image">
-                  <Link target="_blank" to="/index-electronics">
+                  <Link target="" to="#">
                     <img
                       src="assets/images/landing-image/theme/front-end/Electronics.png"
                       className="w-100"
@@ -284,8 +278,8 @@ function IndexPage() {
                   </Link>
                 </div>
                 <Link
-                  target="_blank"
-                  to="/index-electronics"
+                  // target="_blank"
+                  // to="/index-electronics"
                   className="layout-name"
                 >
                   <h4 style={{ textAlign: "center", color: "grey" }}>
@@ -308,7 +302,7 @@ function IndexPage() {
                 <div className="theme-rating">
                   <h3>Please don't forget to rate</h3>
                   <ul className="rating">
-                    <Star/>
+                    <Star />
                   </ul>
                   <h3>our TechGropse eCommerce Templates. Thank you!</h3>
                 </div>

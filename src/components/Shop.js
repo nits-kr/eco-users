@@ -1804,6 +1804,25 @@ function Shop(props) {
                                   <div className="">
                                     <div className="cart_qty qty-box product-qty">
                                       <div className="input-group">
+                                      <button
+                                          type="button"
+                                          className="qty-left-minus"
+                                          data-type="minus"
+                                          data-field=""
+                                          onClick={() =>
+                                            handleCountChange(
+                                              index,
+                                              count[index] - 1
+                                            )
+                                          }
+                                        >
+                                          <i
+                                            className="fa fa-minus"
+                                            aria-hidden="true"
+                                          />
+                                        </button>
+                                        <div className="m-2"> {count[index] ? count[index] : "0"}</div>
+                                        
                                         <button
                                           type="button"
                                           className="qty-right-plus"
@@ -1818,24 +1837,6 @@ function Shop(props) {
                                         >
                                           <i
                                             className="fa fa-plus"
-                                            aria-hidden="true"
-                                          />
-                                        </button>
-                                        <div className="m-2"> {count[index] ? count[index] : "1"}</div>
-                                        <button
-                                          type="button"
-                                          className="qty-left-minus"
-                                          data-type="minus"
-                                          data-field=""
-                                          onClick={() =>
-                                            handleCountChange(
-                                              index,
-                                              count[index] - 1
-                                            )
-                                          }
-                                        >
-                                          <i
-                                            className="fa fa-minus"
                                             aria-hidden="true"
                                           />
                                         </button>

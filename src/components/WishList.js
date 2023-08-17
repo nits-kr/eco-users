@@ -10,13 +10,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import BreadCrumb from "./BreadCrumb";
 import Star from "./Star";
-import {
-  AddToCart,
-} from "./HttpServices";
+import { AddToCart } from "./HttpServices";
 
 function WishList() {
   const [wishList, setWishList] = useState([]);
-  localStorage?.setItem("totalWish", wishList?.length)
+  localStorage?.setItem("totalWish", wishList?.length);
   const [cartListItems, setCartListItems] = useState([]);
   const [quantity, setQuantity] = useState([]);
   const [count, setCount] = useState([]);
@@ -29,7 +27,10 @@ function WishList() {
 
   const handleAddToCart = async (item, index) => {
     try {
-      const { data, error } = await AddToCart(item?.product_Id?._id, count[index]);
+      const { data, error } = await AddToCart(
+        item?.product_Id?._id,
+        count[index]
+      );
       if (error) {
         console.log(error);
         return;
@@ -228,46 +229,44 @@ function WishList() {
                             </h6>
                           </div>
                           <div className="">
-                                    <div className="cart_qty qty-box product-qty">
-                                      <div className="input-group">
-                                        <button
-                                          type="button"
-                                          className="qty-right-plus"
-                                          data-type="plus"
-                                          data-field=""
-                                          onClick={() =>
-                                            handleCountChange(
-                                              index,
-                                              count[index] + 1
-                                            )
-                                          }
-                                        >
-                                          <i
-                                            className="fa fa-plus"
-                                            aria-hidden="true"
-                                          />
-                                        </button>
-                                        <div className="m-2"> {count[index] ? count[index] : "1"}</div>
-                                        <button
-                                          type="button"
-                                          className="qty-left-minus"
-                                          data-type="minus"
-                                          data-field=""
-                                          onClick={() =>
-                                            handleCountChange(
-                                              index,
-                                              count[index] - 1
-                                            )
-                                          }
-                                        >
-                                          <i
-                                            className="fa fa-minus"
-                                            aria-hidden="true"
-                                          />
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
+                            <div className="cart_qty qty-box product-qty">
+                              <div className="input-group">
+                                <button
+                                  type="button"
+                                  className="qty-left-minus"
+                                  data-type="minus"
+                                  data-field=""
+                                  onClick={() =>
+                                    handleCountChange(index, count[index] - 1)
+                                  }
+                                >
+                                  <i
+                                    className="fa fa-minus"
+                                    aria-hidden="true"
+                                  />
+                                </button>
+                                <div className="m-2">
+                                  {" "}
+                                  {count[index] ? count[index] : "0"}
+                                </div>
+
+                                <button
+                                  type="button"
+                                  className="qty-right-plus"
+                                  data-type="plus"
+                                  data-field=""
+                                  onClick={() =>
+                                    handleCountChange(index, count[index] + 1)
+                                  }
+                                >
+                                  <i
+                                    className="fa fa-plus"
+                                    aria-hidden="true"
+                                  />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                         <h5 className="price">
                           <span className="theme-color">
@@ -279,7 +278,7 @@ function WishList() {
                           <Link
                             className="btn btn-add-cart addcart-button"
                             to="/cart"
-                            onClick={() => handleAddToCart(item,index)}
+                            onClick={() => handleAddToCart(item, index)}
                           >
                             Add To Cart
                             {/* <span className="add-icon bg-light-gray">
