@@ -925,7 +925,7 @@ function IndexGrocary(props) {
                   {categoryListData.map((item, index) => {
                     return (
                       <div>
-                        <Link to="/shop" className="category-box category-dark">
+                        <Link to="/shop/:id" className="category-box category-dark">
                           <div className="heading12">
                             <div key={index}>
                               <img

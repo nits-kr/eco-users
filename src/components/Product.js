@@ -6,6 +6,7 @@ import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Slider from "react-slick";
 import { ProductDetails, ProductList, ProductSearch } from "./HttpServices";
+import { useGetCartListQuery } from "../services/Post";
 import {
   InitializeColorPicker,
   StickyCartScroll,
@@ -31,6 +32,7 @@ function Product(props) {
   const [productDetail, setProductDetail] = useState("");
   console.log(productDetail);
   const trendingProduct = useGetTrendingProductQuery();
+  const { data, error, isLoading, isSuccess } = useGetCartListQuery();
   console.log("useGetTrendingProductQuery", trendingProduct);
   const [trendingList, setTrendingList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -40,6 +42,7 @@ function Product(props) {
   console.log("useGetRelatedProductQuery", relatedProduct);
   console.log("product detail", productDetail);
   const userId = localStorage.getItem("loginId");
+  const [cartListItems, setCartListItems] = useState([]);
   const [name, setName] = useState([]);
   const [email, setEmail] = useState([]);
   const [website, setWebsite] = useState([]);
@@ -88,8 +91,10 @@ function Product(props) {
       reviewTitle: title,
       comment: comment,
       rating: userRating,
+      star: userRating,
       product_Id: id,
       user_Id: userId,
+      postedby: userId,
     };
     try {
       const createdReview = await addReview(newContactData);
@@ -176,6 +181,14 @@ function Product(props) {
     //   window?.location?.reload();
     // }, 500);
   };
+  const fetchCartListData = () => {
+    if (isSuccess) {
+      setCartListItems(data?.results?.list);
+    }
+  };
+  useEffect(() => {
+    fetchCartListData();
+  }, [data]);
 
   const handleSearch = () => {
     setSearchKey(searchKey);
@@ -840,7 +853,7 @@ function Product(props) {
                                       </ul>
                                     </div>
                                     <h6 className="ms-3">
-                                      {averageRating} Out Of 5
+                                      {averageRating?.toFixed(2)} Out Of 5
                                     </h6>
                                   </div>
 
@@ -1041,7 +1054,10 @@ function Product(props) {
                                     </ul>
                                   </div>
                                 </div>
-                                <div className="col-xl-6">
+                                <form
+                                  className="col-xl-6"
+                                  onSubmit={handleCreateReview}
+                                >
                                   <div className="review-title">
                                     <h4 className="fw-500">Add a review</h4>
                                   </div>
@@ -1057,11 +1073,17 @@ function Product(props) {
                                           className="form-control"
                                           id="name"
                                           placeholder="Name"
+                                          required
                                           onChange={(e) =>
                                             setName(e.target.value)
                                           }
                                         />
-                                        <label htmlFor="name">Your Name</label>
+                                        <label htmlFor="name">
+                                          Your Name
+                                          <span className="required-field text-danger">
+                                            *
+                                          </span>
+                                        </label>
                                       </div>
                                     </div>
                                     <div className="col-md-6">
@@ -1071,12 +1093,16 @@ function Product(props) {
                                           className="form-control"
                                           id="email"
                                           placeholder="Email Address"
+                                          required
                                           onChange={(e) =>
                                             setEmail(e.target.value)
                                           }
                                         />
                                         <label htmlFor="email">
                                           Email Address
+                                          <span className="required-field text-danger">
+                                            *
+                                          </span>
                                         </label>
                                       </div>
                                     </div>
@@ -1087,6 +1113,7 @@ function Product(props) {
                                           className="form-control"
                                           id="website"
                                           placeholder="Website"
+                                          // required
                                           onChange={(e) =>
                                             setWebsite(e.target.value)
                                           }
@@ -1097,16 +1124,20 @@ function Product(props) {
                                     <div className="col-md-6">
                                       <div className="form-floating theme-form-floating">
                                         <input
-                                          type="url"
+                                          type="text"
                                           className="form-control"
                                           id="review1"
                                           placeholder="Give your review a title"
+                                          required
                                           onChange={(e) =>
                                             setTitle(e.target.value)
                                           }
                                         />
                                         <label htmlFor="review1">
                                           Review Title
+                                          <span className="required-field text-danger">
+                                            *
+                                          </span>
                                         </label>
                                       </div>
                                     </div>
@@ -1125,18 +1156,21 @@ function Product(props) {
                                         />
                                         <label htmlFor="floatingTextarea2">
                                           Write Your Comment
+                                          <span className="required-field text-danger">
+                                            *
+                                          </span>
                                         </label>
                                       </div>
                                     </div>
                                     <button
                                       className="btn btn-animation btn-md fw-bold ms-auto"
                                       type="submit"
-                                      onClick={handleCreateReview}
+                                      // onClick={handleCreateReview}
                                     >
                                       Send Reviews
                                     </button>
                                   </div>
-                                </div>
+                                </form>
                                 <div className="col-12">
                                   <div className="review-title">
                                     <h4 className="fw-500">

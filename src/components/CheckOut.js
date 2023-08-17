@@ -204,7 +204,10 @@ function CheckOut() {
                           <div className="row g-4">
                             {newAddress?.map((item, index) => {
                               return (
-                                <div className="col-xxl-6 col-lg-12 col-md-6" key={item._id}>
+                                <div
+                                  className="col-xxl-6 col-lg-12 col-md-6"
+                                  key={item._id}
+                                >
                                   <div className="delivery-address-box">
                                     <div>
                                       <div className="form-check">
@@ -899,29 +902,34 @@ function CheckOut() {
                     <li>
                       <h4>Subtotal</h4>
                       <h4 className="price">
-                        ${orderItemSummaryPrice.subtotal}
+                        ${orderItemSummaryPrice?.subtotal}
                       </h4>
                     </li>
                     <li>
                       <h4>Shipping</h4>
                       <h4 className="price">
                         {" "}
-                        ${orderItemSummaryPrice.shipping}{" "}
+                        ${orderItemSummaryPrice?.shipping}{" "}
                       </h4>
                     </li>
                     <li>
                       <h4>Tax</h4>
-                      <h4 className="price">${orderItemSummaryPrice.Tax} </h4>
+                      <h4 className="price">${orderItemSummaryPrice?.Tax} </h4>
                     </li>
-                    <li>
+                    {/* <li>
                       <h4>Coupon/Code</h4>
                       <h4 className="price">
-                        $-{orderItemSummaryPrice.DiscountType}{" "}
+                        $-{orderItemSummaryPrice?.DiscountType}{" "}
                       </h4>
-                    </li>
+                    </li> */}
                     <li className="list-total">
                       <h4>Total (USD)</h4>
-                      <h4 className="price">$19.28</h4>
+                      <h4 className="price">
+                        $
+                        {orderItemSummaryPrice?.subtotal +
+                          orderItemSummaryPrice?.shipping +
+                          orderItemSummaryPrice?.Tax}{" "}
+                      </h4>
                     </li>
                   </ul>
                 </div>

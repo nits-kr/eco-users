@@ -236,7 +236,7 @@ export const PostApi = createApi({
       query: (body) => {
         console.log("update login data", body);
         return {
-          url: "/user/review/review/add-review",
+          url: "/user/product/product/product-rating",
           method: "post",
           body,
         };
