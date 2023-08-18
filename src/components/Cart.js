@@ -141,6 +141,9 @@ function Cart() {
       }
       const newCreateWishItems = [...CreateWishItems, data];
       setCreateWishItems(newCreateWishItems);
+      setTimeout(() => {
+        window?.location?.reload();
+      }, 500);
     } catch (error) {
       console.log(error);
     }
@@ -493,7 +496,7 @@ function Cart() {
                                 </Link>} */}
                                 <Link
                                   className="btn p-0 position-relative header-wishlist me-2"
-                                  // to="/wishlist"
+                                  to="/wishlist"
                                   title3="Wishlist"
                                   onClick={() => handleWishClick(item)}
                                 >
