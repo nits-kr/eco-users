@@ -358,7 +358,7 @@ function Cart() {
                                         }}
                                       >
                                         {" "}
-                                        {item?.products[0]?.quantity === 1 ? (
+                                        {/* {item?.products[0]?.quantity === 1 ? (
                                           <div
                                             style={{
                                               cursor: "not-allowed",
@@ -403,9 +403,9 @@ function Cart() {
                                               />
                                             </button>
                                           </div>
-                                        )}
+                                        )} */}
                                         <div>{item?.products[0]?.quantity}</div>
-                                        <div>
+                                        {/* <div>
                                           <button
                                             type="button"
                                             className="btn qty-right-plus ms-2"
@@ -420,7 +420,7 @@ function Cart() {
                                               aria-hidden="true"
                                             />
                                           </button>
-                                        </div>
+                                        </div> */}
                                       </div>
                                     </div>
                                   </div>
