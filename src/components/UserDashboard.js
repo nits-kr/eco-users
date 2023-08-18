@@ -2390,8 +2390,8 @@ function UserDashboard() {
                         name="mobile"
                         id="mobile"
                         maxLength={10}
-                        onInput="javascript: if (this.value.length > this.maxLength) this.value =
-                                      this.value.slice(0, this.maxLength);"
+                        // onInput="javascript: if (this.value.length > this.maxLength) this.value =
+                        //               this.value.slice(0, this.maxLength);"
                       />
                       <label htmlFor="mobile">Email address</label>
                     </div>

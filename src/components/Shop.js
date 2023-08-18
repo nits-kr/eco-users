@@ -192,6 +192,7 @@ function Shop(props) {
     try {
       const editAddress = {
         product_Id: item?._id,
+        userId: storedId,
         like: true
       };
       console.log(item?._id);
@@ -202,6 +203,9 @@ function Shop(props) {
       }
       const newCreateWishItems = [...CreateWishItems, data];
       setCreateWishItems(newCreateWishItems);
+      setTimeout(() => {
+        window?.location?.reload();
+      }, 500);
     } catch (error) {
       console.log(error);
     }
@@ -229,6 +233,9 @@ function Shop(props) {
       }
       const newCartItems = [...cartListItems, data];
       setCartListItems(newCartItems);
+      setTimeout(() => {
+        window?.location?.reload();
+      }, 500);
       console.log("prevCartItems", newCartItems);
       console.log("New cart items", cartListItems);
     } catch (error) {

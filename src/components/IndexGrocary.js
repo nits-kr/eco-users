@@ -139,10 +139,12 @@ function IndexGrocary(props) {
   //     console.log(error);
   //   }
   // };
+  const userId = localStorage?.getItem("loginId")
   const handleWishClick = async (item) => {
     try {
       const editAddress = {
         product_Id: item?._id,
+        userId:userId,
         like: true
       };
       console.log(item?._id);
@@ -153,6 +155,9 @@ function IndexGrocary(props) {
       }
       const newCreateWishItems = [...CreateWishItems, data];
       setCreateWishItems(newCreateWishItems);
+      setTimeout(() => {
+        window?.location?.reload();
+      }, 500);
     } catch (error) {
       console.log(error);
     }

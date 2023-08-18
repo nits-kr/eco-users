@@ -26,7 +26,7 @@ import { useRelatedProductDetailsMutation } from "../services/Post";
 
 function Product(props) {
   const relatedProduct = useGetRelatedProductQuery();
-  const [relatedDetails, respons] = useRelatedProductDetailsMutation()
+  const [relatedDetails, respons] = useRelatedProductDetailsMutation();
   const [addReview, response] = useAddReviewMutation();
   const [relatedProductItems, setRelatedProductItems] = useState([]);
   const [searchKey, setSearchKey] = useState("");
@@ -106,20 +106,24 @@ function Product(props) {
         text: "Your review has been successfully created.",
         icon: "success",
         confirmButtonText: "OK",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.reload();
+        }
       });
     } catch (error) {
       console.error("Error creating contact:", error);
     }
   };
   useEffect(() => {
-    related()
-  }, [id])
+    related();
+  }, [id]);
   const relatedProductDetail = respons?.data?.results?.productData;
   console.log(relatedProductDetail);
   console.log(respons);
   const related = () => {
     const newAddress = {
-      id: id
+      id: id,
     };
     relatedDetails(newAddress);
   };
@@ -550,7 +554,7 @@ function Product(props) {
                         <div className="note-box product-packege">
                           <div className="cart_qty qty-box product-qty">
                             <div className="input-group">
-                            <button
+                              <button
                                 type="button"
                                 className="qty-left-minus"
                                 data-type="minus"
@@ -566,7 +570,7 @@ function Product(props) {
                                 value={count}
                               />
                               {/* {count} */}
-                              
+
                               <button
                                 type="button"
                                 className="qty-right-plus"
@@ -703,14 +707,14 @@ function Product(props) {
                         >
                           <li className="nav-item" role="presentation">
                             <button
-                              className="nav-link active"
+                              className="nav-link "
                               id="description-tab"
                               data-bs-toggle="tab"
                               data-bs-target="#description"
                               type="button"
                               role="tab"
                               aria-controls="description"
-                              aria-selected="true"
+                              aria-selected="false"
                             >
                               Description
                             </button>
@@ -745,14 +749,14 @@ function Product(props) {
                           </li>
                           <li className="nav-item" role="presentation">
                             <button
-                              className="nav-link"
+                              className="nav-link active"
                               id="review-tab"
                               data-bs-toggle="tab"
                               data-bs-target="#review"
                               type="button"
                               role="tab"
                               aria-controls="review"
-                              aria-selected="false"
+                              aria-selected="true"
                             >
                               Review
                             </button>
@@ -763,7 +767,7 @@ function Product(props) {
                           id="myTabContent"
                         >
                           <div
-                            className="tab-pane fade show active"
+                            className="tab-pane fade "
                             id="description"
                             role="tabpanel"
                             aria-labelledby="description-tab"
@@ -940,7 +944,7 @@ function Product(props) {
                             </div>
                           </div>
                           <div
-                            className="tab-pane fade"
+                            className="tab-pane fade show active"
                             id="review"
                             role="tabpanel"
                             aria-labelledby="review-tab"
@@ -1644,7 +1648,8 @@ function Product(props) {
               <div className="row">
                 <div className="col-12">
                   <div className="slider-6_1 product-wrapper">
-                    <Slider {...settings}>{sliders2()}
+                    <Slider {...settings}>
+                      {sliders2()}
                       {/* {relatedProductItems?.map((item, index) => {
                         return (
                           <div key={index}>

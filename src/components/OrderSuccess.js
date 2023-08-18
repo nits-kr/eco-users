@@ -55,17 +55,6 @@ function OrderSuccess() {
   }, []);
   return (
     <>
-      {/* Loader Start */}
-      {/* <div className="fullpage-loader">
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-         </div> */}
-      {/* Loader End */}
-      {/* Header Start */}
       <Header />
       {/* Header End */}
       {/* mobile fix menu start */}
@@ -279,31 +268,43 @@ function OrderSuccess() {
                                   <strong className="">Track Order</strong>
                                 </Link>
                               </h4>
-                              {item?.orderStatus === "Cancelled" ? (
+                              {item?.orderStatus === "Cancelled" ||
+                              item?.orderStatus === "Pending" ||
+                              item?.orderStatus === "Packed" ||
+                              item?.orderStatus === "Approved" ||
+                              item?.orderStatus === "Inprogress" ||
+                              item?.orderStatus === "Shipped" ? (
                                 <Link
-                                  className="text-danger"
+                                  className={
+                                    item?.orderStatus === "Cancelled"
+                                      ? "text-danger"
+                                      : item?.orderStatus === "Pending"
+                                      ? "text-warning"
+                                      : item?.orderStatus === "Packed"
+                                      ? "text-info"
+                                      : item?.orderStatus === "Approved"
+                                      ? "text-success"
+                                      : item?.orderStatus === "Inprogress"
+                                      ? "text-primary"
+                                      : "text-secondary"
+                                  }
                                   style={{
                                     cursor: "not-allowed",
-                                    filter: "blur(0.7px)",
-                                    background: "lightgray",
+                                    filter: "blur(0.5px)",
+                                    background: "#e6ebe8",
                                     color: "darkgray",
                                   }}
                                   disabled
                                 >
-                                  <strong>Cancelled</strong>{" "}
+                                  <strong>{item?.orderStatus}</strong>{" "}
                                 </Link>
                               ) : item?.orderStatus === "Delivered" ? (
                                 <Link
                                   to={`/product/${item?.products[0]?.product_Id?._id}`}
                                   className="text-primary"
-                                  // onClick={() => {
-                                  //   handleRate(item?._id);
-                                  // }}
                                 >
                                   <div className="text-danger">Delivered</div>
-                                  <FontAwesomeIcon
-                                    icon={faStar}
-                                  />
+                                  <FontAwesomeIcon icon={faStar} />
                                   Rate Product{" "}
                                 </Link>
                               ) : (
@@ -316,15 +317,6 @@ function OrderSuccess() {
                                   Cancel Order{" "}
                                 </Link>
                               )}
-
-                              {/* <Link
-                                className="text-danger"
-                                onClick={() => {
-                                  handleRemoveAddress(item?._id);
-                                }}
-                              >
-                                Cancel Order{" "}
-                              </Link> */}
                             </td>
                           </tr>
                         );

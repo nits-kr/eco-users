@@ -1,5 +1,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+const userId = localStorage?.getItem("loginId")
 
 // Define a service using a base URL and expected endpoints
 export const PostApi = createApi({
@@ -73,7 +74,7 @@ export const PostApi = createApi({
     }),
     getOrderList: builder.query({
       query: (name) => ({
-        url: `user/order/order/order-list`,
+        url: `user/order/order/order-list/${userId}`,
         method: "post",
       }),
     }),
@@ -85,13 +86,13 @@ export const PostApi = createApi({
     }),
     getCartList: builder.query({
       query: (name) => ({
-        url: "/user/carts/carts/carts-list",
+        url: `/user/carts/carts/carts-list/${userId}`,
         method: "post",
       }),
     }),
     getAddressList: builder.query({
       query: (name) => ({
-        url: "/user/address/address/address-list",
+        url: `/user/address/address/address-list/${userId}`,
         method: "post",
       }),
     }),

@@ -747,6 +747,7 @@ export async function AddToCart(id, quantity) {
             quantity:  Array.isArray(quantity) ? "1" : (quantity),
           },
         ],
+        user_Id:userId,
       }
     );
     console.log("Add to cart data at http", data);
@@ -805,7 +806,7 @@ export async function DeleteCartProduct(_id) {
 export async function CartList() {
   try {
     const { data } = await UserHttpService.post(
-      `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/carts-list`
+      `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/carts-list/${userId}`
     );
     console.log(data);
     if (data?.error) {
@@ -950,10 +951,11 @@ export async function CreateWish(id) {
     return error;
   }
 }
+const userId = localStorage?.getItem("loginId")
 export async function WishListItems() {
   try {
     const { data } = await UserHttpService.post(
-      `${process.env.REACT_APP_APIENDPOINT}user/wish/wish/wish-List`
+      `${process.env.REACT_APP_APIENDPOINT}user/wish/wish/wish-List/${userId}`
     );
     console.log(data);
     if (data?.error) {

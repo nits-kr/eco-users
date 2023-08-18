@@ -5,17 +5,37 @@ import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Header from "./Header";
 import Footer from "./Footer";
-import { useGetAllPostQuery } from "../services/Post";
+import { useGetAllPostQuery, useGetCategoryListQuery, useGetTrendingProductQuery } from "../services/Post";
 import Spinner from "./Spinner";
 
 function Blog(props) {
   const [loading, setLoading] = useState(false);
+  const categoryListItems = useGetCategoryListQuery();
+  const trendingProduct = useGetTrendingProductQuery();
+  const [trendingList, setTrendingList] = useState([]);
+  const [categoryListData, setCategoryListData] = useState([]);
   const blog = useGetAllPostQuery();
   console.log("useGetAllPostQuery", blog);
 
   const [blogList, setBlogList] = useState();
   
   console.log("blog list", blogList);
+
+  useEffect(() => {
+    props.setProgress(10);
+    setLoading(true);
+    if (trendingProduct?.data?.results?.productlist) {
+      setTrendingList(trendingProduct?.data?.results?.productlist);
+      props.setProgress(100);
+      setLoading(false);
+    }
+  });
+  useEffect(() => {
+    const reversedList =
+      categoryListItems?.data?.results?.list?.slice().reverse() ?? [];
+    setCategoryListData(reversedList);
+  }, [categoryListItems]);
+
   useEffect(() => {
     feather.replace();
     props.setProgress(10);
@@ -126,7 +146,7 @@ function Blog(props) {
                           <div className="blog-label">
                             <span className="time">
                               <i data-feather="clock" />{" "}
-                              <span> {item.createdAt} </span>
+                              <span> {item?.createdAt?.slice(0, 10)} </span>
                             </span>
                             <span className="super">
                               <i data-feather="user" />{" "}
@@ -326,7 +346,19 @@ function Blog(props) {
                       <div className="accordion-body p-0">
                         <div className="category-list-box">
                           <ul>
-                            <li>
+                            {categoryListData?.map((item, index) => {
+                              return (
+                                <li>
+                              <Link to="/blog-list">
+                                <div className="category-name">
+                                  <h5>{item?.categoryName_en} </h5>
+                                  <span>10</span>
+                                </div>
+                              </Link>
+                            </li>
+                              )
+                            })}
+                            {/* <li>
                               <Link to="/blog-list">
                                 <div className="category-name">
                                   <h5>Latest Recipes</h5>
@@ -373,7 +405,7 @@ function Blog(props) {
                                   <span>10</span>
                                 </div>
                               </Link>
-                            </li>
+                            </li> */}
                           </ul>
                         </div>
                       </div>
@@ -455,7 +487,33 @@ function Blog(props) {
                     >
                       <div className="accordion-body">
                         <ul className="product-list product-list-2 border-0 p-0">
-                          <li>
+                          {trendingList?.map((item, index) => {
+                            return (
+                              <li key={index}>
+                            <div className="offer-product">
+                              <Link to="/shop" className="offer-image">
+                                <img
+                                  src={item?.product_Pic[0]}
+                                  className=" lazyload"
+                                  alt=""
+                                />
+                              </Link>
+                              <div className="offer-detail">
+                                <div>
+                                  <Link to="/shop">
+                                    <h6 className="name">
+                                      {item?.productName_en}
+                                    </h6>
+                                  </Link>
+                                  <span> {item?.weight} </span>
+                                  <h6 className="price theme-color">${item?.Price} </h6>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                            )
+                          })}
+                          {/* <li>
                             <div className="offer-product">
                               <Link to="/shop" className="offer-image">
                                 <img
@@ -520,7 +578,7 @@ function Blog(props) {
                                 </div>
                               </div>
                             </div>
-                          </li>
+                          </li> */}
                         </ul>
                       </div>
                     </div>

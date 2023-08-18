@@ -93,17 +93,6 @@ function Cart() {
       }
     }
   };
-  // const HandleIncrease = async (product, id) => {
-  //   if (product.quantity > 1) {
-  //     const formData = {
-  //       id: id,
-  //       quantity: product.quantity + 1,
-  //     };
-
-  //     const { data } = await updateQuantity(formData);
-  //     console.log(data);
-  //   }
-  // };
 
   console.log("cartlist item", cartListItems);
 
@@ -143,10 +132,12 @@ function Cart() {
       console.log(error);
     }
   };
+  const userId = localStorage?.getItem("loginId")
   const handleWishClick = async (item) => {
     try {
       const editAddress = {
         product_Id: item?.products[0]?.product_Id?._id,
+        userId:userId,
         like: true,
       };
       console.log(item?._id);
@@ -452,9 +443,9 @@ function Cart() {
                                   flexDirection: "row",
                                 }}
                               >
-                                {/* {item?.products[0]?.product_Id?.like === "false" ? <Link
+                                {item?.products[0]?.product_Id?.like === "false" ? <Link
                                   className="btn p-0 position-relative header-wishlist me-2"
-                                  // to="/wishlist"
+                                  to="/wishlist"
                                   title3="Wishlist"
                                   onClick={() => handleWishClick(item)}
                                 >
@@ -476,8 +467,9 @@ function Cart() {
                                 </Link> : <Link
                                   className="btn p-0 position-relative header-wishlist me-2"
                                   to="#"
-                                  title3="Wishlist"
+                                  title5="Wishlist"
                                   disabled
+                                  style={{cursor:"not-allowed"}}
                                 >
                                   <FontAwesomeIcon
                                     icon={faHeart}
@@ -488,8 +480,8 @@ function Cart() {
                                     data-tip="Add to Wishlist"
                                     data-for="wishlist-tooltip"
                                   />
-                                </Link>} */}
-                                <Link
+                                </Link>}
+                                {/* <Link
                                   className="btn p-0 position-relative header-wishlist me-2"
                                   to="/wishlist"
                                   title3="Wishlist"
@@ -510,7 +502,7 @@ function Cart() {
                                       e.currentTarget.style.color = "black";
                                     }}
                                   />
-                                </Link>
+                                </Link> */}
                                 <Link
                                   className="btn p-0 position-relative header-wishlist ms-2"
                                   to="#"

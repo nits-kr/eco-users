@@ -473,7 +473,7 @@ function Header({ Dash }) {
                                   >
                                     <div className="drop-cart">
                                       <Link
-                                        to="/product"
+                                        to={`/product/${item?.products[0]?.product_Id?._id}`}
                                         className="drop-image"
                                       >
                                         <img
@@ -492,7 +492,7 @@ function Header({ Dash }) {
                                             {item?.products?.map(
                                               (product, index) => (
                                                 <Link
-                                                  to={`/product`}
+                                                  to={`/product/${item?.products[0]?.product_Id?._id}`}
                                                   key={index}
                                                 >
                                                   <strong>
