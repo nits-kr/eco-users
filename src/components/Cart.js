@@ -77,17 +77,33 @@ function Cart() {
       }
     }
   };
-  const HandleIncrease = async (product, id) => {
-    if (product.quantity > 1) {
+  const HandleIncrease = async (product, id, index) => {
+    if (product?.products[0]?.quantity > 1) {
       const formData = {
         id: id,
-        quantity: product.quantity + 1,
+        quantity: product?.products[0]?.quantity + 1,
       };
-
+      console.log(id);
+      console.log("product qu", product?.products[0]?.quantity);
       const { data } = await updateQuantity(formData);
       console.log(data);
+      if (!data.error) {
+        fetchCartListData();
+        setCount1(!count1);
+      }
     }
   };
+  // const HandleIncrease = async (product, id) => {
+  //   if (product.quantity > 1) {
+  //     const formData = {
+  //       id: id,
+  //       quantity: product.quantity + 1,
+  //     };
+
+  //     const { data } = await updateQuantity(formData);
+  //     console.log(data);
+  //   }
+  // };
 
   console.log("cartlist item", cartListItems);
 
@@ -131,7 +147,7 @@ function Cart() {
     try {
       const editAddress = {
         product_Id: item?.products[0]?.product_Id?._id,
-        like: true
+        like: true,
       };
       console.log(item?._id);
       const { data, error } = await wishAdd(editAddress);
@@ -148,27 +164,6 @@ function Cart() {
       console.log(error);
     }
   };
-  const handleDecrease = async (item) => {
-    count > 1 ? setCount(count - 1) : setCount(1);
-  };
-  // const handleAddToCart = async (item) => {
-  //   try {
-  //     const { data, error } = await AddToCart(item._id, item?.stockQuantity);
-  //     if (error) {
-  //       console.log(error);
-  //       return;
-  //     }
-  //     const newCartItems = [...cartListItems, data];
-  //     setCartListItems(newCartItems);
-  //     console.log("prevCartItems", newCartItems);
-  //     console.log("New cart items", cartListItems);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  //   dispatch(addToCart(item));
-  // };
-  const handleIncrease = async (item) => {};
-
   console.log("coupan", coupan);
   useEffect(() => {
     feather.replace();

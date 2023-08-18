@@ -409,7 +409,7 @@ function Header({ Dash }) {
                         </div>
                       </li>
                       <li className="right-side">
-                        <Link to="#" className="delivery-login-box">
+                        <div className="delivery-login-box">
                           <Link to="/contact-us" className="delivery-icon">
                             <FontAwesomeIcon
                               icon={faPhoneVolume}
@@ -420,7 +420,7 @@ function Header({ Dash }) {
                             <h6>24/7 Delivery</h6>
                             <h5>+91 888 104 2340</h5>
                           </div>
-                        </Link>
+                        </div>
                       </li>
                       <li className="right-side">
                         <Link
@@ -487,7 +487,7 @@ function Header({ Dash }) {
                                         />
                                       </Link>
                                       <div className="drop-contain">
-                                        <Link to="/product">
+                                        <div>
                                           <h5>
                                             {item?.products?.map(
                                               (product, index) => (
@@ -509,10 +509,12 @@ function Header({ Dash }) {
                                               )
                                             )}
                                           </h5>
-                                        </Link>
+                                        </div>
                                         <h6>
                                           {item?.products?.map((product) => (
-                                            <span key={product?.product_Id?.id}>
+                                            <span
+                                              key={product?.product_Id?._id}
+                                            >
                                               {product?.quantity || 0} x $
                                               {product?.product_Id?.Price}
                                             </span>
@@ -653,10 +655,10 @@ function Header({ Dash }) {
                                               src={items?.subCategoryPic}
                                               alt="image"
                                             />
-                                            <Link to={`/shop/${items._id}`}>
+                                            <div>
                                               {" "}
                                               {items?.subCategoryName_en}{" "}
-                                            </Link>
+                                            </div>
                                           </Link>
                                         </li>
                                       );

@@ -118,6 +118,7 @@ function Blog(props) {
                               src={item.blog_Pic}
                               className="bg-img  lazyload"
                               alt=""
+                              width="100%"
                             />
                           </Link>
                         </div>
