@@ -34,7 +34,10 @@ import {
 import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import Spinner from "./Spinner";
-import { useAddToWislistListMutation, useCreateOrderMutation } from "../services/Post";
+import {
+  useAddToWislistListMutation,
+  useCreateOrderMutation,
+} from "../services/Post";
 import { useShowProductRatingMutation } from "../services/Post";
 import { useSubSubProductMutation } from "../services/Post";
 import { useFilterPriceMutation } from "../services/Post";
@@ -193,7 +196,7 @@ function Shop(props) {
       const editAddress = {
         product_Id: item?._id,
         userId: storedId,
-        like: true
+        like: true,
       };
       console.log(item?._id);
       const { data, error } = await wishAdd(editAddress);
@@ -1736,15 +1739,58 @@ function Shop(props) {
                                   <li
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="top"
-                                    title="Wishlist"
-                                    onClick={() => handleWishClick(item)}
+                                    // title="Wishlist"
+                                    // onClick={() => handleWishClick(item)}
                                   >
-                                    <Link
+                                    {/* <Link
                                       to="/wishlist"
                                       className="notifi-wishlist"
                                     >
                                       <FontAwesomeIcon icon={faHeart} />
-                                    </Link>
+                                    </Link> */}
+                                    {item?.like === "false" ? (
+                                      <Link
+                                        className="btn p-0 position-relative header-wishlist me-2"
+                                        to="/wishlist"
+                                        title3="Wishlist"
+                                        onClick={() => handleWishClick(item)}
+                                      >
+                                        <FontAwesomeIcon
+                                          icon={faHeart}
+                                          style={{
+                                            fontSize: "20px",
+                                            color: "black",
+                                          }}
+                                          data-tip="Add to Wishlist"
+                                          data-for="wishlist-tooltip"
+                                          onMouseEnter={(e) => {
+                                            e.currentTarget.style.color = "red";
+                                          }}
+                                          onMouseLeave={(e) => {
+                                            e.currentTarget.style.color =
+                                              "black";
+                                          }}
+                                        />
+                                      </Link>
+                                    ) : (
+                                      <Link
+                                        className="btn p-0 position-relative header-wishlist me-2"
+                                        to="#"
+                                        title5="Wishlist"
+                                        disabled
+                                        style={{ cursor: "not-allowed" }}
+                                      >
+                                        <FontAwesomeIcon
+                                          icon={faHeart}
+                                          style={{
+                                            fontSize: "20px",
+                                            color: "red",
+                                          }}
+                                          data-tip="Add to Wishlist"
+                                          data-for="wishlist-tooltip"
+                                        />
+                                      </Link>
+                                    )}
                                   </li>
                                 </ul>
                               </div>
@@ -1777,11 +1823,17 @@ function Shop(props) {
                                   style={{
                                     display: "flex",
                                     justifyContent: "space-between",
-                                    alignItems:"center"
+                                    alignItems: "center",
                                   }}
                                 >
                                   <div>
-                                    <h6 className="unit" style={{margin:"0px", fontSize:"15px"}}>
+                                    <h6
+                                      className="unit"
+                                      style={{
+                                        margin: "0px",
+                                        fontSize: "15px",
+                                      }}
+                                    >
                                       {item?.stockQuantity} units{" "}
                                     </h6>
                                   </div>
@@ -1830,7 +1882,7 @@ function Shop(props) {
                                   <div className="">
                                     <div className="cart_qty qty-box product-qty">
                                       <div className="input-group">
-                                      <button
+                                        <button
                                           type="button"
                                           className="qty-left-minus"
                                           data-type="minus"
@@ -1847,8 +1899,11 @@ function Shop(props) {
                                             aria-hidden="true"
                                           />
                                         </button>
-                                        <div className="m-2"> {count[index] ? count[index] : "0"}</div>
-                                        
+                                        <div className="m-2">
+                                          {" "}
+                                          {count[index] ? count[index] : "0"}
+                                        </div>
+
                                         <button
                                           type="button"
                                           className="qty-right-plus"

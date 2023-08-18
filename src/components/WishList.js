@@ -166,7 +166,7 @@ function WishList() {
                 totalRatings / item?.product_Id?.ratings?.length;
               return (
                 <div
-                  className="col-xxl-2 col-lg-3 col-md-4 col-6 product-box-contain"
+                  className="col-xxl-2 col-lg-3 col-md-4 col-6 product-box-contain" style={{width:"32vh"}}
                   key={index}
                 >
                   <div className="product-box-3 h-100">

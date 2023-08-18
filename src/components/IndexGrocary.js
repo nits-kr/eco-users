@@ -139,13 +139,13 @@ function IndexGrocary(props) {
   //     console.log(error);
   //   }
   // };
-  const userId = localStorage?.getItem("loginId")
+  const userId = localStorage?.getItem("loginId");
   const handleWishClick = async (item) => {
     try {
       const editAddress = {
         product_Id: item?._id,
-        userId:userId,
-        like: true
+        userId: userId,
+        like: true,
       };
       console.log(item?._id);
       const { data, error } = await wishAdd(editAddress);
@@ -311,12 +311,54 @@ function IndexGrocary(props) {
                 <li
                   data-bs-toggle="tooltip"
                   data-bs-placement="top"
-                  title="Wishlist"
-                  onClick={() => handleWishClick(item)}
+                  // title="Wishlist"
+                  // onClick={() => handleWishClick(item)}
                 >
-                  <Link to="/wishlist" className="notifi-wishlist">
+                  {/* <Link to="/wishlist" className="notifi-wishlist">
                     <FontAwesomeIcon icon={faHeart} />
-                  </Link>
+                  </Link> */}
+                  {item?.like === "false" ? (
+                    <Link
+                      className="btn p-0 position-relative header-wishlist me-2"
+                      to="/wishlist"
+                      title3="Wishlist"
+                      onClick={() => handleWishClick(item)}
+                    >
+                      <FontAwesomeIcon
+                        icon={faHeart}
+                        style={{
+                          fontSize: "20px",
+                          color: "black",
+                        }}
+                        data-tip="Add to Wishlist"
+                        data-for="wishlist-tooltip"
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = "red";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = "black";
+                        }}
+                      />
+                    </Link>
+                  ) : (
+                    <Link
+                      className="btn p-0 position-relative header-wishlist me-2"
+                      to="#"
+                      title5="Wishlist"
+                      disabled
+                      style={{ cursor: "not-allowed" }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faHeart}
+                        style={{
+                          fontSize: "20px",
+                          color: "red",
+                        }}
+                        data-tip="Add to Wishlist"
+                        data-for="wishlist-tooltip"
+                      />
+                    </Link>
+                  )}
                 </li>
               </ul>
             </div>
@@ -336,14 +378,27 @@ function IndexGrocary(props) {
                 <Star rating={averageRating} />
                 <span> In Stock </span>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between" , alignItems:"center"}}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
                 <div>
-                  <h6 className="unit" style={{margin:"0px", fontSize:"15px"}}>{item?.stockQuantity} units </h6>
+                  <h6
+                    className="unit"
+                    style={{ margin: "0px", fontSize: "15px" }}
+                  >
+                    {item?.stockQuantity} units{" "}
+                  </h6>
                 </div>
                 <div className=" mt-3">
                   <div className="cart_qty qty-box product-qty">
-                    <div className="input-group" style={{alignItems:"center"}}>
-                      
+                    <div
+                      className="input-group"
+                      style={{ alignItems: "center" }}
+                    >
                       <button
                         type="button"
                         className="qty-left-minus"
@@ -355,7 +410,10 @@ function IndexGrocary(props) {
                       >
                         <i className="fa fa-minus" aria-hidden="true" />
                       </button>
-                      <div className="m-2"> {count[index] ? count[index] : "0"}</div>
+                      <div className="m-2">
+                        {" "}
+                        {count[index] ? count[index] : "0"}
+                      </div>
                       <button
                         type="button"
                         className="qty-right-plus"
@@ -949,7 +1007,10 @@ function IndexGrocary(props) {
                   {categoryListData.map((item, index) => {
                     return (
                       <div>
-                        <Link to="/shop/:id" className="category-box category-dark">
+                        <Link
+                          to="/shop/:id"
+                          className="category-box category-dark"
+                        >
                           <div className="heading12">
                             <div key={index}>
                               <img
