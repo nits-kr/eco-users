@@ -205,7 +205,7 @@ function OrderSuccess() {
       <section className="cart-section section-b-space">
         <div className="container-fluid-lg">
           <div className="row g-sm-4 g-3">
-            <div className="col-xxl-9 col-lg-8">
+            <div className="col-xxl-12 col-lg-8">
               <div className="cart-table order-table order-table-2">
                 <div
                   className="table-responsive"
@@ -258,7 +258,7 @@ function OrderSuccess() {
                                 Price
                               </h4>
                               <h6 className="theme-color">
-                                $ {item?.products[0]?.product_Id?.Price}
+                                $ {item?.cartsTotal}
                               </h6>
                             </td>
                             <td className="quantity">
@@ -334,7 +334,7 @@ function OrderSuccess() {
                 </div>
               </div>
             </div>
-            <div className="col-xxl-3 col-lg-4">
+            {/* <div className="col-xxl-3 col-lg-4">
               <div className="row g-4">
                 <div className="col-lg-12 col-sm-6">
                   <div className="summery-box">
@@ -407,7 +407,7 @@ function OrderSuccess() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>

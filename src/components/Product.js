@@ -2261,7 +2261,7 @@ function Product(props) {
 
       {/* Tap to top end */}
       {/* Sticky Cart Box Start */}
-      <div className="sticky-bottom-cart">
+      {/* <div className="sticky-bottom-cart">
         <div className="container-fluid-lg">
           <div className="row">
             <div className="col-12">
@@ -2335,7 +2335,7 @@ function Product(props) {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       {/* Sticky Cart Box End */}
       {/* Bg overlay Start */}
       <div className="bg-overlay" />

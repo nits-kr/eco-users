@@ -27,6 +27,7 @@ import {
 import Star from "./Star";
 import { useGetCategoryListQuery } from "../services/Post";
 import { useGetAllPostQuery } from "../services/Post";
+import { useAddToWislistListMutation } from "../services/Post";
 function IndexGrocary(props) {
   const categoryListItems = useGetCategoryListQuery();
   const trendingProduct = useGetTrendingProductQuery();
@@ -40,8 +41,8 @@ function IndexGrocary(props) {
   const [cartListItems, setCartListItems] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
   const [quantity, setQuantity] = useState([]);
+  const [wishAdd, res] = useAddToWislistListMutation();
   const [count, setCount] = useState([]);
-  console.log("count", count);
   const handleCountChange = (index, newCount) => {
     const newCounts = [...count];
     newCounts[index] = newCount >= 0 ? newCount : 0;
@@ -125,9 +126,27 @@ function IndexGrocary(props) {
   const handleViewClick = (item) => {
     setSelectedProduct(item);
   };
+  // const handleWishClick = async (item) => {
+  //   try {
+  //     const { data, error } = await CreateWish(item._id);
+  //     if (error) {
+  //       console.log(error);
+  //       return;
+  //     }
+  //     const newCreateWishItems = [...CreateWishItems, data];
+  //     setCreateWishItems(newCreateWishItems);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   const handleWishClick = async (item) => {
     try {
-      const { data, error } = await CreateWish(item._id);
+      const editAddress = {
+        product_Id: item?._id,
+        like: true
+      };
+      console.log(item?._id);
+      const { data, error } = await wishAdd(editAddress);
       if (error) {
         console.log(error);
         return;

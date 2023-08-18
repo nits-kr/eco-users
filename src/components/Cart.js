@@ -13,6 +13,7 @@ import DealBoxModel from "./DealBoxModel";
 import TapToTop from "./TapToTop";
 import { useGetCartListQuery } from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
+import { useUpdateQuantityMutation } from "../services/Post";
 import {
   increment,
   decrement,
@@ -31,12 +32,20 @@ import { AddToCart } from "./HttpServices";
 function Cart() {
   const [cartListItems, setCartListItems] = useState([]);
   const [wishAdd, response] = useAddToWislistListMutation();
+  const [updateQuantity, respons] = useUpdateQuantityMutation();
   const [addItem, res] = useAddToCartMutation();
   const [coupan, setCoupan] = useState([]);
   const [coupanCode, setCoupanCode] = useState("25753411");
+  const [CreateWishItems, setCreateWishItems] = useState([]);
   const [count, setCount] = useState(1);
-  const [count1, setCount1] = useState(0);
-  // const cartListQuery = useGetCartListQuery();
+
+  // const handleCountChange = (index, newCount) => {
+  //   const newCounts = [...count1];
+  //   newCounts[index] = newCount >= 0 ? newCount : 0;
+  //   setCount1(newCounts);
+  // };
+  // console.log(count1);
+  const coupanCode2 = coupanCode || "";
   const {
     data: cartListQuery,
     error,
@@ -47,7 +56,40 @@ function Cart() {
   const dispatch = useDispatch();
   const counts = useSelector(selectCartCount);
   const cart = useSelector((state) => state.cart);
+  localStorage?.setItem("cartTotal", coupan?.cartsTotalSum);
   console.log(cart);
+
+  const [count1, setCount1] = useState();
+  console.log("count1", count1);
+  const HandleDecrease = async (product, id, index) => {
+    if (product?.products[0]?.quantity > 1) {
+      const formData = {
+        id: id,
+        quantity: product?.products[0]?.quantity - 1,
+      };
+      console.log(id);
+      console.log("product qu", product?.products[0]?.quantity);
+      const { data } = await updateQuantity(formData);
+      console.log(data);
+      if (!data.error) {
+        fetchCartListData();
+        setCount1(!count1);
+      }
+    }
+  };
+  const HandleIncrease = async (product, id) => {
+    if (product.quantity > 1) {
+      const formData = {
+        id: id,
+        quantity: product.quantity + 1,
+      };
+
+      const { data } = await updateQuantity(formData);
+      console.log(data);
+    }
+  };
+
+  console.log("cartlist item", cartListItems);
 
   const fetchCartListData = () => {
     if (isSuccess) {
@@ -56,11 +98,15 @@ function Cart() {
   };
   useEffect(() => {
     fetchCartListData();
-  }, [cartListQuery]);
+  }, [cartListQuery, count1]);
+
+  useEffect(() => {
+    handleCoupan();
+  }, []);
 
   const handleCoupan = async () => {
     try {
-      const { data, error } = await ApplyCoupan(coupanCode);
+      const { data, error } = await ApplyCoupan(coupanCode2);
       error ? console.log(error) : console.log(data);
       setCoupan(data.results);
       console.log(data.results);
@@ -82,17 +128,25 @@ function Cart() {
     }
   };
   const handleWishClick = async (item) => {
-    const wishId = {
-      id: item?.products[0]?.product_Id?._id,
-    };
-    const result = await wishAdd(wishId);
-    setTimeout(() => {
-      window?.location?.reload();
-    }, 500);
-    console.log(result);
+    try {
+      const editAddress = {
+        product_Id: item?.products[0]?.product_Id?._id,
+        like: true
+      };
+      console.log(item?._id);
+      const { data, error } = await wishAdd(editAddress);
+      if (error) {
+        console.log(error);
+        return;
+      }
+      const newCreateWishItems = [...CreateWishItems, data];
+      setCreateWishItems(newCreateWishItems);
+    } catch (error) {
+      console.log(error);
+    }
   };
   const handleDecrease = async (item) => {
-    count > 1 ? setCount(count -1) : setCount(1)
+    count > 1 ? setCount(count - 1) : setCount(1);
   };
   // const handleAddToCart = async (item) => {
   //   try {
@@ -110,9 +164,7 @@ function Cart() {
   //   }
   //   dispatch(addToCart(item));
   // };
-  const handleIncrease = async (item) => {
-    
-  };
+  const handleIncrease = async (item) => {};
 
   console.log("coupan", coupan);
   useEffect(() => {
@@ -121,19 +173,7 @@ function Cart() {
 
   return (
     <>
-      {/* Loader Start */}
-      {/* <div className="fullpage-loader">
-    <span />
-    <span />
-    <span />
-    <span />
-    <span />
-    <span />
-  </div> */}
-      {/* Loader End */}
-      {/* Header Start */}
       <Header />
-      {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
         <ul>
@@ -259,12 +299,6 @@ function Cart() {
                                               aria-hidden="true"
                                             />
                                           </button>
-                                          <input
-                                            className="form-control input-number qty-input"
-                                            type="text"
-                                            name="quantity"
-                                            defaultValue={0}
-                                          />
                                           <button
                                             type="button"
                                             className="btn qty-right-plus"
@@ -312,95 +346,98 @@ function Cart() {
                               </h6>
                             </td>
                             <td className="quantity">
-                              {item?.products?.map((product, index) => (
-                                <div className="quantity-price" key={index}>
-                                  <div className="cart_qty">
-                                    <div className="input-group">
+                              <div className="quantity-price">
+                                <div className="cart_qty">
+                                  <div className="input-group">
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      <div className="table-title text-content">
+                                        Qty
+                                      </div>
                                       <div
                                         style={{
                                           display: "flex",
-                                          flexDirection: "column",
+                                          flexDirection: "row",
                                           alignItems: "center",
-                                          justifyContent: "center",
+                                          justifyContent: "space-between",
                                         }}
                                       >
-                                        <div className="table-title text-content">
-                                          Qty
-                                        </div>
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            justifyContent: "space-between",
-                                          }}
-                                        >
-                                          {" "}
-                                          {product?.quantity === 1 ? (
-                                            <div style={{
+                                        {" "}
+                                        {item?.products[0]?.quantity === 1 ? (
+                                          <div
+                                            style={{
                                               cursor: "not-allowed",
-                                            }}>
-                                              <button
-                                                type="button"
-                                                className="btn qty-left-minus me-2"
-                                                data-type="minus"
-                                                data-field=""
-                                                style={{
-                                                  filter: "blur(0.7px)",
-                                                  background: "lightgray",
-                                                  color: "darkgray",
-                                                }}
-                                                disabled
-                                              >
-                                                <i
-                                                  className="fa fa-minus ms-0"
-                                                  aria-hidden="true"
-                                                />
-                                              </button>
-                                            </div>
-                                          ) : (
-                                            <div>
-                                              <button
-                                                type="button"
-                                                className="btn qty-left-minus me-2"
-                                                data-type="minus"
-                                                data-field=""
-                                                onClick={() =>
-                                                  handleDecrease(product)
-                                                }
-                                              >
-                                                <i
-                                                  className="fa fa-minus ms-0"
-                                                  aria-hidden="true"
-                                                />
-                                              </button>
-                                            </div>
-                                          )}
-                                          <div>{product?.quantity}</div>
-                                          <div>
+                                            }}
+                                          >
                                             <button
                                               type="button"
-                                              className="btn qty-right-plus ms-2"
-                                              data-type="plus"
+                                              className="btn qty-left-minus me-2"
+                                              data-type="minus"
                                               data-field=""
-                                              onClick={() =>
-                                                handleIncrease(product)
-                                              }
+                                              style={{
+                                                filter: "blur(0.7px)",
+                                                background: "lightgray",
+                                                color: "darkgray",
+                                              }}
+                                              disabled
                                             >
                                               <i
-                                                className="fa fa-plus ms-0"
+                                                className="fa fa-minus ms-0"
                                                 aria-hidden="true"
                                               />
                                             </button>
                                           </div>
+                                        ) : (
+                                          <div>
+                                            <button
+                                              type="button"
+                                              className="btn qty-left-minus me-2"
+                                              data-type="minus"
+                                              data-field=""
+                                              onClick={() =>
+                                                HandleDecrease(
+                                                  item,
+                                                  item?._id,
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              <i
+                                                className="fa fa-minus ms-0"
+                                                aria-hidden="true"
+                                              />
+                                            </button>
+                                          </div>
+                                        )}
+                                        <div>{item?.products[0]?.quantity}</div>
+                                        <div>
+                                          <button
+                                            type="button"
+                                            className="btn qty-right-plus ms-2"
+                                            data-type="plus"
+                                            data-field=""
+                                            onClick={() =>
+                                              HandleIncrease(item, item?._id)
+                                            }
+                                          >
+                                            <i
+                                              className="fa fa-plus ms-0"
+                                              aria-hidden="true"
+                                            />
+                                          </button>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                              ))}
+                              </div>
                             </td>
-
                             <td className="subtotal">
                               <h4 className="table-title text-content">
                                 Total
@@ -417,9 +454,46 @@ function Cart() {
                                   flexDirection: "row",
                                 }}
                               >
+                                {/* {item?.products[0]?.product_Id?.like === "false" ? <Link
+                                  className="btn p-0 position-relative header-wishlist me-2"
+                                  // to="/wishlist"
+                                  title3="Wishlist"
+                                  onClick={() => handleWishClick(item)}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faHeart}
+                                    style={{
+                                      fontSize: "20px",
+                                      color: "black",
+                                    }}
+                                    data-tip="Add to Wishlist"
+                                    data-for="wishlist-tooltip"
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.color = "red";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.color = "black";
+                                    }}
+                                  />
+                                </Link> : <Link
+                                  className="btn p-0 position-relative header-wishlist me-2"
+                                  to="#"
+                                  title3="Wishlist"
+                                  disabled
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faHeart}
+                                    style={{
+                                      fontSize: "20px",
+                                      color: "red",
+                                    }}
+                                    data-tip="Add to Wishlist"
+                                    data-for="wishlist-tooltip"
+                                  />
+                                </Link>} */}
                                 <Link
                                   className="btn p-0 position-relative header-wishlist me-2"
-                                  to="/wishlist"
+                                  // to="/wishlist"
                                   title3="Wishlist"
                                   onClick={() => handleWishClick(item)}
                                 >
@@ -505,7 +579,7 @@ function Cart() {
                   <li className="list-total border-top-0">
                     <h4>Total (USD)</h4>
                     <h4 className="price theme-color">
-                      ${coupan && coupan.cartsTotalSum}
+                      ${coupan && coupan?.cartsTotalSum}
                     </h4>
                   </li>
                 </ul>

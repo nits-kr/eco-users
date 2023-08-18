@@ -52,8 +52,8 @@ function WishList() {
     try {
       const { data, error } = await WishListItems();
       error ? console.log(error) : console.log(data);
-      setWishList(data.results.list);
-      console.log(data.results.list);
+      setWishList(data?.results?.list);
+      console.log(data?.results?.list);
     } catch (error) {
       console.log(error);
     }

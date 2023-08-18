@@ -289,41 +289,73 @@ function OrderTracking({ orderStatus }) {
                       <div
                         data-id="step1"
                         className={
-                          order?.orderStatus == "pending" ||
-                          order?.orderStatus == "packed" ||
-                          order?.orderStatus == "Shipped" ||
+                          order?.orderStatus == "Pending" ||
                           order?.orderStatus == "Inprogress" ||
+                          order?.orderStatus == "Approved" ||
+                          order?.orderStatus == "Packed" ||
+                          order?.orderStatus == "Shipped" ||
                           order?.orderStatus == "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
                         }
                       >
                         <div className="Title">
-                          <h5 className="text-dark">pending</h5>
+                          <h5 className="text-dark">Pending</h5>
                           <h6 className="text-dark">05:43 AM</h6>
                         </div>
                       </div>
                       <div
                         data-id="step2"
                         className={
-                          order?.orderStatus == "packed" ||
-                          order?.orderStatus == "Shipped" ||
                           order?.orderStatus == "Inprogress" ||
+                          order?.orderStatus == "Approved" ||
+                          order?.orderStatus == "Packed" ||
+                          order?.orderStatus == "Shipped" ||
                           order?.orderStatus == "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
                         }
                       >
                         <div className="Title">
-                          <h5 className="text-dark">packed</h5>
-                          <h6 className="text-dark">01:21 PM</h6>
+                          <h5 className="text-dark">Inprogress</h5>
+                          <h6 className="text-dark">05:43 AM</h6>
                         </div>
                       </div>
                       <div
                         data-id="step3"
                         className={
+                          order?.orderStatus == "Approved" ||
+                          order?.orderStatus == "Packed" ||
                           order?.orderStatus == "Shipped" ||
-                          order?.orderStatus == "Inprogress" ||
+                          order?.orderStatus == "Delivered"
+                            ? "step-slider-item active"
+                            : "step-slider-item"
+                        }
+                      >
+                        <div className="Title">
+                          <h5 className="text-dark">Approved</h5>
+                          <h6 className="text-dark">05:43 AM</h6>
+                        </div>
+                      </div>
+                      <div
+                        data-id="step4"
+                        className={
+                          order?.orderStatus == "Packed" ||
+                          order?.orderStatus == "Shipped" ||
+                          order?.orderStatus == "Delivered"
+                            ? "step-slider-item active"
+                            : "step-slider-item"
+                        }
+                      >
+                        <div className="Title">
+                          <h5 className="text-dark">Packed</h5>
+                          <h6 className="text-dark">01:21 PM</h6>
+                        </div>
+                      </div>
+                      <div
+                        data-id="step5"
+                        className={
+                          order?.orderStatus == "Shipped" ||
                           order?.orderStatus == "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
@@ -334,7 +366,7 @@ function OrderTracking({ orderStatus }) {
                           <h6 className="text-dark">Processing</h6>
                         </div>
                       </div>
-                      <div
+                      {/* <div
                         data-id="step4"
                         className={
                           order?.orderStatus == "Inprogress" ||
@@ -347,9 +379,9 @@ function OrderTracking({ orderStatus }) {
                           <h5 className="text-dark">Inprogress</h5>
                           <h6 className="text-dark">Pending</h6>
                         </div>
-                      </div>
+                      </div> */}
                       <div
-                        data-id="step5"
+                        data-id="step6"
                         className={
                           order?.orderStatus == "Delivered"
                             ? "step-slider-item active"

@@ -34,7 +34,7 @@ import {
 import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import Spinner from "./Spinner";
-import { useCreateOrderMutation } from "../services/Post";
+import { useAddToWislistListMutation, useCreateOrderMutation } from "../services/Post";
 import { useShowProductRatingMutation } from "../services/Post";
 import { useSubSubProductMutation } from "../services/Post";
 import { useFilterPriceMutation } from "../services/Post";
@@ -43,6 +43,7 @@ import { useDispatch } from "react-redux";
 
 function Shop(props) {
   const [productListItems, setProductListItems] = useState([]);
+  const [wishAdd, res] = useAddToWislistListMutation();
   console.log("productListItems", productListItems);
   const [productListDetails, setProductListDetails] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -173,16 +174,34 @@ function Shop(props) {
     setSelectedProduct(item);
     console.log(item?._id);
   };
+  // const handleWishClick = async (item) => {
+  //   try {
+  //     const { data, error } = await CreateWish(item._id);
+  //     if (error) {
+  //       console.log(error);
+  //       return;
+  //     }
+  //     const newCreateWishItems = [...CreateWishItems, data];
+  //     setCreateWishItems(newCreateWishItems);
+  //     console.log(newCreateWishItems);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   const handleWishClick = async (item) => {
     try {
-      const { data, error } = await CreateWish(item._id);
+      const editAddress = {
+        product_Id: item?._id,
+        like: true
+      };
+      console.log(item?._id);
+      const { data, error } = await wishAdd(editAddress);
       if (error) {
         console.log(error);
         return;
       }
       const newCreateWishItems = [...CreateWishItems, data];
       setCreateWishItems(newCreateWishItems);
-      console.log(newCreateWishItems);
     } catch (error) {
       console.log(error);
     }

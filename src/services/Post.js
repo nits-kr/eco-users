@@ -41,9 +41,9 @@ export const PostApi = createApi({
         const { id } = body;
         console.log("update address body data", id);
         return {
-          url: `user/wish/wish/add-wish?product_Id=${id}`,
+          url: "/user/wish/wish/add-wish",
           method: "post",
-          // body: data,
+          body,
         };
       },
     }),
@@ -202,6 +202,18 @@ export const PostApi = createApi({
         };
       },
     }),
+    updateQuantity: builder.mutation({
+      query: (body) => {
+        console.log("update address", body);
+        const { id, ...data } = body;
+        console.log("update address body data", data);
+        return {
+          url: `/user/carts/carts/edit-card/${id}`,
+          method: "post",
+          body: data,
+        };
+      },
+    }),
     updateCard: builder.mutation({
       query: (body) => {
         console.log("update address", body);
@@ -346,4 +358,5 @@ export const {
   useCreateContactMutation,
   useAddReviewMutation,
   useRelatedProductDetailsMutation,
+  useUpdateQuantityMutation,
 } = PostApi;
