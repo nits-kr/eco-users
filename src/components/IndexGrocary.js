@@ -725,7 +725,7 @@ function IndexGrocary(props) {
                               alt=""
                             />
                             <h5>
-                              <Link to="/shop"> {item?.categoryName_en} </Link>
+                              <Link to="/shop/:id"> {item?.categoryName_en} </Link>
                             </h5>
                           </div>
                         </li>

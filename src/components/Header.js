@@ -1,31 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEye,
-  faHeart,
-  faPhoneVolume,
-} from "@fortawesome/free-solid-svg-icons";
-import { CategoryList, ProductSearch, SubCategoryList } from "./HttpServices";
-import { ApplyCoupan, CartList, DeleteCartProduct } from "./HttpServices";
-
-import { Modal } from "react-bootstrap";
-// import "bootstrap/dist/css/bootstrap.min.css";
+import { faHeart, faPhoneVolume } from "@fortawesome/free-solid-svg-icons";
+import { ProductSearch } from "./HttpServices";
+import { DeleteCartProduct } from "./HttpServices";
 import { useGetCategoryListQuery } from "../services/Post";
 import { useSubCategoryListMutation } from "../services/Post";
 import { useGetCartListQuery } from "../services/Post";
 import { useGetTrendingProductQuery } from "../services/Post";
 
 function Header({ Dash }) {
-  // console.log("product search items", props.productListItems);
   const categoryListItems = useGetCategoryListQuery();
-  const [subCategoryList, res] = useSubCategoryListMutation();
+  const [subCategoryList] = useSubCategoryListMutation();
   const trendingProduct = useGetTrendingProductQuery();
   const [trendingList, setTrendingList] = useState([]);
-  // console.log(res);
   const [categoryListData, setCategoryListData] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
   const [subCategoryItems, setSubCategoryItems] = useState([]);
@@ -33,14 +24,8 @@ function Header({ Dash }) {
   const [suggestions, setSuggestions] = useState([]);
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSale, setShowSale] = useState(false);
-  const [itemId, setItemId] = useState("");
   const cartTotal = localStorage?.getItem("cartTotal");
-  const {
-    data: cartListQuery,
-    error,
-    isLoading,
-    isSuccess,
-  } = useGetCartListQuery();
+  const { data: cartListQuery, isSuccess } = useGetCartListQuery();
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
   localStorage?.setItem("productSearch", searchQuery);
@@ -49,16 +34,17 @@ function Header({ Dash }) {
     if (trendingProduct?.data?.results?.productlist) {
       setTrendingList(trendingProduct?.data?.results?.productlist);
     }
-  });
-  const navigate = useNavigate();
-  const fetchCartListData = () => {
-    if (isSuccess) {
-      setCartListItems(cartListQuery?.results?.list);
-    }
-  };
+  }, [trendingProduct?.data?.results?.productlist]);
   useEffect(() => {
+    const fetchCartListData = () => {
+      if (isSuccess) {
+        setCartListItems(cartListQuery?.results?.list);
+      }
+    };
+
     fetchCartListData();
-  }, [cartListQuery]);
+  }, [cartListQuery, isSuccess]);
+
   useEffect(() => {
     const reversedList =
       categoryListItems?.data?.results?.list?.slice().reverse() ?? [];
@@ -70,12 +56,10 @@ function Header({ Dash }) {
   };
 
   const handleSaveChanges1 = async (categoryId) => {
-    console.log("handleSaveChanges1", categoryId);
-    setItemId(categoryId); // Update the itemId immediately
     const editAddress = {
       id: categoryId,
     };
-    const result = await subCategoryList(editAddress); // Assuming subCategoryList is an async function
+    const result = await subCategoryList(editAddress);
     if (result) {
       setSubCategoryItems(result.data?.results?.listData);
     }
@@ -403,7 +387,14 @@ function Header({ Dash }) {
                           </button>
                         </div>
                         {suggestions.length > 0 && (
-                          <div className="suggestion-list shadow" style={{position:"absolute", zIndex:"1", width:"44.2%"}}>
+                          <div
+                            className="suggestion-list shadow"
+                            style={{
+                              position: "absolute",
+                              zIndex: "1",
+                              width: "44.2%",
+                            }}
+                          >
                             <ul
                               className="suggestion-ul"
                               style={{
@@ -418,7 +409,9 @@ function Header({ Dash }) {
                                   className="suggestion-li ms-2"
                                 >
                                   <Link
-                                    to={`/shop2/${encodeURIComponent(searchQuery)}`}
+                                    to={`/shop2/${encodeURIComponent(
+                                      searchQuery
+                                    )}`}
                                     className="suggestion-item"
                                     onClick={hideSuggestions}
                                   >
@@ -685,7 +678,7 @@ function Header({ Dash }) {
                             onMouseEnter={() => handleOnhover(item?._id)}
                           >
                             <Link to="#" className="category-name">
-                              <img src={item?.categoryPic} alt="image" />
+                              <img src={item?.categoryPic} alt={item?.categoryName_en} />
                               <h6>
                                 {" "}
                                 {item?.categoryName_en
@@ -713,7 +706,7 @@ function Header({ Dash }) {
                                           >
                                             <img
                                               src={items?.subCategoryPic}
-                                              alt="image"
+                                              alt={item?.subCategoryName_en}
                                             />
                                             <div>
                                               {" "}

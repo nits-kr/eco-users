@@ -31,7 +31,8 @@ function Blog(props) {
       props.setProgress(100);
       setLoading(false);
     }
-  });
+  }, [trendingProduct?.data?.results?.productlist, props]);
+
   useEffect(() => {
     const reversedList =
       categoryListItems?.data?.results?.list?.slice().reverse() ?? [];
@@ -49,11 +50,7 @@ function Blog(props) {
     } else {
       setBlogList(blog?.data?.results?.list);
     }
-  }, [blog]);
-
-  useEffect(() => {
-    handleSearch1();
-  }, [searchQuery]);
+  }, [blog, props]);
 
   const handleSearch1 = async () => {
     try {
@@ -81,8 +78,7 @@ function Blog(props) {
           // text: error.message,
           icon: "error",
           confirmButtonText: "OK",
-        })
-        .then(() => {
+        }).then(() => {
           // Reload the page when the "OK" button is clicked
           window.location.reload();
         });
@@ -103,6 +99,9 @@ function Blog(props) {
       }
     }
   };
+  useEffect(() => {
+    handleSearch1();
+  }, [searchQuery]);
   return (
     <>
       {loading}
@@ -208,15 +207,16 @@ function Blog(props) {
                               <Link to="/blog-detail">
                                 <h3>{item.title}</h3>
                               </Link>
-                              <button
-                                onClick={() => {
-                                  window.location.href = "/blog-details";
-                                }}
+                              <Link
+                                // to = {`/blog-details/${item?._id}`}
+                                to={`/blog-details/${encodeURIComponent(
+                                  JSON.stringify(item)
+                                )}`}
                                 className="blog-button"
                               >
                                 Read More
                                 <i className="fa-solid fa-right-long" />
-                              </button>
+                              </Link>
                             </div>
                           </div>
                         </div>
@@ -495,7 +495,10 @@ function Blog(props) {
                                 return (
                                   <li key={index}>
                                     <div className="offer-product">
-                                      <Link to="/shop" className="offer-image">
+                                      <Link
+                                        to="/shop/:id"
+                                        className="offer-image"
+                                      >
                                         <img
                                           src={item?.product_Pic[0]}
                                           className=" lazyload"
@@ -519,72 +522,6 @@ function Blog(props) {
                                   </li>
                                 );
                               })}
-                              {/* <li>
-                            <div className="offer-product">
-                              <Link to="/shop" className="offer-image">
-                                <img
-                                  src="../assets/images/vegetable/product/23.png"
-                                  className=" lazyload"
-                                  alt=""
-                                />
-                              </Link>
-                              <div className="offer-detail">
-                                <div>
-                                  <Link to="/shop">
-                                    <h6 className="name">
-                                      Meatigo Premium Goat Curry
-                                    </h6>
-                                  </Link>
-                                  <span>450 G</span>
-                                  <h6 className="price theme-color">$ 70.00</h6>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li>
-                            <div className="offer-product">
-                              <Link to="/shop" className="offer-image">
-                                <img
-                                  src="../assets/images/vegetable/product/24.png"
-                                  className=" lazyload"
-                                  alt=""
-                                />
-                              </Link>
-                              <div className="offer-detail">
-                                <div>
-                                  <Link to="/shop">
-                                    <h6 className="name">
-                                      Dates Medjoul Premium Imported
-                                    </h6>
-                                  </Link>
-                                  <span>450 G</span>
-                                  <h6 className="price theme-color">$ 40.00</h6>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li className="mb-0">
-                            <div className="offer-product">
-                              <Link to="/shop" className="offer-image">
-                                <img
-                                  src="../assets/images/vegetable/product/26.png"
-                                  className=" lazyload"
-                                  alt=""
-                                />
-                              </Link>
-                              <div className="offer-detail">
-                                <div>
-                                  <Link to="/shop">
-                                    <h6 className="name">
-                                      Apple Red Premium Imported
-                                    </h6>
-                                  </Link>
-                                  <span>1 KG</span>
-                                  <h6 className="price theme-color">$ 80.00</h6>
-                                </div>
-                              </div>
-                            </div>
-                          </li> */}
                             </ul>
                           </div>
                         </div>

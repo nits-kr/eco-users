@@ -144,7 +144,7 @@ function Footer() {
                       </Link>
                     </li>
                     <li>
-                      <Link to="/shop" className="text-content">
+                      <Link to="/shop/:id" className="text-content">
                         Shop
                       </Link>
                     </li>

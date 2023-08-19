@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import IndexPage from "./components/IndexPage";
 import IndexElectronics from "./components/IndexElectronics";
@@ -80,7 +80,7 @@ function App() {
           <Route
             exact
             className="active"
-            path="/blog-details"
+            path="/blog-details/:item"
             element={<BlogDetails />}
           />
           <Route

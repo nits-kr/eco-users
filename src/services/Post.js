@@ -66,6 +66,12 @@ export const PostApi = createApi({
         method: "post",
       }),
     }),
+    blogCommentList: builder.query({
+      query: (name) => ({
+        url: "/user/blog/blog/comments-list",
+        method: "post",
+      }),
+    }),
     getProductListDetails: builder.query({
       query: (id) => ({
         url: `user/product/product/details/${id}`,
@@ -105,6 +111,13 @@ export const PostApi = createApi({
     createAddress: builder.mutation({
       query: (body) => ({
         url: `user/address/address/create-address`,
+        method: "post",
+        body,
+      }),
+    }),
+    createBlogComment: builder.mutation({
+      query: (body) => ({
+        url: "/user/blog/blog/blog-comments",
         method: "post",
         body,
       }),
@@ -360,4 +373,6 @@ export const {
   useAddReviewMutation,
   useRelatedProductDetailsMutation,
   useUpdateQuantityMutation,
+  useBlogCommentListQuery,
+  useCreateBlogCommentMutation,
 } = PostApi;

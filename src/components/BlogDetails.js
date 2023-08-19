@@ -1,39 +1,84 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Header from "./Header";
 import Footer from "./Footer";
-import { useGetAllPostQuery } from "../services/Post";
+import {
+  useBlogCommentListQuery,
+  useCreateBlogCommentMutation,
+  useGetTrendingProductQuery,
+} from "../services/Post";
 
 function BlogDetails() {
-  const blogDetails = useGetAllPostQuery();
-  console.log("blog details", blogDetails);
-  const [blogList, setBlogList] = useState();
+  const { data } = useBlogCommentListQuery();
+  const [addBlogComment] = useCreateBlogCommentMutation();
+  const trendingProduct = useGetTrendingProductQuery();
+  const [trendingList, setTrendingList] = useState([]);
+  const [blogCommentList, setBlogCommentList] = useState();
+  const [fullName, setFullName] = useState([]);
+  const [email, setEmail] = useState([]);
+  const [url, setUrl] = useState([]);
+  const [comments1, setComments] = useState([]);
+  const [items, setItems] = useState([]);
+  const { item } = useParams();
+  useEffect(() => {
+    if (trendingProduct?.data?.results?.productlist) {
+      setTrendingList(trendingProduct?.data?.results?.productlist);
+    }
+  }, [trendingProduct?.data?.results?.productlist]);
+  useEffect(() => {
+    if (item) {
+      const decodedItem = JSON.parse(decodeURIComponent(item));
+      setItems(decodedItem);
+      console.log("blog id", decodedItem?._id);
+    }
+  }, [item]);
+  console.log("blog item", items);
   useEffect(() => {
     feather.replace();
-    if (blogDetails?.data?.results?.list) {
-      setBlogList(blogDetails?.data?.results?.list);
+    if (data?.results?.list) {
+      setBlogCommentList(data?.results?.list);
     } else {
-      setBlogList(blogDetails?.data?.results?.list);
+      setBlogCommentList(data?.results?.list);
     }
-  }, [blogDetails]);
-  console.log("bloglist details", blogList);
+  }, [data]);
+  const userId = localStorage?.getItem("loginId");
+  const userPic = localStorage?.getItem("profilePic");
+
+  const handleOnSave = async (e) => {
+    e.preventDefault();
+    const comments = {
+      fullName: fullName,
+      email: email,
+      enterUrl: url,
+      commnets: comments1,
+      user_Id: userId,
+      blog_Id: items?._id,
+    };
+    try {
+      const response = await addBlogComment(comments);
+      console.log(response);
+
+      // Display a Swal notification on success
+      Swal.fire({
+        title: "Comment Created",
+        text: "Your comment has been successfully created.",
+        icon: "success",
+        confirmButtonText: "OK",
+      }).then(() => {
+        // Reload the page when "OK" is clicked
+        window.location.reload();
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
-      {/* Loader Start */}
-      {/* <div className="fullpage-loader">
-    <span />
-    <span />
-    <span />
-    <span />
-    <span />
-    <span />
-  </div> */}
-      {/* Loader End */}
-      {/* Header Start */}
-      <Header />
+      <Header Dash={"blog"} />
       {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
@@ -375,72 +420,34 @@ function BlogDetails() {
                     >
                       <div className="accordion-body">
                         <ul className="product-list product-list-2 border-0 p-0">
-                          <li>
-                            <div className="offer-product">
-                              <Link to="/shop" className="offer-image">
-                                <img
-                                  src="../assets/images/vegetable/product/23.png"
-                                  className=" lazyload"
-                                  alt=""
-                                />
-                              </Link>
-                              <div className="offer-detail">
-                                <div>
-                                  <Link to="/shop">
-                                    <h6 className="name">
-                                      Meatigo Premium Goat Curry
-                                    </h6>
+                          {trendingList?.map((item, index) => {
+                            return (
+                              <li key={index}>
+                                <div className="offer-product">
+                                  <Link to="/shop/:id" className="offer-image">
+                                    <img
+                                      src={item?.product_Pic[0]}
+                                      className=" lazyload"
+                                      alt=""
+                                    />
                                   </Link>
-                                  <span>450 G</span>
-                                  <h6 className="price theme-color">$ 70.00</h6>
+                                  <div className="offer-detail">
+                                    <div>
+                                      <Link to="/shop/:id">
+                                        <h6 className="name">
+                                          {item?.productName_en}
+                                        </h6>
+                                      </Link>
+                                      <span>{item?.weight}</span>
+                                      <h6 className="price theme-color">
+                                        ${item?.Price}
+                                      </h6>
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li>
-                            <div className="offer-product">
-                              <Link to="/shop" className="offer-image">
-                                <img
-                                  src="../assets/images/vegetable/product/24.png"
-                                  className=" lazyload"
-                                  alt=""
-                                />
-                              </Link>
-                              <div className="offer-detail">
-                                <div>
-                                  <Link to="/shop">
-                                    <h6 className="name">
-                                      Dates Medjoul Premium Imported
-                                    </h6>
-                                  </Link>
-                                  <span>450 G</span>
-                                  <h6 className="price theme-color">$ 40.00</h6>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li className="mb-0">
-                            <div className="offer-product">
-                              <Link to="/shop" className="offer-image">
-                                <img
-                                  src="../assets/images/vegetable/product/26.png"
-                                  className=" lazyload"
-                                  alt=""
-                                />
-                              </Link>
-                              <div className="offer-detail">
-                                <div>
-                                  <Link to="/shop">
-                                    <h6 className="name">
-                                      Apple Red Premium Imported
-                                    </h6>
-                                  </Link>
-                                  <span>1 KG</span>
-                                  <h6 className="price theme-color">$ 80.00</h6>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
+                              </li>
+                            );
+                          })}
                         </ul>
                       </div>
                     </div>
@@ -472,7 +479,7 @@ function BlogDetails() {
                     <li>life style</li>
                     <li>organic</li>
                   </ul>
-                  <h2> {blogList?.title} </h2>
+                  <h2> {blogCommentList?.title} </h2>
                   <ul className="contain-comment-list">
                     <li>
                       <div className="user-list">
@@ -547,16 +554,11 @@ function BlogDetails() {
               </div>
               <div className="blog-detail-contain">
                 <p>
-                  <span className="first">S</span> hotgun approach message the
-                  initiative so can I just chime in on that one. Make sure to
-                  include in your wheelhouse bells and whistles, and touch base
-                  slow-walk our commitment nor what's the status on the
-                  deliverables for eow?. Create spaces to explore whatâ€™s next
-                  commitment to the cause , or UI, for get buy-in but draw a
-                  line in the sand, and pig in a python we've got kpis for that.
-                  Message the initiative value prop, please use "solutionise"
-                  instead of solution ideas! : i am dead inside. Quick sync
-                  4-blocker. Driving the initiative forward flesh that out.
+                  <span className="first">
+                    {" "}
+                    {items?.description?.slice(0, 1)}{" "}
+                  </span>{" "}
+                  {items?.description?.slice(1)}
                 </p>
                 <p>
                   Let's unpack that later everyone thinks the soup tastes better
@@ -627,95 +629,48 @@ function BlogDetails() {
               </div>
               <div className="comment-box overflow-hidden">
                 <div className="leave-title">
-                  <h3>Comments</h3>
+                  <h3>Comments({blogCommentList?.length})</h3>
                 </div>
                 <div className="user-comment-box">
                   <ul>
-                    <li>
-                      <div className="user-box border-color">
-                        <div className="reply-button">
-                          <i className="fa-solid fa-reply" />
-                          <span className="theme-color">Reply</span>
-                        </div>
-                        <div className="user-iamge">
-                          <img
-                            src="../assets/images/inner-page/user/1.jpg"
-                            className="img-fluid blur-up lazyloaded"
-                            alt=""
-                          />
-                          <div className="user-name">
-                            <h6>30 Jan, 2022</h6>
-                            <h5 className="text-content">Glenn Greer</h5>
+                    {blogCommentList?.map((item, index) => {
+                      return (
+                        <li key={index}>
+                          <div className="user-box border-color">
+                            <div className="reply-button">
+                              <i className="fa-solid fa-reply" />
+                              <span className="theme-color">Reply</span>
+                            </div>
+                            <div className="user-iamge">
+                              <img
+                                // src="../assets/images/inner-page/user/1.jpg"
+                                src={
+                                  userPic
+                                    ? userPic
+                                    : "../assets/images/inner-page/user/1.jpg"
+                                }
+                                className="img-fluid blur-up lazyloaded"
+                                alt=""
+                              />
+                              <div className="user-name">
+                                <h6> {item?.createdAt?.slice(0, 10)} </h6>
+                                <h5 className="text-content">
+                                  {" "}
+                                  {item?.fullName}{" "}
+                                </h5>
+                              </div>
+                            </div>
+                            <div className="user-contain">
+                              <p>{item?.commnets}</p>
+                            </div>
                           </div>
-                        </div>
-                        <div className="user-contain">
-                          <p>
-                            "This proposal is a win-win situation which will
-                            cause a stellar paradigm shift, and produce a
-                            multi-fold increase in deliverables a better
-                            understanding"
-                          </p>
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="user-box border-color">
-                        <div className="reply-button">
-                          <i className="fa-solid fa-reply" />
-                          <span className="theme-color">Reply</span>
-                        </div>
-                        <div className="user-iamge">
-                          <img
-                            src="../assets/images/inner-page/user/2.jpg"
-                            className="img-fluid blur-up lazyloaded"
-                            alt=""
-                          />
-                          <div className="user-name">
-                            <h6>30 Jan, 2022</h6>
-                            <h5 className="text-content">Glenn Greer</h5>
-                          </div>
-                        </div>
-                        <div className="user-contain">
-                          <p>
-                            "Yeah, I think maybe you do. Right, gimme a Pepsi
-                            free. Of course, the Enchantment Under The Sea Dance
-                            they're supposed to go to this, that's where they
-                            kiss for the first time. You'll find out. Are you
-                            sure about this storm?"
-                          </p>
-                        </div>
-                      </div>
-                    </li>
-                    <li className="li-padding">
-                      <div className="user-box">
-                        <div className="reply-button">
-                          <i className="fa-solid fa-reply" />
-                          <span className="theme-color">Reply</span>
-                        </div>
-                        <div className="user-iamge">
-                          <img
-                            src="../assets/images/inner-page/user/3.jpg"
-                            className="img-fluid blur-up lazyloaded"
-                            alt=""
-                          />
-                          <div className="user-name">
-                            <h6>30 Jan, 2022</h6>
-                            <h5 className="text-content">Glenn Greer</h5>
-                          </div>
-                        </div>
-                        <div className="user-contain">
-                          <p>
-                            "Cheese slices goat cottage cheese roquefort cream
-                            cheese pecorino cheesy feet when the cheese comes
-                            out everybody's happy"
-                          </p>
-                        </div>
-                      </div>
-                    </li>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               </div>
-              <div className="leave-box">
+              <form className="leave-box" onSubmit={handleOnSave}>
                 <div className="leave-title mt-0">
                   <h3>Leave Comment</h3>
                 </div>
@@ -735,6 +690,8 @@ function BlogDetails() {
                           id="exampleFormControlInput1"
                           placeholder="Full Name"
                           fdprocessedid="wke4hk"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
                         />
                       </div>
                     </div>
@@ -746,16 +703,20 @@ function BlogDetails() {
                           id="exampleFormControlInput2"
                           placeholder="Enter Email Address"
                           fdprocessedid="8sjdms"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
                         />
                       </div>
                     </div>
                     <div className="col-xxl-4 col-lg-12 col-sm-6">
                       <div className="blog-input">
                         <input
-                          type="url"
+                          type="text"
                           className="form-control"
                           id="exampleFormControlInput3"
                           placeholder="Enter URL"
+                          value={url}
+                          onChange={(e) => setUrl(e.target.value)}
                         />
                       </div>
                     </div>
@@ -766,7 +727,10 @@ function BlogDetails() {
                           id="exampleFormControlTextarea1"
                           rows={4}
                           placeholder="Comments"
-                          defaultValue={""}
+                          // defaultValue={""}
+                          value={comments1}
+                          name="comments"
+                          onChange={(e) => setComments(e.target.value)}
                         />
                       </div>
                     </div>
@@ -796,7 +760,7 @@ function BlogDetails() {
                     Post Comment
                   </button>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>

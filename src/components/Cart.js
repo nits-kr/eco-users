@@ -4,57 +4,29 @@ import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faTrash, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faHeart } from "@fortawesome/free-solid-svg-icons";
 import Header from "./Header";
 import Footer from "./Footer";
-import { ApplyCoupan, CartList, DeleteCartProduct } from "./HttpServices";
+import { ApplyCoupan, DeleteCartProduct } from "./HttpServices";
 import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import TapToTop from "./TapToTop";
 import { useGetCartListQuery } from "../services/Post";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { useUpdateQuantityMutation } from "../services/Post";
-import {
-  increment,
-  decrement,
-  selectCartCount,
-  addToCart,
-  clearCart,
-  decreaseCart,
-  getTotals,
-  removeFromCart,
-} from "../app/slice/CartSlice";
 import { useAddToWislistListMutation } from "../services/Post";
-// import { selectCartCount } from "../app/slice/CartSlice";
-import { useAddToCartMutation } from "../services/Post";
-import { AddToCart } from "./HttpServices";
 
 function Cart() {
   const [cartListItems, setCartListItems] = useState([]);
-  const [wishAdd, response] = useAddToWislistListMutation();
-  const [updateQuantity, respons] = useUpdateQuantityMutation();
-  const [addItem, res] = useAddToCartMutation();
+  const [wishAdd] = useAddToWislistListMutation();
+  const [updateQuantity] = useUpdateQuantityMutation();
   const [coupan, setCoupan] = useState([]);
   const [coupanCode, setCoupanCode] = useState("25753411");
   const [CreateWishItems, setCreateWishItems] = useState([]);
-  const [count, setCount] = useState(1);
 
-  // const handleCountChange = (index, newCount) => {
-  //   const newCounts = [...count1];
-  //   newCounts[index] = newCount >= 0 ? newCount : 0;
-  //   setCount1(newCounts);
-  // };
-  // console.log(count1);
   const coupanCode2 = coupanCode || "";
-  const {
-    data: cartListQuery,
-    error,
-    isLoading,
-    isSuccess,
-  } = useGetCartListQuery();
+  const { data: cartListQuery, isSuccess } = useGetCartListQuery();
   console.log(cartListQuery);
-  const dispatch = useDispatch();
-  const counts = useSelector(selectCartCount);
   const cart = useSelector((state) => state.cart);
   localStorage?.setItem("cartTotal", coupan?.cartsTotalSum);
   console.log(cart);
@@ -132,12 +104,12 @@ function Cart() {
       console.log(error);
     }
   };
-  const userId = localStorage?.getItem("loginId")
+  const userId = localStorage?.getItem("loginId");
   const handleWishClick = async (item) => {
     try {
       const editAddress = {
         product_Id: item?.products[0]?.product_Id?._id,
-        userId:userId,
+        userId: userId,
         like: true,
       };
       console.log(item?._id);
@@ -443,44 +415,49 @@ function Cart() {
                                   flexDirection: "row",
                                 }}
                               >
-                                {item?.products[0]?.product_Id?.like === "false" ? <Link
-                                  className="btn p-0 position-relative header-wishlist me-2"
-                                  to="/wishlist"
-                                  title3="Wishlist"
-                                  onClick={() => handleWishClick(item)}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faHeart}
-                                    style={{
-                                      fontSize: "20px",
-                                      color: "black",
-                                    }}
-                                    data-tip="Add to Wishlist"
-                                    data-for="wishlist-tooltip"
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.color = "red";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.color = "black";
-                                    }}
-                                  />
-                                </Link> : <Link
-                                  className="btn p-0 position-relative header-wishlist me-2"
-                                  to="#"
-                                  title5="Wishlist"
-                                  disabled
-                                  style={{cursor:"not-allowed"}}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faHeart}
-                                    style={{
-                                      fontSize: "20px",
-                                      color: "red",
-                                    }}
-                                    data-tip="Add to Wishlist"
-                                    data-for="wishlist-tooltip"
-                                  />
-                                </Link>}
+                                {item?.products[0]?.product_Id?.like ===
+                                "false" ? (
+                                  <Link
+                                    className="btn p-0 position-relative header-wishlist me-2"
+                                    to="/wishlist"
+                                    title3="Wishlist"
+                                    onClick={() => handleWishClick(item)}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faHeart}
+                                      style={{
+                                        fontSize: "20px",
+                                        color: "black",
+                                      }}
+                                      data-tip="Add to Wishlist"
+                                      data-for="wishlist-tooltip"
+                                      onMouseEnter={(e) => {
+                                        e.currentTarget.style.color = "red";
+                                      }}
+                                      onMouseLeave={(e) => {
+                                        e.currentTarget.style.color = "black";
+                                      }}
+                                    />
+                                  </Link>
+                                ) : (
+                                  <Link
+                                    className="btn p-0 position-relative header-wishlist me-2"
+                                    to="#"
+                                    title5="Wishlist"
+                                    disabled
+                                    style={{ cursor: "not-allowed" }}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faHeart}
+                                      style={{
+                                        fontSize: "20px",
+                                        color: "red",
+                                      }}
+                                      data-tip="Add to Wishlist"
+                                      data-for="wishlist-tooltip"
+                                    />
+                                  </Link>
+                                )}
                                 {/* <Link
                                   className="btn p-0 position-relative header-wishlist me-2"
                                   to="/wishlist"
