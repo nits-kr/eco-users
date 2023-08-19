@@ -403,7 +403,7 @@ function Header({ Dash }) {
                           </button>
                         </div>
                         {suggestions.length > 0 && (
-                          <div className="suggestion-list shadow">
+                          <div className="suggestion-list shadow" style={{position:"absolute", zIndex:"1", width:"44.2%"}}>
                             <ul
                               className="suggestion-ul"
                               style={{
