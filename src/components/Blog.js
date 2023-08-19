@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import axios from "axios";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Header from "./Header";
 import Footer from "./Footer";
-import { useGetAllPostQuery, useGetCategoryListQuery, useGetTrendingProductQuery } from "../services/Post";
+import {
+  useGetAllPostQuery,
+  useGetCategoryListQuery,
+  useGetTrendingProductQuery,
+} from "../services/Post";
 import Spinner from "./Spinner";
 
 function Blog(props) {
@@ -14,13 +20,9 @@ function Blog(props) {
   const trendingProduct = useGetTrendingProductQuery();
   const [trendingList, setTrendingList] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const blog = useGetAllPostQuery();
-  console.log("useGetAllPostQuery", blog);
-
   const [blogList, setBlogList] = useState();
-  
-  console.log("blog list", blogList);
-
   useEffect(() => {
     props.setProgress(10);
     setLoading(true);
@@ -48,14 +50,64 @@ function Blog(props) {
       setBlogList(blog?.data?.results?.list);
     }
   }, [blog]);
-  console.log("bolg list", blogList);
-  console.log(("blog list new", blog));
 
+  useEffect(() => {
+    handleSearch1();
+  }, [searchQuery]);
+
+  const handleSearch1 = async () => {
+    try {
+      const url1 =
+        searchQuery !== ""
+          ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/blog/blog/blog-search"
+          : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/blog/blog/blog-list";
+      const response = await axios.post(url1, {
+        title: searchQuery,
+      });
+      const { error, results } = response?.data;
+      if (error) {
+        // throw new Error("Error searching for products. Data is not found.");
+        setBlogList([]);
+      } else {
+        setBlogList(
+          searchQuery !== "" ? results?.blogData : results?.list?.reverse()
+        );
+      }
+    } catch (error) {
+      if (error.response) {
+        Swal.fire({
+          title: "Error!",
+          text: "Data Not Found",
+          // text: error.message,
+          icon: "error",
+          confirmButtonText: "OK",
+        })
+        .then(() => {
+          // Reload the page when the "OK" button is clicked
+          window.location.reload();
+        });
+      } else if (error.request) {
+        Swal.fire({
+          title: "Error!",
+          text: "Network error. Please try again later.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: error.message,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    }
+  };
   return (
     <>
       {loading}
       {/* Header Start */}
-      <Header Dash={"blog"}/>
+      <Header Dash={"blog"} />
       {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
@@ -123,397 +175,351 @@ function Blog(props) {
         <Spinner />
       ) : (
         <>
-      <section className="blog-section section-b-space">
-        <div className="container-fluid-lg">
-          <div className="row g-4">
-            <div className="col-xxl-9 col-xl-8 col-lg-7 order-lg-2">
-              <div className="row g-4 ratio_65">
-                {blogList?.map((item, index) => {
-                  return (
-                    <div className="col-xxl-4 col-sm-6" key={index}>
-                      <div className="blog-box wow fadeInUp">
-                        <div className="blog-image">
-                          <Link to="/blog-detail">
-                            <img
-                              src={item.blog_Pic}
-                              className="bg-img  lazyload"
-                              alt=""
-                              width="100%"
-                            />
-                          </Link>
-                        </div>
-                        <div className="blog-contain">
-                          <div className="blog-label">
-                            <span className="time">
-                              <i data-feather="clock" />{" "}
-                              <span> {item?.createdAt?.slice(0, 10)} </span>
-                            </span>
-                            <span className="super">
-                              <i data-feather="user" />{" "}
-                              <span>Mark J. Speight</span>
-                            </span>
-                          </div>
-                          <Link to="/blog-detail">
-                            <h3>
-                              {item.title}
-                            </h3>
-                          </Link>
-                          <button
-                            onClick={() => {
-                              window.location.href = "/blog-details";
-                            }}
-                            className="blog-button"
-                          >
-                            Read More
-                            <i className="fa-solid fa-right-long" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <nav className="custome-pagination">
-                <ul className="pagination justify-content-center">
-                  <li className="page-item disabled">
-                    <Link className="page-link" to="#" tabIndex={-1}>
-                      <i className="fa-solid fa-angles-left" />
-                    </Link>
-                  </li>
-                  <li className="page-item active">
-                    <Link className="page-link" to="#">
-                      1
-                    </Link>
-                  </li>
-                  <li className="page-item" aria-current="page">
-                    <Link className="page-link" to="#">
-                      2
-                    </Link>
-                  </li>
-                  <li className="page-item">
-                    <Link className="page-link" to="#">
-                      3
-                    </Link>
-                  </li>
-                  <li className="page-item">
-                    <Link className="page-link" to="#">
-                      <i className="fa-solid fa-angles-right" />
-                    </Link>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-            <div className="col-xxl-3 col-xl-4 col-lg-5 order-lg-1">
-              <div className="left-sidebar-box wow fadeInUp">
-                <div className="left-search-box">
-                  <div className="search-box">
-                    <input
-                      type="search"
-                      className="form-control"
-                      id="exampleFormControlInput1"
-                      placeholder="Search...."
-                    />
-                  </div>
-                </div>
-                <div
-                  className="accordion left-accordion-box"
-                  id="accordionPanelsStayOpenExample"
-                >
-                  <div className="accordion-item">
-                    <h2
-                      className="accordion-header"
-                      id="panelsStayOpen-headingOne"
-                    >
-                      <button
-                        className="accordion-button"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#panelsStayOpen-collapseOne"
-                        aria-expanded="true"
-                        aria-controls="panelsStayOpen-collapseOne"
-                      >
-                        Recent Post
-                      </button>
-                    </h2>
-                    <div
-                      id="panelsStayOpen-collapseOne"
-                      className="accordion-collapse collapse show"
-                      aria-labelledby="panelsStayOpen-headingOne"
-                    >
-                      <div className="accordion-body pt-0">
-                        <div className="recent-post-box">
-                          <div className="recent-box">
-                            <Link to="/blog" className="recent-image">
-                              <img
-                                src="../assets/images/inner-page/blog/1.jpg"
-                                className="img-fluid  lazyload"
-                                alt=""
-                              />
-                            </Link>
-                            <div className="recent-detail">
-                              <Link to="/blog">
-                                <h5 className="recent-name">
-                                  Green onion knife and salad placed
-                                </h5>
-                              </Link>
-                              <h6>
-                                25 Jan, 2022 <i data-feather="thumbs-up" />
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="recent-box">
-                            <Link to="/blog" className="recent-image">
-                              <img
-                                src="../assets/images/inner-page/blog/2.jpg"
-                                className="img-fluid  lazyload"
-                                alt=""
-                              />
-                            </Link>
-                            <div className="recent-detail">
-                              <Link to="/blog">
-                                <h5 className="recent-name">
-                                  Health and skin for your organic
-                                </h5>
-                              </Link>
-                              <h6>
-                                25 Jan, 2022 <i data-feather="thumbs-up" />
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="recent-box">
-                            <Link to="/blog" className="recent-image">
-                              <img
-                                src="../assets/images/inner-page/blog/3.jpg"
-                                className="img-fluid  lazyload"
-                                alt=""
-                              />
-                            </Link>
-                            <div className="recent-detail">
-                              <Link to="/blog">
-                                <h5 className="recent-name">
-                                  Organics mix masala fresh &amp; soft
-                                </h5>
-                              </Link>
-                              <h6>
-                                25 Jan, 2022 <i data-feather="thumbs-up" />
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="recent-box">
-                            <Link to="/blog" className="recent-image">
-                              <img
-                                src="../assets/images/inner-page/blog/4.jpg"
-                                className="img-fluid  lazyload"
-                                alt=""
-                              />
-                            </Link>
-                            <div className="recent-detail">
-                              <Link to="/blog">
-                                <h5 className="recent-name">
-                                  Fresh organics brand and picnic
-                                </h5>
-                              </Link>
-                              <h6>
-                                25 Jan, 2022 <i data-feather="thumbs-up" />
-                              </h6>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="accordion-item">
-                    <h2
-                      className="accordion-header"
-                      id="panelsStayOpen-headingTwo"
-                    >
-                      <button
-                        className="accordion-button collapsed"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#panelsStayOpen-collapseTwo"
-                        aria-expanded="false"
-                        aria-controls="panelsStayOpen-collapseTwo"
-                      >
-                        Category
-                      </button>
-                    </h2>
-                    <div
-                      id="panelsStayOpen-collapseTwo"
-                      className="accordion-collapse collapse collapse show"
-                      aria-labelledby="panelsStayOpen-headingTwo"
-                    >
-                      <div className="accordion-body p-0">
-                        <div className="category-list-box">
-                          <ul>
-                            {categoryListData?.map((item, index) => {
-                              return (
-                                <li>
-                              <Link to="/blog-list">
-                                <div className="category-name">
-                                  <h5>{item?.categoryName_en} </h5>
-                                  <span>10</span>
-                                </div>
-                              </Link>
-                            </li>
-                              )
-                            })}
-                            {/* <li>
-                              <Link to="/blog-list">
-                                <div className="category-name">
-                                  <h5>Latest Recipes</h5>
-                                  <span>10</span>
-                                </div>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/blog-list">
-                                <div className="category-name">
-                                  <h5>Diet Food</h5>
-                                  <span>6</span>
-                                </div>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/blog-list">
-                                <div className="category-name">
-                                  <h5>Low calorie Items</h5>
-                                  <span>8</span>
-                                </div>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/blog-list">
-                                <div className="category-name">
-                                  <h5>Cooking Method</h5>
-                                  <span>9</span>
-                                </div>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/blog-list">
-                                <div className="category-name">
-                                  <h5>Dairy Free</h5>
-                                  <span>12</span>
-                                </div>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/blog-list">
-                                <div className="category-name">
-                                  <h5>Vegetarian Food</h5>
-                                  <span>10</span>
-                                </div>
-                              </Link>
-                            </li> */}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="accordion-item">
-                    <h2
-                      className="accordion-header"
-                      id="panelsStayOpen-headingThree"
-                    >
-                      <button
-                        className="accordion-button collapsed"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#panelsStayOpen-collapseThree"
-                        aria-expanded="false"
-                        aria-controls="panelsStayOpen-collapseThree"
-                      >
-                        Product Tags
-                      </button>
-                    </h2>
-                    <div
-                      id="panelsStayOpen-collapseThree"
-                      className="accordion-collapse collapse collapse show"
-                      aria-labelledby="panelsStayOpen-headingThree"
-                    >
-                      <div className="accordion-body pt-0">
-                        <div className="product-tags-box">
-                          <ul>
-                            <li>
-                              <Link to="#">Fruit Cutting</Link>
-                            </li>
-                            <li>
-                              <Link to="#">Meat</Link>
-                            </li>
-                            <li>
-                              <Link to="#">organic</Link>
-                            </li>
-                            <li>
-                              <Link to="#">cake</Link>
-                            </li>
-                            <li>
-                              <Link to="#">pick fruit</Link>
-                            </li>
-                            <li>
-                              <Link to="#">backery</Link>
-                            </li>
-                            <li>
-                              <Link to="#">organix food</Link>
-                            </li>
-                            <li>
-                              <Link to="#">Most Expensive Fruit</Link>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="accordion-item">
-                    <h2
-                      className="accordion-header"
-                      id="panelsStayOpen-headingFour"
-                    >
-                      <button
-                        className="accordion-button collapsed"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#panelsStayOpen-collapseFour"
-                        aria-expanded="false"
-                        aria-controls="panelsStayOpen-collapseFour"
-                      >
-                        Trending Products
-                      </button>
-                    </h2>
-                    <div
-                      id="panelsStayOpen-collapseFour"
-                      className="accordion-collapse collapse collapse show"
-                      aria-labelledby="panelsStayOpen-headingFour"
-                    >
-                      <div className="accordion-body">
-                        <ul className="product-list product-list-2 border-0 p-0">
-                          {trendingList?.map((item, index) => {
-                            return (
-                              <li key={index}>
-                            <div className="offer-product">
-                              <Link to="/shop" className="offer-image">
+          <section className="blog-section section-b-space">
+            <div className="container-fluid-lg">
+              <div className="row g-4">
+                <div className="col-xxl-9 col-xl-8 col-lg-7 order-lg-2">
+                  <div className="row g-4 ratio_65">
+                    {blogList?.map((item, index) => {
+                      return (
+                        <div className="col-xxl-4 col-sm-6" key={index}>
+                          <div className="blog-box wow fadeInUp">
+                            <div className="blog-image">
+                              <Link to="/blog-detail">
                                 <img
-                                  src={item?.product_Pic[0]}
-                                  className=" lazyload"
+                                  src={item.blog_Pic}
+                                  className="bg-img  lazyload"
                                   alt=""
+                                  width="100%"
                                 />
                               </Link>
-                              <div className="offer-detail">
-                                <div>
-                                  <Link to="/shop">
-                                    <h6 className="name">
-                                      {item?.productName_en}
-                                    </h6>
+                            </div>
+                            <div className="blog-contain">
+                              <div className="blog-label">
+                                <span className="time">
+                                  <i data-feather="clock" />{" "}
+                                  <span> {item?.createdAt?.slice(0, 10)} </span>
+                                </span>
+                                <span className="super">
+                                  <i data-feather="user" />{" "}
+                                  <span>Mark J. Speight</span>
+                                </span>
+                              </div>
+                              <Link to="/blog-detail">
+                                <h3>{item.title}</h3>
+                              </Link>
+                              <button
+                                onClick={() => {
+                                  window.location.href = "/blog-details";
+                                }}
+                                className="blog-button"
+                              >
+                                Read More
+                                <i className="fa-solid fa-right-long" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <nav className="custome-pagination">
+                    <ul className="pagination justify-content-center">
+                      <li className="page-item disabled">
+                        <Link className="page-link" to="#" tabIndex={-1}>
+                          <i className="fa-solid fa-angles-left" />
+                        </Link>
+                      </li>
+                      <li className="page-item active">
+                        <Link className="page-link" to="#">
+                          1
+                        </Link>
+                      </li>
+                      <li className="page-item" aria-current="page">
+                        <Link className="page-link" to="#">
+                          2
+                        </Link>
+                      </li>
+                      <li className="page-item">
+                        <Link className="page-link" to="#">
+                          3
+                        </Link>
+                      </li>
+                      <li className="page-item">
+                        <Link className="page-link" to="#">
+                          <i className="fa-solid fa-angles-right" />
+                        </Link>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+                <div className="col-xxl-3 col-xl-4 col-lg-5 order-lg-1">
+                  <div className="left-sidebar-box wow fadeInUp">
+                    <div className="left-search-box">
+                      <div className="search-box">
+                        <input
+                          type="search"
+                          className="form-control"
+                          id="exampleFormControlInput1"
+                          placeholder="Search...."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div
+                      className="accordion left-accordion-box"
+                      id="accordionPanelsStayOpenExample"
+                    >
+                      <div className="accordion-item">
+                        <h2
+                          className="accordion-header"
+                          id="panelsStayOpen-headingOne"
+                        >
+                          <button
+                            className="accordion-button"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#panelsStayOpen-collapseOne"
+                            aria-expanded="true"
+                            aria-controls="panelsStayOpen-collapseOne"
+                          >
+                            Recent Post
+                          </button>
+                        </h2>
+                        <div
+                          id="panelsStayOpen-collapseOne"
+                          className="accordion-collapse collapse show"
+                          aria-labelledby="panelsStayOpen-headingOne"
+                        >
+                          <div className="accordion-body pt-0">
+                            <div className="recent-post-box">
+                              <div className="recent-box">
+                                <Link to="/blog" className="recent-image">
+                                  <img
+                                    src="../assets/images/inner-page/blog/1.jpg"
+                                    className="img-fluid  lazyload"
+                                    alt=""
+                                  />
+                                </Link>
+                                <div className="recent-detail">
+                                  <Link to="/blog">
+                                    <h5 className="recent-name">
+                                      Green onion knife and salad placed
+                                    </h5>
                                   </Link>
-                                  <span> {item?.weight} </span>
-                                  <h6 className="price theme-color">${item?.Price} </h6>
+                                  <h6>
+                                    25 Jan, 2022 <i data-feather="thumbs-up" />
+                                  </h6>
+                                </div>
+                              </div>
+                              <div className="recent-box">
+                                <Link to="/blog" className="recent-image">
+                                  <img
+                                    src="../assets/images/inner-page/blog/2.jpg"
+                                    className="img-fluid  lazyload"
+                                    alt=""
+                                  />
+                                </Link>
+                                <div className="recent-detail">
+                                  <Link to="/blog">
+                                    <h5 className="recent-name">
+                                      Health and skin for your organic
+                                    </h5>
+                                  </Link>
+                                  <h6>
+                                    25 Jan, 2022 <i data-feather="thumbs-up" />
+                                  </h6>
+                                </div>
+                              </div>
+                              <div className="recent-box">
+                                <Link to="/blog" className="recent-image">
+                                  <img
+                                    src="../assets/images/inner-page/blog/3.jpg"
+                                    className="img-fluid  lazyload"
+                                    alt=""
+                                  />
+                                </Link>
+                                <div className="recent-detail">
+                                  <Link to="/blog">
+                                    <h5 className="recent-name">
+                                      Organics mix masala fresh &amp; soft
+                                    </h5>
+                                  </Link>
+                                  <h6>
+                                    25 Jan, 2022 <i data-feather="thumbs-up" />
+                                  </h6>
+                                </div>
+                              </div>
+                              <div className="recent-box">
+                                <Link to="/blog" className="recent-image">
+                                  <img
+                                    src="../assets/images/inner-page/blog/4.jpg"
+                                    className="img-fluid  lazyload"
+                                    alt=""
+                                  />
+                                </Link>
+                                <div className="recent-detail">
+                                  <Link to="/blog">
+                                    <h5 className="recent-name">
+                                      Fresh organics brand and picnic
+                                    </h5>
+                                  </Link>
+                                  <h6>
+                                    25 Jan, 2022 <i data-feather="thumbs-up" />
+                                  </h6>
                                 </div>
                               </div>
                             </div>
-                          </li>
-                            )
-                          })}
-                          {/* <li>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="accordion-item">
+                        <h2
+                          className="accordion-header"
+                          id="panelsStayOpen-headingTwo"
+                        >
+                          <button
+                            className="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#panelsStayOpen-collapseTwo"
+                            aria-expanded="false"
+                            aria-controls="panelsStayOpen-collapseTwo"
+                          >
+                            Category
+                          </button>
+                        </h2>
+                        <div
+                          id="panelsStayOpen-collapseTwo"
+                          className="accordion-collapse collapse collapse show"
+                          aria-labelledby="panelsStayOpen-headingTwo"
+                        >
+                          <div className="accordion-body p-0">
+                            <div className="category-list-box">
+                              <ul>
+                                {categoryListData?.map((item, index) => {
+                                  return (
+                                    <li key={index}>
+                                      <Link to="/blog-list">
+                                        <div className="category-name">
+                                          <h5>{item?.categoryName_en} </h5>
+                                          <span>10</span>
+                                        </div>
+                                      </Link>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="accordion-item">
+                        <h2
+                          className="accordion-header"
+                          id="panelsStayOpen-headingThree"
+                        >
+                          <button
+                            className="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#panelsStayOpen-collapseThree"
+                            aria-expanded="false"
+                            aria-controls="panelsStayOpen-collapseThree"
+                          >
+                            Product Tags
+                          </button>
+                        </h2>
+                        <div
+                          id="panelsStayOpen-collapseThree"
+                          className="accordion-collapse collapse collapse show"
+                          aria-labelledby="panelsStayOpen-headingThree"
+                        >
+                          <div className="accordion-body pt-0">
+                            <div className="product-tags-box">
+                              <ul>
+                                <li>
+                                  <Link to="#">Fruit Cutting</Link>
+                                </li>
+                                <li>
+                                  <Link to="#">Meat</Link>
+                                </li>
+                                <li>
+                                  <Link to="#">organic</Link>
+                                </li>
+                                <li>
+                                  <Link to="#">cake</Link>
+                                </li>
+                                <li>
+                                  <Link to="#">pick fruit</Link>
+                                </li>
+                                <li>
+                                  <Link to="#">backery</Link>
+                                </li>
+                                <li>
+                                  <Link to="#">organix food</Link>
+                                </li>
+                                <li>
+                                  <Link to="#">Most Expensive Fruit</Link>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="accordion-item">
+                        <h2
+                          className="accordion-header"
+                          id="panelsStayOpen-headingFour"
+                        >
+                          <button
+                            className="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#panelsStayOpen-collapseFour"
+                            aria-expanded="false"
+                            aria-controls="panelsStayOpen-collapseFour"
+                          >
+                            Trending Products
+                          </button>
+                        </h2>
+                        <div
+                          id="panelsStayOpen-collapseFour"
+                          className="accordion-collapse collapse collapse show"
+                          aria-labelledby="panelsStayOpen-headingFour"
+                        >
+                          <div className="accordion-body">
+                            <ul className="product-list product-list-2 border-0 p-0">
+                              {trendingList?.map((item, index) => {
+                                return (
+                                  <li key={index}>
+                                    <div className="offer-product">
+                                      <Link to="/shop" className="offer-image">
+                                        <img
+                                          src={item?.product_Pic[0]}
+                                          className=" lazyload"
+                                          alt=""
+                                        />
+                                      </Link>
+                                      <div className="offer-detail">
+                                        <div>
+                                          <Link to="/shop">
+                                            <h6 className="name">
+                                              {item?.productName_en}
+                                            </h6>
+                                          </Link>
+                                          <span> {item?.weight} </span>
+                                          <h6 className="price theme-color">
+                                            ${item?.Price}{" "}
+                                          </h6>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                              {/* <li>
                             <div className="offer-product">
                               <Link to="/shop" className="offer-image">
                                 <img
@@ -579,17 +585,17 @@ function Blog(props) {
                               </div>
                             </div>
                           </li> */}
-                        </ul>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-      </>
+          </section>
+        </>
       )}
       {/* Blog Section End */}
       {/* Footer Section Start */}
