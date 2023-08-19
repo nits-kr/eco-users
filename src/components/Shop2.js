@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams, useLocation  } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import feather from "feather-icons";
@@ -22,9 +22,7 @@ import {
   DescendingProduct,
   TrandingProduct,
   DiscountProduct,
-  FilterPrice,
   AddCompare,
-  ProductRating,
 } from "./HttpServices";
 import Star from "./Star";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -36,60 +34,54 @@ import {
 import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import Spinner from "./Spinner";
-import { useCreateOrderMutation } from "../services/Post";
+import {
+  useAddToWislistListMutation,
+  useCreateOrderMutation,
+} from "../services/Post";
 import { useShowProductRatingMutation } from "../services/Post";
 import { useSubSubProductMutation } from "../services/Post";
 import { useFilterPriceMutation } from "../services/Post";
+import { addToCart } from "../app/slice/CartSlice";
+import { useDispatch } from "react-redux";
 
 function Shop2(props) {
   const [productListItems, setProductListItems] = useState([]);
-  console.log("productListItems", productListItems);
+  const [wishAdd, res] = useAddToWislistListMutation();
   const [productListDetails, setProductListDetails] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [CreateWishItems, setCreateWishItems] = useState([]);
   const [addCompareItems, setAddCompareItems] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
   const [selectedWeight, setSelectedWeight] = useState("");
-  const [priceRange, setPriceRange] = useState([0, 11000]); // Initial price range
   const [loading, setLoading] = useState(false);
   const [subSubProduct, r] = useSubSubProductMutation();
   const [filterProduct, re] = useFilterPriceMutation();
-  // const [searchQuery, setSearchQuery] = useState("");
+  const [quantity, setQuantity] = useState([]);
+  const [count, setCount] = useState([]);
+
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
-    const location = useLocation();
-    // const searchQuery = new URLSearchParams(location.search).get("query");
-  console.log("const [filterProduct, re] = useFilterPriceMutation();", re);
+  const location = useLocation();
+  const dispatch = useDispatch();
+
+  const handleCountChange = (index, newCount) => {
+    const newCounts = [...count];
+    newCounts[index] = newCount >= 0 ? newCount : 0;
+    setCount(newCounts);
+  };
+
   const [currentValue, setCurrentValue] = useState(0);
-  console.log(
-    "const [currentValue, setCurrentValue] = useState(0);",
-    currentValue
-  );
   const storedId = localStorage.getItem("loginId");
-  const searchQuery = localStorage?.getItem("productSearch")
+  const searchQuery = localStorage?.getItem("productSearch");
   const { id } = useParams();
+  const { query } = useParams();
+  console.log("query", query);
   const totalRatings = selectedProduct?.ratings?.reduce(
     (sum, rating) => sum + rating.star,
     0
   );
   const averageRating = totalRatings / selectedProduct?.ratings?.length;
   console.log(id);
-  useEffect(() => {
-    handleSubSubProduct();
-  }, [id]);
-  const handleSubSubProduct = async () => {
-    try {
-      const { data, error } = await subSubProduct(id);
-      if (error) {
-        console.log(error);
-        return;
-      }
-      setProductListItems(data?.results?.listData);
-      console.log("low to high setProductListItems", data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const handleChange = async (event) => {
     const newValue = parseInt(event.target.value, 10);
@@ -109,73 +101,28 @@ function Shop2(props) {
     }
   };
 
-  useEffect(() => {
-    cartData();
-  }, []);
-  const cartData = async () => {
-    try {
-      const { data, error } = await CartList();
-      error ? console.log(error) : console.log(data);
-      setCartListItems(data.results.list);
-      console.log(data.results.list);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
-  const fetchData = async () => {
-    try {
-      props.setProgress(10);
-      setLoading(true);
-      const { data, error } = await ProductList();
-      error ? console.log(error) : console.log(data);
-      setProductListItems(data?.results?.list);
-      setLoading(true);
-      props.setProgress(50);
-      console.log(data?.results?.list);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    if (productListItems?.length > 0) {
-      getData();
-    }
-  }, [productListItems]);
-  const getData = async () => {
-    try {
-      props.setProgress(70);
-      setLoading(true);
-      const ids = productListItems.map((item) => item._id);
-      const promises = ids.map((id) => ProductDetails(id));
-      const results = await Promise.all(promises);
-      const details = results.map((result) => result?.data?.results?.details);
-      setProductListDetails(details);
-      props.setProgress(100);
-      setLoading(false);
-      console.log(details);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleViewClick = (item) => {
     setSelectedProduct(item);
     console.log(item?._id);
   };
   const handleWishClick = async (item) => {
     try {
-      const { data, error } = await CreateWish(item._id);
+      const editAddress = {
+        product_Id: item?._id,
+        userId: storedId,
+        like: true,
+      };
+      console.log(item?._id);
+      const { data, error } = await wishAdd(editAddress);
       if (error) {
         console.log(error);
         return;
       }
       const newCreateWishItems = [...CreateWishItems, data];
       setCreateWishItems(newCreateWishItems);
-      console.log(newCreateWishItems);
+      setTimeout(() => {
+        window?.location?.reload();
+      }, 500);
     } catch (error) {
       console.log(error);
     }
@@ -194,20 +141,24 @@ function Shop2(props) {
       console.log(error);
     }
   };
-  const handleAddToCart = async (item) => {
+  const handleAddToCart = async (item, index) => {
     try {
-      const { data, error } = await AddToCart(item._id, item?.stockQuantity);
+      const { data, error } = await AddToCart(item._id, count[index]);
       if (error) {
         console.log(error);
         return;
       }
       const newCartItems = [...cartListItems, data];
       setCartListItems(newCartItems);
+      setTimeout(() => {
+        window?.location?.reload();
+      }, 500);
       console.log("prevCartItems", newCartItems);
       console.log("New cart items", cartListItems);
     } catch (error) {
       console.log(error);
     }
+    dispatch(addToCart(item));
   };
   const handleTranding = async () => {
     try {
@@ -301,32 +252,31 @@ function Shop2(props) {
     slidesToScroll: 1,
   };
   const handleViewDetails = () => {
-    // Redirect to the product page
-    // Reload the page
-    window.location.href = `/product/${selectedProduct._id}`;
     setTimeout(() => {
       window.location.reload();
     }, 1000);
   };
   useEffect(() => {
-    handleSearch1();
-  }, [searchQuery]);
+    if (query) {
+      handleSearch1();
+    }
+  }, [query]);
 
   const handleSearch1 = async () => {
     try {
       const url1 =
-        searchQuery !== ""
+      query !== ""
           ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/search-product"
           : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/list";
       const response = await axios.post(url1, {
-        productName_en: searchQuery,
+        productName_en: query,
       });
       const { error, results } = response.data;
       if (error) {
         throw new Error("Error searching for products. Data is not found.");
       } else {
         setProductListItems(
-          searchQuery !== "" ? results?.productData : results?.list?.reverse()
+          query !== "" ? results?.productData : results?.list?.reverse()
         );
       }
     } catch (error) {
@@ -358,7 +308,7 @@ function Shop2(props) {
     <>
       {loading}
       {/* Header Start */}
-      <Header setProductListItems={setProductListItems} Dash={"shop"} />
+      <Header setProductListItems={setProductListItems}/>
       {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
@@ -1705,15 +1655,58 @@ function Shop2(props) {
                                   <li
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="top"
-                                    title="Wishlist"
-                                    onClick={() => handleWishClick(item)}
+                                    // title="Wishlist"
+                                    // onClick={() => handleWishClick(item)}
                                   >
-                                    <Link
+                                    {/* <Link
                                       to="/wishlist"
                                       className="notifi-wishlist"
                                     >
                                       <FontAwesomeIcon icon={faHeart} />
-                                    </Link>
+                                    </Link> */}
+                                    {item?.like === "false" ? (
+                                      <Link
+                                        className="btn p-0 position-relative header-wishlist me-2"
+                                        to="/wishlist"
+                                        title3="Wishlist"
+                                        onClick={() => handleWishClick(item)}
+                                      >
+                                        <FontAwesomeIcon
+                                          icon={faHeart}
+                                          style={{
+                                            fontSize: "20px",
+                                            color: "black",
+                                          }}
+                                          data-tip="Add to Wishlist"
+                                          data-for="wishlist-tooltip"
+                                          onMouseEnter={(e) => {
+                                            e.currentTarget.style.color = "red";
+                                          }}
+                                          onMouseLeave={(e) => {
+                                            e.currentTarget.style.color =
+                                              "black";
+                                          }}
+                                        />
+                                      </Link>
+                                    ) : (
+                                      <Link
+                                        className="btn p-0 position-relative header-wishlist me-2"
+                                        to="#"
+                                        title5="Wishlist"
+                                        disabled
+                                        style={{ cursor: "not-allowed" }}
+                                      >
+                                        <FontAwesomeIcon
+                                          icon={faHeart}
+                                          style={{
+                                            fontSize: "20px",
+                                            color: "red",
+                                          }}
+                                          data-tip="Add to Wishlist"
+                                          data-for="wishlist-tooltip"
+                                        />
+                                      </Link>
+                                    )}
                                   </li>
                                 </ul>
                               </div>
@@ -1739,25 +1732,133 @@ function Shop2(props) {
                                   />
                                   <span> {item?.ratings?.length} reviews </span>
                                 </div>
-                                <h6 className="unit">
+                                {/* <h6 className="unit">
                                   {item.stockQuantity} units{" "}
-                                </h6>
+                                </h6> */}
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <div>
+                                    <h6
+                                      className="unit"
+                                      style={{
+                                        margin: "0px",
+                                        fontSize: "15px",
+                                      }}
+                                    >
+                                      {item?.stockQuantity} units{" "}
+                                    </h6>
+                                  </div>
+                                  {/* <div className=" mt-2">
+                                    <form>
+                                      <div className="form-floating ">
+                                        <select
+                                          className="form-select"
+                                          id="floatingSelect12"
+                                          aria-label="  select example"
+                                          defaultValue=" "
+                                          style={{
+                                            height: "26px",
+                                            width: "104px",
+                                            padding: "5px",
+                                          }}
+                                          onChange={(e) =>
+                                            setQuantity(e.target.value)
+                                          }
+                                        >
+                                          <option value="">Quantity</option>
+                                          <option value="1">1</option>
+                                          <option value="2">2</option>
+                                          <option value="3">3</option>
+                                          <option value="4">4</option>
+                                          <option value="5">5</option>
+                                          <option value="6">6</option>
+                                          <option value="7">7</option>
+                                          <option value="8">8</option>
+                                          <option value="9">9</option>
+                                          <option value="10">10</option>
+                                          <option value="11">11</option>
+                                          <option value="12">12</option>
+                                          <option value="13">13</option>
+                                          <option value="14">14</option>
+                                          <option value="15">15</option>
+                                          <option value="16">16</option>
+                                          <option value="17">17</option>
+                                          <option value="18">18</option>
+                                          <option value="19">19</option>
+                                          <option value="20">20</option>
+                                        </select>
+                                      </div>
+                                    </form>
+                                  </div> */}
+                                  <div className="">
+                                    <div className="cart_qty qty-box product-qty">
+                                      <div className="input-group">
+                                        <button
+                                          type="button"
+                                          className="qty-left-minus"
+                                          data-type="minus"
+                                          data-field=""
+                                          onClick={() =>
+                                            handleCountChange(
+                                              index,
+                                              count[index] - 1
+                                            )
+                                          }
+                                        >
+                                          <i
+                                            className="fa fa-minus"
+                                            aria-hidden="true"
+                                          />
+                                        </button>
+                                        <div className="m-2">
+                                          {" "}
+                                          {count[index] ? count[index] : "0"}
+                                        </div>
+
+                                        <button
+                                          type="button"
+                                          className="qty-right-plus"
+                                          data-type="plus"
+                                          data-field=""
+                                          onClick={() =>
+                                            handleCountChange(
+                                              index,
+                                              count[index] + 1
+                                            )
+                                          }
+                                        >
+                                          <i
+                                            className="fa fa-plus"
+                                            aria-hidden="true"
+                                          />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                                 <h5 className="price">
                                   <span className="theme-color">
                                     ${item.Price}
                                   </span>{" "}
                                   <del>${item.oldPrice} </del>
                                 </h5>
-                                <div className="add-to-cart-box bg-white">
+                                <div className="add-to-cart-box bg-white mt-2">
                                   <button className="btn btn-add-cart addcart-button">
                                     <Link
                                       to="/cart"
-                                      onClick={() => handleAddToCart(item)}
+                                      onClick={() =>
+                                        handleAddToCart(item, index)
+                                      }
                                     >
-                                      Add
-                                      <span className="add-icon bg-light-gray">
+                                      Add To Cart
+                                      {/* <span className="add-icon bg-light-gray">
                                         <i className="fa-solid fa-plus" />
-                                      </span>
+                                      </span> */}
                                     </Link>
                                   </button>
                                   <div className="cart_qty qty-box">
@@ -1793,7 +1894,7 @@ function Shop2(props) {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="add-to-cart-box bg-danger mt-2">
+                                {/* <div className="add-to-cart-box bg-danger mt-2">
                                   <button className="btn btn-add-cart addcart-button">
                                     <Link
                                       className="text-light"
@@ -1803,39 +1904,7 @@ function Shop2(props) {
                                       Buy Now
                                     </Link>
                                   </button>
-                                  {/* <div className="cart_qty qty-box">
-                                    <div className="input-group bg-white">
-                                      <button
-                                        type="button"
-                                        className="qty-left-minus bg-gray"
-                                        data-type="minus"
-                                        data-field=""
-                                      >
-                                        <i
-                                          className="fa fa-minus"
-                                          aria-hidden="true"
-                                        />
-                                      </button>
-                                      <input
-                                        className="form-control input-number qty-input"
-                                        type="text"
-                                        name="quantity"
-                                        defaultValue={0}
-                                      />
-                                      <button
-                                        type="button"
-                                        className="qty-right-plus bg-gray"
-                                        data-type="plus"
-                                        data-field=""
-                                      >
-                                        <i
-                                          className="fa fa-plus"
-                                          aria-hidden="true"
-                                        />
-                                      </button>
-                                    </div>
-                                  </div> */}
-                                </div>
+                                </div> */}
                               </div>
                             </div>
                           </div>
@@ -1890,108 +1959,105 @@ function Shop2(props) {
       {/* Footer Section End */}
       {/* Quick View Modal Box Start */}
 
-      {selectedProduct && (
-        <div
-          className="modal fade theme-modal view-modal"
-          id="view"
-          tabIndex={-1}
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          {console.log(selectedProduct._id)}
-          <div className="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-sm-down">
-            <div className="modal-content">
-              <div className="modal-header p-0">
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <i className="fa-solid fa-xmark" />
-                </button>
-              </div>
-              <div className="modal-body">
-                <div className="row g-sm-4 g-2">
-                  <div className="col-lg-6">
-                    <div className="slider-image">
-                      <img
-                        src={selectedProduct.product_Pic[0]}
-                        className="img-fluid lazyload"
-                        alt=""
-                      />
-                    </div>
+      <div
+        className="modal fade theme-modal view-modal"
+        id="view"
+        tabIndex={-1}
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-sm-down">
+          <div className="modal-content">
+            <div className="modal-header p-0">
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              >
+                <i className="fa-solid fa-xmark" />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="row g-sm-4 g-2">
+                <div className="col-lg-6">
+                  <div className="slider-image">
+                    <img
+                      src={selectedProduct?.product_Pic[0]}
+                      className="img-fluid lazyload"
+                      alt=""
+                    />
                   </div>
-                  <div className="col-lg-6">
-                    <div className="right-sidebar-modal">
-                      <div>
-                        <h4 className="title-name">
-                          {selectedProduct?.productName_en}
-                        </h4>
-                        <h4 className="price">${selectedProduct.Price} </h4>
-                        <div className="product-rating">
-                          <Star rating={averageRating} />
-                          <span className="ms-2">
-                            {selectedProduct.ratings.length} Reviews
-                          </span>
-                          <span className="ms-2 text-danger">
-                            6 sold in last 16 hours
-                          </span>
-                        </div>
-                        <div className="product-detail">
-                          <h4>Product Details :</h4>
-                          <p>{selectedProduct?.Description}</p>
-                        </div>
-                        <ul className="brand-list">
-                          <li>
-                            <div className="brand-box">
-                              <h5>Brand Name:</h5>
-                              <h6> {selectedProduct?.brandName} </h6>
-                            </div>
-                          </li>
-                          <li>
-                            <div className="brand-box">
-                              <h5>Product Code:</h5>
-                              <h6>{selectedProduct?.SKU} </h6>
-                            </div>
-                          </li>
-                          <li>
-                            <div className="brand-box">
-                              <h5>Product Type:</h5>
-                              <h6>{selectedProduct?.Tags} </h6>
-                            </div>
-                          </li>
-                        </ul>
-                        <div className="select-size">
-                          <h4>Size :</h4>
-                          <select
-                            className="form-select select-form-size"
-                            value={selectedWeight}
-                            onChange={(e) => setSelectedWeight(e.target.value)}
+                </div>
+                <div className="col-lg-6">
+                  <div className="right-sidebar-modal">
+                    <div>
+                      <h4 className="title-name">
+                        {selectedProduct?.productName_en}
+                      </h4>
+                      <h4 className="price">${selectedProduct?.Price} </h4>
+                      <div className="product-rating">
+                        <Star rating={averageRating} />
+                        <span className="ms-2">
+                          {selectedProduct?.ratings?.length} Reviews
+                        </span>
+                        <span className="ms-2 text-danger">
+                          6 sold in last 16 hours
+                        </span>
+                      </div>
+                      <div className="product-detail">
+                        <h4>Product Details :</h4>
+                        <p>{selectedProduct?.Description}</p>
+                      </div>
+                      <ul className="brand-list">
+                        <li>
+                          <div className="brand-box">
+                            <h5>Brand Name:</h5>
+                            <h6> {selectedProduct?.brandName} </h6>
+                          </div>
+                        </li>
+                        <li>
+                          <div className="brand-box">
+                            <h5>Product Code:</h5>
+                            <h6>{selectedProduct?.SKU} </h6>
+                          </div>
+                        </li>
+                        <li>
+                          <div className="brand-box">
+                            <h5>Product Type:</h5>
+                            <h6>{selectedProduct?.Tags} </h6>
+                          </div>
+                        </li>
+                      </ul>
+                      <div className="select-size">
+                        <h4>Size :</h4>
+                        <select
+                          className="form-select select-form-size"
+                          value={selectedWeight}
+                          onChange={(e) => setSelectedWeight(e.target.value)}
+                        >
+                          <option value="">Select Size</option>
+                          <option value="0.5">1/2 KG</option>
+                          <option value="1">1 KG</option>
+                          <option value="1.5">1.5 KG</option>
+                        </select>
+                      </div>
+                      <div className="modal-button">
+                        <Link to="/cart">
+                          <button
+                            className="btn btn-md add-cart-button icon"
+                            onClick={() => handleAddToCart(selectedProduct)}
                           >
-                            <option value="">Select Size</option>
-                            <option value="0.5">1/2 KG</option>
-                            <option value="1">1 KG</option>
-                            <option value="1.5">1.5 KG</option>
-                          </select>
-                        </div>
-                        <div className="modal-button">
-                          <Link to="/cart">
-                            <button
-                              className="btn btn-md add-cart-button icon"
-                              onClick={() => handleAddToCart(selectedProduct)}
-                            >
-                              Add To Cart
-                            </button>
-                          </Link>
-                          <Link
-                            to={`/product/${selectedProduct._id}`}
-                            className="btn theme-bg-color view-button icon text-white fw-bold btn-md"
-                            onClick={handleViewDetails}
-                          >
-                            View More Details
-                          </Link>
-                        </div>
+                            Add To Cart
+                          </button>
+                        </Link>
+                        <Link
+                          to={`/product/${selectedProduct?._id}`}
+                          className="btn theme-bg-color view-button icon text-white fw-bold btn-md"
+                          onClick={handleViewDetails}
+                        >
+                          View More Details
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -2000,7 +2066,8 @@ function Shop2(props) {
             </div>
           </div>
         </div>
-      )}
+      </div>
+
       {/* Quick View Modal Box End */}
       {/* Location Modal Start */}
       <LocationModel />

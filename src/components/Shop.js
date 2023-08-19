@@ -177,20 +177,6 @@ function Shop(props) {
     setSelectedProduct(item);
     console.log(item?._id);
   };
-  // const handleWishClick = async (item) => {
-  //   try {
-  //     const { data, error } = await CreateWish(item._id);
-  //     if (error) {
-  //       console.log(error);
-  //       return;
-  //     }
-  //     const newCreateWishItems = [...CreateWishItems, data];
-  //     setCreateWishItems(newCreateWishItems);
-  //     console.log(newCreateWishItems);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   const handleWishClick = async (item) => {
     try {
       const editAddress = {
@@ -342,52 +328,52 @@ function Shop(props) {
       window.location.reload();
     }, 1000);
   };
-  useEffect(() => {
-    handleSearch1();
-  }, [searchQuery]);
+  // useEffect(() => {
+  //   handleSearch1();
+  // }, [searchQuery]);
 
-  const handleSearch1 = async () => {
-    try {
-      const url1 =
-        searchQuery !== ""
-          ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/search-product"
-          : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/list";
-      const response = await axios.post(url1, {
-        productName_en: searchQuery,
-      });
-      const { error, results } = response.data;
-      if (error) {
-        throw new Error("Error searching for products. Data is not found.");
-      } else {
-        setProductListItems(
-          searchQuery !== "" ? results?.productData : results?.list?.reverse()
-        );
-      }
-    } catch (error) {
-      if (error.response) {
-        Swal.fire({
-          title: "Error!",
-          text: error.response.data,
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      } else if (error.request) {
-        Swal.fire({
-          title: "Error!",
-          text: "Network error. Please try again later.",
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      } else {
-        Swal.fire({
-          title: "Error!",
-          text: error.message,
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      }
-    }
-  };
+  // const handleSearch1 = async () => {
+  //   try {
+  //     const url1 =
+  //       searchQuery !== ""
+  //         ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/search-product"
+  //         : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/list";
+  //     const response = await axios.post(url1, {
+  //       productName_en: searchQuery,
+  //     });
+  //     const { error, results } = response.data;
+  //     if (error) {
+  //       throw new Error("Error searching for products. Data is not found.");
+  //     } else {
+  //       setProductListItems(
+  //         searchQuery !== "" ? results?.productData : results?.list?.reverse()
+  //       );
+  //     }
+  //   } catch (error) {
+  //     if (error.response) {
+  //       Swal.fire({
+  //         title: "Error!",
+  //         text: error.response.data,
+  //         icon: "error",
+  //         confirmButtonText: "OK",
+  //       });
+  //     } else if (error.request) {
+  //       Swal.fire({
+  //         title: "Error!",
+  //         text: "Network error. Please try again later.",
+  //         icon: "error",
+  //         confirmButtonText: "OK",
+  //       });
+  //     } else {
+  //       Swal.fire({
+  //         title: "Error!",
+  //         text: error.message,
+  //         icon: "error",
+  //         confirmButtonText: "OK",
+  //       });
+  //     }
+  //   }
+  // };
   return (
     <>
       {loading}

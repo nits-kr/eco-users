@@ -4,8 +4,8 @@ import { faStar, faStarHalfStroke } from "@fortawesome/free-solid-svg-icons";
 import { AiOutlineStar } from "react-icons/ai";
 
 function Star({ rating, totalRating }) {
-  console.log(rating);
-  console.log(totalRating);
+  // console.log(rating);
+  // console.log(totalRating);
   const ratingStar = Array.from({ length: 5 }, (item, index) => {
     let number = index + 0.5;
     // debugger;
