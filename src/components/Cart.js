@@ -171,7 +171,6 @@ function Cart() {
         </ul>
       </div>
       {/* mobile fix menu end */}
-      {/* Breadcrumb Section Start */}
       <section className="breadscrumb-section pt-0">
         <div className="container-fluid-lg">
           <div className="row">
