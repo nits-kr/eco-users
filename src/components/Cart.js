@@ -529,16 +529,16 @@ function Cart() {
                   <ul>
                     <li>
                       <h4>Subtotal</h4>
-                      <h4 className="price">${coupan.subtotal} </h4>
+                      <h4 className="price">${coupan?.subtotal} </h4>
                     </li>
                     <li>
                       <h4>Coupon Discount</h4>
-                      <h4 className="price"> - ${coupan.DiscountType} </h4>
+                      <h4 className="price"> - {coupan?.DiscountType} % </h4>
                     </li>
-                    <li className="align-items-start">
+                    {/* <li className="align-items-start">
                       <h4>Shipping</h4>
                       <h4 className="price text-end">$6.90</h4>
-                    </li>
+                    </li> */}
                   </ul>
                 </div>
                 <ul className="summery-total">

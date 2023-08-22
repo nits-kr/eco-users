@@ -835,7 +835,7 @@ export async function CartList() {
 export async function ApplyCoupan(coupanCode) {
   try {
     const { data } = await UserHttpService.post(
-      `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/apply-coupan`,
+      `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/apply-coupan/${userId}`,
       {
         coupanCode: coupanCode,
       }

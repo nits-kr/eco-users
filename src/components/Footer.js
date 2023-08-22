@@ -1,10 +1,25 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import {
+  useGetCategoryListQuery,
+  useSubCategoryListMutation,
+} from "../services/Post";
 
 function Footer() {
+  const categoryListItems = useGetCategoryListQuery();
+  console.log("categoryListItems", categoryListItems);
+  const [subCategoryList] = useSubCategoryListMutation();
+  const [subCategoryItems, setSubCategoryItems] = useState([]);
+  const [categoryListData, setCategoryListData] = useState([]);
+  console.log("categoryListData", categoryListData);
+  useEffect(() => {
+    const reversedList =
+      categoryListItems?.data?.results?.list?.slice().reverse() ?? [];
+    setCategoryListData(reversedList);
+  }, [categoryListItems]);
   return (
     <>
-     <footer className="section-t-space">
+      <footer className="section-t-space">
         <div className="container-fluid-lg">
           <div className="service-section">
             <div className="row g-3">
@@ -99,7 +114,16 @@ function Footer() {
                 </div>
                 <div className="footer-contain">
                   <ul>
-                    <li>
+                    {categoryListData?.map((item, index) => {
+                      return (
+                        <li key={index}>
+                          <Link to="/shop/:id" className="text-content">
+                            {item?.categoryName_en}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                    {/* <li>
                       <Link to="/shop" className="text-content">
                         Vegetables &amp; Fruit
                       </Link>
@@ -128,7 +152,7 @@ function Footer() {
                       <Link to="/shop" className="text-content">
                         Grocery &amp; Staples
                       </Link>
-                    </li>
+                    </li> */}
                   </ul>
                 </div>
               </div>
@@ -303,9 +327,9 @@ function Footer() {
             </div>
           </div>
         </div>
-      </footer> 
+      </footer>
     </>
-  )
+  );
 }
 
-export default Footer
+export default Footer;

@@ -10,6 +10,7 @@ import Footer from "./Footer";
 import {
   useCreateAddressMutation,
   useCreateCardMutation,
+  useDeleteAccountMutation,
 } from "../services/Post";
 import { useGetAddressListQuery } from "../services/Post";
 import { useDeleteAddressMutation } from "../services/Post";
@@ -18,6 +19,7 @@ import { useGetCardListQuery } from "../services/Post";
 import { useDeleteCardMutation } from "../services/Post";
 import { useUpdateCardMutation } from "../services/Post";
 import { useGetOrderListQuery } from "../services/Post";
+import { useGetPendingOrderQuery } from "../services/Post";
 
 function UserDashboard() {
   const [title, setTitle] = useState("");
@@ -44,8 +46,11 @@ function UserDashboard() {
   const addressList = useGetAddressListQuery();
   const orderList = useGetOrderListQuery();
   const cardList = useGetCardListQuery();
+  const {data} = useGetPendingOrderQuery();
+  console.log("pending data", data?.results?.pending);
   const [deleteAddress, deleteAddressInfo] = useDeleteAddressMutation();
   const [deleteCard, deleteCardInfo] = useDeleteCardMutation();
+  const [deleteAccount] = useDeleteAccountMutation();
   const [newAddress, setNewAddress] = useState([]);
   const [newCard, setNewCard] = useState([]);
   const [isSaveCardDisabled, setIsSaveCardDisabled] = useState(false);
@@ -54,8 +59,8 @@ function UserDashboard() {
   const [selectedImage1, setSelectedImage1] = useState(null);
   const storedId = localStorage.getItem("loginId");
   const storedPic = localStorage.getItem("profilePic");
-  const storedOrder = localStorage?.getItem("totalOrder")
-  const storedWish = localStorage?.getItem("totalWish")
+  const storedOrder = localStorage?.getItem("totalOrder");
+  const storedWish = localStorage?.getItem("totalWish");
   const navigate = useNavigate();
 
   const getReversedList = (list) => {
@@ -91,6 +96,33 @@ function UserDashboard() {
           .then(() => {
             const updatedList = newCard.filter((card) => card._id !== cardId);
             setNewCard(updatedList);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    });
+  };
+  const userId = localStorage.getItem("loginId")
+  const handleDeleteAccount = (cardId) => {
+    Swal.fire({
+      title: "Confirm Deletion",
+      text: "Are you sure you want to delete your Account ?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "No, cancel",
+      customClass: {
+        confirmButton: "btn btn-danger me-2",
+        cancelButton: "btn btn-primary ms-2",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteAccount(cardId)
+          .then(() => {
+            // const updatedList = newCard.filter((card) => card._id !== cardId);
+            // setNewCard(updatedList);
+            navigate("/")
           })
           .catch((error) => {
             console.log(error);
@@ -548,7 +580,7 @@ function UserDashboard() {
                               />
                               <div className="totle-detail">
                                 <h5>Total Pending Order</h5>
-                                <h3>254</h3>
+                                <h3> {data?.results?.pending?.length  === 0 ? "0" :data?.results?.pending?.length} </h3>
                               </div>
                             </div>
                           </div>
@@ -1909,7 +1941,10 @@ function UserDashboard() {
                             and you will be create new account
                           </p>
                         </div>
-                        <button className="btn theme-bg-color btn-md fw-bold mt-4 text-white">
+                        <button
+                          className="btn theme-bg-color btn-md fw-bold mt-4 text-white"
+                          onClick={() => handleDeleteAccount()}
+                        >
                           Delete My Account
                         </button>
                       </div>

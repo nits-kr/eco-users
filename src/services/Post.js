@@ -18,9 +18,21 @@ export const PostApi = createApi({
         method: "post",
       }),
     }),
+    getPendingOrder: builder.query({
+      query: (name) => ({
+        url: "/user/dashboards/dashboards/pending-order",
+        method: "post",
+      }),
+    }),
     getCategoryList: builder.query({
       query: (name) => ({
         url: "/user/category/category/category-list",
+        method: "post",
+      }),
+    }),
+    getSubCategoryList: builder.query({
+      query: (name) => ({
+        url: "/admin/category/subCategory/SubCategoryList",
         method: "post",
       }),
     }),
@@ -166,6 +178,12 @@ export const PostApi = createApi({
       query: (id) => ({
         url: `user/compare/compare/compare-delete/${id}`,
         method: "post",
+      }),
+    }),
+    deleteAccount: builder.mutation({
+      query: (id) => ({
+        url: `/user/user/user/delete-account/${id}`,
+        method: "DELETE",
       }),
     }),
     cancelOrder: builder.mutation({
@@ -375,4 +393,7 @@ export const {
   useUpdateQuantityMutation,
   useBlogCommentListQuery,
   useCreateBlogCommentMutation,
+  useDeleteAccountMutation,
+  useGetPendingOrderQuery,
+  useGetSubCategoryListQuery,
 } = PostApi;
