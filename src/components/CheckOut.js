@@ -891,18 +891,18 @@ function CheckOut() {
                           />
                           <h4>
                             {order.products[0]?.product_Id?.productName_en}{" "}
-                            <span>X {order.products[0]?.quantity}</span>
+                            <span>X {order?.products[0]?.quantity}</span>
                           </h4>
-                          <h4 className="price">${order.cartsTotal}</h4>
+                          <h4 className="price">${order?.cartsTotal}</h4>
                         </li>
                       );
                     })}
                   </ul>
                   <ul className="summery-total">
                     <li>
-                      <h4>Subtotal</h4>
+                      <h4>Subtotal(Discounted Price) </h4>
                       <h4 className="price">
-                        ${orderItemSummaryPrice?.subtotal}
+                        ${orderItemSummaryPrice?.cartsTotal}
                       </h4>
                     </li>
                     <li>
@@ -925,10 +925,7 @@ function CheckOut() {
                     <li className="list-total">
                       <h4>Total (USD)</h4>
                       <h4 className="price">
-                        $
-                        {orderItemSummaryPrice?.subtotal +
-                          orderItemSummaryPrice?.shipping +
-                          orderItemSummaryPrice?.Tax}{" "}
+                        ${orderItemSummaryPrice?.cartsTotalSum}{" "}
                       </h4>
                     </li>
                   </ul>

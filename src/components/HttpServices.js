@@ -867,7 +867,7 @@ export async function ApplyCoupan(coupanCode) {
 export async function OrderSummary() {
   try {
     const { data } = await UserHttpService.post(
-      `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/carts-summery`
+      `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/carts-summery/${userId}`
     );
     console.log(data);
     if (data?.error) {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Star from "./Star";
 import axios from "axios";
 import Swal from "sweetalert2";
 import feather from "feather-icons";
@@ -45,8 +46,10 @@ function UserDashboard() {
   const [createCard, r] = useCreateCardMutation();
   const addressList = useGetAddressListQuery();
   const orderList = useGetOrderListQuery();
+  const [orderListData, setOrderListData] = useState([]);
+  console.log("order list", orderList);
   const cardList = useGetCardListQuery();
-  const {data} = useGetPendingOrderQuery();
+  const { data } = useGetPendingOrderQuery();
   console.log("pending data", data?.results?.pending);
   const [deleteAddress, deleteAddressInfo] = useDeleteAddressMutation();
   const [deleteCard, deleteCardInfo] = useDeleteCardMutation();
@@ -78,6 +81,12 @@ function UserDashboard() {
     setNewCard(reversedList);
   }, [cardList]);
 
+  useEffect(() => {
+    const reversedList =
+      orderList?.data?.results?.orderList?.slice().reverse() ?? [];
+    setOrderListData(reversedList);
+  }, [orderList]);
+
   const handleDeleteCard = (cardId) => {
     Swal.fire({
       title: "Confirm Deletion",
@@ -103,7 +112,7 @@ function UserDashboard() {
       }
     });
   };
-  const userId = localStorage.getItem("loginId")
+  const userId = localStorage.getItem("loginId");
   const handleDeleteAccount = (cardId) => {
     Swal.fire({
       title: "Confirm Deletion",
@@ -122,7 +131,7 @@ function UserDashboard() {
           .then(() => {
             // const updatedList = newCard.filter((card) => card._id !== cardId);
             // setNewCard(updatedList);
-            navigate("/")
+            navigate("/");
           })
           .catch((error) => {
             console.log(error);
@@ -580,7 +589,12 @@ function UserDashboard() {
                               />
                               <div className="totle-detail">
                                 <h5>Total Pending Order</h5>
-                                <h3> {data?.results?.pending?.length  === 0 ? "0" :data?.results?.pending?.length} </h3>
+                                <h3>
+                                  {" "}
+                                  {data?.results?.pending?.length === 0
+                                    ? "0"
+                                    : data?.results?.pending?.length}{" "}
+                                </h3>
                               </div>
                             </div>
                           </div>
@@ -1328,135 +1342,115 @@ function UserDashboard() {
                         </span>
                       </div>
                       <div className="order-contain">
-                        {orderList?.data?.results?.orderList?.map(
-                          (item, index) => {
-                            return (
-                              <div
-                                className="order-box dashboard-bg-box"
-                                key={index}
-                              >
-                                <div className="order-container">
-                                  <div className="order-icon">
-                                    <i data-feather="box" />
-                                  </div>
-                                  <div className="order-detail">
-                                    <h4>
-                                      Delivere{" "}
-                                      <span> {item?.orderStatus} </span>
-                                    </h4>
-                                    <h6 className="text-content">
-                                      {item?.products?.map((item) => {
-                                        return item?.product_Id
-                                          ?.careInstuctions;
-                                      })}
-                                    </h6>
-                                  </div>
+                        {orderListData?.map((item, index) => {
+                          const totalRatings = item?.products[0]?.product_Id?.ratings?.reduce(
+                            (sum, rating) => sum + rating?.star,
+                            0
+                          );
+                          const averageRating = totalRatings / item?.products[0]?.product_Id?.ratings?.length;
+                          return (
+                            <div
+                              className="order-box dashboard-bg-box"
+                              key={index}
+                            >
+                              <div className="order-container">
+                                <div className="order-icon">
+                                  <i data-feather="box" />
                                 </div>
-                                <div className="product-order-detail">
-                                  <Link to="/product" className="order-image">
-                                    <img
-                                      src={item?.products?.map((item) => {
-                                        return item?.product_Id?.product_Pic[0];
-                                      })}
-                                      className=" lazyload"
-                                      alt=""
-                                    />
-                                  </Link>
-                                  <div className="order-wrap">
-                                    <Link to="/product">
-                                      <h3>
-                                        {item?.products?.map((item) => {
-                                          return item?.product_Id?.productName;
-                                        })}
-                                      </h3>
-                                    </Link>
-                                    <p className="text-content">
-                                      {item?.products?.map((item) => {
-                                        return item?.product_Id?.Description;
-                                      })}
-                                    </p>
-                                    <ul className="product-size">
-                                      <li>
-                                        <div className="size-box">
-                                          <h6 className="text-content">
-                                            Price :{" "}
-                                          </h6>
-                                          <h5>
-                                            {" "}
-                                            $
-                                            {item?.products?.map((item) => {
-                                              return item?.product_Id?.Price;
-                                            })}{" "}
-                                          </h5>
-                                        </div>
-                                      </li>
-                                      <li>
-                                        <div className="size-box">
-                                          <h6 className="text-content">
-                                            Rate :{" "}
-                                          </h6>
-                                          <div className="product-rating ms-2">
-                                            <ul className="rating">
-                                              <li>
-                                                <i
-                                                  data-feather="star"
-                                                  className="fill"
-                                                />
-                                              </li>
-                                              <li>
-                                                <i
-                                                  data-feather="star"
-                                                  className="fill"
-                                                />
-                                              </li>
-                                              <li>
-                                                <i
-                                                  data-feather="star"
-                                                  className="fill"
-                                                />
-                                              </li>
-                                              <li>
-                                                <i
-                                                  data-feather="star"
-                                                  className="fill"
-                                                />
-                                              </li>
-                                              <li>
-                                                <i data-feather="star" />
-                                              </li>
-                                            </ul>
-                                          </div>
-                                        </div>
-                                      </li>
-                                      <li>
-                                        <div className="size-box">
-                                          <h6 className="text-content">
-                                            Sold By :{" "}
-                                          </h6>
-                                          <h5>Fresho</h5>
-                                        </div>
-                                      </li>
-                                      <li>
-                                        <div className="size-box">
-                                          <h6 className="text-content">
-                                            Quantity :{" "}
-                                          </h6>
-                                          <h5>
-                                            {" "}
-                                            {item?.products?.map((item) => {
-                                              return item?.product_Id
-                                                ?.stockQuantity;
-                                            })}{" "}
-                                          </h5>
-                                        </div>
-                                      </li>
-                                    </ul>
-                                  </div>
+                                <div className="order-detail">
+                                  <h4>
+                                    {
+                                      item?.products[0]?.product_Id
+                                        ?.productName_en
+                                    }{" "}
+                                    <span> {item?.orderStatus} </span>
+                                  </h4>
+                                  <h6 className="text-content">
+                                    {
+                                      item?.products[0]?.product_Id
+                                        ?.careInstuctions
+                                    }
+                                  </h6>
                                 </div>
                               </div>
-                            );
-                          }
-                        )}
+                              <div className="product-order-detail">
+                                <Link to="/product" className="order-image">
+                                  <img
+                                    src={
+                                      item?.products[0]?.product_Id
+                                        ?.product_Pic[0]
+                                    }
+                                    className=" lazyload"
+                                    alt=""
+                                    height="200px"
+                                    width="200px"
+                                  />
+                                </Link>
+                                <div className="order-wrap">
+                                  <Link to="/product">
+                                    <h3>
+                                      {
+                                        item?.products[0]?.product_Id
+                                          ?.productName_en
+                                      }
+                                    </h3>
+                                  </Link>
+                                  <p className="text-content">
+                                    {item?.products[0]?.product_Id?.Description}
+                                  </p>
+                                  <ul className="product-size">
+                                    <li>
+                                      <div className="size-box">
+                                        <h6 className="text-content">
+                                          Price :{" "}
+                                        </h6>
+                                        <h5>
+                                          {" "}
+                                          $
+                                          {item?.products[0]?.product_Id?.Price}
+                                        </h5>
+                                      </div>
+                                    </li>
+                                    <li>
+                                      <div className="size-box">
+                                        <h6 className="text-content">
+                                          Rate :{" "}
+                                        </h6>
+                                        <div className="product-rating ms-2">
+                                          <ul className="rating">
+                                            <Star rating={averageRating}/>
+                                          </ul>
+                                        </div>
+                                      </div>
+                                    </li>
+                                    <li>
+                                      <div className="size-box">
+                                        <h6 className="text-content">
+                                          Sold By :{" "}
+                                        </h6>
+                                        <h5>Fresho</h5>
+                                      </div>
+                                    </li>
+                                    <li>
+                                      <div className="size-box">
+                                        <h6 className="text-content">
+                                          Quantity :{" "}
+                                        </h6>
+                                        <h5>
+                                          {" "}
+                                          {
+                                            item?.products[0]?.product_Id
+                                              ?.stockQuantity
+                                          }
+                                        </h5>
+                                      </div>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -1943,7 +1937,7 @@ function UserDashboard() {
                         </div>
                         <button
                           className="btn theme-bg-color btn-md fw-bold mt-4 text-white"
-                          onClick={() => handleDeleteAccount()}
+                          onClick={() => handleDeleteAccount(userId)}
                         >
                           Delete My Account
                         </button>
