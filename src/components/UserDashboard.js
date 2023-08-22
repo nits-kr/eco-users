@@ -910,7 +910,7 @@ function UserDashboard() {
                                     </h5>
                                     <div className="add-to-cart-box mt-2">
                                       <Link
-                                      to="/cart"
+                                        to="/cart"
                                         className="btn btn-add-cart addcart-button"
                                         tabIndex={0}
                                         onClick={() =>
