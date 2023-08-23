@@ -12,12 +12,14 @@ import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import TapToTop from "./TapToTop";
 import { useGetCartListQuery } from "../services/Post";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useUpdateQuantityMutation } from "../services/Post";
 import { useAddToWislistListMutation } from "../services/Post";
 
 function Cart() {
   const [cartListItems, setCartListItems] = useState([]);
+  const [cartCount, setCartCount] = useState([]);
+  console.log("cartCount", cartCount);
   const [wishAdd] = useAddToWislistListMutation();
   const [updateQuantity] = useUpdateQuantityMutation();
   const [coupan, setCoupan] = useState([]);
@@ -26,47 +28,60 @@ function Cart() {
 
   const coupanCode2 = coupanCode || "";
   const { data: cartListQuery, isSuccess } = useGetCartListQuery();
-  console.log(cartListQuery);
+  // console.log(cartListQuery);
   const cart = useSelector((state) => state.cart);
   localStorage?.setItem("cartTotal", coupan?.cartsTotalSum);
-  console.log(cart);
+  // console.log(cart);
+  const [count, setCount] = useState([]);
+
+  const handleCountChange = (item, index, newCount) => {
+    const newCounts = [...count];
+    newCounts[index] = newCount >= 0 ? newCount : item?.products[0]?.quantity;
+    setCount(newCounts);
+  };
+  console.log(count);
 
   const [count1, setCount1] = useState();
-  console.log("count1", count1);
-  const HandleDecrease = async (product, id, index) => {
-    if (product?.products[0]?.quantity > 1) {
-      const formData = {
-        id: id,
-        quantity: product?.products[0]?.quantity - 1,
-      };
-      console.log(id);
-      console.log("product qu", product?.products[0]?.quantity);
-      const { data } = await updateQuantity(formData);
-      console.log(data);
-      if (!data.error) {
-        fetchCartListData();
-        setCount1(!count1);
-      }
-    }
-  };
-  const HandleIncrease = async (product, id, index) => {
-    if (product?.products[0]?.quantity > 1) {
-      const formData = {
-        id: id,
-        quantity: product?.products[0]?.quantity + 1,
-      };
-      console.log(id);
-      console.log("product qu", product?.products[0]?.quantity);
-      const { data } = await updateQuantity(formData);
-      console.log(data);
-      if (!data.error) {
-        fetchCartListData();
-        setCount1(!count1);
-      }
+  // console.log("count1", count1);
+
+  // useEffect(() => {
+  //   cartListItems?.map((item, index) => {
+  //     return setCartCount(item?.products[0]?.quantity);
+  //   });
+  // }, []);
+
+  // const HandleDecrease = async (id, index) => {
+  //   console.log("decrease", id, index);
+  //   const formData = {
+  //     id: id,
+  //     quantity: count[index],
+  //   };
+  //   const { data } = await updateQuantity(formData);
+  //   console.log(data);
+  //   if (!data?.error) {
+  //     fetchCartListData();
+  //     setCount1(!count1);
+  //   }
+  // };
+  useEffect(() => {
+    HandleIncrease();
+  }, [count]);
+
+  const HandleIncrease = async (id, index) => {
+    console.log("HandleIncrease", id, index);
+    const formData = {
+      id: id,
+      quantity: count[index],
+    };
+    const { data } = await updateQuantity(formData);
+    console.log(data);
+    if (!data?.error) {
+      fetchCartListData();
+      setCount1(!count1);
     }
   };
 
-  console.log("cartlist item", cartListItems);
+  // console.log("cartlist item", cartListItems);
 
   const fetchCartListData = () => {
     if (isSuccess) {
@@ -86,7 +101,7 @@ function Cart() {
       const { data, error } = await ApplyCoupan(coupanCode2);
       error ? console.log(error) : console.log(data);
       setCoupan(data.results);
-      console.log(data.results);
+      // console.log(data.results);
     } catch (error) {
       console.log(error);
     }
@@ -99,7 +114,7 @@ function Cart() {
       setCartListItems((prevCartList) =>
         prevCartList.filter((item) => item._id !== _id)
       );
-      console.log(data.results.deleteDta);
+      // console.log(data.results.deleteDta);
     } catch (error) {
       console.log(error);
     }
@@ -112,7 +127,7 @@ function Cart() {
         userId: userId,
         like: true,
       };
-      console.log(item?._id);
+      // console.log(item?._id);
       const { data, error } = await wishAdd(editAddress);
       if (error) {
         console.log(error);
@@ -127,7 +142,7 @@ function Cart() {
       console.log(error);
     }
   };
-  console.log("coupan", coupan);
+  // console.log("coupan", coupan);
   useEffect(() => {
     feather.replace();
   }, []);
@@ -361,10 +376,10 @@ function Cart() {
                                               data-type="minus"
                                               data-field=""
                                               onClick={() =>
-                                                HandleDecrease(
+                                                handleCountChange(
                                                   item,
-                                                  item?._id,
-                                                  index
+                                                  index,
+                                                  count[index] - 1
                                                 )
                                               }
                                             >
@@ -375,7 +390,12 @@ function Cart() {
                                             </button>
                                           </div>
                                         )} */}
-                                        <div>{item?.products[0]?.quantity}</div>
+                                        <div>
+                                          {count[index]
+                                            ? count[index]
+                                            : item?.products[0]?.quantity}
+                                        </div>
+                                        {/* <div>{item?.products[0]?.quantity}</div> */}
                                         {/* <div>
                                           <button
                                             type="button"
@@ -383,7 +403,11 @@ function Cart() {
                                             data-type="plus"
                                             data-field=""
                                             onClick={() =>
-                                              HandleIncrease(item, item?._id)
+                                              handleCountChange(
+                                                item,
+                                                index,
+                                                count[index] + 1
+                                              )
                                             }
                                           >
                                             <i
@@ -414,56 +438,17 @@ function Cart() {
                                   flexDirection: "row",
                                 }}
                               >
-                                {item?.products[0]?.product_Id?.like ===
-                                "false" ? (
-                                  <Link
-                                    className="btn p-0 position-relative header-wishlist me-2"
-                                    to="/wishlist"
-                                    title3="Wishlist"
-                                    onClick={() => handleWishClick(item)}
-                                  >
-                                    <FontAwesomeIcon
-                                      icon={faHeart}
-                                      style={{
-                                        fontSize: "20px",
-                                        color: "black",
-                                      }}
-                                      data-tip="Add to Wishlist"
-                                      data-for="wishlist-tooltip"
-                                      onMouseEnter={(e) => {
-                                        e.currentTarget.style.color = "red";
-                                      }}
-                                      onMouseLeave={(e) => {
-                                        e.currentTarget.style.color = "black";
-                                      }}
-                                    />
-                                  </Link>
-                                ) : (
-                                  <Link
-                                    className="btn p-0 position-relative header-wishlist me-2"
-                                    to="#"
-                                    title5="Wishlist"
-                                    disabled
-                                    style={{ cursor: "not-allowed" }}
-                                  >
-                                    <FontAwesomeIcon
-                                      icon={faHeart}
-                                      style={{
-                                        fontSize: "20px",
-                                        color: "red",
-                                      }}
-                                      data-tip="Add to Wishlist"
-                                      data-for="wishlist-tooltip"
-                                    />
-                                  </Link>
-                                )}
-                                {/* <Link
-                                  className="btn p-0 position-relative header-wishlist me-2"
-                                  to="/wishlist"
+                                <Link
+                                type="button"
+                                  className="btn p-0 position-relative header-wishlist me-2 btn-apply"
+                                  to="#"
                                   title3="Wishlist"
-                                  onClick={() => handleWishClick(item)}
+                                  style={{backgroundColor:""}}
+                                  // onClick={() => handleWishClick(item)}
+
                                 >
-                                  <FontAwesomeIcon
+                                  Buy
+                                  {/* <FontAwesomeIcon
                                     icon={faHeart}
                                     style={{
                                       fontSize: "20px",
@@ -477,8 +462,8 @@ function Cart() {
                                     onMouseLeave={(e) => {
                                       e.currentTarget.style.color = "black";
                                     }}
-                                  />
-                                </Link> */}
+                                  /> */}
+                                </Link>
                                 <Link
                                   className="btn p-0 position-relative header-wishlist ms-2"
                                   to="#"

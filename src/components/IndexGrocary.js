@@ -187,9 +187,9 @@ function IndexGrocary(props) {
     } catch (error) {
       console.log(error);
     }
-    setTimeout(() => {
-      window?.location?.reload();
-    }, 500);
+    // setTimeout(() => {
+    //   window?.location?.reload();
+    // }, 500);
   };
   useEffect(() => {
     props.setProgress(10);
@@ -436,7 +436,7 @@ function IndexGrocary(props) {
 
               <div className="add-to-cart-box bg-white mt-2">
                 <button className="btn btn-add-cart addcart-button">
-                  <Link to="/cart" onClick={() => handleAddToCart(item, index)}>
+                  <Link to="#" onClick={() => handleAddToCart(item, index)}>
                     Add To Cart
                     {/* <span className="add-icon bg-light-gray">
                       <i className="fa-solid fa-plus" />
@@ -725,7 +725,10 @@ function IndexGrocary(props) {
                               alt=""
                             />
                             <h5>
-                              <Link to="/shop/:id"> {item?.categoryName_en} </Link>
+                              <Link to="/shop/:id">
+                                {" "}
+                                {item?.categoryName_en}{" "}
+                              </Link>
                             </h5>
                           </div>
                         </li>

@@ -874,9 +874,74 @@ function CheckOut() {
             <div className="col-lg-4">
               <div className="right-side-summery-box">
                 <div className="summery-box-2">
+                  {/* <div className="summery-header">
+                    <h3>Cart Total</h3>
+                  </div>
+                  <div className="summery-contain">
+                    <div className="coupon-cart">
+                      <h6 className="text-content mb-2">Coupon Apply</h6>
+                      <div className="mb-3 coupon-box input-group">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="coupanCode"
+                          name="coupanCode"
+                          placeholder="Enter Coupon Code Here..."
+                          // value={coupanCode}
+                          // onChange={(e) => setCoupanCode(e.target.value)}
+                        />
+                        <button
+                          className="btn-apply"
+                          // onClick={() => handleCoupan()}
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                    <ul>
+                      <li>
+                        <h4>Subtotal</h4>
+                        <h4 className="price">$500 </h4>
+                      </li>
+                      <li>
+                        <h4>Coupon Discount</h4>
+                        <h4 className="price"> - 45 % </h4>
+                      </li>
+                    </ul>
+                  </div>
+                  <ul className="summery-total">
+                    <li className="list-total border-top-0">
+                      <h4>Total (USD)</h4>
+                      <h4 className="price theme-color">$600</h4>
+                    </li>
+                  </ul>
+                  <div className="button-group cart-button">
+                    <ul>
+                      <li>
+                        <Link
+                          to="/check-out"
+                          className="btn btn-animation proceed-btn fw-bold"
+                        >
+                          Process To Checkout
+                        </Link>
+                      </li>
+                      <li>
+                        <button
+                          onClick={() => {
+                            window.location.href = "/index";
+                          }}
+                          className="btn btn-light shopping-button text-dark"
+                        >
+                          <i className="fa-solid fa-arrow-left-long" />
+                          Return To Shopping
+                        </button>
+                      </li>
+                    </ul>
+                  </div> */}
                   <div className="summery-header">
                     <h3>Order Summery</h3>
                   </div>
+
                   <ul className="summery-contain">
                     {orderItemSummary.map((order, index) => {
                       return (
