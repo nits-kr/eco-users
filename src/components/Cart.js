@@ -149,9 +149,9 @@ function Cart() {
       console.log(error);
     }
   };
-  const handleCoupan2 = async (item,quantity, id) => {
+  const handleCoupan2 = async (item, quantity, id) => {
     try {
-      const { data, error } = await ApplyCoupan2(quantity,id, coupanCode2);
+      const { data, error } = await ApplyCoupan2(quantity, id, coupanCode2);
       error ? console.log(error) : console.log(data);
       setCoupan2(data?.results);
       localStorage?.setItem(
