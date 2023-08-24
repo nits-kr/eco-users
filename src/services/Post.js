@@ -234,17 +234,24 @@ export const PostApi = createApi({
         };
       },
     }),
+    // applyCoupan: builder.mutation({
+    //   query: (body) => {
+    //     console.log("update address", body);
+    //     const { id, ...data } = body;
+    //     console.log("update address body data", data);
+    //     return {
+    //       url: `/user/carts/carts/apply-coupan/${id}`,
+    //       method: "post",
+    //       body: data,
+    //     };
+    //   },
+    // }),
     applyCoupan: builder.mutation({
-      query: (body) => {
-        console.log("update address", body);
-        const { id, ...data } = body;
-        console.log("update address body data", data);
-        return {
-          url: `/user/carts/carts/apply-coupan/${id}`,
-          method: "post",
-          body: data,
-        };
-      },
+      query: (body) => ({
+        url: "/user/carts/carts/apply-coupan",
+        method: "post",
+        body,
+      }),
     }),
     updateQuantity: builder.mutation({
       query: (body) => {

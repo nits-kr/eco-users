@@ -16,8 +16,11 @@ import { useGetCartListQuery } from "../services/Post";
 import { useSelector } from "react-redux";
 import { useUpdateQuantityMutation } from "../services/Post";
 import { useAddToWislistListMutation } from "../services/Post";
+import { useApplyCoupanMutation } from "../services/Post";
 
 function Cart() {
+  const [applyCoupan, response] = useApplyCoupanMutation()
+  console.log("applyCoupan", applyCoupan);
   const [cartListItems, setCartListItems] = useState([]);
   localStorage?.setItem("cartId", cartListItems[0]?._id);
   const [cartCount, setCartCount] = useState([]);
@@ -67,7 +70,6 @@ function Cart() {
     HandleIncrease(id);
     handleCoupan();
   };
-  
   const handleDecrement = (id) => {
     setCartListItems((prevCartListItems) => {
       return prevCartListItems.map((item) =>
