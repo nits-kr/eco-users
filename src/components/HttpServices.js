@@ -864,13 +864,16 @@ export async function ApplyCoupan(coupanCode) {
     return error;
   }
 }
-const cartId = localStorage?.getItem("cartId")
-export async function ApplyCoupan2(id,coupanCode ) {
+const cartId = localStorage?.getItem("cartId");
+export async function ApplyCoupan2(quantity, id, coupanCode) {
   try {
     const { data } = await UserHttpService.post(
-      `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/apply-coupan/${id}`,
+      `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/apply-coupan`,
       {
         coupanCode: coupanCode,
+        product_Id: id,
+        quantity: quantity,
+        user_Id: userId,
       }
     );
     console.log(data);

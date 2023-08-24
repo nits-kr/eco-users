@@ -19,7 +19,7 @@ import { useAddToWislistListMutation } from "../services/Post";
 import { useApplyCoupanMutation } from "../services/Post";
 
 function Cart() {
-  const [applyCoupan, response] = useApplyCoupanMutation()
+  const [applyCoupan, response] = useApplyCoupanMutation();
   console.log("applyCoupan", applyCoupan);
   const [cartListItems, setCartListItems] = useState([]);
   localStorage?.setItem("cartId", cartListItems[0]?._id);
@@ -149,9 +149,9 @@ function Cart() {
       console.log(error);
     }
   };
-  const handleCoupan2 = async (item, id) => {
+  const handleCoupan2 = async (item,quantity, id) => {
     try {
-      const { data, error } = await ApplyCoupan2(id, coupanCode2);
+      const { data, error } = await ApplyCoupan2(quantity,id, coupanCode2);
       error ? console.log(error) : console.log(data);
       setCoupan2(data?.results);
       localStorage?.setItem(
@@ -493,7 +493,13 @@ function Cart() {
                                   to="#"
                                   className="btn btn-animation proceed-btn fw-bold me-2"
                                   style={{ height: "35px", width: "35px" }}
-                                  onClick={() => handleCoupan2(item, item?._id)}
+                                  onClick={() =>
+                                    handleCoupan2(
+                                      item,
+                                      item?.products[0]?.quantity,
+                                      item?.products[0]?.product_Id?._id
+                                    )
+                                  }
                                 >
                                   Buy
                                 </Link>
@@ -570,8 +576,8 @@ function Cart() {
                       <h4 className="price">
                         $
                         {coupan2?.length !== 0
-                          ? coupan2.subtotal
-                          : coupan.subtotal}
+                          ? coupan2?.subtotal
+                          : coupan?.subtotal}
                       </h4>
                     </li>
                     <li>
@@ -580,8 +586,8 @@ function Cart() {
                         {" "}
                         -{" "}
                         {coupan2?.length !== 0
-                          ? coupan2.DiscountType
-                          : coupan.DiscountType}{" "}
+                          ? coupan2?.DiscountType
+                          : coupan?.DiscountType}{" "}
                         %
                       </h4>
                     </li>
@@ -593,8 +599,8 @@ function Cart() {
                     <h4 className="price theme-color">
                       $
                       {coupan2?.length !== 0
-                        ? coupan2.cartsTotalSum
-                        : coupan.cartsTotalSum}
+                        ? coupan2?.cartsTotalSum
+                        : coupan?.cartsTotalSum}
                     </h4>
                   </li>
                 </ul>

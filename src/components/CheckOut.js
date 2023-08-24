@@ -24,21 +24,11 @@ function CheckOut() {
   console.log("coupan", coupan);
   const navigate = useNavigate();
   const { coupan2 } = useParams();
-  // const buyItem = localStorage.getItem("buyItem");
-  // if (buyItem) {
-  //   const decodedBuyItem = JSON.parse(decodeURIComponent(buyItem));
-  //   setItems(decodedBuyItem);
-  //   console.log(decodedBuyItem);
-  // } else {
-  //   console.log("buyItem not found in localStorage");
 
-  // }
-
-  // Check if the page is navigating away
-window.onbeforeunload = function () {
-  // Remove the 'theme' item from local storage
-  localStorage.removeItem('buyItem');
-};
+  window.onbeforeunload = function () {
+    // Remove the 'theme' item from local storage
+    localStorage.removeItem("buyItem");
+  };
 
   useEffect(() => {
     const buyItem = localStorage.getItem("buyItem");
@@ -90,19 +80,141 @@ window.onbeforeunload = function () {
     feather.replace();
   }, []);
 
+  // const placeOrder = async () => {
+  //   const orderList = orderItemSummary?.map((order) => ({
+  //     product_Id: order.products[0].product_Id._id,
+  //     quantity: order.products[0].quantity,
+  //   }));
+  //   const newOrderData = {
+  //     carts: items ? items?.products[0]?.product_Id?._id : orderList,
+  //     user_Id: userId,
+  //     address_Id: selectedAddressId,
+  //     shippingPrice: "30",
+  //     taxPrice: "20",
+  //     // deliverdBy: "64997c95488af9cf3dfb8d69",
+  //   };
+  //   const confirmationResult = await Swal.fire({
+  //     title: "Place Order Confirmation",
+  //     text: "Are you sure you want to place the order?",
+  //     icon: "question",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, Place Order",
+  //     cancelButtonText: "Cancel",
+  //     customClass: {
+  //       confirmButton: "custom-confirm-button-class m-3",
+  //     },
+  //   });
+
+  //   if (confirmationResult.isConfirmed) {
+  //     try {
+  //       const createNewOrder = await createOrder(newOrderData);
+  //       console.log(createNewOrder);
+  //       await Swal.fire({
+  //         title: "Order Placed!",
+  //         text: "Your order has been placed successfully.",
+  //         icon: "success",
+  //       }).then((result) => {
+  //         if (result.isConfirmed) {
+  //           navigate("/shop/:id");
+  //         }
+  //       });
+  //     } catch (error) {
+  //       // Show error alert
+  //       await Swal.fire({
+  //         title: "Error",
+  //         text: "An error occurred while placing the order.",
+  //         icon: "error",
+  //       });
+  //     }
+  //   }
+  // };
+  // const placeOrder = async () => {
+  //   let orderList = [];
+  //   if (items !== 0) {
+  //     orderList = {
+  //       product_Id: items?.products[0]?.product_Id?._id,
+  //       quantity: items?.products[0]?.quantity,
+  //     };
+  //   } else {
+  //     orderList =
+  //       orderItemSummary?.map((order) => ({
+  //         product_Id: order.products[0].product_Id._id,
+  //         quantity: order.products[0].quantity,
+  //       })) || [];
+  //   }
+
+  //   const newOrderData = {
+  //     carts: orderList,
+  //     user_Id: userId,
+  //     address_Id: selectedAddressId,
+  //     shippingPrice: "30",
+  //     taxPrice: "20",
+  //     // deliverdBy: "64997c95488af9cf3dfb8d69",
+  //   };
+
+  //   const confirmationResult = await Swal.fire({
+  //     title: "Place Order Confirmation",
+  //     text: "Are you sure you want to place the order?",
+  //     icon: "question",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, Place Order",
+  //     cancelButtonText: "Cancel",
+  //     customClass: {
+  //       confirmButton: "custom-confirm-button-class m-3",
+  //     },
+  //   });
+
+  //   if (confirmationResult.isConfirmed) {
+  //     try {
+  //       const createNewOrder = await createOrder(newOrderData);
+  //       console.log(createNewOrder);
+  //       await Swal.fire({
+  //         title: "Order Placed!",
+  //         text: "Your order has been placed successfully.",
+  //         icon: "success",
+  //       }).then((result) => {
+  //         if (result.isConfirmed) {
+  //           navigate("/shop/:id");
+  //         }
+  //       });
+  //     } catch (error) {
+  //       // Show error alert
+  //       await Swal.fire({
+  //         title: "Error",
+  //         text: "An error occurred while placing the order.",
+  //         icon: "error",
+  //       });
+  //     }
+  //   }
+  // };
   const placeOrder = async () => {
-    const orderList = orderItemSummary?.map((order) => ({
-      product_Id: order.products[0].product_Id._id,
-      quantity: order.products[0].quantity,
-    }));
+    let orderList = [];
+    if (items.length !== 0) {
+      orderList = {
+        product_Id: items?.products[0]?.product_Id?._id,
+        quantity: items?.products[0]?.quantity,
+      };
+    } else {
+      orderList =
+        orderItemSummary?.map((order) => ({
+          product_Id: order.products[0].product_Id._id,
+          quantity: order.products[0].quantity,
+        })) || [];
+    }
+
     const newOrderData = {
       carts: orderList,
       user_Id: userId,
       address_Id: selectedAddressId,
-      // shippingPrice: "30",
-      // taxPrice: "20",
+      shippingPrice: "30",
+      taxPrice: "20",
       // deliverdBy: "64997c95488af9cf3dfb8d69",
     };
+
     const confirmationResult = await Swal.fire({
       title: "Place Order Confirmation",
       text: "Are you sure you want to place the order?",
