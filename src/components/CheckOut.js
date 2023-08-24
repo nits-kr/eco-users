@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
@@ -18,7 +18,46 @@ function CheckOut() {
   const addressList = useGetAddressListQuery();
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const userId = localStorage.getItem("loginId");
+  const [coupan, setCoupan] = useState([]);
+  const [items, setItems] = useState([]);
+  console.log("set items for buy", items);
+  console.log("coupan", coupan);
   const navigate = useNavigate();
+  const { coupan2 } = useParams();
+  // const buyItem = localStorage.getItem("buyItem");
+  // if (buyItem) {
+  //   const decodedBuyItem = JSON.parse(decodeURIComponent(buyItem));
+  //   setItems(decodedBuyItem);
+  //   console.log(decodedBuyItem);
+  // } else {
+  //   console.log("buyItem not found in localStorage");
+
+  // }
+
+  // Check if the page is navigating away
+window.onbeforeunload = function () {
+  // Remove the 'theme' item from local storage
+  localStorage.removeItem('buyItem');
+};
+
+  useEffect(() => {
+    const buyItem = localStorage.getItem("buyItem");
+    if (buyItem) {
+      const decodedBuyItem = JSON.parse(decodeURIComponent(buyItem));
+      setItems(decodedBuyItem);
+      console.log("buy item", decodedBuyItem);
+    } else {
+      console.log("buyItem not found in localStorage");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (coupan2) {
+      const decodedItem = JSON.parse(decodeURIComponent(coupan2));
+      setCoupan(decodedItem);
+      console.log("blog id", decodedItem?._id);
+    }
+  }, [coupan2]);
 
   useEffect(() => {
     fetchData();
@@ -941,9 +980,83 @@ function CheckOut() {
                   <div className="summery-header">
                     <h3>Order Summery</h3>
                   </div>
+                  <ul className="summery-contain">
+                    {items && items.products && items.products.length > 0 ? (
+                      <li>
+                        <img
+                          src={
+                            items.products[0]?.product_Id?.product_Pic[0] || ""
+                          }
+                          className="img-fluid lazyloaded checkout-image"
+                          alt=""
+                        />
+                        <h4>
+                          {items.products[0]?.product_Id?.productName_en}{" "}
+                          <span>X {items?.products[0]?.quantity}</span>
+                        </h4>
+                        <h4 className="price">${items?.cartsTotal}</h4>
+                      </li>
+                    ) : (
+                      orderItemSummary.map((order, index) => {
+                        return (
+                          <li key={index}>
+                            <img
+                              src={
+                                order.products[0]?.product_Id?.product_Pic[0] ||
+                                ""
+                              }
+                              className="img-fluid lazyloaded checkout-image"
+                              alt=""
+                            />
+                            <h4>
+                              {order.products[0]?.product_Id?.productName_en}{" "}
+                              <span>X {order?.products[0]?.quantity}</span>
+                            </h4>
+                            <h4 className="price">${order?.cartsTotal}</h4>
+                          </li>
+                        );
+                      })
+                    )}
+                  </ul>
 
                   <ul className="summery-contain">
-                    {orderItemSummary.map((order, index) => {
+                    {/* {items !== 0 ? (
+                      <li>
+                        <img
+                          src={
+                            items.products[0]?.product_Id?.product_Pic[0] || ""
+                          }
+                          className="img-fluid lazyloaded checkout-image"
+                          alt=""
+                        />
+                        <h4>
+                          {items.products[0]?.product_Id?.productName_en}{" "}
+                          <span>X {items?.products[0]?.quantity}</span>
+                        </h4>
+                        <h4 className="price">${items?.cartsTotal}</h4>
+                      </li>
+                    ) : (
+                      orderItemSummary.map((order, index) => {
+                        return (
+                          <li key={index}>
+                            <img
+                              src={
+                                order.products[0]?.product_Id?.product_Pic[0] ||
+                                ""
+                              }
+                              className="img-fluid lazyloaded checkout-image"
+                              alt=""
+                            />
+                            <h4>
+                              {order.products[0]?.product_Id?.productName_en}{" "}
+                              <span>X {order?.products[0]?.quantity}</span>
+                            </h4>
+                            <h4 className="price">${order?.cartsTotal}</h4>
+                          </li>
+                        );
+                      })
+                    )} */}
+                    {/* {orderItemSummary.map((order, index) => {
                       return (
                         <li key={index}>
                           <img
@@ -961,15 +1074,35 @@ function CheckOut() {
                           <h4 className="price">${order?.cartsTotal}</h4>
                         </li>
                       );
-                    })}
+                    })} */}
                   </ul>
                   <ul className="summery-total">
-                    <li>
+                    {/* <li>
                       <h4>Subtotal(Discounted Price) </h4>
                       <h4 className="price">
-                        ${orderItemSummaryPrice?.cartsTotal}
+                        ${orderItemSummaryPrice?.cartsTotal[0]}
                       </h4>
+                    </li> */}
+                    <li>
+                      <h4>Subtotal(Discounted Price) </h4>
+                      {coupan?.length !== 0 ? (
+                        <h4 className="price">${coupan?.cartsTotalSum}</h4>
+                      ) : orderItemSummaryPrice?.cartsTotal ? (
+                        <h4 className="price">
+                          ${orderItemSummaryPrice?.cartsTotal[0]}
+                        </h4>
+                      ) : (
+                        <h4 className="price">$0</h4>
+                      )}
+                      {/* {orderItemSummaryPrice?.cartsTotal ? (
+                        <h4 className="price">
+                          ${orderItemSummaryPrice?.cartsTotal[0]}
+                        </h4>
+                      ) : (
+                        <h4 className="price">$0</h4>
+                      )} */}
                     </li>
+
                     <li>
                       <h4>Shipping</h4>
                       <h4 className="price">
@@ -990,7 +1123,12 @@ function CheckOut() {
                     <li className="list-total">
                       <h4>Total (USD)</h4>
                       <h4 className="price">
-                        ${orderItemSummaryPrice?.cartsTotalSum}{" "}
+                        $
+                        {coupan?.length !== 0
+                          ? coupan?.cartsTotalSum +
+                            orderItemSummaryPrice?.shipping +
+                            orderItemSummaryPrice?.Tax
+                          : orderItemSummaryPrice?.cartsTotalSum}{" "}
                       </h4>
                     </li>
                   </ul>

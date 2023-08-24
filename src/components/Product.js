@@ -383,7 +383,7 @@ function Product(props) {
           <div className="row">
             <div className="col-12">
               <div className="breadscrumb-contain">
-                <h2>Creamy Chocolate Cake</h2>
+                <h2>{productDetail?.productName_en}</h2>
                 <nav>
                   <ol className="breadcrumb mb-0">
                     <li className="breadcrumb-item">
@@ -392,7 +392,7 @@ function Product(props) {
                       </Link>
                     </li>
                     <li className="breadcrumb-item active">
-                      Creamy Chocolate Cake
+                    {productDetail?.productName_en}
                     </li>
                   </ol>
                 </nav>

@@ -1005,7 +1005,7 @@ function Shop3(props) {
                         </div>
                       </div>
                     </div>
-                    <div className="accordion-item">
+                    {/* <div className="accordion-item">
                       <h2
                         className="accordion-header"
                         id="panelsStayOpen-headingFour"
@@ -1111,8 +1111,8 @@ function Shop3(props) {
                           </ul>
                         </div>
                       </div>
-                    </div>
-                    <div className="accordion-item">
+                    </div> */}
+                    {/* <div className="accordion-item">
                       <h2
                         className="accordion-header"
                         id="panelsStayOpen-headingFive"
@@ -1472,7 +1472,7 @@ function Shop3(props) {
                           </ul>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -1572,7 +1572,7 @@ function Shop3(props) {
                                 Z - A Order
                               </Link>
                             </li>
-                            <li>
+                            {/* <li>
                               <Link
                                 className="dropdown-item"
                                 id="off"
@@ -1581,7 +1581,7 @@ function Shop3(props) {
                               >
                                 % Off - Hight To Low
                               </Link>
-                            </li>
+                            </li> */}
                           </ul>
                         </div>
                       </div>

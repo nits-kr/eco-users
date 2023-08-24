@@ -93,7 +93,7 @@ function App() {
           <Route
             exact
             className="active"
-            path="/check-out"
+            path="/check-out/:coupan2"
             element={<CheckOut />}
           />
           <Route

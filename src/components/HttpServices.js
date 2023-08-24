@@ -744,10 +744,10 @@ export async function AddToCart(id, quantity) {
         carts: [
           {
             product_Id: id,
-            quantity:  Array.isArray(quantity) ? "1" : (quantity),
+            quantity: Array.isArray(quantity) ? "1" : quantity,
           },
         ],
-        user_Id:userId,
+        user_Id: userId,
       }
     );
     console.log("Add to cart data at http", data);
@@ -864,6 +864,39 @@ export async function ApplyCoupan(coupanCode) {
     return error;
   }
 }
+const cartId = localStorage?.getItem("cartId")
+export async function ApplyCoupan2(id,coupanCode ) {
+  try {
+    const { data } = await UserHttpService.post(
+      `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/apply-coupan/${id}`,
+      {
+        coupanCode: coupanCode,
+      }
+    );
+    console.log(data);
+    if (data?.error) {
+      Swal.fire({
+        title: data?.message,
+        icon: "error",
+        confirmButtonText: "ok",
+        confirmButtonColor: "red",
+      });
+    }
+    return { data };
+  } catch (error) {
+    if (error.response) {
+      console.log(error?.response?.data.message);
+      Swal.fire({
+        title: error?.response?.data.message,
+        text: "",
+        icon: "error",
+        confirmButtonText: "ok",
+        confirmButtonColor: "red",
+      });
+    }
+    return error;
+  }
+}
 export async function OrderSummary() {
   try {
     const { data } = await UserHttpService.post(
@@ -951,7 +984,7 @@ export async function CreateWish(id) {
     return error;
   }
 }
-const userId = localStorage?.getItem("loginId")
+const userId = localStorage?.getItem("loginId");
 export async function WishListItems() {
   try {
     const { data } = await UserHttpService.post(

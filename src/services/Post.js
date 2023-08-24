@@ -228,7 +228,19 @@ export const PostApi = createApi({
         const { id, ...data } = body;
         console.log("update address body data", data);
         return {
-          url: `user/address/address/update-address/${id}`,
+          url: `/user/address/address/update-address/${id}`,
+          method: "post",
+          body: data,
+        };
+      },
+    }),
+    applyCoupan: builder.mutation({
+      query: (body) => {
+        console.log("update address", body);
+        const { id, ...data } = body;
+        console.log("update address body data", data);
+        return {
+          url: `/user/carts/carts/apply-coupan/${id}`,
           method: "post",
           body: data,
         };
@@ -396,4 +408,5 @@ export const {
   useDeleteAccountMutation,
   useGetPendingOrderQuery,
   useGetSubCategoryListQuery,
+  useApplyCoupanMutation,
 } = PostApi;

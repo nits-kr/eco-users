@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -7,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faHeart } from "@fortawesome/free-solid-svg-icons";
 import Header from "./Header";
 import Footer from "./Footer";
-import { ApplyCoupan, DeleteCartProduct } from "./HttpServices";
+import { ApplyCoupan, DeleteCartProduct, ApplyCoupan2 } from "./HttpServices";
 import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import TapToTop from "./TapToTop";
@@ -18,70 +19,112 @@ import { useAddToWislistListMutation } from "../services/Post";
 
 function Cart() {
   const [cartListItems, setCartListItems] = useState([]);
+  localStorage?.setItem("cartId", cartListItems[0]?._id);
   const [cartCount, setCartCount] = useState([]);
   console.log("cartCount", cartCount);
   const [wishAdd] = useAddToWislistListMutation();
   const [updateQuantity] = useUpdateQuantityMutation();
   const [coupan, setCoupan] = useState([]);
+  const [coupan2, setCoupan2] = useState([]);
+  console.log("coupan2", coupan2);
   const [coupanCode, setCoupanCode] = useState("25753411");
   const [CreateWishItems, setCreateWishItems] = useState([]);
 
   const coupanCode2 = coupanCode || "";
   const { data: cartListQuery, isSuccess } = useGetCartListQuery();
-  // console.log(cartListQuery);
   const cart = useSelector((state) => state.cart);
   localStorage?.setItem("cartTotal", coupan?.cartsTotalSum);
-  // console.log(cart);
-  const [count, setCount] = useState([]);
-
-  const handleCountChange = (item, index, newCount) => {
-    const newCounts = [...count];
-    newCounts[index] = newCount >= 0 ? newCount : item?.products[0]?.quantity;
-    setCount(newCounts);
-  };
-  console.log(count);
 
   const [count1, setCount1] = useState();
-  // console.log("count1", count1);
-
-  // useEffect(() => {
-  //   cartListItems?.map((item, index) => {
-  //     return setCartCount(item?.products[0]?.quantity);
-  //   });
-  // }, []);
-
-  // const HandleDecrease = async (id, index) => {
-  //   console.log("decrease", id, index);
-  //   const formData = {
-  //     id: id,
-  //     quantity: count[index],
-  //   };
-  //   const { data } = await updateQuantity(formData);
-  //   console.log(data);
-  //   if (!data?.error) {
-  //     fetchCartListData();
-  //     setCount1(!count1);
-  //   }
-  // };
-  useEffect(() => {
-    HandleIncrease();
-  }, [count]);
-
-  const HandleIncrease = async (id, index) => {
-    console.log("HandleIncrease", id, index);
+  const handleIncrement = (id) => {
+    setCartListItems((prevCartListItems) => {
+      return prevCartListItems.map((item) =>
+        id === item?._id
+          ? {
+              ...item,
+              products: [
+                {
+                  ...item.products[0],
+                  quantity: item.products[0]?.quantity + 1,
+                },
+              ],
+            }
+          : item
+      );
+    });
+    const item = cartListItems.find((item) => item?._id === id);
+    if (item) {
+      toast.info(
+        <>
+          Increased quantity of{" "}
+          <strong>{item.products[0]?.product_Id?.productName_en}</strong>
+        </>,
+        {
+          position: "bottom-left",
+        }
+      );
+    }
+    HandleIncrease(id);
+    handleCoupan();
+  };
+  
+  const handleDecrement = (id) => {
+    setCartListItems((prevCartListItems) => {
+      return prevCartListItems.map((item) =>
+        id === item?._id
+          ? {
+              ...item,
+              products: [
+                {
+                  ...item.products[0],
+                  quantity: item.products[0]?.quantity - 1,
+                },
+              ],
+            }
+          : item
+      );
+    });
+    const item = cartListItems.find((item) => item?._id === id);
+    if (item) {
+      toast.info(
+        <>
+          Decreased quantity of{" "}
+          <strong>{item.products[0]?.product_Id?.productName_en}</strong>
+        </>,
+        {
+          position: "bottom-left",
+        }
+      );
+    }
+    HandleDecrease(id);
+    handleCoupan();
+  };
+  const HandleIncrease = async (id) => {
+    console.log("HandleIncrease", id);
     const formData = {
       id: id,
-      quantity: count[index],
+      quantity: 1,
     };
-    const { data } = await updateQuantity(formData);
-    console.log(data);
-    if (!data?.error) {
-      fetchCartListData();
-      setCount1(!count1);
+    try {
+      const { data } = await updateQuantity(formData);
+      console.log(data);
+    } catch (error) {
+      console.error("Error updating quantity:", error);
     }
   };
-
-  // console.log("cartlist item", cartListItems);
+  const HandleDecrease = async (id) => {
+    console.log("HandleIncrease", id);
+    const formData = {
+      id: id,
+      quantity: -1,
+    };
+    try {
+      const { data } = await updateQuantity(formData);
+      console.log(data);
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+    }
+  };
 
   const fetchCartListData = () => {
     if (isSuccess) {
@@ -95,13 +138,25 @@ function Cart() {
   useEffect(() => {
     handleCoupan();
   }, []);
-
   const handleCoupan = async () => {
     try {
       const { data, error } = await ApplyCoupan(coupanCode2);
       error ? console.log(error) : console.log(data);
       setCoupan(data.results);
-      // console.log(data.results);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleCoupan2 = async (item, id) => {
+    try {
+      const { data, error } = await ApplyCoupan2(id, coupanCode2);
+      error ? console.log(error) : console.log(data);
+      setCoupan2(data?.results);
+      localStorage?.setItem(
+        "buyItem",
+        encodeURIComponent(JSON.stringify(item))
+      );
+      console.log("check out item", item);
     } catch (error) {
       console.log(error);
     }
@@ -217,7 +272,7 @@ function Cart() {
             <div className="col-xxl-9">
               <div className="cart-table">
                 <div className="table-responsive-xl">
-                  <table className="table">
+                  <table className="table" style={{ marginLeft: "-21px" }}>
                     <tbody>
                       {cartListItems?.map((item, index) => {
                         return (
@@ -344,7 +399,7 @@ function Cart() {
                                         }}
                                       >
                                         {" "}
-                                        {/* {item?.products[0]?.quantity === 1 ? (
+                                        {item?.products[0]?.quantity === 1 ? (
                                           <div
                                             style={{
                                               cursor: "not-allowed",
@@ -376,11 +431,7 @@ function Cart() {
                                               data-type="minus"
                                               data-field=""
                                               onClick={() =>
-                                                handleCountChange(
-                                                  item,
-                                                  index,
-                                                  count[index] - 1
-                                                )
+                                                handleDecrement(item?._id)
                                               }
                                             >
                                               <i
@@ -389,25 +440,16 @@ function Cart() {
                                               />
                                             </button>
                                           </div>
-                                        )} */}
+                                        )}
+                                        <div>{item?.products[0]?.quantity}</div>
                                         <div>
-                                          {count[index]
-                                            ? count[index]
-                                            : item?.products[0]?.quantity}
-                                        </div>
-                                        {/* <div>{item?.products[0]?.quantity}</div> */}
-                                        {/* <div>
                                           <button
                                             type="button"
                                             className="btn qty-right-plus ms-2"
                                             data-type="plus"
                                             data-field=""
                                             onClick={() =>
-                                              handleCountChange(
-                                                item,
-                                                index,
-                                                count[index] + 1
-                                              )
+                                              handleIncrement(item?._id)
                                             }
                                           >
                                             <i
@@ -415,7 +457,7 @@ function Cart() {
                                               aria-hidden="true"
                                             />
                                           </button>
-                                        </div> */}
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -429,9 +471,16 @@ function Cart() {
                               <h5>${item?.cartsTotal}</h5>
                             </td>
                             <td className="save-remove">
-                              <h4 className="table-title text-content">
-                                Action
-                              </h4>
+                              <h3
+                                className="table-title text-content"
+                                style={{
+                                  display: "flex",
+                                  textAlign: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <strong>Action</strong>
+                              </h3>
                               <div
                                 style={{
                                   display: "flex",
@@ -439,33 +488,28 @@ function Cart() {
                                 }}
                               >
                                 <Link
-                                type="button"
-                                  className="btn p-0 position-relative header-wishlist me-2 btn-apply"
                                   to="#"
-                                  title3="Wishlist"
-                                  style={{backgroundColor:""}}
-                                  // onClick={() => handleWishClick(item)}
-
+                                  className="btn btn-animation proceed-btn fw-bold me-2"
+                                  style={{ height: "35px", width: "35px" }}
+                                  onClick={() => handleCoupan2(item, item?._id)}
                                 >
                                   Buy
-                                  {/* <FontAwesomeIcon
-                                    icon={faHeart}
-                                    style={{
-                                      fontSize: "20px",
-                                      color: "black",
-                                    }}
-                                    data-tip="Add to Wishlist"
-                                    data-for="wishlist-tooltip"
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.color = "red";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.color = "black";
-                                    }}
-                                  /> */}
                                 </Link>
                                 <Link
-                                  className="btn p-0 position-relative header-wishlist ms-2"
+                                  to="#"
+                                  className="btn btn-animation proceed-btn fw-bold"
+                                  style={{ height: "35px", width: "35px" }}
+                                  title4="Wishlist"
+                                  onClick={() => deleteCartItem(item._id)}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faTrash}
+                                    // style={{ color: "#fa0000" }}
+                                  />
+                                </Link>
+
+                                {/* <Link
+                                  className="btn  p-0 position-relative header-wishlist ms-2"
                                   to="#"
                                   title4="Wishlist"
                                   onClick={() => deleteCartItem(item._id)}
@@ -474,7 +518,7 @@ function Cart() {
                                     icon={faTrash}
                                     style={{ color: "#fa0000" }}
                                   />
-                                </Link>
+                                </Link> */}
                               </div>
                             </td>
                           </tr>
@@ -484,8 +528,104 @@ function Cart() {
                   </table>
                 </div>
               </div>
+              {/* <Link
+                to="#"
+                className="btn btn-animation proceed-btn fw-bold me-2 mt-2"
+                style={{ height: "35px", width: "125px", marginLeft: "792px" }}
+              >
+                Buy All
+              </Link> */}
             </div>
             <div className="col-xxl-3">
+              <div className="summery-box p-sticky">
+                <div className="summery-header">
+                  <h3>Cart Total</h3>
+                </div>
+                <div className="summery-contain">
+                  <div className="coupon-cart">
+                    <h6 className="text-content mb-2">Coupon Apply</h6>
+                    <div className="mb-3 coupon-box input-group">
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="coupanCode"
+                        name="coupanCode"
+                        placeholder="Enter Coupon Code Here..."
+                        value={coupanCode}
+                        onChange={(e) => setCoupanCode(e.target.value)}
+                      />
+                      <button
+                        className="btn-apply"
+                        onClick={() => handleCoupan()}
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  </div>
+                  <ul>
+                    <li>
+                      <h4>Subtotal</h4>
+                      <h4 className="price">
+                        $
+                        {coupan2?.length !== 0
+                          ? coupan2.subtotal
+                          : coupan.subtotal}
+                      </h4>
+                    </li>
+                    <li>
+                      <h4>Coupon Discount</h4>
+                      <h4 className="price">
+                        {" "}
+                        -{" "}
+                        {coupan2?.length !== 0
+                          ? coupan2.DiscountType
+                          : coupan.DiscountType}{" "}
+                        %
+                      </h4>
+                    </li>
+                  </ul>
+                </div>
+                <ul className="summery-total">
+                  <li className="list-total border-top-0">
+                    <h4>Total (USD)</h4>
+                    <h4 className="price theme-color">
+                      $
+                      {coupan2?.length !== 0
+                        ? coupan2.cartsTotalSum
+                        : coupan.cartsTotalSum}
+                    </h4>
+                  </li>
+                </ul>
+                <div className="button-group cart-button">
+                  <ul>
+                    <li>
+                      <Link
+                        // to="/check-out"
+                        to={`/check-out/${encodeURIComponent(
+                          JSON.stringify(coupan2)
+                        )}`}
+                        className="btn btn-animation proceed-btn fw-bold"
+                      >
+                        Process To Checkout
+                      </Link>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {
+                          window.location.href = "/index";
+                        }}
+                        className="btn btn-light shopping-button text-dark"
+                      >
+                        <i className="fa-solid fa-arrow-left-long" />
+                        Return To Shopping
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* <div className="col-xxl-3">
               <div className="summery-box p-sticky">
                 <div className="summery-header">
                   <h3>Cart Total</h3>
@@ -520,10 +660,6 @@ function Cart() {
                       <h4>Coupon Discount</h4>
                       <h4 className="price"> - {coupan?.DiscountType} % </h4>
                     </li>
-                    {/* <li className="align-items-start">
-                      <h4>Shipping</h4>
-                      <h4 className="price text-end">$6.90</h4>
-                    </li> */}
                   </ul>
                 </div>
                 <ul className="summery-total">
@@ -558,7 +694,7 @@ function Cart() {
                   </ul>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
