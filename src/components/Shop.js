@@ -24,6 +24,11 @@ import {
   DiscountProduct,
   AddCompare,
 } from "./HttpServices";
+import {
+  useGetCategoryListQuery,
+  useGetSubCategoryListQuery,
+  useSubCategoryListMutation,
+} from "../services/Post";
 import Star from "./Star";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -46,6 +51,8 @@ import { useDispatch } from "react-redux";
 
 function Shop(props) {
   const [productListItems, setProductListItems] = useState([]);
+  const subCategoryListItems = useGetSubCategoryListQuery();
+  const [subCategoryListData, setSubCategoryListData] = useState([]);
   const [wishAdd, res] = useAddToWislistListMutation();
   console.log("productListItems", productListItems);
   const [productListDetails, setProductListDetails] = useState([]);
@@ -374,6 +381,11 @@ function Shop(props) {
   //     }
   //   }
   // };
+  useEffect(() => {
+    const reversedList =
+      subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
+      setSubCategoryListData(reversedList);
+  }, [subCategoryListItems]);
   return (
     <>
       {loading}
@@ -662,7 +674,7 @@ function Shop(props) {
                         aria-labelledby="panelsStayOpen-headingOne"
                       >
                         <div className="accordion-body">
-                          <div className="form-floating theme-form-floating-2 search-box">
+                          {/* <div className="form-floating theme-form-floating-2 search-box">
                             <input
                               type="search"
                               className="form-control"
@@ -670,9 +682,31 @@ function Shop(props) {
                               placeholder="Search .."
                             />
                             <label htmlFor="search">Search</label>
-                          </div>
+                          </div> */}
                           <ul className="category-list pe-3 custom-height">
-                            <li>
+                            {subCategoryListData?.map((item, index) => {
+                              return (
+                                <li key={index}>
+                              <div className="form-check ps-0 m-0 category-list-box">
+                                <input
+                                  className="checkbox_animated"
+                                  type="checkbox"
+                                  id="fruit"
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor="fruit"
+                                >
+                                  <span className="name">
+                                    {item?.subCategoryName_en}
+                                  </span>
+                                  <span className="number">(15)</span>
+                                </label>
+                              </div>
+                            </li>
+                              )
+                            })}
+                            {/* <li>
                               <div className="form-check ps-0 m-0 category-list-box">
                                 <input
                                   className="checkbox_animated"
@@ -933,7 +967,7 @@ function Shop(props) {
                                   <span className="number">(03)</span>
                                 </label>
                               </div>
-                            </li>
+                            </li> */}
                           </ul>
                         </div>
                       </div>

@@ -43,9 +43,12 @@ import { useSubSubProductMutation } from "../services/Post";
 import { useFilterPriceMutation } from "../services/Post";
 import { addToCart } from "../app/slice/CartSlice";
 import { useDispatch } from "react-redux";
+import { useGetSubCategoryListQuery } from "../services/Post";
 
 function Shop3(props) {
   const [productListItems, setProductListItems] = useState([]);
+  const subCategoryListItems = useGetSubCategoryListQuery();
+  const [subCategoryListData, setSubCategoryListData] = useState([]);
   const [wishAdd, res] = useAddToWislistListMutation();
   const [productListDetails, setProductListDetails] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -280,7 +283,7 @@ function Shop3(props) {
   const handleSearch1 = async () => {
     try {
       const url1 =
-      query !== ""
+        query !== ""
           ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/search-product"
           : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/list";
       const response = await axios.post(url1, {
@@ -319,11 +322,16 @@ function Shop3(props) {
       }
     }
   };
+  useEffect(() => {
+    const reversedList =
+      subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
+    setSubCategoryListData(reversedList);
+  }, [subCategoryListItems]);
   return (
     <>
       {loading}
       {/* Header Start */}
-      <Header setProductListItems={setProductListItems}/>
+      <Header setProductListItems={setProductListItems} />
       {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
@@ -607,7 +615,7 @@ function Shop3(props) {
                         aria-labelledby="panelsStayOpen-headingOne"
                       >
                         <div className="accordion-body">
-                          <div className="form-floating theme-form-floating-2 search-box">
+                          {/* <div className="form-floating theme-form-floating-2 search-box">
                             <input
                               type="search"
                               className="form-control"
@@ -615,9 +623,31 @@ function Shop3(props) {
                               placeholder="Search .."
                             />
                             <label htmlFor="search">Search</label>
-                          </div>
+                          </div> */}
                           <ul className="category-list pe-3 custom-height">
-                            <li>
+                            {subCategoryListData?.map((item, index) => {
+                              return (
+                                <li key={index}>
+                                  <div className="form-check ps-0 m-0 category-list-box">
+                                    <input
+                                      className="checkbox_animated"
+                                      type="checkbox"
+                                      id="fruit"
+                                    />
+                                    <label
+                                      className="form-check-label"
+                                      htmlFor="fruit"
+                                    >
+                                      <span className="name">
+                                        {item?.subCategoryName_en}
+                                      </span>
+                                      <span className="number">(15)</span>
+                                    </label>
+                                  </div>
+                                </li>
+                              );
+                            })}
+                            {/* <li>
                               <div className="form-check ps-0 m-0 category-list-box">
                                 <input
                                   className="checkbox_animated"
@@ -878,7 +908,7 @@ function Shop3(props) {
                                   <span className="number">(03)</span>
                                 </label>
                               </div>
-                            </li>
+                            </li> */}
                           </ul>
                         </div>
                       </div>

@@ -22,12 +22,14 @@ function Cart() {
   const [applyCoupan, response] = useApplyCoupanMutation();
   console.log("applyCoupan", applyCoupan);
   const [cartListItems, setCartListItems] = useState([]);
+  const [cartTotal, setCartTotal] = useState(0);
   localStorage?.setItem("cartId", cartListItems[0]?._id);
   const [cartCount, setCartCount] = useState([]);
   console.log("cartCount", cartCount);
   const [wishAdd] = useAddToWislistListMutation();
   const [updateQuantity] = useUpdateQuantityMutation();
   const [coupan, setCoupan] = useState([]);
+  console.log("coupan", coupan);
   const [coupan2, setCoupan2] = useState([]);
   console.log("coupan2", coupan2);
   const [coupanCode, setCoupanCode] = useState("25753411");
@@ -130,16 +132,21 @@ function Cart() {
 
   const fetchCartListData = () => {
     if (isSuccess) {
-      setCartListItems(cartListQuery?.results?.list);
+      // setCartListItems(cartListQuery?.results?.list);
+      const items = cartListQuery?.results?.list || [];
+      const total = items.reduce((acc, item) => acc + item.cartsTotal, 0);
+      setCartTotal(total);
+      setCartListItems(items);
+      console.log("total", total);
     }
   };
   useEffect(() => {
     fetchCartListData();
   }, [cartListQuery, count1]);
 
-  useEffect(() => {
-    handleCoupan();
-  }, []);
+  // useEffect(() => {
+  //   handleCoupan();
+  // }, []);
   const handleCoupan = async () => {
     try {
       const { data, error } = await ApplyCoupan(coupanCode2);
@@ -315,7 +322,7 @@ function Cart() {
                                       <span className="text-title">
                                         Quantity
                                       </span>{" "}
-                                      - 500 g
+                                      - {item?.products[0]?.product_Id?.weight}
                                     </li>
                                     <li className="quantity-price-box">
                                       <div className="cart_qty">
@@ -371,10 +378,7 @@ function Cart() {
                               </h5>
                               <h6 className="theme-color">
                                 {" "}
-                                $
-                                {item?.products?.map(
-                                  (product) => product?.product_Id?.Discount
-                                )}{" "}
+                                ${item?.products[0]?.product_Id?.Discount}{" "}
                               </h6>
                             </td>
                             <td className="quantity">
@@ -570,7 +574,34 @@ function Cart() {
                       </button>
                     </div>
                   </div>
-                  <ul>
+
+                  {coupan2.length !== 0 ? (
+                    <ul>
+                      <li>
+                        <h4>Subtotal</h4>
+                        <h4 className="price">${coupan2.subtotal}</h4>
+                      </li>
+                      <li>
+                        <h4>Coupon Discount</h4>
+                        <h4 className="price"> - {coupan2.DiscountType} %</h4>
+                      </li>
+                    </ul>
+                  ) : (
+                    <ul>
+                      <li>
+                        <h4>Subtotal</h4>
+                        <h4 className="price">
+                          ${coupan.subtotal || cartTotal}
+                        </h4>
+                      </li>
+                      <li>
+                        <h4>Coupon Discount</h4>
+                        <h4 className="price"> - {coupan.DiscountType} %</h4>
+                      </li>
+                    </ul>
+                  )}
+
+                  {/* <ul>
                     <li>
                       <h4>Subtotal</h4>
                       <h4 className="price">
@@ -591,17 +622,39 @@ function Cart() {
                         %
                       </h4>
                     </li>
-                  </ul>
+                  </ul> */}
                 </div>
                 <ul className="summery-total">
                   <li className="list-total border-top-0">
                     <h4>Total (USD)</h4>
+                    {/* {coupan !== 0 ? (
+                      <h4 className="price theme-color">
+                        $
+                        {coupan?.cartsTotalSum
+                          ? coupan?.cartsTotalSum
+                          : cartTotal}
+                      </h4>
+                    ) : (
+                      <h4 className="price theme-color">
+                        $
+                        {coupan2?.length !== 0
+                          ? coupan2?.cartsTotalSum
+                          : coupan?.cartsTotalSum}
+                      </h4>
+                    )} */}
                     <h4 className="price theme-color">
+                      $
+                      {coupan2.length !== 0
+                        ? coupan2.cartsTotalSum
+                        : coupan.cartsTotalSum || cartTotal}
+                    </h4>
+
+                    {/* <h4 className="price theme-color">
                       $
                       {coupan2?.length !== 0
                         ? coupan2?.cartsTotalSum
                         : coupan?.cartsTotalSum}
-                    </h4>
+                    </h4> */}
                   </li>
                 </ul>
                 <div className="button-group cart-button">
