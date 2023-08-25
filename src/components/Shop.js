@@ -48,7 +48,7 @@ function Shop(props) {
   console.log("subCategoryProduct", subCategoryProduct?.data);
   const subCategoryListItems = useGetSubCategoryListQuery();
   const [subCategoryListData, setSubCategoryListData] = useState([]);
-  const [selectedSubCategories, setSelectedSubCategories] = useState([]);
+  // const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [wishAdd, res] = useAddToWislistListMutation();
   console.log("productListItems", productListItems);
   const [productListDetails, setProductListDetails] = useState([]);
@@ -64,35 +64,70 @@ function Shop(props) {
   const [count, setCount] = useState([]);
   const [subCategoryProductItems, setSubCategoryProductItems] = useState([]);
   console.log("subCategoryProductItems", subCategoryProductItems);
+  // const [subCategoryListData, setSubCategoryListData] = useState([]);
+  // const [productListItems, setProductListItems] = useState([]);
+  const [selectedSubcategories, setSelectedSubcategories] = useState([]);
 
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
-  const location = useLocation();
-  const dispatch = useDispatch();
+
   const handleSaveChanges1 = async (categoryId) => {
-    const editAddress = {
-      id: categoryId,
-    };
-    const result = await subCategoryProduct(editAddress);
-    if (result) {
-      setProductListItems(result.data?.results?.listData);
+    setSelectedSubcategories((prevSelected) => {
+      if (prevSelected.includes(categoryId)) {
+        return prevSelected.filter((id) => id !== categoryId);
+      } else {
+        return [...prevSelected, categoryId];
+      }
+    });
+  };
+  useEffect(() => {
+    fetchData1();
+  }, []);
+  useEffect(() => {
+    fetchProductsForSelectedSubcategories();
+  }, [selectedSubcategories]);
+  const fetchData1 = async () => {
+    try {
+      props.setProgress(10);
+      setLoading(true);
+      const { data, error } = await ProductList();
+      error ? console.log(error) : console.log(data);
+      setProductListItems(data?.results?.list?.reverse());
+      setLoading(true);
+      props.setProgress(50);
+      console.log(data?.results?.list);
+    } catch (error) {
+      console.log(error);
     }
   };
+  const fetchProductsForSelectedSubcategories = async () => {
+    const selectedProducts = await Promise.all(
+      selectedSubcategories.map(async (categoryId) => {
+        const result = await subCategoryProduct({ id: categoryId });
+        return result.data?.results?.listData;
+      })
+    );
+    const flattenedProducts = selectedProducts.flat();
+    setProductListItems(flattenedProducts);
+  };
+  const dispatch = useDispatch();
+  // const handleSaveChanges1 = async (categoryId) => {
+  //   const editAddress = {
+  //     id: categoryId,
+  //   };
+  //   const result = await subCategoryProduct(editAddress);
+  //   if (result) {
+  //     setProductListItems(result.data?.results?.listData);
+  //   }
+  // };
 
   const handleCountChange = (index, newCount) => {
     const newCounts = [...count];
     newCounts[index] = newCount >= 0 ? newCount : 0;
     setCount(newCounts);
   };
-
-  console.log("const [filterProduct, re] = useFilterPriceMutation();", re);
   const [currentValue, setCurrentValue] = useState(0);
-  console.log(
-    "const [currentValue, setCurrentValue] = useState(0);",
-    currentValue
-  );
   const storedId = localStorage.getItem("loginId");
-  // const searchQuery = localStorage?.getItem("productSearch");
   const [searchQuery, setSearchQuery] = useState("");
   const { id } = useParams();
   const totalRatings = selectedProduct?.ratings?.reduce(
@@ -100,7 +135,6 @@ function Shop(props) {
     0
   );
   const averageRating = totalRatings / selectedProduct?.ratings?.length;
-  console.log(id);
   useEffect(() => {
     handleSubSubProduct();
   }, [id]);
@@ -116,7 +150,6 @@ function Shop(props) {
       console.log(error);
     }
   };
-
   const handleChange = async (event) => {
     const newValue = parseInt(event.target.value, 10);
     setCurrentValue(newValue);
@@ -134,7 +167,6 @@ function Shop(props) {
       console.error("Error filtering products:", error);
     }
   };
-
   useEffect(() => {
     cartData();
   }, []);
@@ -165,7 +197,6 @@ function Shop(props) {
       console.log(error);
     }
   };
-
   useEffect(() => {
     if (productListItems?.length > 0) {
       getData();
@@ -187,7 +218,6 @@ function Shop(props) {
       console.log(error);
     }
   };
-
   const handleViewClick = (item) => {
     setSelectedProduct(item);
     console.log(item?._id);
@@ -325,7 +355,6 @@ function Shop(props) {
       console.log(error);
     }
   };
-
   var w = window.innerWidth;
   useEffect(() => {
     feather.replace();
@@ -396,22 +425,6 @@ function Shop(props) {
       subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
     setSubCategoryListData(reversedList);
   }, [subCategoryListItems]);
-  const handleCheckboxChange = (subCategoryId) => {
-    if (selectedSubCategories.includes(subCategoryId)) {
-      setSelectedSubCategories(
-        selectedSubCategories.filter((id) => id !== subCategoryId)
-      );
-    } else {
-      setSelectedSubCategories([...selectedSubCategories, subCategoryId]);
-    }
-  };
-
-  const filteredProducts = productListItems.filter((product) => {
-    return (
-      selectedSubCategories.length === 0 ||
-      selectedSubCategories.includes(product.subCategoryId)
-    );
-  });
   return (
     <>
       {loading}
@@ -712,8 +725,7 @@ function Shop(props) {
                             <label htmlFor="search">Search</label>
                           </div>
                           <ul className="category-list pe-3 custom-height">
-                            {/* {subCategoryListData?.map((item, index) => {
-                              const isChecked = selectedSubCategories.includes(item?._id);
+                            {subCategoryListData?.map((item, index) => {
                               return (
                                 <li key={index}>
                                   <div className="form-check ps-0 m-0 category-list-box">
@@ -721,39 +733,9 @@ function Shop(props) {
                                       className="checkbox_animated"
                                       type="checkbox"
                                       id={`checkbox_${item?._id}`}
-                                      checked={selectedSubCategories.includes(
+                                      defaultChecked={selectedSubcategories.includes(
                                         item?._id
                                       )}
-                                      onClick={() =>
-                                        handleSaveChanges1(item?._id, isChecked)
-                                      }
-                                    />
-                                    <label
-                                      className="form-check-label"
-                                      htmlFor={`checkbox_${item?._id}`}
-                                    >
-                                      <span className="name">
-                                        {item?.subCategoryName_en}
-                                      </span>
-                                      <span className="number">(15)</span>
-                                    </label>
-                                  </div>
-                                </li>
-                              );
-                            })} */}
-                            {subCategoryListData?.map((item, index) => {
-                              const isChecked = selectedSubCategories.includes(
-                                item?._id
-                              );
-
-                              return (
-                                <li key={index}>
-                                  <div className="form-check ps-0 m-0 category-list-box">
-                                    <input
-                                      className="checkbox_animated"
-                                      type="checkbox"
-                                      id={`checkbox_${item?._id}`}
-                                      defaultChecked={isChecked}
                                       onChange={() =>
                                         handleSaveChanges1(item?._id)
                                       }
@@ -771,269 +753,6 @@ function Shop(props) {
                                 </li>
                               );
                             })}
-
-                            {/* <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="fruit"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="fruit"
-                                >
-                                  <span className="name">
-                                    Fruits &amp; Vegetables
-                                  </span>
-                                  <span className="number">(15)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="cake"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="cake"
-                                >
-                                  <span className="name">
-                                    Bakery, Cake &amp; Dairy
-                                  </span>
-                                  <span className="number">(12)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="behe"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="behe"
-                                >
-                                  <span className="name">Beverages</span>
-                                  <span className="number">(20)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="snacks"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="snacks"
-                                >
-                                  <span className="name">
-                                    Snacks &amp; Branded Foods
-                                  </span>
-                                  <span className="number">(05)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="beauty"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="beauty"
-                                >
-                                  <span className="name">
-                                    Beauty &amp; Household
-                                  </span>
-                                  <span className="number">(30)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="pets"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="pets"
-                                >
-                                  <span className="name">
-                                    Kitchen, Garden &amp; Pets
-                                  </span>
-                                  <span className="number">(50)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="egg"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="egg"
-                                >
-                                  <span className="name">
-                                    Eggs, Meat &amp; Fish
-                                  </span>
-                                  <span className="number">(19)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="food"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="food"
-                                >
-                                  <span className="name">
-                                    Gourment &amp; World Food
-                                  </span>
-                                  <span className="number">(30)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="care"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="care"
-                                >
-                                  <span className="name">Baby Care</span>
-                                  <span className="number">(20)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="fish"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="fish"
-                                >
-                                  <span className="name">
-                                    Fish &amp; Seafood
-                                  </span>
-                                  <span className="number">(10)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="marinades"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="marinades"
-                                >
-                                  <span className="name">Marinades</span>
-                                  <span className="number">(05)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="lamb"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="lamb"
-                                >
-                                  <span className="name">
-                                    Mutton &amp; Lamb
-                                  </span>
-                                  <span className="number">(09)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="other"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="other"
-                                >
-                                  <span className="name">
-                                    Port &amp; other Meats
-                                  </span>
-                                  <span className="number">(06)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="pour"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="pour"
-                                >
-                                  <span className="name">Pourltry</span>
-                                  <span className="number">(01)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="salami"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="salami"
-                                >
-                                  <span className="name">
-                                    Sausages, bacon &amp; Salami
-                                  </span>
-                                  <span className="number">(03)</span>
-                                </label>
-                              </div>
-                            </li> */}
                           </ul>
                         </div>
                       </div>

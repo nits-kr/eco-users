@@ -44,8 +44,10 @@ import { useFilterPriceMutation } from "../services/Post";
 import { addToCart } from "../app/slice/CartSlice";
 import { useDispatch } from "react-redux";
 import { useGetSubCategoryListQuery } from "../services/Post";
+import { useSubCategoryProductListMutation } from "../services/Post";
 
 function Shop2(props) {
+  const [subCategoryProduct] = useSubCategoryProductListMutation();
   const [productListItems, setProductListItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const subCategoryListItems = useGetSubCategoryListQuery();
@@ -67,6 +69,16 @@ function Shop2(props) {
     localStorage.getItem("token");
   const location = useLocation();
   const dispatch = useDispatch();
+
+  const handleSaveChanges1 = async (categoryId) => {
+    const editAddress = {
+      id: categoryId,
+    };
+    const result = await subCategoryProduct(editAddress);
+    if (result) {
+      setProductListItems(result.data?.results?.listData);
+    }
+  };
 
   const handleCountChange = (index, newCount) => {
     const newCounts = [...count];
@@ -261,12 +273,65 @@ function Shop2(props) {
     }, 1000);
   };
   useEffect(() => {
-    if (searchQuery) {
+    if (query) {
       handleSearch1();
+    }
+  }, [query]);
+
+  const handleSearch1 = async () => {
+    try {
+      const url1 =
+        query !== ""
+          ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/search-product"
+          : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/list";
+      const response = await axios.post(url1, {
+        productName_en: query,
+      });
+      const { error, results } = response.data;
+      if (error) {
+        throw new Error("Error searching for products. Data is not found.");
+      } else {
+        setProductListItems(
+          query !== "" ? results?.productData : results?.list?.reverse()
+        );
+      }
+    } catch (error) {
+      if (error.response) {
+        Swal.fire({
+          title: "Error!",
+          text: error.response.data,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      } else if (error.request) {
+        Swal.fire({
+          title: "Error!",
+          text: "Network error. Please try again later.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: error.message,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    }
+  };
+  useEffect(() => {
+    const reversedList =
+      subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
+    setSubCategoryListData(reversedList);
+  }, [subCategoryListItems]);
+  useEffect(() => {
+    if (searchQuery) {
+      handleSearch2();
     }
   }, [searchQuery]);
 
-  const handleSearch1 = async () => {
+  const handleSearch2 = async () => {
     try {
       const url1 =
         searchQuery !== ""
@@ -308,11 +373,6 @@ function Shop2(props) {
       }
     }
   };
-  useEffect(() => {
-    const reversedList =
-      subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
-    setSubCategoryListData(reversedList);
-  }, [subCategoryListItems]);
   return (
     <>
       {loading}
@@ -613,18 +673,22 @@ function Shop2(props) {
                             <label htmlFor="search">Search</label>
                           </div>
                           <ul className="category-list pe-3 custom-height">
-                            {subCategoryListData?.map((item, index) => {
+                          {subCategoryListData?.map((item, index) => {
                               return (
                                 <li key={index}>
                                   <div className="form-check ps-0 m-0 category-list-box">
                                     <input
                                       className="checkbox_animated"
                                       type="checkbox"
-                                      id="fruit"
+                                      id={`checkbox_${item?._id}`}
+                                      defaultChecked=""
+                                      onChange={() =>
+                                        handleSaveChanges1(item?._id)
+                                      }
                                     />
                                     <label
                                       className="form-check-label"
-                                      htmlFor="fruit"
+                                      htmlFor={`checkbox_${item?._id}`}
                                     >
                                       <span className="name">
                                         {item?.subCategoryName_en}
@@ -1498,7 +1562,7 @@ function Shop2(props) {
             {loading ? (
               <div
                 className=""
-                style={{ marginTop: "-600px", marginLeft: "150px" }}
+                style={{ marginTop: "-1000px", marginLeft: "150px" }}
               >
                 {" "}
                 <Spinner />

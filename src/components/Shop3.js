@@ -44,11 +44,16 @@ import { useFilterPriceMutation } from "../services/Post";
 import { addToCart } from "../app/slice/CartSlice";
 import { useDispatch } from "react-redux";
 import { useGetSubCategoryListQuery } from "../services/Post";
+import { useSubCategoryProductListMutation } from "../services/Post";
+
 
 function Shop3(props) {
+  const [subCategoryProduct] = useSubCategoryProductListMutation();
   const [productListItems, setProductListItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const subCategoryListItems = useGetSubCategoryListQuery();
+  // const [subCategoryListData, setSubCategoryListData] = useState([]);
+  // const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [subCategoryListData, setSubCategoryListData] = useState([]);
   const [wishAdd, res] = useAddToWislistListMutation();
   const [productListDetails, setProductListDetails] = useState([]);
@@ -79,6 +84,16 @@ function Shop3(props) {
   // const searchQuery = localStorage?.getItem("productSearch");
   const { id } = useParams();
   const { query } = useParams();
+  const handleSaveChanges1 = async (categoryId) => {
+    const editAddress = {
+      id: categoryId,
+    };
+    const result = await subCategoryProduct(editAddress);
+    if (result) {
+      setProductListItems(result.data?.results?.listData);
+    }
+  };
+
   console.log("query", query);
   const totalRatings = selectedProduct?.ratings?.reduce(
     (sum, rating) => sum + rating.star,
@@ -323,11 +338,11 @@ function Shop3(props) {
       }
     }
   };
-  // useEffect(() => {
-  //   const reversedList =
-  //     subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
-  //   setSubCategoryListData(reversedList);
-  // }, [subCategoryListItems]);
+  useEffect(() => {
+    const reversedList =
+      subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
+    setSubCategoryListData(reversedList);
+  }, [subCategoryListItems]);
   return (
     <>
       {loading}
@@ -628,18 +643,22 @@ function Shop3(props) {
                             <label htmlFor="search">Search</label>
                           </div>
                           <ul className="category-list pe-3 custom-height">
-                            {/* {subCategoryListData?.map((item, index) => {
+                            {subCategoryListData?.map((item, index) => {
                               return (
                                 <li key={index}>
                                   <div className="form-check ps-0 m-0 category-list-box">
                                     <input
                                       className="checkbox_animated"
                                       type="checkbox"
-                                      id="fruit"
+                                      id={`checkbox_${item?._id}`}
+                                      defaultChecked=""
+                                      onChange={() =>
+                                        handleSaveChanges1(item?._id)
+                                      }
                                     />
                                     <label
                                       className="form-check-label"
-                                      htmlFor="fruit"
+                                      htmlFor={`checkbox_${item?._id}`}
                                     >
                                       <span className="name">
                                         {item?.subCategoryName_en}
@@ -649,7 +668,7 @@ function Shop3(props) {
                                   </div>
                                 </li>
                               );
-                            })} */}
+                            })}
                             <li>
                               <div className="form-check ps-0 m-0 category-list-box">
                                 <input
