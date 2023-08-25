@@ -169,13 +169,10 @@ function Cart() {
       console.log(createNewOrder);
       setCoupan(createNewOrder?.data?.results);
     } catch (error) {
-      // Handle error without Swal
       console.error("An error occurred while placing the order.");
     }
   };
   const handleCoupan2 = async (item, quantity, id) => {
-    // orderList = [{ product_Id: id, quantity: quantity }];
-
     const newOrderData = {
       coupanCode: coupanCode2,
       carts: [{ product_Id: id, quantity: quantity }],
@@ -187,7 +184,6 @@ function Cart() {
       console.log("createNewOrder", createNewOrder);
       setCoupan2(createNewOrder?.data?.results);
     } catch (error) {
-      // Handle error without Swal
       console.error("An error occurred while placing the order.");
     }
   };
