@@ -48,6 +48,18 @@ export const PostApi = createApi({
         };
       },
     }),
+    subCategoryProductList: builder.mutation({
+      query: (body) => {
+        console.log("update address", body);
+        const { id } = body;
+        console.log("update address body data", id);
+        return {
+          url: `/user/category/category/subCategory-product/${id}`,
+          method: "post",
+          // body: data,
+        };
+      },
+    }),
     AddToWislistList: builder.mutation({
       query: (body) => {
         console.log("update address", body);
@@ -416,4 +428,5 @@ export const {
   useGetPendingOrderQuery,
   useGetSubCategoryListQuery,
   useApplyCoupanMutation,
+  useSubCategoryProductListMutation,
 } = PostApi;

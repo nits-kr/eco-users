@@ -24,11 +24,7 @@ import {
   DiscountProduct,
   AddCompare,
 } from "./HttpServices";
-import {
-  useGetCategoryListQuery,
-  useGetSubCategoryListQuery,
-  useSubCategoryListMutation,
-} from "../services/Post";
+import { useGetSubCategoryListQuery } from "../services/Post";
 import Star from "./Star";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -39,18 +35,17 @@ import {
 import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import Spinner from "./Spinner";
-import {
-  useAddToWislistListMutation,
-  useCreateOrderMutation,
-} from "../services/Post";
-import { useShowProductRatingMutation } from "../services/Post";
+import { useAddToWislistListMutation } from "../services/Post";
 import { useSubSubProductMutation } from "../services/Post";
 import { useFilterPriceMutation } from "../services/Post";
 import { addToCart } from "../app/slice/CartSlice";
 import { useDispatch } from "react-redux";
+import { useSubCategoryProductListMutation } from "../services/Post";
 
 function Shop(props) {
   const [productListItems, setProductListItems] = useState([]);
+  const [subCategoryProduct] = useSubCategoryProductListMutation();
+  console.log("subCategoryProduct", subCategoryProduct?.data);
   const subCategoryListItems = useGetSubCategoryListQuery();
   const [subCategoryListData, setSubCategoryListData] = useState([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
@@ -67,11 +62,22 @@ function Shop(props) {
   const [filterProduct, re] = useFilterPriceMutation();
   const [quantity, setQuantity] = useState([]);
   const [count, setCount] = useState([]);
+  const [subCategoryProductItems, setSubCategoryProductItems] = useState([]);
+  console.log("subCategoryProductItems", subCategoryProductItems);
 
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
   const location = useLocation();
   const dispatch = useDispatch();
+  const handleSaveChanges1 = async (categoryId) => {
+    const editAddress = {
+      id: categoryId,
+    };
+    const result = await subCategoryProduct(editAddress);
+    if (result) {
+      setProductListItems(result.data?.results?.listData);
+    }
+  };
 
   const handleCountChange = (index, newCount) => {
     const newCounts = [...count];
@@ -706,24 +712,55 @@ function Shop(props) {
                             <label htmlFor="search">Search</label>
                           </div>
                           <ul className="category-list pe-3 custom-height">
-                            {subCategoryListData?.map((item, index) => {
+                            {/* {subCategoryListData?.map((item, index) => {
+                              const isChecked = selectedSubCategories.includes(item?._id);
                               return (
                                 <li key={index}>
                                   <div className="form-check ps-0 m-0 category-list-box">
                                     <input
                                       className="checkbox_animated"
                                       type="checkbox"
-                                      id={`checkbox_${item?._id}`} 
+                                      id={`checkbox_${item?._id}`}
                                       checked={selectedSubCategories.includes(
                                         item?._id
                                       )}
-                                      onChange={() =>
-                                        handleCheckboxChange(item?._id)
+                                      onClick={() =>
+                                        handleSaveChanges1(item?._id, isChecked)
                                       }
                                     />
                                     <label
                                       className="form-check-label"
-                                      htmlFor="fruit"
+                                      htmlFor={`checkbox_${item?._id}`}
+                                    >
+                                      <span className="name">
+                                        {item?.subCategoryName_en}
+                                      </span>
+                                      <span className="number">(15)</span>
+                                    </label>
+                                  </div>
+                                </li>
+                              );
+                            })} */}
+                            {subCategoryListData?.map((item, index) => {
+                              const isChecked = selectedSubCategories.includes(
+                                item?._id
+                              );
+
+                              return (
+                                <li key={index}>
+                                  <div className="form-check ps-0 m-0 category-list-box">
+                                    <input
+                                      className="checkbox_animated"
+                                      type="checkbox"
+                                      id={`checkbox_${item?._id}`}
+                                      defaultChecked={isChecked}
+                                      onChange={() =>
+                                        handleSaveChanges1(item?._id)
+                                      }
+                                    />
+                                    <label
+                                      className="form-check-label"
+                                      htmlFor={`checkbox_${item?._id}`}
                                     >
                                       <span className="name">
                                         {item?.subCategoryName_en}
@@ -734,6 +771,7 @@ function Shop(props) {
                                 </li>
                               );
                             })}
+
                             {/* <li>
                               <div className="form-check ps-0 m-0 category-list-box">
                                 <input
