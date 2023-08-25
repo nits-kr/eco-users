@@ -47,6 +47,7 @@ import { useGetSubCategoryListQuery } from "../services/Post";
 
 function Shop3(props) {
   const [productListItems, setProductListItems] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const subCategoryListItems = useGetSubCategoryListQuery();
   const [subCategoryListData, setSubCategoryListData] = useState([]);
   const [wishAdd, res] = useAddToWislistListMutation();
@@ -75,7 +76,7 @@ function Shop3(props) {
 
   const [currentValue, setCurrentValue] = useState(0);
   const storedId = localStorage.getItem("loginId");
-  const searchQuery = localStorage?.getItem("productSearch");
+  // const searchQuery = localStorage?.getItem("productSearch");
   const { id } = useParams();
   const { query } = useParams();
   console.log("query", query);
@@ -275,26 +276,26 @@ function Shop3(props) {
     }, 1000);
   };
   useEffect(() => {
-    if (query) {
+    if (searchQuery) {
       handleSearch1();
     }
-  }, [query]);
+  }, [searchQuery]);
 
   const handleSearch1 = async () => {
     try {
       const url1 =
-        query !== ""
+        searchQuery !== ""
           ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/search-product"
           : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/list";
       const response = await axios.post(url1, {
-        productName_en: query,
+        productName_en: searchQuery,
       });
       const { error, results } = response.data;
       if (error) {
         throw new Error("Error searching for products. Data is not found.");
       } else {
         setProductListItems(
-          query !== "" ? results?.productData : results?.list?.reverse()
+          searchQuery !== "" ? results?.productData : results?.list?.reverse()
         );
       }
     } catch (error) {
@@ -322,11 +323,11 @@ function Shop3(props) {
       }
     }
   };
-  useEffect(() => {
-    const reversedList =
-      subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
-    setSubCategoryListData(reversedList);
-  }, [subCategoryListItems]);
+  // useEffect(() => {
+  //   const reversedList =
+  //     subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
+  //   setSubCategoryListData(reversedList);
+  // }, [subCategoryListItems]);
   return (
     <>
       {loading}
@@ -615,17 +616,19 @@ function Shop3(props) {
                         aria-labelledby="panelsStayOpen-headingOne"
                       >
                         <div className="accordion-body">
-                          {/* <div className="form-floating theme-form-floating-2 search-box">
+                          <div className="form-floating theme-form-floating-2 search-box">
                             <input
                               type="search"
                               className="form-control"
                               id="search"
                               placeholder="Search .."
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
                             />
                             <label htmlFor="search">Search</label>
-                          </div> */}
+                          </div>
                           <ul className="category-list pe-3 custom-height">
-                            {subCategoryListData?.map((item, index) => {
+                            {/* {subCategoryListData?.map((item, index) => {
                               return (
                                 <li key={index}>
                                   <div className="form-check ps-0 m-0 category-list-box">
@@ -646,8 +649,8 @@ function Shop3(props) {
                                   </div>
                                 </li>
                               );
-                            })}
-                            {/* <li>
+                            })} */}
+                            <li>
                               <div className="form-check ps-0 m-0 category-list-box">
                                 <input
                                   className="checkbox_animated"
@@ -908,7 +911,7 @@ function Shop3(props) {
                                   <span className="number">(03)</span>
                                 </label>
                               </div>
-                            </li> */}
+                            </li>
                           </ul>
                         </div>
                       </div>
@@ -1510,7 +1513,7 @@ function Shop3(props) {
             {loading ? (
               <div
                 className=""
-                style={{ marginTop: "-1000px", marginLeft: "150px" }}
+                style={{ marginTop: "-600px", marginLeft: "150px" }}
               >
                 {" "}
                 <Spinner />

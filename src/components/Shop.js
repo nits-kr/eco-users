@@ -53,6 +53,7 @@ function Shop(props) {
   const [productListItems, setProductListItems] = useState([]);
   const subCategoryListItems = useGetSubCategoryListQuery();
   const [subCategoryListData, setSubCategoryListData] = useState([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [wishAdd, res] = useAddToWislistListMutation();
   console.log("productListItems", productListItems);
   const [productListDetails, setProductListDetails] = useState([]);
@@ -85,7 +86,8 @@ function Shop(props) {
     currentValue
   );
   const storedId = localStorage.getItem("loginId");
-  const searchQuery = localStorage?.getItem("productSearch");
+  // const searchQuery = localStorage?.getItem("productSearch");
+  const [searchQuery, setSearchQuery] = useState("");
   const { id } = useParams();
   const totalRatings = selectedProduct?.ratings?.reduce(
     (sum, rating) => sum + rating.star,
@@ -335,57 +337,73 @@ function Shop(props) {
       window.location.reload();
     }, 1000);
   };
-  // useEffect(() => {
-  //   handleSearch1();
-  // }, [searchQuery]);
+  useEffect(() => {
+    handleSearch1();
+  }, [searchQuery]);
 
-  // const handleSearch1 = async () => {
-  //   try {
-  //     const url1 =
-  //       searchQuery !== ""
-  //         ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/search-product"
-  //         : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/list";
-  //     const response = await axios.post(url1, {
-  //       productName_en: searchQuery,
-  //     });
-  //     const { error, results } = response.data;
-  //     if (error) {
-  //       throw new Error("Error searching for products. Data is not found.");
-  //     } else {
-  //       setProductListItems(
-  //         searchQuery !== "" ? results?.productData : results?.list?.reverse()
-  //       );
-  //     }
-  //   } catch (error) {
-  //     if (error.response) {
-  //       Swal.fire({
-  //         title: "Error!",
-  //         text: error.response.data,
-  //         icon: "error",
-  //         confirmButtonText: "OK",
-  //       });
-  //     } else if (error.request) {
-  //       Swal.fire({
-  //         title: "Error!",
-  //         text: "Network error. Please try again later.",
-  //         icon: "error",
-  //         confirmButtonText: "OK",
-  //       });
-  //     } else {
-  //       Swal.fire({
-  //         title: "Error!",
-  //         text: error.message,
-  //         icon: "error",
-  //         confirmButtonText: "OK",
-  //       });
-  //     }
-  //   }
-  // };
+  const handleSearch1 = async () => {
+    try {
+      const url1 =
+        searchQuery !== ""
+          ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/search-product"
+          : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/list";
+      const response = await axios.post(url1, {
+        productName_en: searchQuery,
+      });
+      const { error, results } = response.data;
+      if (error) {
+        throw new Error("Error searching for products. Data is not found.");
+      } else {
+        setProductListItems(
+          searchQuery !== "" ? results?.productData : results?.list?.reverse()
+        );
+      }
+    } catch (error) {
+      if (error.response) {
+        Swal.fire({
+          title: "Error!",
+          text: error.response.data,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      } else if (error.request) {
+        Swal.fire({
+          title: "Error!",
+          text: "Network error. Please try again later.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: error.message,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    }
+  };
   useEffect(() => {
     const reversedList =
       subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
-      setSubCategoryListData(reversedList);
+    setSubCategoryListData(reversedList);
   }, [subCategoryListItems]);
+  const handleCheckboxChange = (subCategoryId) => {
+    if (selectedSubCategories.includes(subCategoryId)) {
+      setSelectedSubCategories(
+        selectedSubCategories.filter((id) => id !== subCategoryId)
+      );
+    } else {
+      setSelectedSubCategories([...selectedSubCategories, subCategoryId]);
+    }
+  };
+
+  const filteredProducts = productListItems.filter((product) => {
+    return (
+      selectedSubCategories.length === 0 ||
+      selectedSubCategories.includes(product.subCategoryId)
+    );
+  });
   return (
     <>
       {loading}
@@ -674,37 +692,45 @@ function Shop(props) {
                         aria-labelledby="panelsStayOpen-headingOne"
                       >
                         <div className="accordion-body">
-                          {/* <div className="form-floating theme-form-floating-2 search-box">
+                          <div className="form-floating theme-form-floating-2 search-box">
                             <input
                               type="search"
                               className="form-control"
                               id="search"
                               placeholder="Search .."
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
                             />
                             <label htmlFor="search">Search</label>
-                          </div> */}
+                          </div>
                           <ul className="category-list pe-3 custom-height">
                             {subCategoryListData?.map((item, index) => {
                               return (
                                 <li key={index}>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="fruit"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="fruit"
-                                >
-                                  <span className="name">
-                                    {item?.subCategoryName_en}
-                                  </span>
-                                  <span className="number">(15)</span>
-                                </label>
-                              </div>
-                            </li>
-                              )
+                                  <div className="form-check ps-0 m-0 category-list-box">
+                                    <input
+                                      className="checkbox_animated"
+                                      type="checkbox"
+                                      id={`checkbox_${item?._id}`} 
+                                      checked={selectedSubCategories.includes(
+                                        item?._id
+                                      )}
+                                      onChange={() =>
+                                        handleCheckboxChange(item?._id)
+                                      }
+                                    />
+                                    <label
+                                      className="form-check-label"
+                                      htmlFor="fruit"
+                                    >
+                                      <span className="name">
+                                        {item?.subCategoryName_en}
+                                      </span>
+                                      <span className="number">(15)</span>
+                                    </label>
+                                  </div>
+                                </li>
+                              );
                             })}
                             {/* <li>
                               <div className="form-check ps-0 m-0 category-list-box">
@@ -1569,7 +1595,7 @@ function Shop(props) {
             {loading ? (
               <div
                 className=""
-                style={{ marginTop: "-1000px", marginLeft: "150px" }}
+                style={{ marginTop: "-600px", marginLeft: "150px" }}
               >
                 {" "}
                 <Spinner />
