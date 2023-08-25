@@ -261,7 +261,9 @@ function Shop2(props) {
     }, 1000);
   };
   useEffect(() => {
-    handleSearch1();
+    if (searchQuery) {
+      handleSearch1();
+    }
   }, [searchQuery]);
 
   const handleSearch1 = async () => {
