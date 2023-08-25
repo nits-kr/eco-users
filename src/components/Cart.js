@@ -12,7 +12,7 @@ import { ApplyCoupan, DeleteCartProduct, ApplyCoupan2 } from "./HttpServices";
 import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import TapToTop from "./TapToTop";
-import { useGetCartListQuery } from "../services/Post";
+import { useApplyCoupan2Mutation, useGetCartListQuery } from "../services/Post";
 import { useSelector } from "react-redux";
 import { useUpdateQuantityMutation } from "../services/Post";
 import { useAddToWislistListMutation } from "../services/Post";
@@ -20,8 +20,10 @@ import { useApplyCoupanMutation } from "../services/Post";
 
 function Cart() {
   const [applyCoupan, response] = useApplyCoupanMutation();
+  const [applyCoupan2, response2] = useApplyCoupan2Mutation();
   console.log("applyCoupan", applyCoupan);
   const [cartListItems, setCartListItems] = useState([]);
+  console.log("cartListItems", cartListItems);
   const [cartTotal, setCartTotal] = useState(0);
   localStorage?.setItem("cartId", cartListItems[0]?._id);
   const [cartCount, setCartCount] = useState([]);
@@ -38,7 +40,7 @@ function Cart() {
   const coupanCode2 = coupanCode || "";
   const { data: cartListQuery, isSuccess } = useGetCartListQuery();
   const cart = useSelector((state) => state.cart);
-  localStorage?.setItem("cartTotal", coupan?.cartsTotalSum);
+  localStorage?.setItem("cartTotal", cartTotal);
 
   const [count1, setCount1] = useState();
   const handleIncrement = (id) => {
@@ -70,7 +72,7 @@ function Cart() {
       );
     }
     HandleIncrease(id);
-    handleCoupan();
+    applyCoupanCode();
   };
   const handleDecrement = (id) => {
     setCartListItems((prevCartListItems) => {
@@ -101,7 +103,7 @@ function Cart() {
       );
     }
     HandleDecrease(id);
-    handleCoupan();
+    applyCoupanCode();
   };
   const HandleIncrease = async (id) => {
     console.log("HandleIncrease", id);
@@ -134,7 +136,7 @@ function Cart() {
     if (isSuccess) {
       // setCartListItems(cartListQuery?.results?.list);
       const items = cartListQuery?.results?.list || [];
-      const total = items.reduce((acc, item) => acc + item.cartsTotal, 0);
+      const total = items.reduce((acc, item) => acc + item?.cartsTotal, 0);
       setCartTotal(total);
       setCartListItems(items);
       console.log("total", total);
@@ -147,7 +149,64 @@ function Cart() {
   // useEffect(() => {
   //   handleCoupan();
   // }, []);
+  const applyCoupanCode = async () => {
+    let orderList = [];
+
+    orderList =
+      cartListItems?.map((order) => ({
+        product_Id: order?.products[0]?.product_Id?._id,
+        quantity: order?.products[0]?.quantity,
+      })) || [];
+
+    const newOrderData = {
+      coupanCode: coupanCode2,
+      carts: orderList,
+      user_Id: userId,
+    };
+
+    try {
+      const createNewOrder = await applyCoupan(newOrderData);
+      console.log(createNewOrder);
+      setCoupan(createNewOrder?.data?.results);
+    } catch (error) {
+      // Handle error without Swal
+      console.error("An error occurred while placing the order.");
+    }
+  };
+  const handleCoupan2 = async (item, quantity, id) => {
+    // orderList = [{ product_Id: id, quantity: quantity }];
+
+    const newOrderData = {
+      coupanCode: coupanCode2,
+      carts: [{ product_Id: id, quantity: quantity }],
+      user_Id: userId,
+    };
+
+    try {
+      const createNewOrder = await applyCoupan2(newOrderData);
+      console.log("createNewOrder", createNewOrder);
+      setCoupan2(createNewOrder?.data?.results);
+    } catch (error) {
+      // Handle error without Swal
+      console.error("An error occurred while placing the order.");
+    }
+  };
+
   const handleCoupan = async () => {
+    const data = {
+      coupanCode: "25753411",
+      carts: [
+        {
+          product_Id: "64c25ddb24e0f35295000510",
+          quantity: "3",
+        },
+        {
+          product_Id: "64c25ddb24e0f35295000510",
+          quantity: "1",
+        },
+      ],
+      user_Id: "64d4d0dcda1e0148c5bed23f",
+    };
     try {
       const { data, error } = await ApplyCoupan(coupanCode2);
       error ? console.log(error) : console.log(data);
@@ -156,7 +215,7 @@ function Cart() {
       console.log(error);
     }
   };
-  const handleCoupan2 = async (item, quantity, id) => {
+  const handleCoupan23 = async (item, quantity, id) => {
     try {
       const { data, error } = await ApplyCoupan2(quantity, id, coupanCode2);
       error ? console.log(error) : console.log(data);
@@ -568,7 +627,7 @@ function Cart() {
                       />
                       <button
                         className="btn-apply"
-                        onClick={() => handleCoupan()}
+                        onClick={() => applyCoupanCode()}
                       >
                         Apply
                       </button>
@@ -591,12 +650,12 @@ function Cart() {
                       <li>
                         <h4>Subtotal</h4>
                         <h4 className="price">
-                          ${coupan.subtotal || cartTotal}
+                          ${coupan?.subtotal || cartTotal}
                         </h4>
                       </li>
                       <li>
                         <h4>Coupon Discount</h4>
-                        <h4 className="price"> - {coupan.DiscountType} %</h4>
+                        <h4 className="price"> - {coupan?.DiscountType} %</h4>
                       </li>
                     </ul>
                   )}

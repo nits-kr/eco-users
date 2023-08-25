@@ -265,6 +265,13 @@ export const PostApi = createApi({
         body,
       }),
     }),
+    applyCoupan2: builder.mutation({
+      query: (body) => ({
+        url: "/user/carts/carts/apply-coupan",
+        method: "post",
+        body,
+      }),
+    }),
     updateQuantity: builder.mutation({
       query: (body) => {
         console.log("update address", body);
@@ -429,4 +436,5 @@ export const {
   useGetSubCategoryListQuery,
   useApplyCoupanMutation,
   useSubCategoryProductListMutation,
+  useApplyCoupan2Mutation,
 } = PostApi;
