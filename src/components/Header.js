@@ -20,6 +20,7 @@ function Header({ Dash }) {
   const [categoryListData, setCategoryListData] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
   const [subCategoryItems, setSubCategoryItems] = useState([]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showWelcome, setShowWelcome] = useState(true);
@@ -61,7 +62,7 @@ function Header({ Dash }) {
     };
     const result = await subCategoryList(editAddress);
     if (result) {
-      setSubCategoryItems(result.data?.results?.listData);
+      setSubCategoryItems(result?.data?.results?.listData);
     }
   };
 
@@ -678,7 +679,10 @@ function Header({ Dash }) {
                             onMouseEnter={() => handleOnhover(item?._id)}
                           >
                             <Link to="#" className="category-name">
-                              <img src={item?.categoryPic} alt={item?.categoryName_en} />
+                              <img
+                                src={item?.categoryPic}
+                                alt={item?.categoryName_en}
+                              />
                               <h6>
                                 {" "}
                                 {item?.categoryName_en
@@ -706,11 +710,11 @@ function Header({ Dash }) {
                                           >
                                             <img
                                               src={items?.subCategoryPic}
-                                              alt={item?.subCategoryName_en}
+                                              alt=""
                                             />
                                             <div>
-                                              {" "}
-                                              {items?.subCategoryName_en}{" "}
+                                              {items?.subCategoryName_en ||
+                                                "No Product"}
                                             </div>
                                           </Link>
                                         </li>

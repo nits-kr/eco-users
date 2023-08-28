@@ -342,244 +342,254 @@ function Cart() {
                 <div className="table-responsive-xl">
                   <table className="table" style={{ marginLeft: "-21px" }}>
                     <tbody>
-                      {cartListItems?.map((item, index) => {
-                        return (
-                          <tr className="product-box-contain" key={index}>
-                            <td className="product-detail">
-                              <div className="product border-0">
-                                <Link to="/product" className="product-image">
-                                  <img
-                                    src={item?.products?.map(
-                                      (product) =>
-                                        product?.product_Id?.product_Pic[0]
-                                    )}
-                                    className="img-fluid  lazyload"
-                                    alt=""
-                                  />
-                                </Link>
-                                <div className="product-detail">
-                                  <ul>
-                                    <li className="name">
-                                      {item?.products?.map((product, index) => (
-                                        <Link to={`/product`} key={index}>
-                                          <strong>
-                                            {
-                                              product?.product_Id
-                                                ?.productName_en
-                                            }
-                                          </strong>
-                                        </Link>
-                                      ))}
-                                    </li>
-                                    <li className="text-content">
-                                      <span className="text-title">
-                                        Sold By:
-                                      </span>{" "}
-                                      Fresho
-                                    </li>
-                                    <li className="text-content">
-                                      <span className="text-title">
-                                        Quantity
-                                      </span>{" "}
-                                      - {item?.products[0]?.product_Id?.weight}
-                                    </li>
-                                    <li className="quantity-price-box">
-                                      <div className="cart_qty">
-                                        <div className="input-group">
-                                          <button
-                                            type="button"
-                                            className="btn qty-left-minus"
-                                            data-type="minus"
-                                            data-field=""
-                                          >
-                                            <i
-                                              className="fa fa-minus ms-0"
-                                              aria-hidden="true"
-                                            />
-                                          </button>
-                                          <button
-                                            type="button"
-                                            className="btn qty-right-plus"
-                                            data-type="plus"
-                                            data-field=""
-                                          >
-                                            <i
-                                              className="fa fa-plus ms-0"
-                                              aria-hidden="true"
-                                            />
-                                          </button>
+                      {cartListItems
+                        ?.slice()
+                        ?.reverse()
+                        ?.map((item, index) => {
+                          return (
+                            <tr className="product-box-contain" key={index}>
+                              <td className="product-detail">
+                                <div className="product border-0">
+                                  <Link to="/product" className="product-image">
+                                    <img
+                                      src={item?.products?.map(
+                                        (product) =>
+                                          product?.product_Id?.product_Pic[0]
+                                      )}
+                                      className="img-fluid  lazyload"
+                                      alt=""
+                                    />
+                                  </Link>
+                                  <div className="product-detail">
+                                    <ul>
+                                      <li className="name">
+                                        {item?.products?.map(
+                                          (product, index) => (
+                                            <Link to={`/product`} key={index}>
+                                              <strong>
+                                                {
+                                                  product?.product_Id
+                                                    ?.productName_en
+                                                }
+                                              </strong>
+                                            </Link>
+                                          )
+                                        )}
+                                      </li>
+                                      <li className="text-content">
+                                        <span className="text-title">
+                                          Sold By:
+                                        </span>{" "}
+                                        Fresho
+                                      </li>
+                                      <li className="text-content">
+                                        <span className="text-title">
+                                          Quantity
+                                        </span>{" "}
+                                        -{" "}
+                                        {item?.products[0]?.product_Id?.weight}
+                                      </li>
+                                      <li className="quantity-price-box">
+                                        <div className="cart_qty">
+                                          <div className="input-group">
+                                            <button
+                                              type="button"
+                                              className="btn qty-left-minus"
+                                              data-type="minus"
+                                              data-field=""
+                                            >
+                                              <i
+                                                className="fa fa-minus ms-0"
+                                                aria-hidden="true"
+                                              />
+                                            </button>
+                                            <button
+                                              type="button"
+                                              className="btn qty-right-plus"
+                                              data-type="plus"
+                                              data-field=""
+                                            >
+                                              <i
+                                                className="fa fa-plus ms-0"
+                                                aria-hidden="true"
+                                              />
+                                            </button>
+                                          </div>
                                         </div>
-                                      </div>
-                                    </li>
-                                    <li>
-                                      <h5>Total: $35.10</h5>
-                                    </li>
-                                  </ul>
+                                      </li>
+                                      <li>
+                                        <h5>Total: $35.10</h5>
+                                      </li>
+                                    </ul>
+                                  </div>
                                 </div>
-                              </div>
-                            </td>
-                            <td className="price">
-                              <h4 className="table-title text-content">
-                                Price
-                              </h4>
-                              <h5>
-                                $
-                                {item?.products?.map(
-                                  (product) => product?.product_Id?.Price
-                                )}{" "}
-                                <del className="text-content">
-                                  {" "}
+                              </td>
+                              <td className="price">
+                                <h4 className="table-title text-content">
+                                  Price
+                                </h4>
+                                <h5>
                                   $
                                   {item?.products?.map(
-                                    (product) => product?.product_Id?.oldPrice
+                                    (product) => product?.product_Id?.Price
                                   )}{" "}
-                                </del>
-                              </h5>
-                              <h6 className="theme-color">
-                                {" "}
-                                ${item?.products[0]?.product_Id?.Discount}{" "}
-                              </h6>
-                            </td>
-                            <td className="quantity">
-                              <div className="quantity-price">
-                                <div className="cart_qty">
-                                  <div className="input-group">
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                      }}
-                                    >
-                                      <div className="table-title text-content">
-                                        Qty
-                                      </div>
+                                  <del className="text-content">
+                                    {" "}
+                                    $
+                                    {item?.products?.map(
+                                      (product) => product?.product_Id?.oldPrice
+                                    )}{" "}
+                                  </del>
+                                </h5>
+                                <h6 className="theme-color">
+                                  {" "}
+                                  ${
+                                    item?.products[0]?.product_Id?.Discount
+                                  }{" "}
+                                </h6>
+                              </td>
+                              <td className="quantity">
+                                <div className="quantity-price">
+                                  <div className="cart_qty">
+                                    <div className="input-group">
                                       <div
                                         style={{
                                           display: "flex",
-                                          flexDirection: "row",
+                                          flexDirection: "column",
                                           alignItems: "center",
-                                          justifyContent: "space-between",
+                                          justifyContent: "center",
                                         }}
                                       >
-                                        {" "}
-                                        {item?.products[0]?.quantity === 1 ? (
-                                          <div
-                                            style={{
-                                              cursor: "not-allowed",
-                                            }}
-                                          >
-                                            <button
-                                              type="button"
-                                              className="btn qty-left-minus me-2"
-                                              data-type="minus"
-                                              data-field=""
+                                        <div className="table-title text-content">
+                                          Qty
+                                        </div>
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                          }}
+                                        >
+                                          {" "}
+                                          {item?.products[0]?.quantity === 1 ? (
+                                            <div
                                               style={{
-                                                filter: "blur(0.7px)",
-                                                background: "lightgray",
-                                                color: "darkgray",
+                                                cursor: "not-allowed",
                                               }}
-                                              disabled
                                             >
-                                              <i
-                                                className="fa fa-minus ms-0"
-                                                aria-hidden="true"
-                                              />
-                                            </button>
+                                              <button
+                                                type="button"
+                                                className="btn qty-left-minus me-2"
+                                                data-type="minus"
+                                                data-field=""
+                                                style={{
+                                                  filter: "blur(0.7px)",
+                                                  background: "lightgray",
+                                                  color: "darkgray",
+                                                }}
+                                                disabled
+                                              >
+                                                <i
+                                                  className="fa fa-minus ms-0"
+                                                  aria-hidden="true"
+                                                />
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            <div>
+                                              <button
+                                                type="button"
+                                                className="btn qty-left-minus me-2"
+                                                data-type="minus"
+                                                data-field=""
+                                                onClick={() =>
+                                                  handleDecrement(item?._id)
+                                                }
+                                              >
+                                                <i
+                                                  className="fa fa-minus ms-0"
+                                                  aria-hidden="true"
+                                                />
+                                              </button>
+                                            </div>
+                                          )}
+                                          <div>
+                                            {item?.products[0]?.quantity}
                                           </div>
-                                        ) : (
                                           <div>
                                             <button
                                               type="button"
-                                              className="btn qty-left-minus me-2"
-                                              data-type="minus"
+                                              className="btn qty-right-plus ms-2"
+                                              data-type="plus"
                                               data-field=""
                                               onClick={() =>
-                                                handleDecrement(item?._id)
+                                                handleIncrement(item?._id)
                                               }
                                             >
                                               <i
-                                                className="fa fa-minus ms-0"
+                                                className="fa fa-plus ms-0"
                                                 aria-hidden="true"
                                               />
                                             </button>
                                           </div>
-                                        )}
-                                        <div>{item?.products[0]?.quantity}</div>
-                                        <div>
-                                          <button
-                                            type="button"
-                                            className="btn qty-right-plus ms-2"
-                                            data-type="plus"
-                                            data-field=""
-                                            onClick={() =>
-                                              handleIncrement(item?._id)
-                                            }
-                                          >
-                                            <i
-                                              className="fa fa-plus ms-0"
-                                              aria-hidden="true"
-                                            />
-                                          </button>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            </td>
-                            <td className="subtotal">
-                              <h4 className="table-title text-content">
-                                Total
-                              </h4>
-                              <h5>${item?.cartsTotal}</h5>
-                            </td>
-                            <td className="save-remove">
-                              <h3
-                                className="table-title text-content"
-                                style={{
-                                  display: "flex",
-                                  textAlign: "center",
-                                  justifyContent: "center",
-                                }}
-                              >
-                                <strong>Action</strong>
-                              </h3>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                }}
-                              >
-                                <Link
-                                  to="#"
-                                  className="btn btn-animation proceed-btn fw-bold me-2"
-                                  style={{ height: "35px", width: "35px" }}
-                                  onClick={() =>
-                                    handleCoupan2(
-                                      item,
-                                      item?.products[0]?.quantity,
-                                      item?.products[0]?.product_Id?._id
-                                    )
-                                  }
+                              </td>
+                              <td className="subtotal">
+                                <h4 className="table-title text-content">
+                                  Total
+                                </h4>
+                                <h5>${item?.cartsTotal}</h5>
+                              </td>
+                              <td className="save-remove">
+                                <h3
+                                  className="table-title text-content"
+                                  style={{
+                                    display: "flex",
+                                    textAlign: "center",
+                                    justifyContent: "center",
+                                  }}
                                 >
-                                  Buy
-                                </Link>
-                                <Link
-                                  to="#"
-                                  className="btn btn-animation proceed-btn fw-bold"
-                                  style={{ height: "35px", width: "35px" }}
-                                  title4="Wishlist"
-                                  onClick={() => deleteCartItem(item._id)}
+                                  <strong>Action</strong>
+                                </h3>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                  }}
                                 >
-                                  <FontAwesomeIcon
-                                    icon={faTrash}
-                                    // style={{ color: "#fa0000" }}
-                                  />
-                                </Link>
+                                  <Link
+                                    to="#"
+                                    className="btn btn-animation proceed-btn fw-bold me-2"
+                                    style={{ height: "35px", width: "35px" }}
+                                    onClick={() =>
+                                      handleCoupan2(
+                                        item,
+                                        item?.products[0]?.quantity,
+                                        item?.products[0]?.product_Id?._id
+                                      )
+                                    }
+                                  >
+                                    Buy
+                                  </Link>
+                                  <Link
+                                    to="#"
+                                    className="btn btn-animation proceed-btn fw-bold"
+                                    style={{ height: "35px", width: "35px" }}
+                                    title4="Wishlist"
+                                    onClick={() => deleteCartItem(item._id)}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faTrash}
+                                      // style={{ color: "#fa0000" }}
+                                    />
+                                  </Link>
 
-                                {/* <Link
+                                  {/* <Link
                                   className="btn  p-0 position-relative header-wishlist ms-2"
                                   to="#"
                                   title4="Wishlist"
@@ -590,11 +600,11 @@ function Cart() {
                                     style={{ color: "#fa0000" }}
                                   />
                                 </Link> */}
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
                     </tbody>
                   </table>
                 </div>

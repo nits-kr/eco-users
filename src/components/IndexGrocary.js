@@ -390,7 +390,21 @@ function IndexGrocary(props) {
                     className="unit"
                     style={{ margin: "0px", fontSize: "15px" }}
                   >
-                    {item?.stockQuantity} units{" "}
+                    {item?.stockQuantity > 0 ? (
+                      item?.stockQuantity <= 5 ? (
+                        <span style={{ color: "rgb(199, 0, 85)" }}>
+                          Only few left
+                        </span>
+                      ) : item?.stockQuantity <= 10 ? (
+                        <span style={{ color: "rgb(199, 0, 85)" }}>
+                          Only {item?.stockQuantity} left
+                        </span>
+                      ) : (
+                        <span style={{ color: "green" }}>In Stock</span>
+                      )
+                    ) : (
+                      <span style={{ color: "red" }}>Out Of Stock</span>
+                    )}
                   </h6>
                 </div>
                 <div className=" mt-3">
