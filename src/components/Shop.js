@@ -48,6 +48,7 @@ function Shop(props) {
   console.log("subCategoryProduct", subCategoryProduct?.data);
   const subCategoryListItems = useGetSubCategoryListQuery();
   const [subCategoryListData, setSubCategoryListData] = useState([]);
+  console.log("subCategoryListData", subCategoryListData);
   // const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [wishAdd, res] = useAddToWislistListMutation();
   console.log("productListItems", productListItems);
