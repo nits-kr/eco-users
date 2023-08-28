@@ -183,6 +183,10 @@ function Cart() {
       const createNewOrder = await applyCoupan2(newOrderData);
       console.log("createNewOrder", createNewOrder);
       setCoupan2(createNewOrder?.data?.results);
+      localStorage?.setItem(
+        "buyItem",
+        encodeURIComponent(JSON.stringify(item))
+      );
     } catch (error) {
       console.error("An error occurred while placing the order.");
     }
