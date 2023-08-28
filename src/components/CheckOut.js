@@ -19,6 +19,7 @@ function CheckOut() {
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const userId = localStorage.getItem("loginId");
   const [coupan, setCoupan] = useState([]);
+  console.log("check out coupan", coupan);
   const [items, setItems] = useState([]);
   console.log("set items for buy", items);
   console.log("coupan", coupan);
