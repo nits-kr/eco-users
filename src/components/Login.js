@@ -32,6 +32,8 @@ function Login() {
   useEffect(() => {
     if (res.isSuccess) {
       localStorage.setItem("loginId", res.data?.results?.verifyUser?._id);
+      localStorage.setItem("userName", res.data?.results?.verifyUser?.userName);
+      localStorage.setItem("userEmail", res.data?.results?.verifyUser?.userEmail);
       localStorage.setItem("token", res.data?.results?.token);
       // dispatch(
       //   setCredentials({ user: email, token: res.data?.results?.token })
@@ -161,11 +163,7 @@ function Login() {
                         aria-labelledby="select-language"
                       >
                         <li>
-                          <a
-                            className="dropdown-item"
-                            href="#"
-                            id="english"
-                          >
+                          <a className="dropdown-item" href="#" id="english">
                             <img
                               src="../assets/images/country/united-kingdom.png"
                               className="img-fluid  lazyload"
@@ -175,11 +173,7 @@ function Login() {
                           </a>
                         </li>
                         <li>
-                          <a
-                            className="dropdown-item"
-                            href="#"
-                            id="france"
-                          >
+                          <a className="dropdown-item" href="#" id="france">
                             <img
                               src="../assets/images/country/germany.png"
                               className="img-fluid  lazyload"
@@ -189,11 +183,7 @@ function Login() {
                           </a>
                         </li>
                         <li>
-                          <a
-                            className="dropdown-item"
-                            href="#"
-                            id="chinese"
-                          >
+                          <a className="dropdown-item" href="#" id="chinese">
                             <img
                               src="../assets/images/country/turkish.png"
                               className="img-fluid  lazyload"
@@ -221,29 +211,17 @@ function Login() {
                         aria-labelledby="select-dollar"
                       >
                         <li>
-                          <a
-                            className="dropdown-item"
-                            id="aud"
-                            href="#"
-                          >
+                          <a className="dropdown-item" id="aud" href="#">
                             AUD
                           </a>
                         </li>
                         <li>
-                          <a
-                            className="dropdown-item"
-                            id="eur"
-                            href="#"
-                          >
+                          <a className="dropdown-item" id="eur" href="#">
                             EUR
                           </a>
                         </li>
                         <li>
-                          <a
-                            className="dropdown-item"
-                            id="cny"
-                            href="#"
-                          >
+                          <a className="dropdown-item" id="cny" href="#">
                             CNY
                           </a>
                         </li>
@@ -429,10 +407,7 @@ function Login() {
                               <h4 className="theme-color fw-bold">$106.58</h4>
                             </div>
                             <div className="button-group">
-                              <a
-                                href="#"
-                                className="btn btn-sm cart-button"
-                              >
+                              <a href="#" className="btn btn-sm cart-button">
                                 View Cart
                               </a>
                               <a
@@ -514,37 +489,25 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="#">
-                                  Potato &amp; Tomato
-                                </a>
+                                <a href="#">Potato &amp; Tomato</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Cucumber &amp; Capsicum
-                                </a>
+                                <a href="#">Cucumber &amp; Capsicum</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Leafy Vegetables
-                                </a>
+                                <a href="#">Leafy Vegetables</a>
                               </li>
                               <li>
                                 <a href="#">Root Vegetables</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Beans &amp; Okra
-                                </a>
+                                <a href="#">Beans &amp; Okra</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Cabbage &amp; Cauliflower
-                                </a>
+                                <a href="#">Cabbage &amp; Cauliflower</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Gourd &amp; Drumstick
-                                </a>
+                                <a href="#">Gourd &amp; Drumstick</a>
                               </li>
                               <li>
                                 <a href="#">Specialty</a>
@@ -557,19 +520,13 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="#">
-                                  Banana &amp; Papaya
-                                </a>
+                                <a href="#">Banana &amp; Papaya</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Kiwi, Citrus Fruit
-                                </a>
+                                <a href="#">Kiwi, Citrus Fruit</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Apples &amp; Pomegranate
-                                </a>
+                                <a href="#">Apples &amp; Pomegranate</a>
                               </li>
                               <li>
                                 <a href="#">Seasonal Fruits</a>
@@ -597,24 +554,16 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="#">
-                                  Soda &amp; Cocktail Mix
-                                </a>
+                                <a href="#">Soda &amp; Cocktail Mix</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Soda &amp; Cocktail Mix
-                                </a>
+                                <a href="#">Soda &amp; Cocktail Mix</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Sports &amp; Energy Drinks
-                                </a>
+                                <a href="#">Sports &amp; Energy Drinks</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Non Alcoholic Drinks
-                                </a>
+                                <a href="#">Non Alcoholic Drinks</a>
                               </li>
                               <li>
                                 <a href="#">Packaged Water</a>
@@ -651,9 +600,7 @@ function Login() {
                                 <a href="#">Marinated Meat</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Fresh &amp; Frozen Meat
-                                </a>
+                                <a href="#">Fresh &amp; Frozen Meat</a>
                               </li>
                             </ul>
                           </div>
@@ -663,30 +610,22 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="#">
-                                  Fresh Water Fish
-                                </a>
+                                <a href="#">Fresh Water Fish</a>
                               </li>
                               <li>
                                 <a href="#">Dry Fish</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Frozen Fish &amp; Seafood
-                                </a>
+                                <a href="#">Frozen Fish &amp; Seafood</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Marine Water Fish
-                                </a>
+                                <a href="#">Marine Water Fish</a>
                               </li>
                               <li>
                                 <a href="#">Canned Seafood</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Prawans &amp; Shrimps
-                                </a>
+                                <a href="#">Prawans &amp; Shrimps</a>
                               </li>
                               <li>
                                 <a href="#">Other Seafood</a>
@@ -708,9 +647,7 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="#">
-                                  Oats &amp; Porridge
-                                </a>
+                                <a href="#">Oats &amp; Porridge</a>
                               </li>
                               <li>
                                 <a href="#">Kids Cereal</a>
@@ -722,22 +659,16 @@ function Login() {
                                 <a href="#">Flakes</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Granola &amp; Cereal Bars
-                                </a>
+                                <a href="#">Granola &amp; Cereal Bars</a>
                               </li>
                               <li>
                                 <a href="#">Instant Noodles</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Pasta &amp; Macaroni
-                                </a>
+                                <a href="#">Pasta &amp; Macaroni</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Frozen Non-Veg Snacks
-                                </a>
+                                <a href="#">Frozen Non-Veg Snacks</a>
                               </li>
                             </ul>
                           </div>
@@ -753,34 +684,22 @@ function Login() {
                                 <a href="#">Curd</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Paneer, Tofu &amp; Cream
-                                </a>
+                                <a href="#">Paneer, Tofu &amp; Cream</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Butter &amp; Margarine
-                                </a>
+                                <a href="#">Butter &amp; Margarine</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Condensed, Powdered Milk
-                                </a>
+                                <a href="#">Condensed, Powdered Milk</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Buttermilk &amp; Lassi
-                                </a>
+                                <a href="#">Buttermilk &amp; Lassi</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Yogurt &amp; Shrikhand
-                                </a>
+                                <a href="#">Yogurt &amp; Shrikhand</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Flavoured, Soya Milk
-                                </a>
+                                <a href="#">Flavoured, Soya Milk</a>
                               </li>
                             </ul>
                           </div>
@@ -833,19 +752,13 @@ function Login() {
                                 <a href="#">Salted Biscuits</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Marie, Health, Digestive
-                                </a>
+                                <a href="#">Marie, Health, Digestive</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Cream Biscuits &amp; Wafers
-                                </a>
+                                <a href="#">Cream Biscuits &amp; Wafers</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Glucose &amp; Milk Biscuits
-                                </a>
+                                <a href="#">Glucose &amp; Milk Biscuits</a>
                               </li>
                               <li>
                                 <a href="#">Cookies</a>
@@ -858,24 +771,16 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="#">
-                                  Bread Sticks &amp; Lavash
-                                </a>
+                                <a href="#">Bread Sticks &amp; Lavash</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Cheese &amp; Garlic Bread
-                                </a>
+                                <a href="#">Cheese &amp; Garlic Bread</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Puffs, Patties, Sandwiches
-                                </a>
+                                <a href="#">Puffs, Patties, Sandwiches</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Breadcrumbs &amp; Croutons
-                                </a>
+                                <a href="#">Breadcrumbs &amp; Croutons</a>
                               </li>
                             </ul>
                           </div>
@@ -894,19 +799,13 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="#">
-                                  Lemon, Ginger &amp; Garlic
-                                </a>
+                                <a href="#">Lemon, Ginger &amp; Garlic</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Indian &amp; Exotic Herbs
-                                </a>
+                                <a href="#">Indian &amp; Exotic Herbs</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Organic Vegetables
-                                </a>
+                                <a href="#">Organic Vegetables</a>
                               </li>
                               <li>
                                 <a href="#">Organic Fruits</a>
@@ -919,42 +818,28 @@ function Login() {
                             </div>
                             <ul>
                               <li>
-                                <a href="#">
-                                  Organic Dry Fruits
-                                </a>
+                                <a href="#">Organic Dry Fruits</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Organic Dals &amp; Pulses
-                                </a>
+                                <a href="#">Organic Dals &amp; Pulses</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Organic Millet &amp; Flours
-                                </a>
+                                <a href="#">Organic Millet &amp; Flours</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Organic Sugar, Jaggery
-                                </a>
+                                <a href="#">Organic Sugar, Jaggery</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Organic Masalas &amp; Spices
-                                </a>
+                                <a href="#">Organic Masalas &amp; Spices</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Organic Rice, Other Rice
-                                </a>
+                                <a href="#">Organic Rice, Other Rice</a>
                               </li>
                               <li>
                                 <a href="#">Organic Flours</a>
                               </li>
                               <li>
-                                <a href="#">
-                                  Organic Edible Oil, Ghee
-                                </a>
+                                <a href="#">Organic Edible Oil, Ghee</a>
                               </li>
                             </ul>
                           </div>
@@ -996,26 +881,17 @@ function Login() {
                             </a>
                           </li>
                           <li className="nav-item">
-                            <a
-                              className="nav-link dropdown-toggle"
-                              href="#"
-                            >
+                            <a className="nav-link dropdown-toggle" href="#">
                               About Us
                             </a>
                           </li>
                           <li className="nav-item">
-                            <a
-                              className="nav-link dropdown-toggle"
-                              href="#"
-                            >
+                            <a className="nav-link dropdown-toggle" href="#">
                               Contact Us
                             </a>
                           </li>
                           <li className="nav-item">
-                            <a
-                              className="nav-link dropdown-toggle"
-                              href="#"
-                            >
+                            <a className="nav-link dropdown-toggle" href="#">
                               Blog
                             </a>
                           </li>

@@ -16,6 +16,7 @@ function OrderSuccess() {
   const [newOrder, setNewOrder] = useState([]);
   localStorage?.setItem("totalOrder", newOrder?.length);
   const [cancelOrder, re] = useCancelOrderMutation();
+  const storeUser = localStorage?.getItem("userName");
   const getReversedList = (list) => {
     return list?.data?.results?.orderList?.slice().reverse() ?? [];
   };
@@ -247,7 +248,7 @@ function OrderSuccess() {
                                 Price
                               </h4>
                               <h6 className="theme-color">
-                                $ {item?.cartsTotal}
+                                $ {item?.products[0]?.product_Id?.Price}
                               </h6>
                             </td>
                             <td className="quantity">
@@ -258,9 +259,9 @@ function OrderSuccess() {
                             </td>
                             <td className="subtotal">
                               <h4 className="table-title text-content">
-                                Total
+                                Total (after Discount)
                               </h4>
-                              <h5>${item?.cartsTotal} </h5>
+                              <h5>${item?.cartsTotal?.[0]?.[0]?.totalAfterDiscount[0]} </h5>
                             </td>
                             <td className="subtotal">
                               <h4 className="table-title text-content">

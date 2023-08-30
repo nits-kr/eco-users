@@ -27,10 +27,14 @@ import { AddToCart } from "./HttpServices";
 function UserDashboard() {
   const [wishList, setWishList] = useState([]);
   const [title, setTitle] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [address, setAddress] = useState("");
   const [locality, setLocality] = useState("");
   const [city, setCity] = useState("");
+  const [state, setState] = useState("");
   const [country, setCountry] = useState("");
+  const [pinCode, setPinCode] = useState("");
   const [cardNumbers, setCardNumbers] = useState("");
   const [cardHolder, setCardHolder] = useState("");
   const [cardValid, setCardValid] = useState("");
@@ -67,6 +71,8 @@ function UserDashboard() {
   const storedPic = localStorage.getItem("profilePic");
   const storedOrder = localStorage?.getItem("totalOrder");
   const storedWish = localStorage?.getItem("totalWish");
+  const storeUser = localStorage?.getItem("userName");
+  const storeUserEmail = localStorage?.getItem("userEmail");
   const navigate = useNavigate();
 
   const [count, setCount] = useState([]);
@@ -207,10 +213,14 @@ function UserDashboard() {
   const handleSaveChanges = async () => {
     const newAddressData = {
       title: title,
+      fullName: fullName,
       address: address,
       locality: locality,
       city: city,
       country: country,
+      pinCode: pinCode,
+      state: state,
+      mobileNumber: mobileNumber,
       user_Id: storedId,
     };
 
@@ -467,8 +477,8 @@ function UserDashboard() {
                       </div>
                     </div>
                     <div className="profile-name">
-                      <h3>Vicki E. Pope</h3>
-                      <h6 className="text-content">vicki.pope@gmail.com</h6>
+                      <h3> {storeUser} </h3>
+                      <h6 className="text-content"> {storeUserEmail} </h6>
                     </div>
                   </div>
                 </div>
@@ -1145,7 +1155,7 @@ function UserDashboard() {
                                     <table className="table">
                                       <tbody>
                                         <tr>
-                                          <td colSpan={2}>Jack Jennas</td>
+                                          <td colSpan={2}>{item?.fullName}</td>
                                         </tr>
                                         <tr>
                                           <td>Address :</td>
@@ -1166,8 +1176,12 @@ function UserDashboard() {
                                           <td> {item?.country} </td>
                                         </tr>
                                         <tr>
+                                          <td>Pin Code :</td>
+                                          <td> {item?.pinCode} </td>
+                                        </tr>
+                                        <tr>
                                           <td>Phone :</td>
-                                          <td>+ 812-710-3798</td>
+                                          <td> {item?.mobileNumber} </td>
                                         </tr>
                                       </tbody>
                                     </table>
@@ -1325,7 +1339,7 @@ function UserDashboard() {
                         </div>
                         <div className="profile-name-detail">
                           <div className="d-sm-flex align-items-center d-block">
-                            <h3>Vicki E. Pope</h3>
+                            <h3> {storeUser} </h3>
                             <div className="product-rating profile-rating">
                               <ul className="rating">
                                 <li>
@@ -1794,11 +1808,39 @@ function UserDashboard() {
                     className="form-control"
                     id="title"
                     name="title"
-                    placeholder="Enter First Name"
+                    placeholder="Enter Title Name"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                   />
-                  <label htmlFor="fname">Title</label>
+                  <label htmlFor="fname">Title (Home/Work)</label>
+                </div>
+              </form>
+              <form>
+                <div className="form-floating mb-4 theme-form-floating">
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="fullName"
+                    name="fullName"
+                    placeholder="Enter Full Name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
+                  <label htmlFor="fname">Full Name</label>
+                </div>
+              </form>
+              <form>
+                <div className="form-floating mb-4 theme-form-floating">
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="mobileNumber"
+                    name="mobileNumber"
+                    placeholder="Enter mobile number"
+                    value={mobileNumber}
+                    onChange={(e) => setMobileNumber(e.target.value)}
+                  />
+                  <label htmlFor="fname">Mobile Number</label>
                 </div>
               </form>
               <form>
@@ -1847,6 +1889,20 @@ function UserDashboard() {
               <form>
                 <div className="form-floating mb-4 theme-form-floating">
                   <input
+                    type="text"
+                    className="form-control"
+                    id="state"
+                    name="state"
+                    placeholder="Enter Email Address"
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                  />
+                  <label htmlFor="email">State</label>
+                </div>
+              </form>
+              <form>
+                <div className="form-floating mb-4 theme-form-floating">
+                  <input
                     type="email"
                     className="form-control"
                     id="countary"
@@ -1855,7 +1911,7 @@ function UserDashboard() {
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
                   />
-                  <label htmlFor="email">countary</label>
+                  <label htmlFor="email">country</label>
                 </div>
               </form>
 
@@ -1866,6 +1922,8 @@ function UserDashboard() {
                     className="form-control"
                     id="pin"
                     placeholder="Enter Pin Code"
+                    value={pinCode}
+                    onChange={(e) => setPinCode(e.target.value)}
                   />
                   <label htmlFor="pin">Pin Code</label>
                 </div>

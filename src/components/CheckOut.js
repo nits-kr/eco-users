@@ -25,6 +25,7 @@ function CheckOut() {
   console.log("coupan", coupan);
   const navigate = useNavigate();
   const { coupan2 } = useParams();
+  const storeUser = localStorage?.getItem("userName");
 
   window.onbeforeunload = function () {
     // Remove the 'theme' item from local storage
@@ -271,7 +272,7 @@ function CheckOut() {
                                       <ul className="delivery-address-detail">
                                         <li>
                                           <h4 className="fw-500">
-                                            Jack Jennas
+                                            {storeUser}
                                           </h4>
                                         </li>
                                         <li>
@@ -327,7 +328,7 @@ function CheckOut() {
                                             <span className="text-title">
                                               Phone :
                                             </span>{" "}
-                                            + 380 (0564) 53 - 29 - 68
+                                            {item?.mobileNumber}
                                           </h6>
                                         </li>
                                       </ul>

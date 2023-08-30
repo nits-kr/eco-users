@@ -123,36 +123,7 @@ function Footer() {
                         </li>
                       );
                     })}
-                    {/* <li>
-                      <Link to="/shop" className="text-content">
-                        Vegetables &amp; Fruit
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/shop" className="text-content">
-                        Beverages
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/shop" className="text-content">
-                        Meats &amp; Seafood
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/shop" className="text-content">
-                        Frozen Foods
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/shop" className="text-content">
-                        Biscuits &amp; Snacks
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/shop" className="text-content">
-                        Grocery &amp; Staples
-                      </Link>
-                    </li> */}
+                   
                   </ul>
                 </div>
               </div>
