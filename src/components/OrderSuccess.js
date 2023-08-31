@@ -261,7 +261,13 @@ function OrderSuccess() {
                               <h4 className="table-title text-content">
                                 Total (after Discount)
                               </h4>
-                              <h5>${item?.cartsTotal?.[0]?.[0]?.totalAfterDiscount[0]} </h5>
+                              <h5>
+                                $
+                                {
+                                  item?.cartsTotal?.[0]?.[0]
+                                    ?.totalAfterDiscount[0]
+                                }{" "}
+                              </h5>
                             </td>
                             <td className="subtotal">
                               <h4 className="table-title text-content">

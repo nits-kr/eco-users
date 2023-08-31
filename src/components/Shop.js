@@ -748,7 +748,7 @@ function Shop(props) {
                                       <span className="name">
                                         {item?.subCategoryName_en}
                                       </span>
-                                      <span className="number">(15)</span>
+                                      {/* <span className="number">({productListItems?.length})</span> */}
                                     </label>
                                   </div>
                                 </li>
