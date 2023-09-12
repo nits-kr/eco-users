@@ -1512,7 +1512,7 @@ function Shop(props) {
                               <div className="product-image">
                                 <Link to="/product">
                                   <img
-                                    src={item.product_Pic[0]}
+                                    src={item?.addVarient[0]?.product_Pic[0]}
                                     className="img-fluid  lazyload"
                                     alt=""
                                   />
@@ -1545,15 +1545,7 @@ function Shop(props) {
                                   <li
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="top"
-                                    // title="Wishlist"
-                                    // onClick={() => handleWishClick(item)}
                                   >
-                                    {/* <Link
-                                      to="/wishlist"
-                                      className="notifi-wishlist"
-                                    >
-                                      <FontAwesomeIcon icon={faHeart} />
-                                    </Link> */}
                                     {item?.like === "false" ? (
                                       <Link
                                         className="btn p-0 position-relative header-wishlist me-2"
@@ -1603,7 +1595,6 @@ function Shop(props) {
                             </div>
                             <div className="product-footer">
                               <div className="product-detail">
-                                {/* <span className="span-name"> {item._id} </span> */}
                                 <Link to="/product">
                                   <h5 className="name">
                                     {item.productName_en}
@@ -1622,9 +1613,7 @@ function Shop(props) {
                                   />
                                   <span> {item?.ratings?.length} reviews </span>
                                 </div>
-                                {/* <h6 className="unit">
-                                  {item.stockQuantity} units{" "}
-                                </h6> */}
+
                                 <div
                                   style={{
                                     display: "flex",
@@ -1640,19 +1629,22 @@ function Shop(props) {
                                         fontSize: "15px",
                                       }}
                                     >
-                                      {/* {item?.stockQuantity > 0 ? "In Stock" : "Out Of Stock"} */}
-                                      {item?.stockQuantity > 0 ? (
+                                      {item?.addVarient[0]?.stockQuantity >
+                                      0 ? (
                                         item?.stockQuantity <= 5 ? (
                                           <span
                                             style={{ color: "rgb(199, 0, 85)" }}
                                           >
                                             Only few left
                                           </span>
-                                        ) : item?.stockQuantity <= 10 ? (
+                                        ) : item?.addVarient[0]
+                                            ?.stockQuantity <= 10 ? (
                                           <span
                                             style={{ color: "rgb(199, 0, 85)" }}
                                           >
-                                            Only {item?.stockQuantity} left
+                                            Only{" "}
+                                            {item?.addVarient[0]?.stockQuantity}{" "}
+                                            left
                                           </span>
                                         ) : (
                                           <span style={{ color: "green" }}>
@@ -1666,48 +1658,6 @@ function Shop(props) {
                                       )}
                                     </h6>
                                   </div>
-                                  {/* <div className=" mt-2">
-                                    <form>
-                                      <div className="form-floating ">
-                                        <select
-                                          className="form-select"
-                                          id="floatingSelect12"
-                                          aria-label="  select example"
-                                          defaultValue=" "
-                                          style={{
-                                            height: "26px",
-                                            width: "104px",
-                                            padding: "5px",
-                                          }}
-                                          onChange={(e) =>
-                                            setQuantity(e.target.value)
-                                          }
-                                        >
-                                          <option value="">Quantity</option>
-                                          <option value="1">1</option>
-                                          <option value="2">2</option>
-                                          <option value="3">3</option>
-                                          <option value="4">4</option>
-                                          <option value="5">5</option>
-                                          <option value="6">6</option>
-                                          <option value="7">7</option>
-                                          <option value="8">8</option>
-                                          <option value="9">9</option>
-                                          <option value="10">10</option>
-                                          <option value="11">11</option>
-                                          <option value="12">12</option>
-                                          <option value="13">13</option>
-                                          <option value="14">14</option>
-                                          <option value="15">15</option>
-                                          <option value="16">16</option>
-                                          <option value="17">17</option>
-                                          <option value="18">18</option>
-                                          <option value="19">19</option>
-                                          <option value="20">20</option>
-                                        </select>
-                                      </div>
-                                    </form>
-                                  </div> */}
                                   <div className="">
                                     <div className="cart_qty qty-box product-qty">
                                       <div className="input-group">
@@ -1744,6 +1694,9 @@ function Shop(props) {
                                               count[index] + 1
                                             )
                                           }
+                                          disabled={
+                                            count[index] === item?.stockQuantity
+                                          }
                                         >
                                           <i
                                             className="fa fa-plus"
@@ -1756,9 +1709,9 @@ function Shop(props) {
                                 </div>
                                 <h5 className="price">
                                   <span className="theme-color">
-                                    ${item.Price}
+                                    ${item?.addVarient[0]?.Price}
                                   </span>{" "}
-                                  <del>${item.oldPrice} </del>
+                                  <del>${item?.addVarient[0]?.oldPrice} </del>
                                 </h5>
                                 <div className="add-to-cart-box bg-white mt-2">
                                   <button className="btn btn-add-cart addcart-button">
@@ -1896,7 +1849,7 @@ function Shop(props) {
                 <div className="col-lg-6">
                   <div className="slider-image">
                     <img
-                      src={selectedProduct?.product_Pic[0]}
+                      src={selectedProduct?.addVarient[0]?.product_Pic[0]}
                       className="img-fluid lazyload"
                       alt=""
                     />
@@ -1908,7 +1861,7 @@ function Shop(props) {
                       <h4 className="title-name">
                         {selectedProduct?.productName_en}
                       </h4>
-                      <h4 className="price">${selectedProduct?.Price} </h4>
+                      <h4 className="price">${selectedProduct?.addVarient[0]?.Price} </h4>
                       <div className="product-rating">
                         <Star rating={averageRating} />
                         <span className="ms-2">

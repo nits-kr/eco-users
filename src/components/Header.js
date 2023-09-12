@@ -531,11 +531,7 @@ function Header({ Dash }) {
                                         className="drop-image"
                                       >
                                         <img
-                                          src={item?.products?.map(
-                                            (product) =>
-                                              product?.product_Id
-                                                ?.product_Pic[0]
-                                          )}
+                                          src={item?.products[0]?.product_Id?.addVarient[0]?.product_Pic[0]}
                                           className="img-fluid  lazyload"
                                           alt=""
                                         />
@@ -864,7 +860,7 @@ function Header({ Dash }) {
                         <div className="deal-offer-contain">
                           <Link to="/shop" className="deal-image">
                             <img
-                              src={item?.product_Pic[0]}
+                              src={item?.addVarient[0]?.product_Pic[0]}
                               className=" lazyload"
                               alt=""
                             />

@@ -500,7 +500,7 @@ function Blog(props) {
                                         className="offer-image"
                                       >
                                         <img
-                                          src={item?.product_Pic[0]}
+                                          src={item?.addVarient[0]?.product_Pic[0]}
                                           className=" lazyload"
                                           alt=""
                                         />
@@ -514,7 +514,7 @@ function Blog(props) {
                                           </Link>
                                           <span> {item?.weight} </span>
                                           <h6 className="price theme-color">
-                                            ${item?.Price}{" "}
+                                            ${item?.addVarient[0]?.Price}{" "}
                                           </h6>
                                         </div>
                                       </div>

@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import $ from 'jquery';
-
+import $ from "jquery";
 
 export function UseCountdownTimer(deadline) {
   useEffect(() => {
@@ -8,13 +7,11 @@ export function UseCountdownTimer(deadline) {
   }, []);
 
   function getTimeRemaining(endtime) {
-    var t = Date.parse(endtime) - Date.parse(new Date());
-
-    var seconds = Math.floor((t / 1000) % 60);
-    var minutes = Math.floor((t / 1000 / 60) % 60);
-    var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
-    var days = Math.floor(t / (1000 * 60 * 60 * 24));
-
+    const t = Date.parse(endtime) - Date.parse(new Date());
+    const seconds = Math.floor((t / 1000) % 60);
+    const minutes = Math.floor((t / 1000 / 60) % 60);
+    const hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(t / (1000 * 60 * 60 * 24));
     return {
       total: t,
       days: days,
@@ -38,10 +35,10 @@ export function UseCountdownTimer(deadline) {
     function updateClock() {
       var t = getTimeRemaining(endtime);
 
-      daysSpan.innerHTML = t.days;
-      hoursSpan.innerHTML = ("0" + t.hours).slice(-2);
-      minutesSpan.innerHTML = ("0" + t.minutes).slice(-2);
-      secondsSpan.innerHTML = ("0" + t.seconds).slice(-2);
+      daysSpan.textContent = t.days;
+      hoursSpan.textContent = ("0" + t.hours).slice(-2);
+      minutesSpan.textContent = ("0" + t.minutes).slice(-2);
+      secondsSpan.textContent = ("0" + t.seconds).slice(-2);
 
       if (t.total <= 0) {
         clearInterval(timeinterval);
@@ -54,15 +51,16 @@ export function UseCountdownTimer(deadline) {
 }
 
 export function StickyCartScroll() {
-  window.addEventListener('scroll', function() {
+  window.addEventListener("scroll", function () {
     const scroll = window.pageYOffset || document.documentElement.scrollTop;
-    const widthContent = window.innerWidth || document.documentElement.clientWidth;
+    const widthContent =
+      window.innerWidth || document.documentElement.clientWidth;
 
     if (widthContent > 300) {
       if (scroll >= 800) {
-        document.body.classList.add('stickyCart');
+        document.body.classList.add("stickyCart");
       } else {
-        document.body.classList.remove('stickyCart');
+        document.body.classList.remove("stickyCart");
       }
     }
   });
@@ -107,13 +105,8 @@ export function InitializeColorPicker() {
 }
 
 export const HandleOkButtonClick = () => {
-  const cookieBarBox = document.querySelector('.cookie-bar-box');
+  const cookieBarBox = document.querySelector(".cookie-bar-box");
   if (cookieBarBox) {
-    cookieBarBox.style.display = 'none';
+    cookieBarBox.style.display = "none";
   }
 };
-
-
-
-
-

@@ -126,19 +126,7 @@ function IndexGrocary(props) {
   const handleViewClick = (item) => {
     setSelectedProduct(item);
   };
-  // const handleWishClick = async (item) => {
-  //   try {
-  //     const { data, error } = await CreateWish(item._id);
-  //     if (error) {
-  //       console.log(error);
-  //       return;
-  //     }
-  //     const newCreateWishItems = [...CreateWishItems, data];
-  //     setCreateWishItems(newCreateWishItems);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+
   const userId = localStorage?.getItem("loginId");
   const handleWishClick = async (item) => {
     try {
@@ -271,143 +259,224 @@ function IndexGrocary(props) {
   );
   const averageRating = totalRatings / selectedProduct?.ratings?.length;
   const sliders2 = () => {
-    return trendingList?.map((item, index) => (
-      <div key={index}>
-        <div className="product-box-3 h-100 wow fadeInUp">
-          <div className="product-header">
-            <div className="product-image">
-              <Link to="/product">
-                <img
-                  src={item?.product_Pic[0]}
-                  className="img-fluid  lazyload"
-                  alt=""
-                />
-              </Link>
-              <ul className="product-option">
-                <li
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  title="View"
-                >
-                  <Link
-                    to="#"
-                    data-bs-toggle="modal"
-                    data-bs-target="#view"
-                    onClick={() => handleViewClick(item)}
+    return trendingList?.map((item, index) => {
+      const totalRatings = item.ratings.reduce(
+        (sum, rating) => sum + rating.star,
+        0
+      );
+      const averageRating = totalRatings / item.ratings.length;
+      return (
+        <div key={index}>
+          <div className="product-box-3 h-100 wow fadeInUp">
+            <div className="product-header">
+              <div className="product-image">
+                <Link to="/product">
+                  <img
+                    src={item?.addVarient[0]?.product_Pic[0]}
+                    className="img-fluid  lazyload"
+                    alt=""
+                  />
+                </Link>
+                <ul className="product-option">
+                  <li
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="View"
                   >
-                    <FontAwesomeIcon icon={faEye} />
-                  </Link>
-                </li>
-                <li
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  title="Compare"
-                  onClick={() => handleCompareClick(item)}
-                >
-                  <Link to="/compare">
-                    <FontAwesomeIcon icon={faArrowsRotate} />
-                  </Link>
-                </li>
-                <li
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  // title="Wishlist"
-                  // onClick={() => handleWishClick(item)}
-                >
-                  {/* <Link to="/wishlist" className="notifi-wishlist">
+                    <Link
+                      to="#"
+                      data-bs-toggle="modal"
+                      data-bs-target="#view"
+                      onClick={() => handleViewClick(item)}
+                    >
+                      <FontAwesomeIcon icon={faEye} />
+                    </Link>
+                  </li>
+                  <li
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Compare"
+                    onClick={() => handleCompareClick(item)}
+                  >
+                    <Link to="/compare">
+                      <FontAwesomeIcon icon={faArrowsRotate} />
+                    </Link>
+                  </li>
+                  <li
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    // title="Wishlist"
+                    // onClick={() => handleWishClick(item)}
+                  >
+                    {/* <Link to="/wishlist" className="notifi-wishlist">
                     <FontAwesomeIcon icon={faHeart} />
                   </Link> */}
-                  {item?.like === "false" ? (
-                    <Link
-                      className="btn p-0 position-relative header-wishlist me-2"
-                      to="/wishlist"
-                      title3="Wishlist"
-                      onClick={() => handleWishClick(item)}
-                    >
-                      <FontAwesomeIcon
-                        icon={faHeart}
-                        style={{
-                          fontSize: "20px",
-                          color: "black",
-                        }}
-                        data-tip="Add to Wishlist"
-                        data-for="wishlist-tooltip"
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.color = "red";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.color = "black";
-                        }}
-                      />
-                    </Link>
-                  ) : (
-                    <Link
-                      className="btn p-0 position-relative header-wishlist me-2"
-                      to="#"
-                      title5="Wishlist"
-                      disabled
-                      style={{ cursor: "not-allowed" }}
-                    >
-                      <FontAwesomeIcon
-                        icon={faHeart}
-                        style={{
-                          fontSize: "20px",
-                          color: "red",
-                        }}
-                        data-tip="Add to Wishlist"
-                        data-for="wishlist-tooltip"
-                      />
-                    </Link>
-                  )}
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="product-footer">
-            <div className="product-detail">
-              {/* <span className="span-name"> {item.productName_en} </span> */}
-              <Link to="/product">
-                <h5 className="name">{item?.productName_en}</h5>
-              </Link>
-              <p className="text-content mt-1 mb-2 product-content">
-                Cheesy feet cheesy grin brie. Mascarpone cheese and wine hard
-                cheese the big cheese everyone loves smelly cheese macaroni
-                cheese croque monsieur.
-              </p>
-              <div className="product-rating mt-2">
-                <Star rating={averageRating} />
-                <span> In Stock </span>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <div>
-                  <h6
-                    className="unit"
-                    style={{ margin: "0px", fontSize: "15px" }}
-                  >
-                    {item?.stockQuantity > 0 ? (
-                      item?.stockQuantity <= 5 ? (
-                        <span style={{ color: "rgb(199, 0, 85)" }}>
-                          Only few left
-                        </span>
-                      ) : item?.stockQuantity <= 10 ? (
-                        <span style={{ color: "rgb(199, 0, 85)" }}>
-                          Only {item?.stockQuantity} left
-                        </span>
-                      ) : (
-                        <span style={{ color: "green" }}>In Stock</span>
-                      )
+                    {item?.like === "false" ? (
+                      <Link
+                        className="btn p-0 position-relative header-wishlist me-2"
+                        to="/wishlist"
+                        title3="Wishlist"
+                        onClick={() => handleWishClick(item)}
+                      >
+                        <FontAwesomeIcon
+                          icon={faHeart}
+                          style={{
+                            fontSize: "20px",
+                            color: "black",
+                          }}
+                          data-tip="Add to Wishlist"
+                          data-for="wishlist-tooltip"
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.color = "red";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.color = "black";
+                          }}
+                        />
+                      </Link>
                     ) : (
-                      <span style={{ color: "red" }}>Out Of Stock</span>
+                      <Link
+                        className="btn p-0 position-relative header-wishlist me-2"
+                        to="#"
+                        title5="Wishlist"
+                        disabled
+                        style={{ cursor: "not-allowed" }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faHeart}
+                          style={{
+                            fontSize: "20px",
+                            color: "red",
+                          }}
+                          data-tip="Add to Wishlist"
+                          data-for="wishlist-tooltip"
+                        />
+                      </Link>
                     )}
-                  </h6>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="product-footer">
+              <div className="product-detail">
+                {/* <span className="span-name"> {item.productName_en} </span> */}
+                <Link to="/product">
+                  <h5 className="name">{item?.productName_en}</h5>
+                </Link>
+                <p className="text-content mt-1 mb-2 product-content">
+                  Cheesy feet cheesy grin brie. Mascarpone cheese and wine hard
+                  cheese the big cheese everyone loves smelly cheese macaroni
+                  cheese croque monsieur.
+                </p>
+                <div className="product-rating mt-2">
+                  <Star
+                    rating={averageRating || 0}
+                    totalRating={item.totalRating}
+                  />
+                  <span> {item?.ratings?.length} reviews </span>
                 </div>
-                <div className=" mt-3">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div>
+                    <h6
+                      className="unit"
+                      style={{ margin: "0px", fontSize: "15px" }}
+                    >
+                      {item?.addVarient[0]?.stockQuantity > 0 ? (
+                        item?.addVarient[0]?.stockQuantity <= 5 ? (
+                          <span style={{ color: "rgb(199, 0, 85)" }}>
+                            Only few left
+                          </span>
+                        ) : item?.addVarient[0]?.stockQuantity <= 10 ? (
+                          <span style={{ color: "rgb(199, 0, 85)" }}>
+                            Only {item?.addVarient[0]?.stockQuantity} left
+                          </span>
+                        ) : (
+                          <span style={{ color: "green" }}>In Stock</span>
+                        )
+                      ) : (
+                        <span style={{ color: "red" }}>Out Of Stock</span>
+                      )}
+                    </h6>
+                  </div>
+                  {item?.addVarient[0]?.stockQuantity <= 0 ? (
+                    <div className=" mt-3">
+                      <div className="cart_qty qty-box product-qty">
+                        <div
+                          className="input-group"
+                          style={{ alignItems: "center" }}
+                        >
+                          <button
+                            type="button"
+                            className="qty-left-minus"
+                            data-type="minus"
+                            data-field=""
+                            disabled
+                            style={{ cursor: "not-allowed" }}
+                          >
+                            <i className="fa fa-minus" aria-hidden="true" />
+                          </button>
+                          <div className="m-2">
+                            {" "}
+                            {count[index] ? count[index] : "0"}
+                          </div>
+                          <button
+                            type="button"
+                            className="qty-right-plus"
+                            data-type="plus"
+                            data-field=""
+                            disabled
+                            style={{ cursor: "not-allowed" }}
+                          >
+                            <i className="fa fa-plus" aria-hidden="true" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className=" mt-3">
+                      <div className="cart_qty qty-box product-qty">
+                        <div
+                          className="input-group"
+                          style={{ alignItems: "center" }}
+                        >
+                          <button
+                            type="button"
+                            className="qty-left-minus"
+                            data-type="minus"
+                            data-field=""
+                            onClick={() =>
+                              handleCountChange(index, count[index] - 1)
+                            }
+                          >
+                            <i className="fa fa-minus" aria-hidden="true" />
+                          </button>
+                          <div className="m-2">
+                            {" "}
+                            {count[index] ? count[index] : "0"}
+                          </div>
+                          <button
+                            type="button"
+                            className="qty-right-plus"
+                            data-type="plus"
+                            data-field=""
+                            onClick={() =>
+                              handleCountChange(index, count[index] + 1)
+                            }
+                            disabled={count[index] === item?.stockQuantity}
+                          >
+                            <i className="fa fa-plus" aria-hidden="true" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {/* <div className=" mt-3">
                   <div className="cart_qty qty-box product-qty">
                     <div
                       className="input-group"
@@ -441,28 +510,34 @@ function IndexGrocary(props) {
                       </button>
                     </div>
                   </div>
+                </div> */}
                 </div>
-              </div>
-              <h5 className="price">
-                <span className="theme-color">${item?.Price}</span>{" "}
-                <del>${item?.oldPrice} </del>
-              </h5>
+                <h5 className="price">
+                  <span className="theme-color">
+                    ${item?.addVarient[0]?.Price}
+                  </span>{" "}
+                  <del>${item?.addVarient[0]?.oldPrice} </del>
+                </h5>
 
-              <div className="add-to-cart-box bg-white mt-2">
-                <button className="btn btn-add-cart addcart-button">
-                  <Link to="/cart" onClick={() => handleAddToCart(item, index)}>
-                    Add To Cart
-                    {/* <span className="add-icon bg-light-gray">
+                <div className="add-to-cart-box bg-white mt-2">
+                  <button className="btn btn-add-cart addcart-button">
+                    <Link
+                      to="/cart"
+                      onClick={() => handleAddToCart(item, index)}
+                    >
+                      Add To Cart
+                      {/* <span className="add-icon bg-light-gray">
                       <i className="fa-solid fa-plus" />
                     </span> */}
-                  </Link>
-                </button>
+                    </Link>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    ));
+      );
+    });
   };
 
   return (
@@ -847,7 +922,7 @@ function IndexGrocary(props) {
                                 <div className="offer-product">
                                   <Link to="/product" className="offer-image">
                                     <img
-                                      src={item?.product_Pic[0]}
+                                      src={item?.addVarient[0]?.product_Pic[0]}
                                       className=" lazyload"
                                       alt=""
                                     />
@@ -3809,7 +3884,7 @@ function IndexGrocary(props) {
                 <div className="col-lg-6">
                   <div className="slider-image">
                     <img
-                      src={selectedProduct?.product_Pic[0]}
+                      src={selectedProduct?.addVarient[0]?.product_Pic[0]}
                       className="img-fluid  lazyload"
                       alt=""
                     />

@@ -1688,7 +1688,7 @@ function Shop3(props) {
                               <div className="product-image">
                                 <Link to="/product">
                                   <img
-                                    src={item.product_Pic[0]}
+                                    src={item?.addVarient[0]?.product_Pic[0]}
                                     className="img-fluid  lazyload"
                                     alt=""
                                   />
@@ -1919,6 +1919,7 @@ function Shop3(props) {
                                               count[index] + 1
                                             )
                                           }
+                                          disabled={count[index] === item?.stockQuantity}
                                         >
                                           <i
                                             className="fa fa-plus"
@@ -2071,7 +2072,7 @@ function Shop3(props) {
                 <div className="col-lg-6">
                   <div className="slider-image">
                     <img
-                      src={selectedProduct?.product_Pic[0]}
+                      src={selectedProduct?.addVarient[0]?.product_Pic[0]}
                       className="img-fluid lazyload"
                       alt=""
                     />

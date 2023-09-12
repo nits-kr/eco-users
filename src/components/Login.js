@@ -35,6 +35,7 @@ function Login() {
       localStorage.setItem("userName", res.data?.results?.verifyUser?.userName);
       localStorage.setItem("userEmail", res.data?.results?.verifyUser?.userEmail);
       localStorage.setItem("token", res.data?.results?.token);
+      localStorage.setItem("mobileNumber", res.data?.results?.verifyUser?.mobileNumber);
       // dispatch(
       //   setCredentials({ user: email, token: res.data?.results?.token })
       // );

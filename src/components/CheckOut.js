@@ -1000,25 +1000,22 @@ function CheckOut() {
                         <h4 className="price">${items?.cartsTotal}</h4>
                       </li>
                     ) : (
-                      orderItemSummary.map((order, index) => {
-                        return (
-                          <li key={index}>
-                            <img
-                              src={
-                                order.products[0]?.product_Id?.product_Pic[0] ||
-                                ""
-                              }
-                              className="img-fluid lazyloaded checkout-image"
-                              alt=""
-                            />
-                            <h4>
-                              {order.products[0]?.product_Id?.productName_en}{" "}
-                              <span>X {order?.products[0]?.quantity}</span>
-                            </h4>
-                            <h4 className="price">${order?.cartsTotal}</h4>
-                          </li>
-                        );
-                      })
+                      orderItemSummary?.map((order, index) => (
+                        <li key={index}>
+                          <img
+                            src={
+                              order.products[0]?.product_Id?.addVarient[0]?.product_Pic[0] || ""
+                            }
+                            className="img-fluid lazyloaded checkout-image"
+                            alt=""
+                          />
+                          <h4>
+                            {order.products[0]?.product_Id?.productName_en}{" "}
+                            <span>X {order.products[0]?.quantity}</span>
+                          </h4>
+                          <h4 className="price">${order.cartsTotal}</h4>
+                        </li>
+                      ))
                     )}
                   </ul>
 

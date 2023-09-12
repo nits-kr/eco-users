@@ -174,7 +174,7 @@ function WishList() {
                       <div className="product-image">
                         <Link to="/product">
                           <img
-                            src={item?.product_Id?.product_Pic[0]}
+                            src={item?.product_Id?.addVarient[0]?.product_Pic[0]}
                             className="img-fluid  lazyload"
                             alt=""
                           />

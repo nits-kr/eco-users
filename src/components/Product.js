@@ -23,6 +23,7 @@ import { AddToCart } from "./HttpServices";
 import { useAddReviewMutation } from "../services/Post";
 import GetStar from "./GetStar";
 import { useRelatedProductDetailsMutation } from "../services/Post";
+import CountdownTimer from "./CountdownTimer";
 
 function Product(props) {
   const relatedProduct = useGetRelatedProductQuery();
@@ -44,6 +45,9 @@ function Product(props) {
   console.log("useGetRelatedProductQuery", relatedProduct);
   console.log("product detail", productDetail);
   const userId = localStorage.getItem("loginId");
+  const userEmail = localStorage?.getItem("userEmail");
+  const mobileNumber = localStorage?.getItem("mobileNumber");
+  const userName = localStorage?.getItem("userName");
   const [cartListItems, setCartListItems] = useState([]);
   const [name, setName] = useState([]);
   const [email, setEmail] = useState([]);
@@ -51,6 +55,18 @@ function Product(props) {
   const [title, setTitle] = useState([]);
   const [comment, setComment] = useState([]);
   const [count, setCount] = useState(0);
+  const [selectedAttributeValues, setSelectedAttributeValues] = useState({});
+  const [selectedVariant, setSelectedVariant] = useState(0);
+  const variants = productDetail?.addVarient || [];
+  console.log("variant", variants);
+
+  const handleVariantChange = (index) => {
+    setSelectedVariant(index);
+  };
+  const selectedVariantData = variants[selectedVariant];
+  // const price = selectedVariantData?.Price;
+  const price = count ? (selectedVariantData?.Price) * count : selectedVariantData?.Price;
+  const oldPrice = count ? (selectedVariantData?.oldPrice) * count : selectedVariantData?.oldPrice;
 
   const [formData, setFormData] = useState({
     r1: "",
@@ -146,6 +162,9 @@ function Product(props) {
           description: formData.description,
           user_Id: userId,
           product_Id: id,
+          reporterName: userName,
+          reporterNumber: mobileNumber,
+          reporterEmail: userEmail,
         };
         reportData(newAddress);
       }
@@ -230,8 +249,8 @@ function Product(props) {
   useEffect(() => {
     feather.replace();
   }, []);
-  var deadline = new Date(Date.parse(new Date()) + 15 * 24 * 60 * 60 * 1000);
-  UseCountdownTimer(deadline);
+  // var deadline = new Date(Date.parse(new Date()) + 15 * 24 * 60 * 60 * 1000);
+  // UseCountdownTimer(deadline);
 
   const sliders2 = () => {
     return relatedProductDetail?.map((item, index) => (
@@ -383,7 +402,12 @@ function Product(props) {
           <div className="row">
             <div className="col-12">
               <div className="breadscrumb-contain">
-                <h2>{productDetail?.productName_en}</h2>
+                <h2>
+                  {productDetail?.productName_en?.toUpperCase()?.length > 20
+                    ? productDetail.productName_en.slice(0, 20) + "..."
+                    : productDetail.productName_en || "N/A"}
+                </h2>
+
                 <nav>
                   <ol className="breadcrumb mb-0">
                     <li className="breadcrumb-item">
@@ -392,7 +416,9 @@ function Product(props) {
                       </Link>
                     </li>
                     <li className="breadcrumb-item active">
-                    {productDetail?.productName_en}
+                      {productDetail?.productName_en?.toUpperCase()?.length > 20
+                        ? productDetail.productName_en.slice(0, 20) + "..."
+                        : productDetail.productName_en || "N/A"}
                     </li>
                   </ol>
                 </nav>
@@ -417,22 +443,35 @@ function Product(props) {
                         <div className="row g-2">
                           <div className="col-12">
                             <div className="product-main-1 no-arrow">
-                              {productDetail?.product_Pic?.map(
-                                (item, index) => {
-                                  return (
-                                    <div key={index}>
-                                      <div className="slider-image">
-                                        <img
-                                          src={item}
-                                          id="img-1"
-                                          data-zoom-image="../assets/images/product/category/1.jpg"
-                                          className="img-fluid image_zoom_cls-0  lazyload"
-                                          alt=""
-                                        />
-                                      </div>
+                              {/* {productDetail?.addVarient?.[0]?.product_Pic?.map((item, index) => {
+                                return (
+                                  <div key={index}>
+                                    <div className="slider-image">
+                                      <img
+                                        src={item}
+                                        id={`img-${index}`}
+                                        data-zoom-image="../assets/images/product/category/1.jpg"
+                                        className="img-fluid image_zoom_cls-0  lazyload"
+                                        alt=""
+                                      />
                                     </div>
-                                  );
-                                }
+                                  </div>
+                                );
+                              })} */}
+                              {selectedVariantData?.product_Pic?.map(
+                                (item, index) => (
+                                  <div key={index}>
+                                    <div className="slider-image">
+                                      <img
+                                        src={item}
+                                        id={`img-${index}`}
+                                        data-zoom-image="../assets/images/product/category/1.jpg"
+                                        className="img-fluid image_zoom_cls-0 lazyload"
+                                        alt=""
+                                      />
+                                    </div>
+                                  </div>
+                                )
                               )}
                             </div>
                           </div>
@@ -464,11 +503,24 @@ function Product(props) {
                         </h2>
                         <div className="price-rating">
                           <h3 className="theme-color price">
-                            ${productDetail?.Price}{" "}
+                            ${price}{" "}
+                            {oldPrice && (
+                              <del className="text-content">${oldPrice}</del>
+                            )}
+                            {/* ${productDetail?.Price}{" "}
                             <del className="text-content">
                               ${productDetail?.oldPrice}{" "}
-                            </del>{" "}
-                            <span className="offer theme-color">(8% off)</span>
+                            </del>{" "} */}
+                            {oldPrice && (
+                              <span className="offer theme-color">
+                                (~
+                                {Math.round(
+                                  ((oldPrice - price) / oldPrice) * 100
+                                )}
+                                % off)
+                              </span>
+                            )}
+                            {/* <span className="offer theme-color">(8% off)</span> */}
                           </h3>
 
                           <div>
@@ -484,29 +536,45 @@ function Product(props) {
                         </div>
                         <div className="product-packege">
                           <div className="product-title">
-                            <h4>Weight</h4>
+                            <h4>
+                              Select:{" "}
+                              <strong style={{ color: "var(--theme-color)" }}>
+                                {variants?.[0]?.attribute_Id?.attributeName_en}
+                              </strong>{" "}
+                            </h4>
                           </div>
                           <ul className="select-packege">
-                            <li>
-                              <Link to="#" className="active">
-                                1/2 KG
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="#">1 KG</Link>
-                            </li>
-                            <li>
-                              <Link to="#">1.5 KG</Link>
-                            </li>
-                            <li>
-                              <Link to="#">Red Roses</Link>
-                            </li>
-                            <li>
-                              <Link to="#">With Pink Roses</Link>
-                            </li>
+                            {variants.map((variant, index) => (
+                              <li key={index}>
+                                <Link
+                                  className={`variant-button ${
+                                    selectedVariant === index ? "active" : ""
+                                  }`}
+                                  onClick={() => handleVariantChange(index)}
+                                >
+                                  {variant.values_Id?.valuesName_en}
+                                </Link>
+                              </li>
+                            ))}
                           </ul>
+                          {/* <div>
+                            <label htmlFor="variantSelect">RAM</label>
+                            <select
+                              className="select-packege"
+                              value={selectedVariant}
+                              onChange={(event) =>
+                                handleVariantChange(event.target.value)
+                              }
+                            >
+                              {variants.map((variant, index) => (
+                                <option key={index} value={index}>
+                                  {variant.values_Id?.valuesName_en}
+                                </option>
+                              ))}
+                            </select>
+                          </div> */}
                         </div>
-                        <div
+                        {/* <div
                           className="time deal-timer product-deal-timer mx-md-0 mx-auto"
                           id="clockdiv-1"
                           data-hours={1}
@@ -520,7 +588,7 @@ function Product(props) {
                             <li>
                               <div className="counter d-block">
                                 <div className="days d-block">
-                                  {/* <h5 /> */}
+                                 
                                 </div>
                                 <h6>Days</h6>
                               </div>
@@ -528,7 +596,7 @@ function Product(props) {
                             <li>
                               <div className="counter d-block">
                                 <div className="hours d-block">
-                                  {/* <h5 /> */}
+                                  
                                 </div>
                                 <h6>Hours</h6>
                               </div>
@@ -536,7 +604,7 @@ function Product(props) {
                             <li>
                               <div className="counter d-block">
                                 <div className="minutes d-block">
-                                  {/* <h5 /> */}
+                                 
                                 </div>
                                 <h6>Min</h6>
                               </div>
@@ -544,13 +612,14 @@ function Product(props) {
                             <li>
                               <div className="counter d-block">
                                 <div className="seconds d-block">
-                                  {/* <h5 /> */}
+                                  
                                 </div>
                                 <h6>Sec</h6>
                               </div>
                             </li>
                           </ul>
-                        </div>
+                        </div> */}
+                        <CountdownTimer/>
                         <div className="note-box product-packege">
                           <div className="cart_qty qty-box product-qty">
                             <div className="input-group">
@@ -601,7 +670,7 @@ function Product(props) {
                             <span>Add To Compare</span>
                           </Link>
                         </div>
-                        <div className="pickup-box">
+                        {/* <div className="pickup-box">
                           <div className="product-title">
                             <h4>Store Information</h4>
                           </div>
@@ -643,7 +712,59 @@ function Product(props) {
                               </li>
                             </ul>
                           </div>
+                        </div> */}
+
+                        {/* Other product details */}
+
+                        <div className="pickup-box">
+                          <div className="product-title">
+                            <h4>Store Information</h4>
+                          </div>
+                          <div className="pickup-detail">
+                            <h4 className="text-content">
+                              {productDetail?.Description}
+                            </h4>
+                          </div>
+                          <div className="product-info">
+                            <ul className="product-info-list product-info-list-2">
+                              <li>
+                                Type :{" "}
+                                <Link to="#">
+                                  {/* {
+                                    selectedVariantData?.values_Id
+                                      ?.valuesName_en
+                                  } */}
+                                  {productDetail.productType}
+                                </Link>
+                              </li>
+                              <li>
+                                SKU :{" "}
+                                <Link to="#">{selectedVariantData?.SKU}</Link>
+                              </li>
+                              <li>
+                                MFG :{" "}
+                                <Link to="#">
+                                  {" "}
+                                  {productDetail?.publishDate?.slice(
+                                    0,
+                                    10
+                                  )}{" "}
+                                </Link>
+                              </li>
+                              <li>
+                                Stock :{" "}
+                                <Link to="#">
+                                  {" "}
+                                  {selectedVariantData?.stockQuantity}{" "}
+                                </Link>
+                              </li>
+                              {/* <li>
+                                Tags : <Link to="#">{productDetail?.Tags}</Link>{" "}
+                              </li> */}
+                            </ul>
+                          </div>
                         </div>
+
                         <div className="paymnet-option">
                           <div className="product-title">
                             <h4>Guaranteed Safe Checkout</h4>
@@ -1571,7 +1692,7 @@ function Product(props) {
                                 <div className="offer-product">
                                   <Link to="/product" className="offer-image">
                                     <img
-                                      src={item?.product_Pic[0]}
+                                      src={item?.addVarient[0]?.product_Pic[0]}
                                       className="img-fluid  lazyload"
                                       alt=""
                                     />

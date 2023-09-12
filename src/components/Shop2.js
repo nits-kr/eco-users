@@ -1950,6 +1950,7 @@ function Shop2(props) {
                                               count[index] + 1
                                             )
                                           }
+                                          disabled={count[index] === item?.stockQuantity}
                                         >
                                           <i
                                             className="fa fa-plus"

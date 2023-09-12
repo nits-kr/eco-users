@@ -352,10 +352,7 @@ function Cart() {
                                 <div className="product border-0">
                                   <Link to="/product" className="product-image">
                                     <img
-                                      src={item?.products?.map(
-                                        (product) =>
-                                          product?.product_Id?.product_Pic[0]
-                                      )}
+                                      src={item?.products[0]?.product_Id?.addVarient[0]?.product_Pic[0]}
                                       className="img-fluid  lazyload"
                                       alt=""
                                     />
@@ -369,7 +366,7 @@ function Cart() {
                                               <strong>
                                                 {
                                                   product?.product_Id
-                                                    ?.productName_en
+                                                    ?.productName_en?.slice(0,15)
                                                 }
                                               </strong>
                                             </Link>
