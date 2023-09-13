@@ -3895,12 +3895,20 @@ function IndexGrocary(props) {
                     <h4 className="title-name">
                       {selectedProduct?.productName_en}
                     </h4>
-                    <h4 className="price">${selectedProduct?.Price} </h4>
+                    <h4 className="price">
+                      ${selectedProduct?.addVarient[0]?.Price}{" "}
+                    </h4>
                     <div className="product-rating">
                       <ul className="rating">
-                        <Star />
+                        <Star
+                          rating={averageRating || 0}
+                          totalRating={selectedProduct?.ratings?.length}
+                        />
+                        {console.log("selectedProduct", selectedProduct)}
                       </ul>
-                      <span className="ms-2">8 Reviews</span>
+                      <span className="ms-2">
+                        {selectedProduct?.ratings?.length}Reviews
+                      </span>
                       <span className="ms-2 text-danger">
                         6 sold in last 16 hours
                       </span>
@@ -3913,23 +3921,25 @@ function IndexGrocary(props) {
                       <li>
                         <div className="brand-box">
                           <h5>Brand Name:</h5>
-                          <h6>Black Forest</h6>
+                          <h6>
+                            {selectedProduct?.category_Id?.categoryName_en}
+                          </h6>
                         </div>
                       </li>
                       <li>
                         <div className="brand-box">
                           <h5>Product Code:</h5>
-                          <h6>W0690034</h6>
+                          <h6>{selectedProduct?.addVarient[0]?.SKU}</h6>
                         </div>
                       </li>
                       <li>
                         <div className="brand-box">
                           <h5>Product Type:</h5>
-                          <h6>lorem ipsum</h6>
+                          <h6>{selectedProduct?.productType}</h6>
                         </div>
                       </li>
                     </ul>
-                    <div className="select-size">
+                    {/* <div className="select-size">
                       <h4>Cake Size :</h4>
                       <select
                         className="form-select select-form-size"
@@ -3942,7 +3952,7 @@ function IndexGrocary(props) {
                         <option value="red">Red Roses</option>
                         <option value="pink">With Pink Roses</option>
                       </select>
-                    </div>
+                    </div> */}
                     <div className="modal-button">
                       <Link
                         to="/cart"

@@ -352,7 +352,10 @@ function Cart() {
                                 <div className="product border-0">
                                   <Link to="/product" className="product-image">
                                     <img
-                                      src={item?.products[0]?.product_Id?.addVarient[0]?.product_Pic[0]}
+                                      src={
+                                        item?.products[0]?.product_Id
+                                          ?.addVarient[0]?.product_Pic[0]
+                                      }
                                       className="img-fluid  lazyload"
                                       alt=""
                                     />
@@ -364,10 +367,10 @@ function Cart() {
                                           (product, index) => (
                                             <Link to={`/product`} key={index}>
                                               <strong>
-                                                {
-                                                  product?.product_Id
-                                                    ?.productName_en?.slice(0,15)
-                                                }
+                                                {product?.product_Id?.productName_en?.slice(
+                                                  0,
+                                                  15
+                                                )}
                                               </strong>
                                             </Link>
                                           )
@@ -379,14 +382,14 @@ function Cart() {
                                         </span>{" "}
                                         Fresho
                                       </li>
-                                      <li className="text-content">
+                                      {/* <li className="text-content">
                                         <span className="text-title">
                                           Quantity
                                         </span>{" "}
                                         -{" "}
                                         {item?.products[0]?.product_Id?.weight}
-                                      </li>
-                                      <li className="quantity-price-box">
+                                      </li> */}
+                                      {/* <li className="quantity-price-box">
                                         <div className="cart_qty">
                                           <div className="input-group">
                                             <button
@@ -413,15 +416,15 @@ function Cart() {
                                             </button>
                                           </div>
                                         </div>
-                                      </li>
-                                      <li>
+                                      </li> */}
+                                      {/* <li>
                                         <h5>Total: $35.10</h5>
-                                      </li>
+                                      </li> */}
                                     </ul>
                                   </div>
                                 </div>
                               </td>
-                              <td className="price">
+                              {/* <td className="price">
                                 <h4 className="table-title text-content">
                                   Price
                                 </h4>
@@ -444,7 +447,7 @@ function Cart() {
                                     item?.products[0]?.product_Id?.Discount
                                   }{" "}
                                 </h6>
-                              </td>
+                              </td> */}
                               <td className="quantity">
                                 <div className="quantity-price">
                                   <div className="cart_qty">
@@ -540,7 +543,7 @@ function Cart() {
                                 <h4 className="table-title text-content">
                                   Total
                                 </h4>
-                                <h5>${item?.cartsTotal}</h5>
+                                <h5>${item?.products[0]?.Price}</h5>
                               </td>
                               <td className="save-remove">
                                 <h3

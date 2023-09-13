@@ -27,6 +27,8 @@ import CountdownTimer from "./CountdownTimer";
 
 function Product(props) {
   const relatedProduct = useGetRelatedProductQuery();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
   const [relatedDetails, respons] = useRelatedProductDetailsMutation();
   const [addReview, response] = useAddReviewMutation();
   const [relatedProductItems, setRelatedProductItems] = useState([]);
@@ -65,8 +67,12 @@ function Product(props) {
   };
   const selectedVariantData = variants[selectedVariant];
   // const price = selectedVariantData?.Price;
-  const price = count ? (selectedVariantData?.Price) * count : selectedVariantData?.Price;
-  const oldPrice = count ? (selectedVariantData?.oldPrice) * count : selectedVariantData?.oldPrice;
+  const price = count
+    ? selectedVariantData?.Price * count
+    : selectedVariantData?.Price;
+  const oldPrice = count
+    ? selectedVariantData?.oldPrice * count
+    : selectedVariantData?.oldPrice;
 
   const [formData, setFormData] = useState({
     r1: "",
@@ -204,7 +210,7 @@ function Product(props) {
 
   const handleAddToCart = async (item, index) => {
     try {
-      const { data, error } = await AddToCart(id, count);
+      const { data, error } = await AddToCart(id, count, price);
       if (error) {
         console.log(error);
         return;
@@ -214,9 +220,9 @@ function Product(props) {
     } catch (error) {
       console.log(error);
     }
-    setTimeout(() => {
-      window?.location?.reload();
-    }, 500);
+    // setTimeout(() => {
+    //   window?.location?.reload();
+    // }, 500);
   };
   const fetchCartListData = () => {
     if (isSuccess) {
@@ -251,6 +257,15 @@ function Product(props) {
   }, []);
   // var deadline = new Date(Date.parse(new Date()) + 15 * 24 * 60 * 60 * 1000);
   // UseCountdownTimer(deadline);
+  const sliderSettings = {
+    dots: true, // Show dots (indicators)
+    infinite: true, // Infinite loop
+    speed: 500,
+    slidesToShow: 1, // Number of slides to show at once
+    slidesToScroll: 1,
+    autoplay: true,
+    beforeChange: (current, next) => setCurrentSlide(next), // Update current slide index
+  };
 
   const sliders2 = () => {
     return relatedProductDetail?.map((item, index) => (
@@ -436,7 +451,7 @@ function Product(props) {
           <section className="product-section">
             <div className="container-fluid-lg">
               <div className="row">
-                <div className="col-xxl-9 col-xl-8 col-lg-7 wow fadeInUp">
+                <div className="col-xxl-12 col-xl-8 col-lg-7 wow fadeInUp">
                   <div className="row g-4">
                     <div className="col-xl-6 wow fadeInUp">
                       <div className="product-left-box">
@@ -458,7 +473,157 @@ function Product(props) {
                                   </div>
                                 );
                               })} */}
+                              <div className="col-12 offerdetails_product position-relative">
+                                <div
+                                  id="carouselExampleIndicators"
+                                  className="carousel slide"
+                                  data-interval="false"
+                                  data-bs-ride="carousel"
+                                >
+                                  <div className="carousel-inner">
+                                    {selectedVariantData?.product_Pic?.map(
+                                      (item, index) => (
+                                        <div
+                                          className={`carousel-item ${
+                                            index === 0 ? "active" : ""
+                                          }`}
+                                          key={index}
+                                        >
+                                          <img
+                                            src={item}
+                                            className="d-block w-100"
+                                            alt={`Slide ${index + 1}`}
+                                          />
+                                          <span className="label_s">
+                                            {item.label}
+                                          </span>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                  {selectedVariantData?.product_Pic?.length <
+                                  10 ? (
+                                    <div className="carousel-indicators">
+                                      {selectedVariantData?.product_Pic
+                                        ?.slice(0, 10)
+                                        ?.map((item, index) => (
+                                          <button
+                                            type="button"
+                                            data-bs-target="#carouselExampleIndicators"
+                                            data-bs-slide-to={index}
+                                            key={index}
+                                            aria-label={`Slide ${index + 1}`}
+                                            className={
+                                              index === 0 ? "active" : ""
+                                            }
+                                          >
+                                            <img
+                                              src={item}
+                                              className="thumnail_img"
+                                              alt={`Slide ${index + 1}`}
+                                            />
+                                          </button>
+                                        ))}
+                                    </div>
+                                  ) : (
+                                    <div className="carousel">
+                                      <button
+                                        type="button"
+                                        className="carousel-control-prev"
+                                        data-bs-target="#carouselExampleIndicators"
+                                        data-bs-slide="prev"
+                                      >
+                                        <span
+                                          className="carousel-control-prev-icon"
+                                          aria-hidden="true"
+                                        ></span>
+                                        <span className="visually-hidden">
+                                          Previous
+                                        </span>
+                                      </button>
+
+                                      <div className="carousel-indicators">
+                                        {selectedVariantData?.product_Pic
+                                          ?.slice(0, 10)
+                                          ?.map((item, index) => (
+                                            <button
+                                              type="button"
+                                              data-bs-target="#carouselExampleIndicators"
+                                              data-bs-slide-to={index}
+                                              key={index}
+                                              aria-label={`Slide ${index + 1}`}
+                                              className={
+                                                index === 0 ? "active" : ""
+                                              }
+                                            >
+                                              <img
+                                                src={item}
+                                                className="thumnail_img"
+                                                alt={`Slide ${index + 1}`}
+                                              />
+                                            </button>
+                                          ))}
+                                      </div>
+
+                                      <button
+                                        type="button"
+                                        className="carousel-control-next"
+                                        data-bs-target="#carouselExampleIndicators"
+                                        data-bs-slide="next"
+                                      >
+                                        <span
+                                          className="carousel-control-next-icon"
+                                          aria-hidden="true"
+                                        ></span>
+                                        <span className="visually-hidden">
+                                          Next
+                                        </span>
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              {/* <Slider {...sliderSettings}>
+                                {selectedVariantData?.product_Pic?.map(
+                                  (item, index) => (
+                                    <div key={index}>
+                                      <div className="slider-image">
+                                        <img
+                                          src={item}
+                                          id={`img-${index}`}
+                                          data-zoom-image="../assets/images/product/category/1.jpg"
+                                          className="img-fluid image_zoom_cls-0 lazyload"
+                                          alt=""
+                                          style={{
+                                            width: "100%",
+                                            height: "45vh",
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
+                                  )
+                                )}
+                              </Slider>
                               {selectedVariantData?.product_Pic?.map(
+                                  (item, index) => (
+                                    <button
+                                      type="button"
+                                      data-bs-target="#carouselExampleIndicators"
+                                      data-bs-slide-to={index}
+                                      key={index}
+                                      aria-label={`Slide ${index + 1}`}
+                                      className={index === 0 ? "active" : ""}
+                                    >
+                                      <img
+                                        src={item}
+                                        className="thumnail_img"
+                                        alt={`Slide ${index + 1}`}
+                                      />
+                                    </button>
+                                  )
+                                )} */}
+
+                              {/* {selectedVariantData?.product_Pic?.map(
                                 (item, index) => (
                                   <div key={index}>
                                     <div className="slider-image">
@@ -472,7 +637,7 @@ function Product(props) {
                                     </div>
                                   </div>
                                 )
-                              )}
+                              )} */}
                             </div>
                           </div>
                         </div>
@@ -531,9 +696,9 @@ function Product(props) {
                             </span>
                           </div>
                         </div>
-                        <div className="procuct-contain">
+                        {/* <div className="procuct-contain">
                           <p>{productDetail?.Description}</p>
-                        </div>
+                        </div> */}
                         <div className="product-packege">
                           <div className="product-title">
                             <h4>
@@ -619,7 +784,7 @@ function Product(props) {
                             </li>
                           </ul>
                         </div> */}
-                        <CountdownTimer/>
+                        <CountdownTimer />
                         <div className="note-box product-packege">
                           <div className="cart_qty qty-box product-qty">
                             <div className="input-group">
@@ -717,6 +882,12 @@ function Product(props) {
                         {/* Other product details */}
 
                         <div className="pickup-box">
+                          <div className="procuct-contain">
+                            <div className="product-title">
+                              <h4>Description</h4>
+                            </div>
+                            <p>{productDetail?.Description}</p>
+                          </div>
                           <div className="product-title">
                             <h4>Store Information</h4>
                           </div>
@@ -1614,7 +1785,7 @@ function Product(props) {
                     </div>
                   </div>
                 </div>
-                <div className="col-xxl-3 col-xl-4 col-lg-5 d-none d-lg-block wow fadeInUp">
+                {/* <div className="col-xxl-3 col-xl-4 col-lg-5 d-none d-lg-block wow fadeInUp">
                   <div className="right-sidebar-box">
                     <div className="vendor-box">
                       <div className="verndor-contain">
@@ -1681,7 +1852,7 @@ function Product(props) {
                         </ul>
                       </div>
                     </div>
-                    {/* Trending Product */}
+                   
                     <div className="pt-25">
                       <div className="category-menu">
                         <h3>Trending Products</h3>
@@ -1717,7 +1888,7 @@ function Product(props) {
                         </ul>
                       </div>
                     </div>
-                    {/* Banner Section */}
+                   
                     <div className="ratio_156 pt-25">
                       <div className="home-contain ">
                         <img
@@ -1750,7 +1921,7 @@ function Product(props) {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </section>
