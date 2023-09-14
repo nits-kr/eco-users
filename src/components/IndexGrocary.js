@@ -163,9 +163,9 @@ function IndexGrocary(props) {
       console.log(error);
     }
   };
-  const handleAddToCart = async (item, index) => {
+  const handleAddToCart = async (item, price, index) => {
     try {
-      const { data, error } = await AddToCart(item._id, count[index]);
+      const { data, error } = await AddToCart(item._id, count[index], price*count[index]);
       if (error) {
         console.log(error);
         return;
@@ -523,7 +523,9 @@ function IndexGrocary(props) {
                   <button className="btn btn-add-cart addcart-button">
                     <Link
                       to="/cart"
-                      onClick={() => handleAddToCart(item, index)}
+                      onClick={() =>
+                        handleAddToCart(item, item?.addVarient[0]?.Price, index)
+                      }
                     >
                       Add To Cart
                       {/* <span className="add-icon bg-light-gray">

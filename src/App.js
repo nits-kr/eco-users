@@ -46,6 +46,7 @@ import OrderTracking from "./components/OrderTracking";
 import Shop2 from "./components/Shop2";
 import GetStar from "./components/GetStar";
 import Shop3 from "./components/Shop3";
+import CheckOutNew from "./components/CheckOutNew";
 
 function App() {
   const [progress, setProgress] = useState(0);
@@ -96,6 +97,13 @@ function App() {
             path="/check-out/:coupan2"
             element={<CheckOut />}
           />
+          <Route
+            exact
+            className="active"
+            path="/check-outall"
+            element={<CheckOutNew/>}
+          />
+          
           <Route
             exact
             className="active"

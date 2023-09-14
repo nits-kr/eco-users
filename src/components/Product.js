@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationDot, faHeart } from "@fortawesome/free-solid-svg-icons";
 import Slider from "react-slick";
 import { ProductDetails, ProductList, ProductSearch } from "./HttpServices";
 import { useGetCartListQuery } from "../services/Post";
@@ -451,7 +453,7 @@ function Product(props) {
           <section className="product-section">
             <div className="container-fluid-lg">
               <div className="row">
-                <div className="col-xxl-12 col-xl-8 col-lg-7 wow fadeInUp">
+                <div className="col-xxl-9 col-xl-8 col-lg-7 wow fadeInUp">
                   <div className="row g-4">
                     <div className="col-xl-6 wow fadeInUp">
                       <div className="product-left-box">
@@ -502,10 +504,10 @@ function Product(props) {
                                     )}
                                   </div>
                                   {selectedVariantData?.product_Pic?.length <
-                                  10 ? (
+                                  5 ? (
                                     <div className="carousel-indicators">
                                       {selectedVariantData?.product_Pic
-                                        ?.slice(0, 10)
+                                        ?.slice(0, 5)
                                         ?.map((item, index) => (
                                           <button
                                             type="button"
@@ -544,7 +546,7 @@ function Product(props) {
 
                                       <div className="carousel-indicators">
                                         {selectedVariantData?.product_Pic
-                                          ?.slice(0, 10)
+                                          ?.slice(0, 5)
                                           ?.map((item, index) => (
                                             <button
                                               type="button"
@@ -1785,74 +1787,74 @@ function Product(props) {
                     </div>
                   </div>
                 </div>
-                {/* <div className="col-xxl-3 col-xl-4 col-lg-5 d-none d-lg-block wow fadeInUp">
-                  <div className="right-sidebar-box">
-                    <div className="vendor-box">
-                      <div className="verndor-contain">
-                        <div className="vendor-image">
-                          <img
-                            src="../assets/images/product/vendor.png"
-                            className=" lazyload"
-                            alt=""
-                          />
+                <div className="col-xxl-3 col-xl-4 col-lg-5 d-none d-lg-block wow fadeInUp">
+                  <div
+                    className="right-sidebar-box"
+                    style={{
+                      border: "2px solid #e8ebe9",
+                      borderRadius: "5px",
+                      padding: "25px",
+                    }}
+                  >
+                    <div className="verndor-contain">
+                     
+                      <div className="vendor-name">
+                        <h5 className="fw-500 fs-1">
+                          <strong>$499</strong>{" "}
+                        </h5>
+                        
+                        <p className="vendor-detail">
+                          <span>
+                            <Link>FREE delivery</Link>{" "}
+                          </span>{" "}
+                          <span>
+                            <strong>Monday , 18 September</strong>{" "}
+                          </span>
+                          . Order within 3 hrs. <Link>Details</Link>
+                        </p>
+                        <div className="" style={{fontSize:"20px"}}><strong className="text-color-primary">In Stock </strong> </div>
+                        <div className="vendor-list">
+                          <ul>
+                            <li>
+                              <div className="address-contact">
+                                {/* <i data-feather="map-pin" /> */}
+                                <Link>
+                                  <FontAwesomeIcon
+                                    icon={faLocationDot}
+                                    className="me-2"
+                                  />
+                                  Select delivery location
+                                  <span className="text-content ms-2">
+                                    Select delivery location
+                                  </span>
+                                </Link>
+                                {/* <h5>
+                                    Address:{" "}
+                                    <span className="text-content">
+                                      <Link>Select delivery location</Link>
+                                    </span>
+                                  </h5> */}
+                              </div>
+                            </li>
+                            <li>
+                              <div className="address-contact">
+                                <i data-feather="headphones" />
+                                <h5>
+                                  Contact Seller:{" "}
+                                  <span className="text-content">
+                                    (+1)-123-456-789
+                                  </span>
+                                </h5>
+                                <h5 className="mt-2">
+                                Sold by <Link>KRAASA</Link> and <Link>Fulfilled by TechGroupse</Link>
+                                </h5>
+                              </div>
+                            </li>
+                          </ul>
                         </div>
-                        <div className="vendor-name">
-                          <h5 className="fw-500">Noodles Co.</h5>
-                          <div className="product-rating mt-1">
-                            <ul className="rating">
-                              <li>
-                                <i data-feather="star" className="fill" />
-                              </li>
-                              <li>
-                                <i data-feather="star" className="fill" />
-                              </li>
-                              <li>
-                                <i data-feather="star" className="fill" />
-                              </li>
-                              <li>
-                                <i data-feather="star" className="fill" />
-                              </li>
-                              <li>
-                                <i data-feather="star" />
-                              </li>
-                            </ul>
-                            <span>(36 Reviews)</span>
-                          </div>
-                        </div>
-                      </div>
-                      <p className="vendor-detail">
-                        Noodles &amp; Company is an American fast-casual
-                        restaurant that offers international and American noodle
-                        dishes and pasta.
-                      </p>
-                      <div className="vendor-list">
-                        <ul>
-                          <li>
-                            <div className="address-contact">
-                              <i data-feather="map-pin" />
-                              <h5>
-                                Address:{" "}
-                                <span className="text-content">
-                                  1288 Franklin Avenue
-                                </span>
-                              </h5>
-                            </div>
-                          </li>
-                          <li>
-                            <div className="address-contact">
-                              <i data-feather="headphones" />
-                              <h5>
-                                Contact Seller:{" "}
-                                <span className="text-content">
-                                  (+1)-123-456-789
-                                </span>
-                              </h5>
-                            </div>
-                          </li>
-                        </ul>
                       </div>
                     </div>
-                   
+
                     <div className="pt-25">
                       <div className="category-menu">
                         <h3>Trending Products</h3>
@@ -1888,7 +1890,7 @@ function Product(props) {
                         </ul>
                       </div>
                     </div>
-                   
+
                     <div className="ratio_156 pt-25">
                       <div className="home-contain ">
                         <img
@@ -1921,7 +1923,7 @@ function Product(props) {
                       </div>
                     </div>
                   </div>
-                </div> */}
+                </div>
               </div>
             </div>
           </section>

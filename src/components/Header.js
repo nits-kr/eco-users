@@ -531,7 +531,10 @@ function Header({ Dash }) {
                                         className="drop-image"
                                       >
                                         <img
-                                          src={item?.products[0]?.product_Id?.addVarient[0]?.product_Pic[0]}
+                                          src={
+                                            item?.products[0]?.product_Id
+                                              ?.addVarient[0]?.product_Pic[0]
+                                          }
                                           className="img-fluid  lazyload"
                                           alt=""
                                         />
@@ -548,7 +551,7 @@ function Header({ Dash }) {
                                                   <strong>
                                                     {
                                                       product?.product_Id
-                                                        ?.productName_en
+                                                        ?.productName_en?.slice(0,8)
                                                     }{" "}
                                                     {
                                                       product?.product_Id

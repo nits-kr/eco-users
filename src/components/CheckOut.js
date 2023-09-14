@@ -47,7 +47,8 @@ function CheckOut() {
     if (coupan2) {
       const decodedItem = JSON.parse(decodeURIComponent(coupan2));
       setCoupan(decodedItem);
-      console.log("blog id", decodedItem?._id);
+      console.log("blog id", decodedItem);
+      console.log("coupon2", coupan2);
     }
   }, [coupan2]);
 
@@ -986,13 +987,13 @@ function CheckOut() {
                   <ul className="summery-contain">
                     {items && items.products && items.products.length > 0 ? (
                       <li>
-                        <img
+                        {/* <img
                           src={
                             items.products[0]?.product_Id?.product_Pic[0] || ""
                           }
                           className="img-fluid lazyloaded checkout-image"
                           alt=""
-                        />
+                        /> */}
                         <h4>
                           {items.products[0]?.product_Id?.productName_en}{" "}
                           <span>X {items?.products[0]?.quantity}</span>
@@ -1004,7 +1005,8 @@ function CheckOut() {
                         <li key={index}>
                           <img
                             src={
-                              order.products[0]?.product_Id?.addVarient[0]?.product_Pic[0] || ""
+                              order.products[0]?.product_Id?.addVarient[0]
+                                ?.product_Pic[0] || ""
                             }
                             className="img-fluid lazyloaded checkout-image"
                             alt=""
@@ -1086,7 +1088,9 @@ function CheckOut() {
                     <li>
                       <h4>Subtotal(Discounted Price) </h4>
                       {coupan?.length !== 0 ? (
-                        <h4 className="price">${coupan?.cartsTotalSum}</h4>
+                        <h4 className="price">
+                          ${coupan?.cartsTotalSum?.toFixed(2)}
+                        </h4>
                       ) : orderItemSummaryPrice?.cartsTotal ? (
                         <h4 className="price">
                           ${orderItemSummaryPrice?.cartsTotal[0]}
@@ -1105,14 +1109,27 @@ function CheckOut() {
 
                     <li>
                       <h4>Shipping</h4>
-                      <h4 className="price">
+                      {/* <h4 className="price">
                         {" "}
-                        ${orderItemSummaryPrice?.shipping}{" "}
+                        ${orderItemSummaryPrice?.shipping !== "undefined" ? orderItemSummaryPrice?.shipping : 0}{" "}
+                      </h4> */}
+                      <h4 className="price">
+                        $
+                        {orderItemSummaryPrice?.shipping !== undefined
+                          ? orderItemSummaryPrice?.shipping
+                          : 0}
                       </h4>
                     </li>
                     <li>
                       <h4>Tax</h4>
-                      <h4 className="price">${orderItemSummaryPrice?.Tax} </h4>
+                      <h4 className="price">
+                        $
+                        {orderItemSummaryPrice?.Tax !== undefined
+                          ? orderItemSummaryPrice?.Tax
+                          : 0}
+                      </h4>
+
+                      {/* <h4 className="price">${orderItemSummaryPrice?.Tax} </h4> */}
                     </li>
                     {/* <li>
                       <h4>Coupon/Code</h4>
@@ -1122,13 +1139,27 @@ function CheckOut() {
                     </li> */}
                     <li className="list-total">
                       <h4>Total (USD)</h4>
-                      <h4 className="price">
+                      {/* <h4 className="price">
                         $
                         {coupan?.length !== 0
-                          ? coupan?.cartsTotalSum +
+                          ? coupan?.coupan?.cartsTotalSum?.toFixed(2) +
                             orderItemSummaryPrice?.shipping +
                             orderItemSummaryPrice?.Tax
                           : orderItemSummaryPrice?.cartsTotalSum}{" "}
+                      </h4> */}
+                      <h4 className="price">
+                        {coupan?.length !== 0
+                          ? (
+                              (parseFloat(coupan?.cartsTotalSum) || 0) +
+                              (parseFloat(orderItemSummaryPrice?.shipping) ||
+                                0) +
+                              (parseFloat(orderItemSummaryPrice?.Tax) || 0)
+                            ).toFixed(2)
+                          : (
+                              parseFloat(
+                                orderItemSummaryPrice?.cartsTotalSum
+                              ) || 0
+                            ).toFixed(2)}
                       </h4>
                     </li>
                   </ul>

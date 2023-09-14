@@ -36,10 +36,11 @@ function Cart() {
   console.log("coupan2", coupan2);
   const [coupanCode, setCoupanCode] = useState("25753411");
   const [CreateWishItems, setCreateWishItems] = useState([]);
-
+  const [totalPrice, setTotalPrice] = useState([]);
   const coupanCode2 = coupanCode || "";
   const { data: cartListQuery, isSuccess } = useGetCartListQuery();
   const cart = useSelector((state) => state.cart);
+  const [singleItemPrice, setSingleItemPrice] = useState([]);
   localStorage?.setItem("cartTotal", cartTotal);
 
   const [count1, setCount1] = useState();
@@ -132,101 +133,115 @@ function Cart() {
     }
   };
 
+  useEffect(() => {
+    fetchCartListData();
+  }, [cartListQuery, count1]);
   const fetchCartListData = () => {
     if (isSuccess) {
-      // setCartListItems(cartListQuery?.results?.list);
       const items = cartListQuery?.results?.list || [];
-      const total = items.reduce((acc, item) => acc + item?.cartsTotal, 0);
+      // localStorage?.setItem("allCartItems", items);
+      localStorage?.setItem(
+        "allCartItems",
+        encodeURIComponent(JSON.stringify(items))
+      );
+      let total = 0;
+      items.forEach((item) => {
+        if (item?.products && item.products.length > 0) {
+          item.products.forEach((product) => {
+            if (product.Price) {
+              total += product.Price;
+              // total += product.Price * (item.quantity || 1);
+              setTotalPrice(total);
+            }
+          });
+        }
+      });
+
       setCartTotal(total);
       setCartListItems(items);
       console.log("total", total);
     }
   };
-  useEffect(() => {
-    fetchCartListData();
-  }, [cartListQuery, count1]);
 
   // useEffect(() => {
   //   handleCoupan();
   // }, []);
   const applyCoupanCode = async () => {
-    let orderList = [];
+    let cartList = [];
 
-    orderList =
+    cartList =
       cartListItems?.map((order) => ({
         product_Id: order?.products[0]?.product_Id?._id,
         quantity: order?.products[0]?.quantity,
+        Price: order?.products[0]?.Price,
       })) || [];
 
     const newOrderData = {
       coupanCode: coupanCode2,
-      carts: orderList,
+      carts: cartList,
       user_Id: userId,
     };
 
     try {
       const createNewOrder = await applyCoupan(newOrderData);
+      let totalPrice = 0;
+      createNewOrder?.data?.results.product.forEach((product) => {
+        totalPrice += parseInt(product.Price);
+        // totalPrice += parseInt(product.Price) * parseInt(product.quantity);
+      });
+
+      const discountPercentage =
+        createNewOrder?.data?.results.DiscountType[0] || 0;
+      const discountedPrice =
+        totalPrice - (totalPrice * discountPercentage) / 100;
+
+      setCoupan({
+        ...createNewOrder?.data?.results,
+        cartsTotalSum: discountedPrice || cartTotal,
+      });
       console.log(createNewOrder);
-      setCoupan(createNewOrder?.data?.results);
+      // setCoupan(createNewOrder?.data?.results);
     } catch (error) {
       console.error("An error occurred while placing the order.");
     }
   };
+  const handlePrice = (item) => {
+    setSingleItemPrice(item);
+    localStorage?.setItem("buyItem", encodeURIComponent(JSON.stringify(item)));
+    window.onbeforeunload = function () {
+      // Remove the 'theme' item from local storage
+      localStorage.removeItem("allCartItems");
+    };
+    console.log(item);
+  };
   const handleCoupan2 = async (item, quantity, id) => {
     const newOrderData = {
       coupanCode: coupanCode2,
-      carts: [{ product_Id: id, quantity: quantity }],
+      carts: [{ product_Id: id, Price: item, quantity: quantity }],
       user_Id: userId,
     };
 
     try {
       const createNewOrder = await applyCoupan2(newOrderData);
       console.log("createNewOrder", createNewOrder);
-      setCoupan2(createNewOrder?.data?.results);
-      localStorage?.setItem(
-        "buyItem",
-        encodeURIComponent(JSON.stringify(item))
-      );
+      let totalPrice = 0;
+      createNewOrder?.data?.results.product.forEach((product) => {
+        totalPrice += parseInt(product.Price);
+        // totalPrice += parseInt(product.Price) * parseInt(product.quantity);
+      });
+
+      const discountPercentage =
+        createNewOrder?.data?.results.DiscountType[0] || 0;
+      const discountedPrice =
+        totalPrice - (totalPrice * discountPercentage) / 100;
+
+      setCoupan2({
+        ...createNewOrder?.data?.results,
+        cartsTotalSum: discountedPrice || cartTotal,
+      });
+      // setCoupan2(createNewOrder?.data?.results);
     } catch (error) {
       console.error("An error occurred while placing the order.");
-    }
-  };
-
-  const handleCoupan = async () => {
-    const data = {
-      coupanCode: "25753411",
-      carts: [
-        {
-          product_Id: "64c25ddb24e0f35295000510",
-          quantity: "3",
-        },
-        {
-          product_Id: "64c25ddb24e0f35295000510",
-          quantity: "1",
-        },
-      ],
-      user_Id: "64d4d0dcda1e0148c5bed23f",
-    };
-    try {
-      const { data, error } = await ApplyCoupan(coupanCode2);
-      error ? console.log(error) : console.log(data);
-      setCoupan(data.results);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const handleCoupan23 = async (item, quantity, id) => {
-    try {
-      const { data, error } = await ApplyCoupan2(quantity, id, coupanCode2);
-      error ? console.log(error) : console.log(data);
-      setCoupan2(data?.results);
-      localStorage?.setItem(
-        "buyItem",
-        encodeURIComponent(JSON.stringify(item))
-      );
-      console.log("check out item", item);
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -243,32 +258,24 @@ function Cart() {
     }
   };
   const userId = localStorage?.getItem("loginId");
-  const handleWishClick = async (item) => {
-    try {
-      const editAddress = {
-        product_Id: item?.products[0]?.product_Id?._id,
-        userId: userId,
-        like: true,
-      };
-      // console.log(item?._id);
-      const { data, error } = await wishAdd(editAddress);
-      if (error) {
-        console.log(error);
-        return;
-      }
-      const newCreateWishItems = [...CreateWishItems, data];
-      setCreateWishItems(newCreateWishItems);
-      setTimeout(() => {
-        window?.location?.reload();
-      }, 500);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   // console.log("coupan", coupan);
   useEffect(() => {
     feather.replace();
   }, []);
+
+  // const checkoutUrl =
+  //   coupan?.length !== 0
+  //     ? `/check-out/${encodeURIComponent(
+  //         JSON.stringify(coupan2.length !== 0 ? coupan2 : coupan)
+  //       )}`
+  //     : "/check-outall";
+  const checkoutUrl =
+    coupan2 && coupan2.length !== 0
+      ? `/check-out/${encodeURIComponent(JSON.stringify(coupan2))}`
+      : coupan && coupan.length !== 0
+      ? `/check-out/${encodeURIComponent(JSON.stringify(coupan))}`
+      : "/check-outall";
 
   return (
     <>
@@ -566,13 +573,14 @@ function Cart() {
                                     to="#"
                                     className="btn btn-animation proceed-btn fw-bold me-2"
                                     style={{ height: "35px", width: "35px" }}
-                                    onClick={() =>
-                                      handleCoupan2(
-                                        item,
-                                        item?.products[0]?.quantity,
-                                        item?.products[0]?.product_Id?._id
-                                      )
-                                    }
+                                    onClick={() => {
+                                      // handleCoupan2(
+                                      //   item,
+                                      //   item?.products[0]?.quantity,
+                                      //   item?.products[0]?.product_Id?._id
+                                      // );
+                                      handlePrice(item);
+                                    }}
                                   >
                                     Buy
                                   </Link>
@@ -623,32 +631,63 @@ function Cart() {
                   <h3>Cart Total</h3>
                 </div>
                 <div className="summery-contain">
-                  <div className="coupon-cart">
-                    <h6 className="text-content mb-2">Coupon Apply</h6>
-                    <div className="mb-3 coupon-box input-group">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="coupanCode"
-                        name="coupanCode"
-                        placeholder="Enter Coupon Code Here..."
-                        value={coupanCode}
-                        onChange={(e) => setCoupanCode(e.target.value)}
-                      />
-                      <button
-                        className="btn-apply"
-                        onClick={() => applyCoupanCode()}
-                      >
-                        Apply
-                      </button>
+                  {singleItemPrice.length !== 0 ? (
+                    <div className="coupon-cart">
+                      <h6 className="text-content mb-2">Coupon Apply</h6>
+                      <div className="mb-3 coupon-box input-group">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="coupanCode"
+                          name="coupanCode"
+                          placeholder="Enter Coupon Code Here..."
+                          value={coupanCode}
+                          onChange={(e) => setCoupanCode(e.target.value)}
+                        />
+                        <button
+                          className="btn-apply"
+                          onClick={() =>
+                            handleCoupan2(
+                              singleItemPrice?.products[0]?.Price,
+                              singleItemPrice?.products[0]?.quantity,
+                              singleItemPrice?.products[0]?.product_Id?._id
+                            )
+                          }
+                        >
+                          Apply
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="coupon-cart">
+                      <h6 className="text-content mb-2">Coupon Apply</h6>
+                      <div className="mb-3 coupon-box input-group">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="coupanCode"
+                          name="coupanCode"
+                          placeholder="Enter Coupon Code Here..."
+                          value={coupanCode}
+                          onChange={(e) => setCoupanCode(e.target.value)}
+                        />
+                        <button
+                          className="btn-apply"
+                          onClick={() => applyCoupanCode()}
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
-                  {coupan2.length !== 0 ? (
+                  {singleItemPrice.length !== 0 ? (
                     <ul>
                       <li>
                         <h4>Subtotal</h4>
-                        <h4 className="price">${coupan2.subtotal}</h4>
+                        <h4 className="price">
+                          ${singleItemPrice?.products[0]?.Price}
+                        </h4>
                       </li>
                       <li>
                         <h4>Coupon Discount</h4>
@@ -711,12 +750,27 @@ function Cart() {
                           : coupan?.cartsTotalSum}
                       </h4>
                     )} */}
-                    <h4 className="price theme-color">
+                    {singleItemPrice?.length !== 0 ? (
+                      <h4 className="price theme-color">
+                        $
+                        {coupan2.length !== 0
+                          ? coupan2?.cartsTotalSum?.toFixed(2)
+                          : singleItemPrice?.products[0]?.Price}
+                      </h4>
+                    ) : (
+                      <h4 className="price theme-color">
+                        $
+                        {coupan2.length !== 0
+                          ? coupan2?.cartsTotalSum?.toFixed(2)
+                          : coupan?.cartsTotalSum?.toFixed(2) || cartTotal}
+                      </h4>
+                    )}
+                    {/* <h4 className="price theme-color">
                       $
                       {coupan2.length !== 0
-                        ? coupan2.cartsTotalSum
-                        : coupan.cartsTotalSum || cartTotal}
-                    </h4>
+                        ? coupan2?.cartsTotalSum?.toFixed(2)
+                        : coupan?.cartsTotalSum?.toFixed(2) || cartTotal}
+                    </h4> */}
 
                     {/* <h4 className="price theme-color">
                       $
@@ -729,7 +783,7 @@ function Cart() {
                 <div className="button-group cart-button">
                   <ul>
                     <li>
-                      <Link
+                      {/* <Link
                         // to="/check-out"
                         to={`/check-out/${encodeURIComponent(
                           JSON.stringify(coupan2)
@@ -737,7 +791,32 @@ function Cart() {
                         className="btn btn-animation proceed-btn fw-bold"
                       >
                         Process To Checkout
+                      </Link> */}
+                      <Link
+                        to={checkoutUrl}
+                        className="btn btn-animation proceed-btn fw-bold"
+                      >
+                        Process To Checkout
                       </Link>
+                      {/* {coupan || coupan2 ? (
+                        <Link
+                          to={`/check-out/${encodeURIComponent(
+                            JSON.stringify(
+                              coupan2.length !== 0 ? coupan2 : coupan
+                            )
+                          )}`}
+                          className="btn btn-animation proceed-btn fw-bold"
+                        >
+                          Process To Checkout
+                        </Link>
+                      ) : (
+                        <Link
+                          to="/check-out"
+                          className="btn btn-animation proceed-btn fw-bold"
+                        >
+                          Process To Checkout
+                        </Link>
+                      )} */}
                     </li>
                     <li>
                       <button
