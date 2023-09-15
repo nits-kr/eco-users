@@ -43,6 +43,10 @@ function IndexGrocary(props) {
   const [quantity, setQuantity] = useState([]);
   const [wishAdd, res] = useAddToWislistListMutation();
   const [count, setCount] = useState([]);
+  useEffect(() => {
+    const initialCounts = trendingList?.map(() => 1);
+    setCount(initialCounts);
+  }, [trendingList]);
   const handleCountChange = (index, newCount) => {
     const newCounts = [...count];
     newCounts[index] = newCount >= 0 ? newCount : 0;
@@ -165,7 +169,11 @@ function IndexGrocary(props) {
   };
   const handleAddToCart = async (item, price, index) => {
     try {
-      const { data, error } = await AddToCart(item._id, count[index], price*count[index]);
+      const { data, error } = await AddToCart(
+        item._id,
+        count[index],
+        price * count[index]
+      );
       if (error) {
         console.log(error);
         return;
@@ -458,7 +466,7 @@ function IndexGrocary(props) {
                           </button>
                           <div className="m-2">
                             {" "}
-                            {count[index] ? count[index] : "0"}
+                            {count[index] ? count[index] : "1"}
                           </div>
                           <button
                             type="button"
@@ -939,9 +947,18 @@ function IndexGrocary(props) {
                                           {item?.productName_en}
                                         </h6>
                                       </Link>
-                                      <span> {item?.stockQuantity} left </span>
+                                      <span>
+                                        {" "}
+                                        {
+                                          item?.addVarient[0]?.stockQuantity
+                                        }{" "}
+                                        left{" "}
+                                      </span>
                                       <h6 className="price theme-color">
-                                        ${item?.Price}{" "}
+                                        $
+                                        {item?.addVarient[0]?.dollarPrice?.toFixed(
+                                          2
+                                        )}{" "}
                                       </h6>
                                     </div>
                                   </div>

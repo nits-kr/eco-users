@@ -26,6 +26,8 @@ import { useAddReviewMutation } from "../services/Post";
 import GetStar from "./GetStar";
 import { useRelatedProductDetailsMutation } from "../services/Post";
 import CountdownTimer from "./CountdownTimer";
+import Carousel from "./Carousel ";
+import SetupReadMore from "./javascript/Readmore";
 
 function Product(props) {
   const relatedProduct = useGetRelatedProductQuery();
@@ -62,6 +64,7 @@ function Product(props) {
   const [selectedAttributeValues, setSelectedAttributeValues] = useState({});
   const [selectedVariant, setSelectedVariant] = useState(0);
   const variants = productDetail?.addVarient || [];
+  const [area, setArea] = useState(true);
   console.log("variant", variants);
 
   const handleVariantChange = (index) => {
@@ -222,9 +225,9 @@ function Product(props) {
     } catch (error) {
       console.log(error);
     }
-    // setTimeout(() => {
-    //   window?.location?.reload();
-    // }, 500);
+    setTimeout(() => {
+      window?.location?.reload();
+    }, 500);
   };
   const fetchCartListData = () => {
     if (isSuccess) {
@@ -371,6 +374,13 @@ function Product(props) {
     ));
   };
 
+  const handleExpand = () => {
+    setArea(false);
+  };
+  const handleCompress = () => {
+    setArea(true);
+  };
+
   return (
     <>
       {loading}
@@ -455,7 +465,7 @@ function Product(props) {
               <div className="row">
                 <div className="col-xxl-9 col-xl-8 col-lg-7 wow fadeInUp">
                   <div className="row g-4">
-                    <div className="col-xl-6 wow fadeInUp">
+                    <div className="col-xl-7 wow fadeInUp">
                       <div className="product-left-box">
                         <div className="row g-2">
                           <div className="col-12">
@@ -503,7 +513,62 @@ function Product(props) {
                                       )
                                     )}
                                   </div>
-                                  {selectedVariantData?.product_Pic?.length <
+
+                                  <div className="carousel">
+                                    <button
+                                      type="button"
+                                      className="carousel-control-prev"
+                                      data-bs-target="#carouselExampleIndicators"
+                                      data-bs-slide="prev"
+                                    >
+                                      <span
+                                        className="carousel-control-prev-icon"
+                                        aria-hidden="true"
+                                      ></span>
+                                      <span className="visually-hidden">
+                                        Previous
+                                      </span>
+                                    </button>
+
+                                    <div className="carousel-indicators">
+                                      {selectedVariantData?.product_Pic?.map(
+                                        (item, index) => (
+                                          <button
+                                            type="button"
+                                            data-bs-target="#carouselExampleIndicators"
+                                            data-bs-slide-to={index}
+                                            key={index}
+                                            aria-label={`Slide ${index + 1}`}
+                                            className={
+                                              index === 0 ? "active" : ""
+                                            }
+                                          >
+                                            <img
+                                              src={item}
+                                              className="thumnail_img"
+                                              alt={`Slide ${index + 1}`}
+                                            />
+                                          </button>
+                                        )
+                                      )}
+                                    </div>
+
+                                    <button
+                                      type="button"
+                                      className="carousel-control-next"
+                                      data-bs-target="#carouselExampleIndicators"
+                                      data-bs-slide="next"
+                                    >
+                                      <span
+                                        className="carousel-control-next-icon"
+                                        aria-hidden="true"
+                                      ></span>
+                                      <span className="visually-hidden">
+                                        Next
+                                      </span>
+                                    </button>
+                                  </div>
+                                  {/* {selectedVariantData?.product_Pic?.length <
                                   5 ? (
                                     <div className="carousel-indicators">
                                       {selectedVariantData?.product_Pic
@@ -546,7 +611,6 @@ function Product(props) {
 
                                       <div className="carousel-indicators">
                                         {selectedVariantData?.product_Pic
-                                          ?.slice(0, 5)
                                           ?.map((item, index) => (
                                             <button
                                               type="button"
@@ -582,7 +646,7 @@ function Product(props) {
                                         </span>
                                       </button>
                                     </div>
-                                  )}
+                                  )} */}
                                 </div>
                               </div>
                               {/* <Slider {...sliderSettings}>
@@ -646,7 +710,7 @@ function Product(props) {
                       </div>
                     </div>
                     <div
-                      className="col-xl-6 wow fadeInUp"
+                      className="col-xl-5 wow fadeInUp"
                       data-wow-delay="0.1s"
                     >
                       <div className="right-box-contain">
@@ -668,6 +732,16 @@ function Product(props) {
                         <h2 className="name">
                           {productDetail?.productName_en}
                         </h2>
+                        {/* <h3 className="name">
+                        Deal of the Day
+                        </h3> */}
+                        <Link
+                          to="/cart"
+                          className="btn btn-md bg-danger cart-button text-white mb-3"
+                          style={{ width: "35%", height: "30px" }}
+                        >
+                          Deal of the Day
+                        </Link>
                         <div className="price-rating">
                           <h3 className="theme-color price">
                             ${price}{" "}
@@ -701,6 +775,9 @@ function Product(props) {
                         {/* <div className="procuct-contain">
                           <p>{productDetail?.Description}</p>
                         </div> */}
+                        <div className="border mt-2"></div>
+                        <Carousel />
+                        <div className="border my-2"></div>
                         <div className="product-packege">
                           <div className="product-title">
                             <h4>
@@ -884,20 +961,49 @@ function Product(props) {
                         {/* Other product details */}
 
                         <div className="pickup-box">
-                          <div className="procuct-contain">
-                            <div className="product-title">
-                              <h4>Description</h4>
+                          {area ? (
+                            <div className="procuct-contain">
+                              <div className="product-title">
+                                <h4>Description</h4>
+                              </div>
+                              <p>
+                                {productDetail?.Description?.slice(0, 140)}
+                                <strong>...</strong>
+                              </p>
+                              <Link
+                                to=""
+                                className="blog-button"
+                                onClick={handleExpand}
+                              >
+                                Read More
+                                <i className="fa-solid fa-right-long ms-2" />
+                              </Link>
                             </div>
-                            <p>{productDetail?.Description}</p>
-                          </div>
-                          <div className="product-title">
+                          ) : (
+                            <div className="procuct-contain">
+                              <div className="product-title">
+                                <h4>Description</h4>
+                              </div>
+                              <p>{productDetail?.Description}</p>
+                              <Link
+                                to=""
+                                className="blog-button"
+                                onClick={handleCompress}
+                              >
+                                Hide More
+                                <i className="fa-solid fa-right-long ms-2" />
+                              </Link>
+                            </div>
+                          )}
+
+                          {/* <div className="product-title">
                             <h4>Store Information</h4>
                           </div>
                           <div className="pickup-detail">
                             <h4 className="text-content">
                               {productDetail?.Description}
                             </h4>
-                          </div>
+                          </div> */}
                           <div className="product-info">
                             <ul className="product-info-list product-info-list-2">
                               <li>
@@ -1797,12 +1903,24 @@ function Product(props) {
                     }}
                   >
                     <div className="verndor-contain">
-                     
                       <div className="vendor-name">
-                        <h5 className="fw-500 fs-1">
-                          <strong>$499</strong>{" "}
+                        {/* <h5 className="fw-500 fs-1 mb-3">
+                          <strong>${price} </strong>{" "}
+                        </h5> */}
+                        <h5 className="fw-500 fs-1 mb-3">
+                          <strong>
+                            <span
+                              style={{
+                                fontSize: "0.6em",
+                                verticalAlign: "top",
+                              }}
+                            >
+                              $
+                            </span>
+                            {price}{" "}
+                          </strong>
                         </h5>
-                        
+
                         <p className="vendor-detail">
                           <span>
                             <Link>FREE delivery</Link>{" "}
@@ -1812,11 +1930,15 @@ function Product(props) {
                           </span>
                           . Order within 3 hrs. <Link>Details</Link>
                         </p>
-                        <div className="" style={{fontSize:"20px"}}><strong className="text-color-primary">In Stock </strong> </div>
+                        <div className="" style={{ fontSize: "20px" }}>
+                          <strong className="text-color-primary">
+                            In Stock{" "}
+                          </strong>{" "}
+                        </div>
                         <div className="vendor-list">
                           <ul>
                             <li>
-                              <div className="address-contact">
+                              <div className="address-contact mb-3">
                                 {/* <i data-feather="map-pin" /> */}
                                 <Link>
                                   <FontAwesomeIcon
@@ -1824,9 +1946,9 @@ function Product(props) {
                                     className="me-2"
                                   />
                                   Select delivery location
-                                  <span className="text-content ms-2">
+                                  {/* <span className="text-content ms-2">
                                     Select delivery location
-                                  </span>
+                                  </span> */}
                                 </Link>
                                 {/* <h5>
                                     Address:{" "}
@@ -1846,7 +1968,8 @@ function Product(props) {
                                   </span>
                                 </h5>
                                 <h5 className="mt-2">
-                                Sold by <Link>KRAASA</Link> and <Link>Fulfilled by TechGroupse</Link>
+                                  Sold by <Link>KRAASA</Link> and{" "}
+                                  <Link>Fulfilled by TechGropse</Link>
                                 </h5>
                               </div>
                             </li>
@@ -1877,9 +2000,9 @@ function Product(props) {
                                           {item?.productName_en}
                                         </h6>
                                       </Link>
-                                      <span> {item?.weight} </span>
+                                      <span><strong> {item?.addVarient[0]?.values_Id?.valuesName_en}</strong> </span>
                                       <h6 className="price theme-color">
-                                        ${item?.Price}{" "}
+                                        ${item?.addVarient[0]?.dollarPrice?.toFixed(2)}{" "}
                                       </h6>
                                     </div>
                                   </div>

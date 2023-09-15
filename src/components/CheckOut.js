@@ -52,49 +52,19 @@ function CheckOut() {
     }
   }, [coupan2]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleAddressSelection = (addressId) => {
-    setSelectedAddressId(addressId);
-  };
-
-  const getReversedList = (list) => {
-    return list?.data?.results?.addressData?.slice().reverse() ?? [];
-  };
-  useEffect(() => {
-    const reversedList = getReversedList(addressList);
-    setNewAddress(reversedList);
-  }, [addressList]);
-
-  const fetchData = async () => {
-    try {
-      const { data, error } = await OrderSummary();
-      error ? console.log(error) : console.log(data);
-      setOrderItemSummary(data?.results?.product);
-      setOrderItemSummaryPrice(data.results);
-      console.log(data.results.product);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    feather.replace();
-  }, []);
-
   const placeOrder = async () => {
     let orderList = [];
-    if (items.length !== 0) {
-      orderList = {
-        product_Id: items?.products[0]?.product_Id?._id,
-        quantity: items?.products[0]?.quantity,
-      };
+    if (coupan.length !== 0) {
+      orderList = coupan.product.map((product) => ({
+        product_Id: product.product_Id,
+        quantity: product.quantity,
+      }));
     } else {
       orderList =
         orderItemSummary?.map((order) => ({
           product_Id: order.products[0].product_Id._id,
           quantity: order.products[0].quantity,
+          cartsTotal: orderItemSummaryPrice?.cartsTotalSum,
         })) || [];
     }
 
@@ -102,6 +72,7 @@ function CheckOut() {
       carts: orderList,
       user_Id: userId,
       address_Id: selectedAddressId,
+      cartsTotal: coupan.cartsTotalSum,
       shippingPrice: "30",
       taxPrice: "20",
       // deliverdBy: "64997c95488af9cf3dfb8d69",
@@ -144,6 +115,37 @@ function CheckOut() {
       }
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleAddressSelection = (addressId) => {
+    setSelectedAddressId(addressId);
+  };
+
+  const getReversedList = (list) => {
+    return list?.data?.results?.addressData?.slice().reverse() ?? [];
+  };
+  useEffect(() => {
+    const reversedList = getReversedList(addressList);
+    setNewAddress(reversedList);
+  }, [addressList]);
+
+  const fetchData = async () => {
+    try {
+      const { data, error } = await OrderSummary();
+      error ? console.log(error) : console.log(data);
+      setOrderItemSummary(data?.results?.product);
+      setOrderItemSummaryPrice(data.results);
+      console.log(data.results.product);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    feather.replace();
+  }, []);
 
   return (
     <>

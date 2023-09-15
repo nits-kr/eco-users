@@ -30929,4 +30929,24 @@ button.btn.btn-add-cart.addcart-button {
 .carousel-indicators .active {
   opacity: 1;
 }
+/* Read more */
+.product-description {
+  max-height: 3em;
+  overflow: hidden;
+  position: relative;
+}
 
+.read-more-button {
+  display: none;
+}
+
+.read-more-button::before {
+  content: "Read More...";
+  display: block;
+  color: blue; /* You can change the color as needed */
+  cursor: pointer;
+}
+
+.read-more-button.expanded::before {
+  content: "Read Less...";
+}

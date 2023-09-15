@@ -418,7 +418,9 @@ function Header({ Dash }) {
                                   >
                                     <div className="product-image">
                                       <img
-                                        src={product.product_Pic[0]}
+                                        src={
+                                          product?.addVarient[0]?.product_Pic[0]
+                                        }
                                         alt={product.productName_en}
                                         width={20}
                                         height={20}
@@ -543,38 +545,59 @@ function Header({ Dash }) {
                                         <div>
                                           <h5>
                                             {item?.products?.map(
-                                              (product, index) => (
-                                                <Link
-                                                  to={`/product/${item?.products[0]?.product_Id?._id}`}
-                                                  key={index}
-                                                >
-                                                  <strong>
-                                                    {
-                                                      product?.product_Id
-                                                        ?.productName_en?.slice(0,8)
-                                                    }{" "}
-                                                    {
-                                                      product?.product_Id
-                                                        ?.weight
-                                                    }
-                                                  </strong>
-                                                </Link>
-                                              )
+                                              (product, index) => {
+                                                const productName =
+                                                  product?.product_Id
+                                                    ?.productName_en;
+                                                const trimmedProductName =
+                                                  productName
+                                                    ? productName
+                                                        .split(" ")
+                                                        .slice(0, 3)
+                                                        .join(" ")
+                                                    : "";
+
+                                                return (
+                                                  <Link
+                                                    to={`/product/${item?.products[0]?.product_Id?._id}`}
+                                                    key={index}
+                                                  >
+                                                    <strong>
+                                                      {trimmedProductName.slice(
+                                                        0,
+                                                        8
+                                                      )}{" "}
+                                                      {
+                                                        product?.product_Id
+                                                          ?.weight
+                                                      }
+                                                    </strong>
+                                                  </Link>
+                                                );
+                                              }
                                             )}
                                           </h5>
                                         </div>
                                         <h6>
-                                          {item?.products?.map((product) => (
-                                            <span
-                                              key={product?.product_Id?._id}
-                                            >
-                                              {product?.quantity || 0} x $
-                                              {product?.product_Id?.Price}
-                                            </span>
-                                          ))}
+                                          {item?.products?.map(
+                                            (product, index) => (
+                                              <span
+                                                key={product?.product_Id?._id}
+                                              >
+                                                <strong>
+                                                  {product?.quantity || 0} x $
+                                                  {product?.Price}
+                                                </strong>
+                                                {index <
+                                                  item.products.length - 1 &&
+                                                  ", "}
+                                              </span>
+                                            )
+                                          )}
                                         </h6>
 
                                         <button
+                                          title="Remove"
                                           className="close-button close_button me-2"
                                           onClick={() =>
                                             deleteCartItem(item._id)
@@ -584,6 +607,8 @@ function Header({ Dash }) {
                                         </button>
                                       </div>
                                     </div>
+                                    {index < cartListItems.length - 1 && <hr />}{" "}
+                                    {/* Horizontal bar */}
                                   </li>
                                 );
                               })}

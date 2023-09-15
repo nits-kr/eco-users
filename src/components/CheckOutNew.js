@@ -57,6 +57,71 @@ function CheckOutNew() {
     }
   }, []);
 
+  const placeOrder = async () => {
+    let orderList = [];
+
+    if (items.length !== 0) {
+      orderList.push({
+        product_Id: items.products[0]?.product_Id?._id,
+        quantity: items.products[0]?.quantity,
+      });
+    } else if (items2.length !== 0) {
+      orderList = items2.map((product) => ({
+        product_Id: product?.products[0]?.product_Id?._id,
+        quantity: product?.products[0]?.quantity,
+      }));
+    }
+
+    const cartsTotal =
+      items.length !== 0 ? items?.products[0]?.Price : totalPrice;
+
+    const newOrderData = {
+      carts: orderList,
+      user_Id: userId,
+      address_Id: selectedAddressId,
+      cartsTotal: cartsTotal,
+      shippingPrice: "30",
+      taxPrice: "20",
+    };
+
+    const confirmationResult = await Swal.fire({
+      title: "Place Order Confirmation",
+      text: "Are you sure you want to place the order?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Place Order",
+      cancelButtonText: "Cancel",
+      customClass: {
+        confirmButton: "custom-confirm-button-class m-3",
+      },
+    });
+
+    if (confirmationResult.isConfirmed) {
+      try {
+        const createNewOrder = await createOrder(newOrderData);
+        console.log(createNewOrder);
+        await Swal.fire({
+          title: "Order Placed!",
+          text: "Your order has been placed successfully.",
+          icon: "success",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/shop/:id");
+          }
+        });
+      } catch (error) {
+        // Show an error alert
+        await Swal.fire({
+          title: "Error",
+          text: "An error occurred while placing the order.",
+          icon: "error",
+        });
+      }
+    }
+  };
+
   useEffect(() => {
     if (coupan2) {
       const decodedItem = JSON.parse(decodeURIComponent(coupan2));
@@ -82,30 +147,6 @@ function CheckOutNew() {
     setNewAddress(reversedList);
   }, [addressList]);
 
-  // const fetchData = async () => {
-  //   try {
-  //     const { data, error } = await OrderSummary();
-  //     error ? console.log(error) : console.log(data);
-  //     setOrderItemSummary(data?.results?.product);
-  //     setOrderItemSummaryPrice(data.results);
-  //     const items = data?.results?.product || [];
-  //     let total = 0;
-  //     items.forEach((item) => {
-  //       if (item?.products && item.products.length > 0) {
-  //         item.products.forEach((product) => {
-  //           if (product.Price) {
-  //             total += product.Price;
-  //             // total += product.Price * (item.quantity || 1);
-  //             setTotalPrice(total);
-  //           }
-  //         });
-  //       }
-  //     });
-  //     console.log(data.results.product);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   const fetchData = async () => {
     try {
       const { data, error } = await OrderSummary();
@@ -143,68 +184,6 @@ function CheckOutNew() {
   useEffect(() => {
     feather.replace();
   }, []);
-
-  const placeOrder = async () => {
-    let orderList = [];
-    if (items.length !== 0) {
-      orderList = {
-        product_Id: items?.products[0]?.product_Id?._id,
-        quantity: items?.products[0]?.quantity,
-      };
-    } else {
-      orderList =
-        orderItemSummary?.map((order) => ({
-          product_Id: order.products[0].product_Id._id,
-          quantity: order.products[0].quantity,
-        })) || [];
-    }
-
-    const newOrderData = {
-      carts: orderList,
-      user_Id: userId,
-      address_Id: selectedAddressId,
-      shippingPrice: "30",
-      taxPrice: "20",
-      // deliverdBy: "64997c95488af9cf3dfb8d69",
-    };
-
-    const confirmationResult = await Swal.fire({
-      title: "Place Order Confirmation",
-      text: "Are you sure you want to place the order?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Place Order",
-      cancelButtonText: "Cancel",
-      customClass: {
-        confirmButton: "custom-confirm-button-class m-3",
-      },
-    });
-
-    if (confirmationResult.isConfirmed) {
-      try {
-        const createNewOrder = await createOrder(newOrderData);
-        console.log(createNewOrder);
-        await Swal.fire({
-          title: "Order Placed!",
-          text: "Your order has been placed successfully.",
-          icon: "success",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate("/shop/:id");
-          }
-        });
-      } catch (error) {
-        // Show error alert
-        await Swal.fire({
-          title: "Error",
-          text: "An error occurred while placing the order.",
-          icon: "error",
-        });
-      }
-    }
-  };
 
   return (
     <>
@@ -1240,11 +1219,7 @@ function CheckOutNew() {
                                 0) +
                               (parseFloat(orderItemSummaryPrice?.Tax) || 0)
                             ).toFixed(2)
-                          : (
-                              parseFloat(
-                                totalPrice
-                              ) || 0
-                            ).toFixed(2)}
+                          : (parseFloat(totalPrice) || 0).toFixed(2)}
                       </h4>
                     </li>
                   </ul>

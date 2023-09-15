@@ -63,6 +63,10 @@ function Shop(props) {
   const [filterProduct, re] = useFilterPriceMutation();
   const [quantity, setQuantity] = useState([]);
   const [count, setCount] = useState([]);
+  useEffect(() => {
+    const initialCounts = productListItems?.map(() => 1);
+    setCount(initialCounts);
+  }, [productListItems]);
   const [subCategoryProductItems, setSubCategoryProductItems] = useState([]);
   console.log("subCategoryProductItems", subCategoryProductItems);
   // const [subCategoryListData, setSubCategoryListData] = useState([]);
@@ -259,9 +263,9 @@ function Shop(props) {
       console.log(error);
     }
   };
-  const handleAddToCart = async (item, index) => {
+  const handleAddToCart = async (item, price, index) => {
     try {
-      const { data, error } = await AddToCart(item._id, count[index]);
+      const { data, error } = await AddToCart(item._id, count[index], price * count[index]);
       if (error) {
         console.log(error);
         return;
@@ -1680,7 +1684,7 @@ function Shop(props) {
                                         </button>
                                         <div className="m-2">
                                           {" "}
-                                          {count[index] ? count[index] : "0"}
+                                          {count[index] ? count[index] : "1"}
                                         </div>
 
                                         <button
@@ -1718,7 +1722,7 @@ function Shop(props) {
                                     <Link
                                       to="/cart"
                                       onClick={() =>
-                                        handleAddToCart(item, index)
+                                        handleAddToCart(item, item?.addVarient[0]?.Price, index)
                                       }
                                     >
                                       Add To Cart

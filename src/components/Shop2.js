@@ -64,6 +64,10 @@ function Shop2(props) {
   const [filterProduct, re] = useFilterPriceMutation();
   const [quantity, setQuantity] = useState([]);
   const [count, setCount] = useState([]);
+  useEffect(() => {
+    const initialCounts = productListItems?.map(() => 1);
+    setCount(initialCounts);
+  }, [productListItems]);
 
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
@@ -157,9 +161,9 @@ function Shop2(props) {
       console.log(error);
     }
   };
-  const handleAddToCart = async (item, index) => {
+  const handleAddToCart = async (item, price, index) => {
     try {
-      const { data, error } = await AddToCart(item._id, count[index]);
+      const { data, error } = await AddToCart(item._id, count[index], price * count[index]);
       if (error) {
         console.log(error);
         return;
@@ -1719,7 +1723,7 @@ function Shop2(props) {
                               <div className="product-image">
                                 <Link to="/product">
                                   <img
-                                    src={item.product_Pic[0]}
+                                    src={item?.addVarient[0]?.product_Pic[0]}
                                     className="img-fluid  lazyload"
                                     alt=""
                                   />
@@ -1936,7 +1940,7 @@ function Shop2(props) {
                                         </button>
                                         <div className="m-2">
                                           {" "}
-                                          {count[index] ? count[index] : "0"}
+                                          {count[index] ? count[index] : "1"}
                                         </div>
 
                                         <button
@@ -1972,7 +1976,7 @@ function Shop2(props) {
                                     <Link
                                       to="/cart"
                                       onClick={() =>
-                                        handleAddToCart(item, index)
+                                        handleAddToCart(item, item?.addVarient[0]?.Price, index)
                                       }
                                     >
                                       Add To Cart

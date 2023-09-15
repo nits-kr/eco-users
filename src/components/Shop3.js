@@ -66,6 +66,10 @@ function Shop3(props) {
   const [filterProduct, re] = useFilterPriceMutation();
   const [quantity, setQuantity] = useState([]);
   const [count, setCount] = useState([]);
+  useEffect(() => {
+    const initialCounts = productListItems?.map(() => 1);
+    setCount(initialCounts);
+  }, [productListItems]);
 
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
@@ -174,9 +178,9 @@ function Shop3(props) {
       console.log(error);
     }
   };
-  const handleAddToCart = async (item, index) => {
+  const handleAddToCart = async (item, price, index) => {
     try {
-      const { data, error } = await AddToCart(item._id, count[index]);
+      const { data, error } = await AddToCart(item._id, count[index], price * count[index]);
       if (error) {
         console.log(error);
         return;
@@ -1905,7 +1909,7 @@ function Shop3(props) {
                                         </button>
                                         <div className="m-2">
                                           {" "}
-                                          {count[index] ? count[index] : "0"}
+                                          {count[index] ? count[index] : "1"}
                                         </div>
 
                                         <button
@@ -1941,7 +1945,7 @@ function Shop3(props) {
                                     <Link
                                       to="/cart"
                                       onClick={() =>
-                                        handleAddToCart(item, index)
+                                        handleAddToCart(item, item?.addVarient[0]?.Price, index)
                                       }
                                     >
                                       Add To Cart
