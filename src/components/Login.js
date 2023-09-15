@@ -33,24 +33,29 @@ function Login() {
     if (res.isSuccess) {
       localStorage.setItem("loginId", res.data?.results?.verifyUser?._id);
       localStorage.setItem("userName", res.data?.results?.verifyUser?.userName);
-      localStorage.setItem("userEmail", res.data?.results?.verifyUser?.userEmail);
+      localStorage.setItem(
+        "userEmail",
+        res.data?.results?.verifyUser?.userEmail
+      );
       localStorage.setItem("token", res.data?.results?.token);
-      localStorage.setItem("mobileNumber", res.data?.results?.verifyUser?.mobileNumber);
-      // dispatch(
-      //   setCredentials({ user: email, token: res.data?.results?.token })
-      // );
+      localStorage.setItem(
+        "mobileNumber",
+        res.data?.results?.verifyUser?.mobileNumber
+      );
       console.log(res.data?.results?.token);
+
+      // Show the success message without the confirm button
       Swal.fire({
         title: "Login Successful!",
         icon: "success",
         text: "You have successfully logged in.",
+        showConfirmButton: false, // Hide the confirm button
+        timer: 500, // Automatically close the alert after 1.5 seconds
       }).then((result) => {
-        if (result.isConfirmed) {
-          navigate("*");
-          setTimeout(() => {
-            window?.location?.reload();
-          }, 500);
-        }
+        navigate("*");
+        setTimeout(() => {
+          window?.location?.reload();
+        }, 500);
       });
     } else if (res.isError && res.error?.data?.error) {
       Swal.fire({
@@ -60,6 +65,41 @@ function Login() {
       });
     }
   }, [res, navigate]);
+
+  // useEffect(() => {
+  //   if (res.isSuccess) {
+  //     localStorage.setItem("loginId", res.data?.results?.verifyUser?._id);
+  //     localStorage.setItem("userName", res.data?.results?.verifyUser?.userName);
+  //     localStorage.setItem(
+  //       "userEmail",
+  //       res.data?.results?.verifyUser?.userEmail
+  //     );
+  //     localStorage.setItem("token", res.data?.results?.token);
+  //     localStorage.setItem(
+  //       "mobileNumber",
+  //       res.data?.results?.verifyUser?.mobileNumber
+  //     );
+  //     console.log(res.data?.results?.token);
+  //     Swal.fire({
+  //       title: "Login Successful!",
+  //       icon: "success",
+  //       text: "You have successfully logged in.",
+  //     }).then((result) => {
+  //       if (result.isConfirmed) {
+  //         navigate("*");
+  //         setTimeout(() => {
+  //           window?.location?.reload();
+  //         }, 500);
+  //       }
+  //     });
+  //   } else if (res.isError && res.error?.data?.error) {
+  //     Swal.fire({
+  //       title: "Incorrect Password!",
+  //       icon: "error",
+  //       text: res.error?.data?.message || "Unknown error occurred.",
+  //     });
+  //   }
+  // }, [res, navigate]);
 
   const handleSaveChanges = async (e) => {
     e.preventDefault();

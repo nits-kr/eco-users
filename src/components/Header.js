@@ -896,8 +896,14 @@ function Header({ Dash }) {
                           <Link to="/shop" className="deal-contain">
                             <h5> {item?.productName_en} </h5>
                             <h6>
-                              ${item?.Price} <del> {item?.oldPrice}</del>{" "}
-                              <span> {item?.weight} </span>
+                              ${item?.addVarient[0]?.dollarPrice?.toFixed(2)}{" "}
+                              <del> {item?.oldPrice}</del>{" "}
+                              <span>
+                                {" "}
+                                {
+                                  item?.addVarient[0]?.values_Id?.valuesName_en
+                                }{" "}
+                              </span>
                             </h6>
                           </Link>
                         </div>
