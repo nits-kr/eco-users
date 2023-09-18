@@ -54,6 +54,18 @@ function OrderSuccess() {
   useEffect(() => {
     feather.replace();
   }, []);
+
+  function trimProductName(productName) {
+    const words = productName.split(" "); // Split the product name into words
+    if (words.length > 3) {
+      // If there are more than 3 words, keep the first 3 and join the rest with '...'
+      return words.slice(0, 3).join(" ") + " ...";
+    } else {
+      // If there are 3 or fewer words, return the original product name
+      return productName;
+    }
+  }
+
   return (
     <>
       <Header />
@@ -215,7 +227,7 @@ function OrderSuccess() {
                                   <img
                                     src={
                                       item?.products[0]?.product_Id
-                                        ?.product_Pic[0]
+                                        ?.addVarient[0]?.product_Pic[0]
                                     }
                                     className="img-fluid  lazyload"
                                     alt=""
@@ -223,7 +235,7 @@ function OrderSuccess() {
                                 </Link>
                                 <div className="product-detail">
                                   <ul>
-                                    <li className="name">
+                                    {/* <li className="name">
                                       <Link to="/product">
                                         {" "}
                                         {
@@ -231,7 +243,17 @@ function OrderSuccess() {
                                             ?.productName_en
                                         }{" "}
                                       </Link>
+                                    </li> */}
+                                    <li className="name">
+                                      <Link to="/product">
+                                        {" "}
+                                        {trimProductName(
+                                          item?.products[0]?.product_Id
+                                            ?.productName_en
+                                        )}{" "}
+                                      </Link>
                                     </li>
+
                                     <li className="text-content">
                                       Sold By: Fresho
                                     </li>
@@ -248,7 +270,7 @@ function OrderSuccess() {
                                 Price
                               </h4>
                               <h6 className="theme-color">
-                                $ {item?.products[0]?.product_Id?.Price}
+                                $ {item?.cartsTotal?.toFixed(2)}
                               </h6>
                             </td>
                             <td className="quantity">
@@ -261,13 +283,7 @@ function OrderSuccess() {
                               <h4 className="table-title text-content">
                                 Total (after Discount)
                               </h4>
-                              <h5>
-                                $
-                                {
-                                  item?.cartsTotal?.[0]?.[0]
-                                    ?.totalAfterDiscount[0]
-                                }{" "}
-                              </h5>
+                              <h5>${item?.cartsTotal?.toFixed(2)} </h5>
                             </td>
                             <td className="subtotal">
                               <h4 className="table-title text-content">

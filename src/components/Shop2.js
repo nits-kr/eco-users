@@ -163,7 +163,11 @@ function Shop2(props) {
   };
   const handleAddToCart = async (item, price, index) => {
     try {
-      const { data, error } = await AddToCart(item._id, count[index], price * count[index]);
+      const { data, error } = await AddToCart(
+        item._id,
+        count[index],
+        price * count[index]
+      );
       if (error) {
         console.log(error);
         return;
@@ -1715,6 +1719,14 @@ function Shop2(props) {
                         (sum, rating) => sum + rating.star,
                         0
                       );
+                      const totalStockQuantity =
+                        item.addVarient.length > 0
+                          ? item.addVarient.reduce(
+                              (sum, variant) =>
+                                sum + (variant.stockQuantity || 0),
+                              0
+                            )
+                          : 0;
                       const averageRating = totalRatings / item.ratings.length;
                       return (
                         <div key={index}>
@@ -1851,18 +1863,18 @@ function Shop2(props) {
                                         fontSize: "15px",
                                       }}
                                     >
-                                      {item?.stockQuantity > 0 ? (
-                                        item?.stockQuantity <= 5 ? (
+                                      {totalStockQuantity > 0 ? (
+                                        totalStockQuantity <= 5 ? (
                                           <span
                                             style={{ color: "rgb(199, 0, 85)" }}
                                           >
                                             Only few left
                                           </span>
-                                        ) : item?.stockQuantity <= 10 ? (
+                                        ) : totalStockQuantity <= 10 ? (
                                           <span
                                             style={{ color: "rgb(199, 0, 85)" }}
                                           >
-                                            Only {item?.stockQuantity} left
+                                            Only {totalStockQuantity} left
                                           </span>
                                         ) : (
                                           <span style={{ color: "green" }}>
@@ -1954,7 +1966,9 @@ function Shop2(props) {
                                               count[index] + 1
                                             )
                                           }
-                                          disabled={count[index] === item?.stockQuantity}
+                                          disabled={
+                                            count[index] === item?.stockQuantity
+                                          }
                                         >
                                           <i
                                             className="fa fa-plus"
@@ -1967,16 +1981,20 @@ function Shop2(props) {
                                 </div>
                                 <h5 className="price">
                                   <span className="theme-color">
-                                    ${item.Price}
+                                    ${item?.addVarient[0]?.Price}
                                   </span>{" "}
-                                  <del>${item.oldPrice} </del>
+                                  <del>${item?.addVarient[0]?.oldPrice} </del>
                                 </h5>
                                 <div className="add-to-cart-box bg-white mt-2">
                                   <button className="btn btn-add-cart addcart-button">
                                     <Link
                                       to="/cart"
                                       onClick={() =>
-                                        handleAddToCart(item, item?.addVarient[0]?.Price, index)
+                                        handleAddToCart(
+                                          item,
+                                          item?.addVarient[0]?.Price,
+                                          index
+                                        )
                                       }
                                     >
                                       Add To Cart

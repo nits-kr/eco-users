@@ -78,7 +78,10 @@ function Product(props) {
   const oldPrice = count
     ? selectedVariantData?.oldPrice * count
     : selectedVariantData?.oldPrice;
+  const quantity = selectedVariantData?.stockQuantity;
+  console.log("quantity", quantity);
 
+  console.log("selectedVariantData", selectedVariantData);
   const [formData, setFormData] = useState({
     r1: "",
     description: "",
@@ -1932,7 +1935,21 @@ function Product(props) {
                         </p>
                         <div className="" style={{ fontSize: "20px" }}>
                           <strong className="text-color-primary">
-                            In Stock{" "}
+                            {quantity > 0 ? (
+                              quantity <= 5 ? (
+                                <span style={{ color: "rgb(199, 0, 85)" }}>
+                                  Only few left
+                                </span>
+                              ) : quantity <= 10 ? (
+                                <span style={{ color: "rgb(199, 0, 85)" }}>
+                                  Only {quantity} left
+                                </span>
+                              ) : (
+                                <span style={{ color: "green" }}>In Stock</span>
+                              )
+                            ) : (
+                              <span style={{ color: "red" }}>Out Of Stock</span>
+                            )}
                           </strong>{" "}
                         </div>
                         <div className="vendor-list">
@@ -2000,9 +2017,20 @@ function Product(props) {
                                           {item?.productName_en}
                                         </h6>
                                       </Link>
-                                      <span><strong> {item?.addVarient[0]?.values_Id?.valuesName_en}</strong> </span>
+                                      <span>
+                                        <strong>
+                                          {" "}
+                                          {
+                                            item?.addVarient[0]?.values_Id
+                                              ?.valuesName_en
+                                          }
+                                        </strong>{" "}
+                                      </span>
                                       <h6 className="price theme-color">
-                                        ${item?.addVarient[0]?.dollarPrice?.toFixed(2)}{" "}
+                                        $
+                                        {item?.addVarient[0]?.dollarPrice?.toFixed(
+                                          2
+                                        )}{" "}
                                       </h6>
                                     </div>
                                   </div>

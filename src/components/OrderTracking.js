@@ -24,7 +24,6 @@ function OrderTracking({ orderStatus }) {
     };
     handleOrderDetails();
   }, [id, orderDetails]);
-  
 
   useEffect(() => {
     feather.replace();
@@ -101,7 +100,10 @@ function OrderTracking({ orderStatus }) {
             <div className="col-xxl-3 col-xl-4 col-lg-6">
               <div className="order-image">
                 <img
-                  src={order?.products[0]?.product_Id?.product_Pic[0]}
+                  src={
+                    order?.products[0]?.product_Id?.addVarient[0]
+                      ?.product_Pic[0]
+                  }
                   className="img-fluid  lazyload"
                   alt=""
                 />
