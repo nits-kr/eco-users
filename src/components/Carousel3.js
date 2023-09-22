@@ -6,40 +6,40 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faAngleLeft } from "@fortawesome/free-solid-svg-icons";
 import "./Carousal.css";
 
-const Carousel3 = ({ autoPlay = false, delay = 3000 }) => {
-  //   const images = [
-  //     "../assets/images/review/1.jpg",
-  //     "../assets/images/review/2.jpg",
-  //     "../assets/images/review/1.jpg",
-  //     "../assets/images/review/2.jpg",
-  //     "../assets/images/review/1.jpg",
-  //     "../assets/images/review/2.jpg",
-  //   ];
+const Carousel3 = ({ autoPlay = true, delay = 5000 }) => {
   const content = [
     {
-      title: "../assets/svg/leaf.svg#leaf",
-      description: "Avail No Cost EMI on select cards for orders above ₹3000",
-      offers: "1 offer",
-    },
-    {
-      title: "../assets/svg/leaf.svg#leaf",
+      title: "../../assets/svg/deliveryVan.svg",
       description:
         "Upto ₹750.00 discount on select Credit Cards. 11 offers available.",
+      offers: "Free Delivery",
     },
     {
-      title: "../assets/svg/leaf.svg#leaf",
+      title: "../../assets/svg/return.svg",
       description: "Avail No Cost EMI on select cards for orders above ₹3000",
-      offers: "1 offer",
+      offers: "10 Days Return & Exchange",
     },
     {
-      title: "../assets/svg/leaf.svg#leaf",
+      title: "../../assets/svg/checkmarks.svg",
       description:
         "Upto ₹750.00 discount on select Credit Cards. 11 offers available.",
+      offers: "10 Day Warranty",
     },
     {
-      title: "../assets/svg/leaf.svg#leaf",
+      title: "../../assets/svg/deliveryVanCheck.svg",
+      description:
+        "Upto ₹750.00 discount on select Credit Cards. 11 offers available.",
+      offers: "Amazon Delivered",
+    },
+    {
+      title: "../../assets/svg/dollarBook.svg",
       description: "Avail No Cost EMI on select cards for orders above ₹3000",
-      offers: "1 offer",
+      offers: "Pay On Delivery",
+    },
+    {
+      title: "../../assets/svg/dollarLock.svg",
+      description: "Avail No Cost EMI on select cards for orders above ₹3000",
+      offers: "Secure transaction",
     },
   ];
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -66,49 +66,50 @@ const Carousel3 = ({ autoPlay = false, delay = 3000 }) => {
 
   return (
     <div className="carousel mt-3">
+      <hr className="text-secondary" />
       <div
         className="carousel-container my-2"
         style={{
           transform: `translateX(-${currentIndex * (100 / slidesToShow)}%)`,
-          height: "150px",
+          height: "80px",
           width: "auto",
           display: "flex",
           justifyContent: "space-between",
         }}
       >
-        {/* {content.map((item, index) => (
-          <div key={index} className="carousel-slide">
-            <img src={image} alt={`Slide ${index}`} />
-            <div className="carousel-content">{item}</div>
-          </div>
-        ))} */}
         {content.map((item, index) => (
-          <div key={index} className="carousel-slide border mx-1 shadow">
+          <div key={index} className="carousel-slide">
             <div className="carousel-content p-2">
-              <h5 className="carousel-title">
-                {" "}
-                <strong>{item.title}</strong>{" "}
-                <svg className="icon-width">
-                  <use xlinkHref={item?.title} />
-                </svg>
-              </h5>
-              <p className="carousel-description my-2">{item.description}</p>
-              {/* <Link className="carousel-offers">
-                {item.offers}
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  style={{ fontSize: "10px", marginLeft: "3px" }}
-                />
-              </Link> */}
-              {item.offers && (
-                <Link className="carousel-offers">
-                  {item.offers}
-                  <FontAwesomeIcon
-                    icon={faChevronRight}
-                    style={{ fontSize: "10px", marginLeft: "3px" }}
-                  />
-                </Link>
-              )}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <div style={{ height: "40px" }}>
+                  <div className="service-box">
+                    <div
+                      className="service-image shadow"
+                      style={{ borderRadius: "50%" }}
+                    >
+                      <img src={item?.title} className=" lazyload" alt="" />
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className="d-flex flex-direction-row align-items-start mt-2"
+                  style={{ fontSize: "13px", height: "40px" }}
+                >
+                  <Link
+                  // style={{ textShadow: "1px 1px 1px rgba(0, 0, 0, 0.1)" }}
+                  >
+                    {item.offers}
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         ))}

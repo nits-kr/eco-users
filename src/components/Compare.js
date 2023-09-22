@@ -156,7 +156,7 @@ function Compare() {
                             <td key={index}>
                               <Link to="/product" className="compare-image">
                                 <img
-                                  src={item?.product_Id?.product_Pic[0]}
+                                  src={item?.product_Id?.addVarient[0]?.product_Pic[0]}
                                   className="img-fluid  lazyload"
                                   alt=""
                                 />

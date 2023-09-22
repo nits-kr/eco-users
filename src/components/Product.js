@@ -806,7 +806,7 @@ console.log("selectedVariantData?._id", selectedVariantData?._id);
                         <div className="border mt-2"></div>
                         <Carousel />
                         {/* <hr/> */}
-                        {/* <Carousel3/> */}
+                        <Carousel3/>
                         <div className="border my-2"></div>
                         <div className="product-packege">
                           <div className="product-title">
