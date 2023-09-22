@@ -741,15 +741,19 @@ export async function AddToCart(id, quantity, price) {
     const { data } = await UserHttpService.post(
       `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/add-cart`,
       {
-        carts: [
-          {
-            product_Id: id,
-            quantity: Array.isArray(quantity) ? "1" : quantity,
-            Price: price,
-          },
-        ],
+        // carts: [
+        //   {
+        //     product_Id: id,
+        //     quantity: Array.isArray(quantity) ? "1" : quantity,
+        //     Price: price,
+        //     user_Id: userId,
+        //   },
+        // ],
+        // user_Id: userId,
+        product_Id: id,
+        quantity: Array.isArray(quantity) ? "1" : quantity,
+        Price: price,
         user_Id: userId,
-        
       }
     );
     console.log("Add to cart data at http", data);

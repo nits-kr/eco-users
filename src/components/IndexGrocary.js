@@ -47,6 +47,7 @@ function IndexGrocary(props) {
     const initialCounts = trendingList?.map(() => 1);
     setCount(initialCounts);
   }, [trendingList]);
+  console.log("count", count);
   const handleCountChange = (index, newCount) => {
     const newCounts = [...count];
     newCounts[index] = newCount >= 0 ? newCount : 0;
@@ -273,6 +274,14 @@ function IndexGrocary(props) {
         0
       );
       const averageRating = totalRatings / item.ratings.length;
+      const isItemInCart = cartListItems.some(
+        (cartItem) => cartItem?.products?.[0]?.product_Id?._id === item._id
+      );
+      console.log("Item ID:", item?._id);
+      console.log("Cart Items:", cartListItems);
+      console.log("Is Item In Cart:", isItemInCart);
+      const totalPrice =
+        (item?.addVarient[0]?.Price || 0) * (count[index] || 1);
       return (
         <div key={index}>
           <div className="product-box-3 h-100 wow fadeInUp">
@@ -367,7 +376,6 @@ function IndexGrocary(props) {
             </div>
             <div className="product-footer">
               <div className="product-detail">
-                {/* <span className="span-name"> {item.productName_en} </span> */}
                 <Link to="/product">
                   <h5 className="name">{item?.productName_en}</h5>
                 </Link>
@@ -484,64 +492,43 @@ function IndexGrocary(props) {
                       </div>
                     </div>
                   )}
-                  {/* <div className=" mt-3">
-                  <div className="cart_qty qty-box product-qty">
-                    <div
-                      className="input-group"
-                      style={{ alignItems: "center" }}
-                    >
-                      <button
-                        type="button"
-                        className="qty-left-minus"
-                        data-type="minus"
-                        data-field=""
-                        onClick={() =>
-                          handleCountChange(index, count[index] - 1)
-                        }
-                      >
-                        <i className="fa fa-minus" aria-hidden="true" />
-                      </button>
-                      <div className="m-2">
-                        {" "}
-                        {count[index] ? count[index] : "0"}
-                      </div>
-                      <button
-                        type="button"
-                        className="qty-right-plus"
-                        data-type="plus"
-                        data-field=""
-                        onClick={() =>
-                          handleCountChange(index, count[index] + 1)
-                        }
-                      >
-                        <i className="fa fa-plus" aria-hidden="true" />
-                      </button>
-                    </div>
-                  </div>
-                </div> */}
                 </div>
                 <h5 className="price">
-                  <span className="theme-color">
-                    ${item?.addVarient[0]?.Price}
-                  </span>{" "}
+                  <span className="theme-color">${totalPrice}</span>{" "}
                   <del>${item?.addVarient[0]?.oldPrice} </del>
                 </h5>
 
-                <div className="add-to-cart-box bg-white mt-2">
-                  <button className="btn btn-add-cart addcart-button">
-                    <Link
-                      to="/cart"
-                      onClick={() =>
-                        handleAddToCart(item, item?.addVarient[0]?.Price, index)
-                      }
-                    >
-                      Add To Cart
-                      {/* <span className="add-icon bg-light-gray">
-                      <i className="fa-solid fa-plus" />
-                    </span> */}
-                    </Link>
-                  </button>
-                </div>
+                {isItemInCart ? (
+                  <div className="add-to-cart-box bg-white mt-2">
+                    <button className="btn btn-add-cart addcart-button">
+                      <Link
+                        to="/cart"
+                        // onClick={() =>
+                        //   handleAddToCart(item, item?.addVarient[0]?.Price, index)
+                        // }
+                      >
+                        Go To Cart
+                      </Link>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="add-to-cart-box bg-white mt-2">
+                    <button className="btn btn-add-cart addcart-button">
+                      <Link
+                        to="/cart"
+                        onClick={() =>
+                          handleAddToCart(
+                            item,
+                            item?.addVarient[0]?.Price,
+                            index
+                          )
+                        }
+                      >
+                        Add To Cart
+                      </Link>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

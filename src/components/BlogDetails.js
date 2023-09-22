@@ -426,7 +426,7 @@ function BlogDetails() {
                                 <div className="offer-product">
                                   <Link to="/shop/:id" className="offer-image">
                                     <img
-                                      src={item?.product_Pic[0]}
+                                      src={item?.addVarient[0]?.product_Pic[0]}
                                       className=" lazyload"
                                       alt=""
                                     />
@@ -438,9 +438,17 @@ function BlogDetails() {
                                           {item?.productName_en}
                                         </h6>
                                       </Link>
-                                      <span>{item?.weight}</span>
+                                      <span>
+                                        {
+                                          item?.addVarient[0]?.values_Id
+                                            ?.valuesName_en
+                                        }
+                                      </span>
                                       <h6 className="price theme-color">
-                                        ${item?.Price}
+                                        $
+                                        {item?.addVarient[0]?.dollarPrice?.toFixed(
+                                          2
+                                        )}
                                       </h6>
                                     </div>
                                   </div>

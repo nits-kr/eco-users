@@ -12,6 +12,7 @@ import { useGetAddressListQuery } from "../services/Post";
 
 function CheckOut() {
   const [orderItemSummary, setOrderItemSummary] = useState([]);
+  console.log("orderItemSummary", orderItemSummary);
   const [orderItemSummaryPrice, setOrderItemSummaryPrice] = useState([]);
   const [createOrder, response] = useCreateOrderMutation();
   const [newAddress, setNewAddress] = useState([]);
@@ -136,7 +137,7 @@ function CheckOut() {
     try {
       const { data, error } = await OrderSummary();
       error ? console.log(error) : console.log(data);
-      setOrderItemSummary(data?.results?.product);
+      setOrderItemSummary(data?.results?.cartsTotal);
       setOrderItemSummaryPrice(data.results);
       console.log(data.results.product);
     } catch (error) {
@@ -149,17 +150,6 @@ function CheckOut() {
 
   return (
     <>
-      {/* Loader Start */}
-      {/* <div className="fullpage-loader">
-    <span />
-    <span />
-    <span />
-    <span />
-    <span />
-    <span />
-  </div> */}
-      {/* Loader End */}
-      {/* Header Start */}
       <Header />
       {/* Header End */}
       {/* mobile fix menu start */}
@@ -989,106 +979,62 @@ function CheckOut() {
                   <ul className="summery-contain">
                     {items && items.products && items.products.length > 0 ? (
                       <li>
-                        {/* <img
-                          src={
-                            items.products[0]?.product_Id?.product_Pic[0] || ""
-                          }
-                          className="img-fluid lazyloaded checkout-image"
-                          alt=""
-                        /> */}
-                        <h4>
-                          {items.products[0]?.product_Id?.productName_en}{" "}
-                          <span>X {items?.products[0]?.quantity}</span>
-                        </h4>
-                        <h4 className="price">${items?.cartsTotal}</h4>
-                      </li>
-                    ) : (
-                      orderItemSummary?.map((order, index) => (
-                        <li key={index}>
-                          <img
-                            src={
-                              order.products[0]?.product_Id?.addVarient[0]
-                                ?.product_Pic[0] || ""
-                            }
-                            className="img-fluid lazyloaded checkout-image"
-                            alt=""
-                          />
-                          <h4>
-                            {order.products[0]?.product_Id?.productName_en}{" "}
-                            <span>X {order.products[0]?.quantity}</span>
-                          </h4>
-                          <h4 className="price">${order.cartsTotal}</h4>
-                        </li>
-                      ))
-                    )}
-                  </ul>
-
-                  <ul className="summery-contain">
-                    {/* {items !== 0 ? (
-                      <li>
                         <img
                           src={
-                            items.products[0]?.product_Id?.product_Pic[0] || ""
+                            items.products[0]?.product_Id?.addVarient[0]
+                              ?.product_Pic[0] || ""
                           }
                           className="img-fluid lazyloaded checkout-image"
                           alt=""
                         />
                         <h4>
-                          {items.products[0]?.product_Id?.productName_en}{" "}
+                          {items.products[0]?.product_Id?.productName_en
+                            ?.split(" ")
+                            ?.slice(0, 3)
+                            ?.join(" ")}{" "}
                           <span>X {items?.products[0]?.quantity}</span>
                         </h4>
-                        <h4 className="price">${items?.cartsTotal}</h4>
+                        <h4 className="price">
+                          $
+                          {items.products[0]?.product_Id?.addVarient[0]?.Price *
+                            items.products[0]?.quantity}
+                        </h4>
                       </li>
                     ) : (
-                      orderItemSummary.map((order, index) => {
-                        return (
-                          <li key={index}>
-                            <img
-                              src={
-                                order.products[0]?.product_Id?.product_Pic[0] ||
-                                ""
-                              }
-                              className="img-fluid lazyloaded checkout-image"
-                              alt=""
-                            />
-                            <h4>
-                              {order.products[0]?.product_Id?.productName_en}{" "}
-                              <span>X {order?.products[0]?.quantity}</span>
-                            </h4>
-                            <h4 className="price">${order?.cartsTotal}</h4>
-                          </li>
-                        );
-                      })
-                    )} */}
-                    {/* {orderItemSummary.map((order, index) => {
-                      return (
-                        <li key={index}>
-                          <img
-                            src={
-                              order.products[0]?.product_Id?.product_Pic[0] ||
-                              ""
-                            }
-                            className="img-fluid lazyloaded checkout-image"
-                            alt=""
-                          />
-                          <h4>
-                            {order.products[0]?.product_Id?.productName_en}{" "}
-                            <span>X {order?.products[0]?.quantity}</span>
-                          </h4>
-                          <h4 className="price">${order?.cartsTotal}</h4>
-                        </li>
-                      );
-                    })} */}
+                      orderItemSummary?.map((orderGroup, groupIndex) => (
+                        <React.Fragment key={groupIndex}>
+                          {orderGroup.map((order, index) => (
+                            <li key={index}>
+                              <img
+                                src={
+                                  order.product_Id?.addVarient[0]
+                                    ?.product_Pic[0] || ""
+                                }
+                                className="img-fluid lazyloaded checkout-image"
+                                alt=""
+                              />
+                              <h4>
+                                {order.product_Id?.productName_en
+                                  ?.split(" ")
+                                  ?.slice(0, 3)
+                                  ?.join(" ")}{" "}
+                                <span>X {order.quantity}</span>
+                              </h4>
+                              <h4 className="price">
+                                $
+                                {order?.product_Id?.addVarient[0]?.Price *
+                                  order.quantity}
+                              </h4>
+                            </li>
+                          ))}
+                        </React.Fragment>
+                      ))
+                    )}
                   </ul>
+
                   <ul className="summery-total">
-                    {/* <li>
-                      <h4>Subtotal(Discounted Price) </h4>
-                      <h4 className="price">
-                        ${orderItemSummaryPrice?.cartsTotal[0]}
-                      </h4>
-                    </li> */}
                     <li>
-                      <h4>Subtotal(Discounted Price) </h4>
+                      <h4>Subtotal(<span>Coupan Applied</span>) </h4>
                       {coupan?.length !== 0 ? (
                         <h4 className="price">
                           ${coupan?.cartsTotalSum?.toFixed(2)}
@@ -1100,21 +1046,10 @@ function CheckOut() {
                       ) : (
                         <h4 className="price">$0</h4>
                       )}
-                      {/* {orderItemSummaryPrice?.cartsTotal ? (
-                        <h4 className="price">
-                          ${orderItemSummaryPrice?.cartsTotal[0]}
-                        </h4>
-                      ) : (
-                        <h4 className="price">$0</h4>
-                      )} */}
                     </li>
 
                     <li>
                       <h4>Shipping</h4>
-                      {/* <h4 className="price">
-                        {" "}
-                        ${orderItemSummaryPrice?.shipping !== "undefined" ? orderItemSummaryPrice?.shipping : 0}{" "}
-                      </h4> */}
                       <h4 className="price">
                         $
                         {orderItemSummaryPrice?.shipping !== undefined
@@ -1141,14 +1076,6 @@ function CheckOut() {
                     </li> */}
                     <li className="list-total">
                       <h4>Total (USD)</h4>
-                      {/* <h4 className="price">
-                        $
-                        {coupan?.length !== 0
-                          ? coupan?.coupan?.cartsTotalSum?.toFixed(2) +
-                            orderItemSummaryPrice?.shipping +
-                            orderItemSummaryPrice?.Tax
-                          : orderItemSummaryPrice?.cartsTotalSum}{" "}
-                      </h4> */}
                       <h4 className="price">
                         {coupan?.length !== 0
                           ? (

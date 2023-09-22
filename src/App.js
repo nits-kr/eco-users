@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import IndexPage from "./components/IndexPage";
 import IndexElectronics from "./components/IndexElectronics";
 import SellerGrid from "./components/SellerGrid";
@@ -101,9 +101,9 @@ function App() {
             exact
             className="active"
             path="/check-outall"
-            element={<CheckOutNew/>}
+            element={<CheckOutNew />}
           />
-          
+
           <Route
             exact
             className="active"
@@ -246,9 +246,9 @@ function App() {
             exact
             className="active"
             path="/get-star"
-            element={<GetStar/>}
+            element={<GetStar />}
           />
-          
+
           <Route
             exact
             className="active"

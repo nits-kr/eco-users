@@ -73,7 +73,10 @@ function CheckOutNew() {
     }
 
     const cartsTotal =
-      items.length !== 0 ? items?.products[0]?.Price : totalPrice;
+      items.length !== 0
+        ? items?.products[0]?.product_Id?.addVarient[0]?.Price *
+          items?.products[0]?.quantity
+        : totalSubtotal;
 
     const newOrderData = {
       carts: orderList,
@@ -176,6 +179,18 @@ function CheckOutNew() {
       console.log(error);
     }
   };
+
+  let totalSubtotal = 0;
+
+  orderItemSummary?.forEach((cart) => {
+    cart.forEach((item) => {
+      const subtotal =
+        (item?.product_Id?.addVarient[0]?.Price || 0) * (item?.quantity || 1);
+      totalSubtotal += subtotal;
+    });
+  });
+
+  console.log("Total Subtotal:", totalSubtotal);
 
   useEffect(() => {
     fetchData();
@@ -957,70 +972,6 @@ function CheckOutNew() {
             <div className="col-lg-4">
               <div className="right-side-summery-box">
                 <div className="summery-box-2">
-                  {/* <div className="summery-header">
-                    <h3>Cart Total</h3>
-                  </div>
-                  <div className="summery-contain">
-                    <div className="coupon-cart">
-                      <h6 className="text-content mb-2">Coupon Apply</h6>
-                      <div className="mb-3 coupon-box input-group">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="coupanCode"
-                          name="coupanCode"
-                          placeholder="Enter Coupon Code Here..."
-                          // value={coupanCode}
-                          // onChange={(e) => setCoupanCode(e.target.value)}
-                        />
-                        <button
-                          className="btn-apply"
-                          // onClick={() => handleCoupan()}
-                        >
-                          Apply
-                        </button>
-                      </div>
-                    </div>
-                    <ul>
-                      <li>
-                        <h4>Subtotal</h4>
-                        <h4 className="price">$500 </h4>
-                      </li>
-                      <li>
-                        <h4>Coupon Discount</h4>
-                        <h4 className="price"> - 45 % </h4>
-                      </li>
-                    </ul>
-                  </div>
-                  <ul className="summery-total">
-                    <li className="list-total border-top-0">
-                      <h4>Total (USD)</h4>
-                      <h4 className="price theme-color">$600</h4>
-                    </li>
-                  </ul>
-                  <div className="button-group cart-button">
-                    <ul>
-                      <li>
-                        <Link
-                          to="/check-out"
-                          className="btn btn-animation proceed-btn fw-bold"
-                        >
-                          Process To Checkout
-                        </Link>
-                      </li>
-                      <li>
-                        <button
-                          onClick={() => {
-                            window.location.href = "/index";
-                          }}
-                          className="btn btn-light shopping-button text-dark"
-                        >
-                          <i className="fa-solid fa-arrow-left-long" />
-                          Return To Shopping
-                        </button>
-                      </li>
-                    </ul>
-                  </div> */}
                   <div className="summery-header">
                     <h3>Order Summery</h3>
                   </div>
@@ -1036,33 +987,23 @@ function CheckOutNew() {
                           alt=""
                         />
                         <h4>
-                          {items.products[0]?.product_Id?.productName_en}{" "}
-                          {/* <span>X {items?.products[0]?.quantity}</span> */}
+                          {items.products[0]?.product_Id?.productName_en &&
+                            items.products[0].product_Id.productName_en
+                              .split(" ")
+                              .slice(0, 3)
+                              .join(" ")}{" "}
+                          <span>X {items?.products[0]?.quantity}</span>
                         </h4>
-                        <h4 className="price">${items?.cartsTotal}</h4>
+                        <h4 className="price">
+                          {" "}
+                          <span>
+                            $
+                            {items?.products[0]?.product_Id?.addVarient[0]
+                              ?.Price * items?.products[0]?.quantity}
+                          </span>{" "}
+                        </h4>
                       </li>
                     ) : (
-                      // <ul className="summery-contain">
-                      //   {orderItemSummary.map((itemList, index) =>
-                      //     itemList.map((order, subIndex) => (
-                      //       <li key={subIndex}>
-                      //         <img
-                      //           src={
-                      //             order.product_Id?.addVarient[0]
-                      //               ?.product_Pic[0] || ""
-                      //           }
-                      //           className="img-fluid lazyloaded checkout-image"
-                      //           alt=""
-                      //         />
-                      //         <h4>
-                      //           {order.product_Id?.productName_en}{" "}
-                      //           <span>X {order.quantity}</span>
-                      //         </h4>
-                      //         <h4 className="price">${order.Price}</h4>
-                      //       </li>
-                      //     ))
-                      //   )}
-                      // </ul>
                       <ul className="summery-contain">
                         {orderItemSummary?.map((orderGroup, groupIndex) => (
                           <React.Fragment key={groupIndex}>
@@ -1077,10 +1018,17 @@ function CheckOutNew() {
                                   alt=""
                                 />
                                 <h4>
-                                  {order.product_Id?.productName_en}{" "}
+                                  {order.product_Id?.productName_en
+                                    ?.split(" ")
+                                    ?.slice(0, 3)
+                                    ?.join(" ")}{" "}
                                   <span>X {order.quantity}</span>
                                 </h4>
-                                <h4 className="price">${order.Price}</h4>
+                                <h4 className="price">
+                                  $
+                                  {order?.product_Id?.addVarient[0]?.Price *
+                                    order.quantity}
+                                </h4>
                               </li>
                             ))}
                           </React.Fragment>
@@ -1089,94 +1037,26 @@ function CheckOutNew() {
                     )}
                   </ul>
 
-                  <ul className="summery-contain">
-                    {/* {items !== 0 ? (
-                      <li>
-                        <img
-                          src={
-                            items.products[0]?.product_Id?.product_Pic[0] || ""
-                          }
-                          className="img-fluid lazyloaded checkout-image"
-                          alt=""
-                        />
-                        <h4>
-                          {items.products[0]?.product_Id?.productName_en}{" "}
-                          <span>X {items?.products[0]?.quantity}</span>
-                        </h4>
-                        <h4 className="price">${items?.cartsTotal}</h4>
-                      </li>
-                    ) : (
-                      orderItemSummary.map((order, index) => {
-                        return (
-                          <li key={index}>
-                            <img
-                              src={
-                                order.products[0]?.product_Id?.product_Pic[0] ||
-                                ""
-                              }
-                              className="img-fluid lazyloaded checkout-image"
-                              alt=""
-                            />
-                            <h4>
-                              {order.products[0]?.product_Id?.productName_en}{" "}
-                              <span>X {order?.products[0]?.quantity}</span>
-                            </h4>
-                            <h4 className="price">${order?.cartsTotal}</h4>
-                          </li>
-                        );
-                      })
-                    )} */}
-                    {/* {orderItemSummary.map((order, index) => {
-                      return (
-                        <li key={index}>
-                          <img
-                            src={
-                              order.products[0]?.product_Id?.product_Pic[0] ||
-                              ""
-                            }
-                            className="img-fluid lazyloaded checkout-image"
-                            alt=""
-                          />
-                          <h4>
-                            {order.products[0]?.product_Id?.productName_en}{" "}
-                            <span>X {order?.products[0]?.quantity}</span>
-                          </h4>
-                          <h4 className="price">${order?.cartsTotal}</h4>
-                        </li>
-                      );
-                    })} */}
-                  </ul>
+                  <ul className="summery-contain"></ul>
                   <ul className="summery-total">
-                    {/* <li>
-                      <h4>Subtotal(Discounted Price) </h4>
-                      <h4 className="price">
-                        ${orderItemSummaryPrice?.cartsTotal[0]}
-                      </h4>
-                    </li> */}
                     <li>
                       <h4>Subtotal(Discounted Price) </h4>
                       {items && items.products && items.products.length > 0 ? (
                         <h4 className="price">
-                          ${items?.products[0]?.Price?.toFixed(2)}
+                          $
+                          {(
+                            items?.products[0]?.product_Id?.addVarient[0]
+                              ?.Price * items?.products[0]?.quantity
+                          )?.toFixed(2)}
                         </h4>
                       ) : (
-                        <h4 className="price">${totalPrice}</h4>
+                        <h4 className="price">${totalSubtotal}</h4>
                       )}
-                      {/* {orderItemSummaryPrice?.cartsTotal ? (
-                        <h4 className="price">
-                          ${orderItemSummaryPrice?.cartsTotal[0]}
-                        </h4>
-                      ) : (
-                        <h4 className="price">$0</h4>
-                      )} */}
                     </li>
 
                     <li>
                       <h4>Shipping</h4>
-                      {/* <h4 className="price">
-                        {" "}
-                        ${orderItemSummaryPrice?.shipping !== "undefined" ? orderItemSummaryPrice?.shipping : 0}{" "}
-                      </h4> */}
+
                       <h4 className="price">
                         $
                         {orderItemSummaryPrice?.shipping !== undefined
@@ -1192,34 +1072,25 @@ function CheckOutNew() {
                           ? orderItemSummaryPrice?.Tax
                           : 0}
                       </h4>
-
-                      {/* <h4 className="price">${orderItemSummaryPrice?.Tax} </h4> */}
                     </li>
                     {/* <li>
                       <h4>Coupon/Code</h4>
-                      <h4 className="price">
-                        $-{orderItemSummaryPrice?.DiscountType}{" "}
-                      </h4>
+                      <h4 className="price">Apply Coupan</h4>
                     </li> */}
                     <li className="list-total">
                       <h4>Total (USD)</h4>
-                      {/* <h4 className="price">
-                        $
-                        {coupan?.length !== 0
-                          ? coupan?.coupan?.cartsTotalSum?.toFixed(2) +
-                            orderItemSummaryPrice?.shipping +
-                            orderItemSummaryPrice?.Tax
-                          : orderItemSummaryPrice?.cartsTotalSum}{" "}
-                      </h4> */}
                       <h4 className="price">
                         {items && items.products && items.products.length > 0
                           ? (
-                              (parseFloat(items?.products[0]?.Price) || 0) +
+                              (parseFloat(
+                                items?.products[0]?.product_Id?.addVarient[0]
+                                  ?.Price * items?.products[0]?.quantity
+                              ) || 0) +
                               (parseFloat(orderItemSummaryPrice?.shipping) ||
                                 0) +
                               (parseFloat(orderItemSummaryPrice?.Tax) || 0)
                             ).toFixed(2)
-                          : (parseFloat(totalPrice) || 0).toFixed(2)}
+                          : (parseFloat(totalSubtotal) || 0).toFixed(2)}
                       </h4>
                     </li>
                   </ul>

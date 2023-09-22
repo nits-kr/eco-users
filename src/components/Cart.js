@@ -41,6 +41,7 @@ function Cart() {
   const { data: cartListQuery, isSuccess } = useGetCartListQuery();
   const cart = useSelector((state) => state.cart);
   const [singleItemPrice, setSingleItemPrice] = useState([]);
+  console.log("singleItemPrice", singleItemPrice);
   localStorage?.setItem("cartTotal", cartTotal);
 
   const [count1, setCount1] = useState();
@@ -162,6 +163,18 @@ function Cart() {
       console.log("total", total);
     }
   };
+  let totalSubtotal = 0;
+  cartListItems
+    ?.slice()
+    ?.reverse()
+    ?.forEach((item) => {
+      const subtotal =
+        (item?.products[0]?.product_Id?.addVarient[0]?.Price || 0) *
+        (item?.products[0]?.quantity || 1);
+      totalSubtotal += subtotal;
+    });
+
+  console.log("Total Subtotal:", totalSubtotal);
 
   // useEffect(() => {
   //   handleCoupan();
@@ -173,7 +186,9 @@ function Cart() {
       cartListItems?.map((order) => ({
         product_Id: order?.products[0]?.product_Id?._id,
         quantity: order?.products[0]?.quantity,
-        Price: order?.products[0]?.Price,
+        Price:
+          order?.products[0]?.product_Id?.addVarient[0]?.Price *
+          order?.products[0]?.quantity,
       })) || [];
 
     const newOrderData = {
@@ -187,7 +202,6 @@ function Cart() {
       let totalPrice = 0;
       createNewOrder?.data?.results.product.forEach((product) => {
         totalPrice += parseInt(product.Price);
-        // totalPrice += parseInt(product.Price) * parseInt(product.quantity);
       });
 
       const discountPercentage =
@@ -212,12 +226,12 @@ function Cart() {
       // Remove the 'theme' item from local storage
       localStorage.removeItem("allCartItems");
     };
-    console.log(item);
+    console.log("cart subtotal", item);
   };
   const handleCoupan2 = async (item, quantity, id) => {
     const newOrderData = {
       coupanCode: coupanCode2,
-      carts: [{ product_Id: id, Price: item, quantity: quantity }],
+      carts: [{ product_Id: id, Price: item * quantity, quantity: quantity }],
       user_Id: userId,
     };
 
@@ -353,6 +367,33 @@ function Cart() {
                         ?.slice()
                         ?.reverse()
                         ?.map((item, index) => {
+                          const subtotal =
+                            (item?.products[0]?.product_Id?.addVarient[0]
+                              ?.Price || 0) *
+                            (item?.products[0]?.quantity || 1);
+                          console.log(
+                            "item?.products[0]?.Price",
+                            item?.products[0]?.Price
+                          );
+                          console.log(
+                            "item?.products[0]?.quantity",
+                            item?.products[0]?.quantity
+                          );
+
+                          // let totalSubtotal = 0;
+                          // cartListItems
+                          //   ?.slice()
+                          //   ?.reverse()
+                          //   ?.forEach((item) => {
+                          //     const subtotal =
+                          //       (item?.products[0]?.product_Id?.addVarient[0]
+                          //         ?.Price || 0) *
+                          //       (item?.products[0]?.quantity || 1);
+                          //     totalSubtotal += subtotal;
+                          //   });
+
+                          // console.log("Total Subtotal:", totalSubtotal);
+
                           return (
                             <tr className="product-box-contain" key={index}>
                               <td className="product-detail">
@@ -374,10 +415,10 @@ function Cart() {
                                           (product, index) => (
                                             <Link to={`/product`} key={index}>
                                               <strong>
-                                                {product?.product_Id?.productName_en?.slice(
-                                                  0,
-                                                  15
-                                                )}
+                                                {product?.product_Id?.productName_en
+                                                  ?.split(" ")
+                                                  ?.slice(0, 3)
+                                                  ?.join(" ")}
                                               </strong>
                                             </Link>
                                           )
@@ -389,13 +430,15 @@ function Cart() {
                                         </span>{" "}
                                         Fresho
                                       </li>
-                                      {/* <li className="text-content">
+                                      <li className="text-content">
                                         <span className="text-title">
-                                          Quantity
+                                          SKU :
                                         </span>{" "}
-                                        -{" "}
-                                        {item?.products[0]?.product_Id?.weight}
-                                      </li> */}
+                                        {
+                                          item?.products[0]?.product_Id
+                                            ?.addVarient[0]?.SKU
+                                        }
+                                      </li>
                                       {/* <li className="quantity-price-box">
                                         <div className="cart_qty">
                                           <div className="input-group">
@@ -550,7 +593,8 @@ function Cart() {
                                 <h4 className="table-title text-content">
                                   Total
                                 </h4>
-                                <h5>${item?.products[0]?.Price}</h5>
+                                {/* <h5>${item?.products[0]?.Price}</h5> */}
+                                <h5>${subtotal}</h5>
                               </td>
                               <td className="save-remove">
                                 <h3
@@ -567,6 +611,8 @@ function Cart() {
                                   style={{
                                     display: "flex",
                                     flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                   }}
                                 >
                                   <Link
@@ -648,7 +694,8 @@ function Cart() {
                           className="btn-apply"
                           onClick={() =>
                             handleCoupan2(
-                              singleItemPrice?.products[0]?.Price,
+                              singleItemPrice?.products[0]?.product_Id
+                                ?.addVarient[0]?.Price,
                               singleItemPrice?.products[0]?.quantity,
                               singleItemPrice?.products[0]?.product_Id?._id
                             )
@@ -686,7 +733,10 @@ function Cart() {
                       <li>
                         <h4>Subtotal</h4>
                         <h4 className="price">
-                          ${singleItemPrice?.products[0]?.Price}
+                          $
+                          {singleItemPrice?.products[0]?.product_Id
+                            ?.addVarient[0]?.Price *
+                            singleItemPrice?.products[0]?.quantity}
                         </h4>
                       </li>
                       <li>
@@ -699,7 +749,7 @@ function Cart() {
                       <li>
                         <h4>Subtotal</h4>
                         <h4 className="price">
-                          ${coupan?.subtotal || cartTotal}
+                          ${coupan?.subtotal || totalSubtotal}
                         </h4>
                       </li>
                       <li>
@@ -735,34 +785,21 @@ function Cart() {
                 <ul className="summery-total">
                   <li className="list-total border-top-0">
                     <h4>Total (USD)</h4>
-                    {/* {coupan !== 0 ? (
-                      <h4 className="price theme-color">
-                        $
-                        {coupan?.cartsTotalSum
-                          ? coupan?.cartsTotalSum
-                          : cartTotal}
-                      </h4>
-                    ) : (
-                      <h4 className="price theme-color">
-                        $
-                        {coupan2?.length !== 0
-                          ? coupan2?.cartsTotalSum
-                          : coupan?.cartsTotalSum}
-                      </h4>
-                    )} */}
                     {singleItemPrice?.length !== 0 ? (
                       <h4 className="price theme-color">
                         $
                         {coupan2.length !== 0
                           ? coupan2?.cartsTotalSum?.toFixed(2)
-                          : singleItemPrice?.products[0]?.Price}
+                          : singleItemPrice?.products[0]?.product_Id
+                              ?.addVarient[0]?.Price *
+                            singleItemPrice?.products[0]?.quantity}
                       </h4>
                     ) : (
                       <h4 className="price theme-color">
                         $
                         {coupan2.length !== 0
                           ? coupan2?.cartsTotalSum?.toFixed(2)
-                          : coupan?.cartsTotalSum?.toFixed(2) || cartTotal}
+                          : coupan?.cartsTotalSum?.toFixed(2) || totalSubtotal}
                       </h4>
                     )}
                     {/* <h4 className="price theme-color">
