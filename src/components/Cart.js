@@ -175,6 +175,7 @@ function Cart() {
     });
 
   console.log("Total Subtotal:", totalSubtotal);
+  localStorage?.setItem("totalSubtotal", totalSubtotal)
 
   // useEffect(() => {
   //   handleCoupan();

@@ -1092,7 +1092,7 @@ function IndexGrocary(props) {
                 </>
               )}
               <div className="title">
-                <h2>Bowse by Categories</h2>
+                <h2>Browse by Categories</h2>
                 <span className="title-leaf">
                   <svg className="icon-width">
                     <use xlinkHref="../assets/svg/leaf.svg#leaf" />

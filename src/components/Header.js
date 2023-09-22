@@ -30,6 +30,7 @@ function Header({ Dash }) {
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
   localStorage?.setItem("productSearch", searchQuery);
+  const totalSubtotal = localStorage?.getItem("totalSubtotal");
 
   useEffect(() => {
     if (trendingProduct?.data?.results?.productlist) {
@@ -616,7 +617,7 @@ function Header({ Dash }) {
                             <div className="price-box">
                               <h5>Total :</h5>
                               <h4 className="theme-color fw-bold">
-                                ${cartTotal}{" "}
+                                ${totalSubtotal}{" "}
                               </h4>
                             </div>
                             <div className="button-group">

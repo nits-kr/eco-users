@@ -7,7 +7,12 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faHeart } from "@fortawesome/free-solid-svg-icons";
 import Slider from "react-slick";
-import { ProductDetails, ProductList, ProductSearch } from "./HttpServices";
+import {
+  ProductDetails,
+  ProductList,
+  ProductSearch,
+  CartList,
+} from "./HttpServices";
 import { useGetCartListQuery } from "../services/Post";
 import {
   InitializeColorPicker,
@@ -28,6 +33,7 @@ import { useRelatedProductDetailsMutation } from "../services/Post";
 import CountdownTimer from "./CountdownTimer";
 import Carousel from "./Carousel ";
 import SetupReadMore from "./javascript/Readmore";
+import Carousel3 from "./Carousel3";
 
 function Product(props) {
   const relatedProduct = useGetRelatedProductQuery();
@@ -60,12 +66,25 @@ function Product(props) {
   const [website, setWebsite] = useState([]);
   const [title, setTitle] = useState([]);
   const [comment, setComment] = useState([]);
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(1);
   const [selectedAttributeValues, setSelectedAttributeValues] = useState({});
   const [selectedVariant, setSelectedVariant] = useState(0);
   const variants = productDetail?.addVarient || [];
   const [area, setArea] = useState(true);
   console.log("variant", variants);
+
+  useEffect(() => {
+    cartData();
+  }, []);
+  const cartData = async () => {
+    try {
+      const { data, error } = await CartList();
+      error ? console.log(error) : console.log(data);
+      setCartListItems(data.results.list);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleVariantChange = (index) => {
     setSelectedVariant(index);
@@ -81,6 +100,12 @@ function Product(props) {
   const quantity = selectedVariantData?.stockQuantity;
   console.log("quantity", quantity);
 
+  const isVariantInCart = cartListItems.some((item) => {
+    return item?.products?.some((product) => {
+      return product?.product_Id?._id === selectedVariantData?._id;
+    });
+  });
+console.log("selectedVariantData?._id", selectedVariantData?._id);
   console.log("selectedVariantData", selectedVariantData);
   const [formData, setFormData] = useState({
     r1: "",
@@ -228,9 +253,9 @@ function Product(props) {
     } catch (error) {
       console.log(error);
     }
-    setTimeout(() => {
-      window?.location?.reload();
-    }, 500);
+    // setTimeout(() => {
+    //   window?.location?.reload();
+    // }, 500);
   };
   const fetchCartListData = () => {
     if (isSuccess) {
@@ -780,6 +805,8 @@ function Product(props) {
                         </div> */}
                         <div className="border mt-2"></div>
                         <Carousel />
+                        {/* <hr/> */}
+                        {/* <Carousel3/> */}
                         <div className="border my-2"></div>
                         <div className="product-packege">
                           <div className="product-title">
@@ -867,45 +894,116 @@ function Product(props) {
                           </ul>
                         </div> */}
                         <CountdownTimer />
-                        <div className="note-box product-packege">
-                          <div className="cart_qty qty-box product-qty">
-                            <div className="input-group">
-                              <button
-                                type="button"
-                                className="qty-left-minus"
-                                data-type="minus"
-                                data-field=""
-                                onClick={() => setCount(count - 1)}
-                              >
-                                <i className="fa fa-minus" aria-hidden="true" />
-                              </button>
-                              <input
-                                className="form-control input-number qty-input"
-                                type="text"
-                                name="quantity"
-                                value={count}
-                              />
-                              {/* {count} */}
 
-                              <button
-                                type="button"
-                                className="qty-right-plus"
-                                data-type="plus"
-                                data-field=""
-                                onClick={() => setCount(count + 1)}
-                              >
-                                <i className="fa fa-plus" aria-hidden="true" />
-                              </button>
+                        <div className="note-box product-packege">
+                          {selectedVariantData?.stockQuantity <= 0 ? (
+                            <div className="cart_qty qty-box product-qty">
+                              <div className="input-group">
+                                <button
+                                  type="button"
+                                  className="qty-left-minus"
+                                  data-type="minus"
+                                  data-field=""
+                                  // onClick={() => setCount(count - 1)}
+                                  style={{ cursor: "not-allowed" }}
+                                  disabled
+                                >
+                                  <i
+                                    className="fa fa-minus"
+                                    aria-hidden="true"
+                                  />
+                                </button>
+                                <input
+                                  className="form-control input-number qty-input"
+                                  type="text"
+                                  name="quantity"
+                                  value={count}
+                                />
+                                {/* {count} */}
+
+                                <button
+                                  type="button"
+                                  className="qty-right-plus"
+                                  data-type="plus"
+                                  data-field=""
+                                  // onClick={() => setCount(count + 1)}
+                                  disabled
+                                  style={{ cursor: "not-allowed" }}
+                                >
+                                  <i
+                                    className="fa fa-plus"
+                                    aria-hidden="true"
+                                  />
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                          <Link
+                          ) : (
+                            <div className="cart_qty qty-box product-qty">
+                              <div className="input-group">
+                                <button
+                                  type="button"
+                                  className="qty-left-minus"
+                                  data-type="minus"
+                                  data-field=""
+                                  onClick={() => setCount(count - 1)}
+                                  disabled={count <= 1}
+                                >
+                                  <i
+                                    className="fa fa-minus"
+                                    aria-hidden="true"
+                                  />
+                                </button>
+                                <input
+                                  className="form-control input-number qty-input"
+                                  type="text"
+                                  name="quantity"
+                                  value={count}
+                                />
+                                {/* {count} */}
+
+                                <button
+                                  type="button"
+                                  className="qty-right-plus"
+                                  data-type="plus"
+                                  data-field=""
+                                  onClick={() => setCount(count + 1)}
+                                  disabled={
+                                    count === selectedVariantData?.stockQuantity
+                                  }
+                                >
+                                  <i
+                                    className="fa fa-plus"
+                                    aria-hidden="true"
+                                  />
+                                </button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* <Link
                             to="/cart"
                             // onClick={() => handleAddToCart(item)}
                             className="btn btn-md bg-dark cart-button text-white w-100"
                             onClick={() => handleAddToCart()}
                           >
                             Add To Cart
-                          </Link>
+                          </Link> */}
+
+                          {isVariantInCart ? (
+                            <Link
+                              to="/cart"
+                              className="btn btn-md bg-dark cart-button text-white w-100"
+                            >
+                              Go to Cart
+                            </Link>
+                          ) : (
+                            <button
+                              className="btn btn-md bg-dark cart-button text-white w-100"
+                              onClick={() => handleAddToCart()}
+                            >
+                              Add to Cart
+                            </button>
+                          )}
                         </div>
                         <div className="buy-box">
                           <Link to="/wishlist">

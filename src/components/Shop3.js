@@ -97,6 +97,20 @@ function Shop3(props) {
     }
   };
 
+  useEffect(() => {
+    cartData();
+  }, []);
+  const cartData = async () => {
+    try {
+      const { data, error } = await CartList();
+      error ? console.log(error) : console.log(data);
+      setCartListItems(data.results.list);
+      console.log(data.results.list);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   console.log("query", query);
   const totalRatings = selectedProduct?.ratings?.reduce(
     (sum, rating) => sum + rating.star,
@@ -180,7 +194,11 @@ function Shop3(props) {
   };
   const handleAddToCart = async (item, price, index) => {
     try {
-      const { data, error } = await AddToCart(item._id, count[index], price * count[index]);
+      const { data, error } = await AddToCart(
+        item._id,
+        count[index],
+        price * count[index]
+      );
       if (error) {
         console.log(error);
         return;
@@ -1684,7 +1702,24 @@ function Shop3(props) {
                         (sum, rating) => sum + rating.star,
                         0
                       );
+                      const totalStockQuantity =
+                        item.addVarient.length > 0
+                          ? item.addVarient.reduce(
+                              (sum, variant) =>
+                                sum + (variant.stockQuantity || 0),
+                              0
+                            )
+                          : 0;
                       const averageRating = totalRatings / item.ratings.length;
+                      const isItemInCart = cartListItems.some(
+                        (cartItem) =>
+                          cartItem?.products?.[0]?.product_Id?._id === item._id
+                      );
+                      console.log("Item ID:", item?._id);
+                      console.log("Cart Items:", cartListItems);
+                      console.log("Is Item In Cart:", isItemInCart);
+                      const totalPrice =
+                        (item?.addVarient[0]?.Price || 0) * (count[index] || 1);
                       return (
                         <div key={index}>
                           <div className="product-box-3 h-100 wow fadeInUp">
@@ -1820,18 +1855,18 @@ function Shop3(props) {
                                         fontSize: "15px",
                                       }}
                                     >
-                                      {item?.stockQuantity > 0 ? (
-                                        item?.stockQuantity <= 5 ? (
+                                      {totalStockQuantity > 0 ? (
+                                        totalStockQuantity <= 5 ? (
                                           <span
                                             style={{ color: "rgb(199, 0, 85)" }}
                                           >
                                             Only few left
                                           </span>
-                                        ) : item?.stockQuantity <= 10 ? (
+                                        ) : totalStockQuantity <= 10 ? (
                                           <span
                                             style={{ color: "rgb(199, 0, 85)" }}
                                           >
-                                            Only {item?.stockQuantity} left
+                                            Only {totalStockQuantity} left
                                           </span>
                                         ) : (
                                           <span style={{ color: "green" }}>
@@ -1923,7 +1958,9 @@ function Shop3(props) {
                                               count[index] + 1
                                             )
                                           }
-                                          disabled={count[index] === item?.stockQuantity}
+                                          disabled={
+                                            count[index] === item?.stockQuantity
+                                          }
                                         >
                                           <i
                                             className="fa fa-plus"
@@ -1936,68 +1973,42 @@ function Shop3(props) {
                                 </div>
                                 <h5 className="price">
                                   <span className="theme-color">
-                                    ${item.Price}
+                                    ${totalPrice}
                                   </span>{" "}
                                   <del>${item.oldPrice} </del>
                                 </h5>
-                                <div className="add-to-cart-box bg-white mt-2">
-                                  <button className="btn btn-add-cart addcart-button">
-                                    <Link
-                                      to="/cart"
-                                      onClick={() =>
-                                        handleAddToCart(item, item?.addVarient[0]?.Price, index)
-                                      }
-                                    >
-                                      Add To Cart
-                                      {/* <span className="add-icon bg-light-gray">
-                                        <i className="fa-solid fa-plus" />
-                                      </span> */}
-                                    </Link>
-                                  </button>
-                                  <div className="cart_qty qty-box">
-                                    <div className="input-group bg-white">
-                                      <button
-                                        type="button"
-                                        className="qty-left-minus bg-gray"
-                                        data-type="minus"
-                                        data-field=""
+
+                                {isItemInCart ? (
+                                  <div className="add-to-cart-box bg-white mt-2">
+                                    <button className="btn btn-add-cart addcart-button">
+                                      <Link
+                                        to="/cart"
+                                        // onClick={() =>
+                                        //   handleAddToCart(item, item?.addVarient[0]?.Price, index)
+                                        // }
                                       >
-                                        <i
-                                          className="fa fa-minus"
-                                          aria-hidden="true"
-                                        />
-                                      </button>
-                                      <input
-                                        className="form-control input-number qty-input"
-                                        type="text"
-                                        name="quantity"
-                                        defaultValue={0}
-                                      />
-                                      <button
-                                        type="button"
-                                        className="qty-right-plus bg-gray"
-                                        data-type="plus"
-                                        data-field=""
-                                      >
-                                        <i
-                                          className="fa fa-plus"
-                                          aria-hidden="true"
-                                        />
-                                      </button>
-                                    </div>
+                                        Go To Cart
+                                      </Link>
+                                    </button>
                                   </div>
-                                </div>
-                                {/* <div className="add-to-cart-box bg-danger mt-2">
-                                  <button className="btn btn-add-cart addcart-button">
-                                    <Link
-                                      className="text-light"
-                                      to="/cart"
-                                      onClick={() => handleAddToCart(item)}
-                                    >
-                                      Buy Now
-                                    </Link>
-                                  </button>
-                                </div> */}
+                                ) : (
+                                  <div className="add-to-cart-box bg-white mt-2">
+                                    <button className="btn btn-add-cart addcart-button">
+                                      <Link
+                                        to="/cart"
+                                        onClick={() =>
+                                          handleAddToCart(
+                                            item,
+                                            item?.addVarient[0]?.Price,
+                                            index
+                                          )
+                                        }
+                                      >
+                                        Add To Cart
+                                      </Link>
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>

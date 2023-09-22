@@ -89,6 +89,19 @@ function Shop2(props) {
     newCounts[index] = newCount >= 0 ? newCount : 0;
     setCount(newCounts);
   };
+  useEffect(() => {
+    cartData();
+  }, []);
+  const cartData = async () => {
+    try {
+      const { data, error } = await CartList();
+      error ? console.log(error) : console.log(data);
+      setCartListItems(data.results.list);
+      console.log(data.results.list);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const [currentValue, setCurrentValue] = useState(0);
   const storedId = localStorage.getItem("loginId");
@@ -174,15 +187,12 @@ function Shop2(props) {
       }
       const newCartItems = [...cartListItems, data];
       setCartListItems(newCartItems);
-      setTimeout(() => {
-        window?.location?.reload();
-      }, 500);
-      console.log("prevCartItems", newCartItems);
-      console.log("New cart items", cartListItems);
     } catch (error) {
       console.log(error);
     }
-    dispatch(addToCart(item));
+    setTimeout(() => {
+      window?.location?.reload();
+    }, 500);
   };
   const handleTranding = async () => {
     try {
@@ -1728,6 +1738,15 @@ function Shop2(props) {
                             )
                           : 0;
                       const averageRating = totalRatings / item.ratings.length;
+                      const isItemInCart = cartListItems.some(
+                        (cartItem) =>
+                          cartItem?.products?.[0]?.product_Id?._id === item._id
+                      );
+                      console.log("Item ID:", item?._id);
+                      console.log("Cart Items:", cartListItems);
+                      console.log("Is Item In Cart:", isItemInCart);
+                      const totalPrice =
+                        (item?.addVarient[0]?.Price || 0) * (count[index] || 1);
                       return (
                         <div key={index}>
                           <div className="product-box-3 h-100 wow fadeInUp">
@@ -1981,72 +2000,41 @@ function Shop2(props) {
                                 </div>
                                 <h5 className="price">
                                   <span className="theme-color">
-                                    ${item?.addVarient[0]?.Price}
+                                    ${totalPrice}
                                   </span>{" "}
                                   <del>${item?.addVarient[0]?.oldPrice} </del>
                                 </h5>
-                                <div className="add-to-cart-box bg-white mt-2">
-                                  <button className="btn btn-add-cart addcart-button">
-                                    <Link
-                                      to="/cart"
-                                      onClick={() =>
-                                        handleAddToCart(
-                                          item,
-                                          item?.addVarient[0]?.Price,
-                                          index
-                                        )
-                                      }
-                                    >
-                                      Add To Cart
-                                      {/* <span className="add-icon bg-light-gray">
-                                        <i className="fa-solid fa-plus" />
-                                      </span> */}
-                                    </Link>
-                                  </button>
-                                  <div className="cart_qty qty-box">
-                                    <div className="input-group bg-white">
-                                      <button
-                                        type="button"
-                                        className="qty-left-minus bg-gray"
-                                        data-type="minus"
-                                        data-field=""
+                                {isItemInCart ? (
+                                  <div className="add-to-cart-box bg-white mt-2">
+                                    <button className="btn btn-add-cart addcart-button">
+                                      <Link
+                                        to="/cart"
+                                        // onClick={() =>
+                                        //   handleAddToCart(item, item?.addVarient[0]?.Price, index)
+                                        // }
                                       >
-                                        <i
-                                          className="fa fa-minus"
-                                          aria-hidden="true"
-                                        />
-                                      </button>
-                                      <input
-                                        className="form-control input-number qty-input"
-                                        type="text"
-                                        name="quantity"
-                                        defaultValue={0}
-                                      />
-                                      <button
-                                        type="button"
-                                        className="qty-right-plus bg-gray"
-                                        data-type="plus"
-                                        data-field=""
-                                      >
-                                        <i
-                                          className="fa fa-plus"
-                                          aria-hidden="true"
-                                        />
-                                      </button>
-                                    </div>
+                                        Go To Cart
+                                      </Link>
+                                    </button>
                                   </div>
-                                </div>
-                                {/* <div className="add-to-cart-box bg-danger mt-2">
-                                  <button className="btn btn-add-cart addcart-button">
-                                    <Link
-                                      className="text-light"
-                                      to="/cart"
-                                      onClick={() => handleAddToCart(item)}
-                                    >
-                                      Buy Now
-                                    </Link>
-                                  </button>
-                                </div> */}
+                                ) : (
+                                  <div className="add-to-cart-box bg-white mt-2">
+                                    <button className="btn btn-add-cart addcart-button">
+                                      <Link
+                                        to="/cart"
+                                        onClick={() =>
+                                          handleAddToCart(
+                                            item,
+                                            item?.addVarient[0]?.Price,
+                                            index
+                                          )
+                                        }
+                                      >
+                                        Add To Cart
+                                      </Link>
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>

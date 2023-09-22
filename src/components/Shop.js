@@ -116,15 +116,6 @@ function Shop(props) {
     setProductListItems(flattenedProducts);
   };
   const dispatch = useDispatch();
-  // const handleSaveChanges1 = async (categoryId) => {
-  //   const editAddress = {
-  //     id: categoryId,
-  //   };
-  //   const result = await subCategoryProduct(editAddress);
-  //   if (result) {
-  //     setProductListItems(result.data?.results?.listData);
-  //   }
-  // };
 
   const handleCountChange = (index, newCount) => {
     const newCounts = [...count];
@@ -263,24 +254,48 @@ function Shop(props) {
       console.log(error);
     }
   };
+  // const handleAddToCart = async (item, price, index) => {
+  //   try {
+  //     const { data, error } = await AddToCart(
+  //       item._id,
+  //       count[index],
+  //       price * count[index]
+  //     );
+  //     if (error) {
+  //       console.log(error);
+  //       return;
+  //     }
+  //     const newCartItems = [...cartListItems, data];
+  //     setCartListItems(newCartItems);
+  //     setTimeout(() => {
+  //       window?.location?.reload();
+  //     }, 500);
+  //     console.log("prevCartItems", newCartItems);
+  //     console.log("New cart items", cartListItems);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  //   dispatch(addToCart(item));
+  // };
   const handleAddToCart = async (item, price, index) => {
     try {
-      const { data, error } = await AddToCart(item._id, count[index], price * count[index]);
+      const { data, error } = await AddToCart(
+        item._id,
+        count[index],
+        price * count[index]
+      );
       if (error) {
         console.log(error);
         return;
       }
       const newCartItems = [...cartListItems, data];
       setCartListItems(newCartItems);
-      setTimeout(() => {
-        window?.location?.reload();
-      }, 500);
-      console.log("prevCartItems", newCartItems);
-      console.log("New cart items", cartListItems);
     } catch (error) {
       console.log(error);
     }
-    dispatch(addToCart(item));
+    setTimeout(() => {
+      window?.location?.reload();
+    }, 500);
   };
   const handleTranding = async () => {
     try {
@@ -762,67 +777,7 @@ function Shop(props) {
                         </div>
                       </div>
                     </div>
-                    {/* <div className="accordion-item">
-                          <h2
-                            className="accordion-header"
-                            id="panelsStayOpen-headingTwo"
-                          >
-                            <button
-                              className="accordion-button collapsed"
-                              type="button"
-                              data-bs-toggle="collapse"
-                              data-bs-target="#collapseTwo"
-                              aria-expanded="false"
-                              aria-controls="collapseTwo"
-                            >
-                              <span>Food Preference</span>
-                            </button>
-                          </h2>
-                          <div
-                            id="collapseTwo"
-                            className="accordion-collapse collapse show"
-                            aria-labelledby="panelsStayOpen-headingTwo"
-                          >
-                            <div className="accordion-body">
-                              <ul className="category-list custom-padding">
-                                <li>
-                                  <div className="form-check ps-0 m-0 category-list-box">
-                                    <input
-                                      className="checkbox_animated"
-                                      type="checkbox"
-                                      id="veget"
-                                    />
-                                    <label
-                                      className="form-check-label"
-                                      htmlFor="veget"
-                                    >
-                                      <span className="name">Vegetarian</span>
-                                      <span className="number">(08)</span>
-                                    </label>
-                                  </div>
-                                </li>
-                                <li>
-                                  <div className="form-check ps-0 m-0 category-list-box">
-                                    <input
-                                      className="checkbox_animated"
-                                      type="checkbox"
-                                      id="non"
-                                    />
-                                    <label
-                                      className="form-check-label"
-                                      htmlFor="non"
-                                    >
-                                      <span className="name">
-                                        Non Vegetarian
-                                      </span>
-                                      <span className="number">(09)</span>
-                                    </label>
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div> */}
+
                     <div className="accordion-item">
                       <h2
                         className="accordion-header"
@@ -884,474 +839,6 @@ function Shop(props) {
                         </div>
                       </div>
                     </div>
-                    {/* <div className="accordion-item">
-                      <h2
-                        className="accordion-header"
-                        id="panelsStayOpen-headingFour"
-                      >
-                        <button
-                          className="accordion-button collapsed"
-                          type="button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#collapseFour"
-                          aria-expanded="false"
-                          aria-controls="collapseFour"
-                        >
-                          <span>Discount</span>
-                        </button>
-                      </h2>
-                      <div
-                        id="collapseFour"
-                        className="accordion-collapse collapse show"
-                        aria-labelledby="panelsStayOpen-headingFour"
-                      >
-                        <div className="accordion-body">
-                          <ul className="category-list custom-padding">
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault"
-                                >
-                                  <span className="name">upto 5%</span>
-                                  <span className="number">(06)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault1"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault1"
-                                >
-                                  <span className="name">5% - 10%</span>
-                                  <span className="number">(08)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault2"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault2"
-                                >
-                                  <span className="name">10% - 15%</span>
-                                  <span className="number">(10)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault3"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault3"
-                                >
-                                  <span className="name">15% - 25%</span>
-                                  <span className="number">(14)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault4"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault4"
-                                >
-                                  <span className="name">More than 25%</span>
-                                  <span className="number">(13)</span>
-                                </label>
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div> */}
-                    {/* <div className="accordion-item">
-                      <h2
-                        className="accordion-header"
-                        id="panelsStayOpen-headingFive"
-                      >
-                        <button
-                          className="accordion-button collapsed"
-                          type="button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#collapseFive"
-                          aria-expanded="false"
-                          aria-controls="collapseFive"
-                        >
-                          <span>Pack Size</span>
-                        </button>
-                      </h2>
-                      <div
-                        id="collapseFive"
-                        className="accordion-collapse collapse show"
-                        aria-labelledby="panelsStayOpen-headingFive"
-                      >
-                        <div className="accordion-body">
-                          <ul className="category-list pe-3 custom-height">
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault5"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault5"
-                                >
-                                  <span className="name">400 to 500 g</span>
-                                  <span className="number">(05)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault6"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault6"
-                                >
-                                  <span className="name">500 to 700 g</span>
-                                  <span className="number">(02)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault7"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault7"
-                                >
-                                  <span className="name">700 to 1 kg</span>
-                                  <span className="number">(04)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault8"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault8"
-                                >
-                                  <span className="name">
-                                    120 - 150 g each Vacuum 2 pcs
-                                  </span>
-                                  <span className="number">(06)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault9"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault9"
-                                >
-                                  <span className="name">1 pc</span>
-                                  <span className="number">(09)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault10"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault10"
-                                >
-                                  <span className="name">1 to 1.2 kg</span>
-                                  <span className="number">(06)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault11"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault11"
-                                >
-                                  <span className="name">
-                                    2 x 24 pcs Multipack
-                                  </span>
-                                  <span className="number">(03)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault12"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault12"
-                                >
-                                  <span className="name">
-                                    2x6 pcs Multipack
-                                  </span>
-                                  <span className="number">(04)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault13"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault13"
-                                >
-                                  <span className="name">
-                                    4x6 pcs Multipack
-                                  </span>
-                                  <span className="number">(05)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault14"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault14"
-                                >
-                                  <span className="name">
-                                    5x6 pcs Multipack
-                                  </span>
-                                  <span className="number">(09)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault15"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault15"
-                                >
-                                  <span className="name">Combo 2 Items</span>
-                                  <span className="number">(10)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault16"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault16"
-                                >
-                                  <span className="name">Combo 3 Items</span>
-                                  <span className="number">(14)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault17"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault17"
-                                >
-                                  <span className="name">2 pcs</span>
-                                  <span className="number">(19)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault18"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault18"
-                                >
-                                  <span className="name">3 pcs</span>
-                                  <span className="number">(14)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault19"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault19"
-                                >
-                                  <span className="name">
-                                    2 pcs Vacuum (140 g to 180 g each )
-                                  </span>
-                                  <span className="number">(13)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault20"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault20"
-                                >
-                                  <span className="name">4 pcs</span>
-                                  <span className="number">(18)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault21"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault21"
-                                >
-                                  <span className="name">
-                                    4 pcs Vacuum (140 g to 180 g each )
-                                  </span>
-                                  <span className="number">(07)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault22"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault22"
-                                >
-                                  <span className="name">6 pcs</span>
-                                  <span className="number">(09)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault23"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault23"
-                                >
-                                  <span className="name">6 pcs carton</span>
-                                  <span className="number">(11)</span>
-                                </label>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="form-check ps-0 m-0 category-list-box">
-                                <input
-                                  className="checkbox_animated"
-                                  type="checkbox"
-                                  id="flexCheckDefault24"
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="flexCheckDefault24"
-                                >
-                                  <span className="name">6 pcs Pouch</span>
-                                  <span className="number">(16)</span>
-                                </label>
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div> */}
                   </div>
                 </div>
               </div>
@@ -1509,6 +996,15 @@ function Shop(props) {
                         0
                       );
                       const averageRating = totalRatings / item.ratings.length;
+                      const isItemInCart = cartListItems.some(
+                        (cartItem) =>
+                          cartItem?.products?.[0]?.product_Id?._id === item._id
+                      );
+                      console.log("Item ID:", item?._id);
+                      console.log("Cart Items:", cartListItems);
+                      console.log("Is Item In Cart:", isItemInCart);
+                      const totalPrice =
+                        (item?.addVarient[0]?.Price || 0) * (count[index] || 1);
                       return (
                         <div key={index}>
                           <div className="product-box-3 h-100 wow fadeInUp">
@@ -1713,68 +1209,41 @@ function Shop(props) {
                                 </div>
                                 <h5 className="price">
                                   <span className="theme-color">
-                                    ${item?.addVarient[0]?.Price}
+                                    ${totalPrice}
                                   </span>{" "}
                                   <del>${item?.addVarient[0]?.oldPrice} </del>
                                 </h5>
-                                <div className="add-to-cart-box bg-white mt-2">
-                                  <button className="btn btn-add-cart addcart-button">
-                                    <Link
-                                      to="/cart"
-                                      onClick={() =>
-                                        handleAddToCart(item, item?.addVarient[0]?.Price, index)
-                                      }
-                                    >
-                                      Add To Cart
-                                      {/* <span className="add-icon bg-light-gray">
-                                        <i className="fa-solid fa-plus" />
-                                      </span> */}
-                                    </Link>
-                                  </button>
-                                  <div className="cart_qty qty-box">
-                                    <div className="input-group bg-white">
-                                      <button
-                                        type="button"
-                                        className="qty-left-minus bg-gray"
-                                        data-type="minus"
-                                        data-field=""
+                                {isItemInCart ? (
+                                  <div className="add-to-cart-box bg-white mt-2">
+                                    <button className="btn btn-add-cart addcart-button">
+                                      <Link
+                                        to="/cart"
+                                        // onClick={() =>
+                                        //   handleAddToCart(item, item?.addVarient[0]?.Price, index)
+                                        // }
                                       >
-                                        <i
-                                          className="fa fa-minus"
-                                          aria-hidden="true"
-                                        />
-                                      </button>
-                                      <input
-                                        className="form-control input-number qty-input"
-                                        type="text"
-                                        name="quantity"
-                                        defaultValue={0}
-                                      />
-                                      <button
-                                        type="button"
-                                        className="qty-right-plus bg-gray"
-                                        data-type="plus"
-                                        data-field=""
-                                      >
-                                        <i
-                                          className="fa fa-plus"
-                                          aria-hidden="true"
-                                        />
-                                      </button>
-                                    </div>
+                                        Go To Cart
+                                      </Link>
+                                    </button>
                                   </div>
-                                </div>
-                                {/* <div className="add-to-cart-box bg-danger mt-2">
-                                  <button className="btn btn-add-cart addcart-button">
-                                    <Link
-                                      className="text-light"
-                                      to="/cart"
-                                      onClick={() => handleAddToCart(item)}
-                                    >
-                                      Buy Now
-                                    </Link>
-                                  </button>
-                                </div> */}
+                                ) : (
+                                  <div className="add-to-cart-box bg-white mt-2">
+                                    <button className="btn btn-add-cart addcart-button">
+                                      <Link
+                                        to="/cart"
+                                        onClick={() =>
+                                          handleAddToCart(
+                                            item,
+                                            item?.addVarient[0]?.Price,
+                                            index
+                                          )
+                                        }
+                                      >
+                                        Add To Cart
+                                      </Link>
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1865,7 +1334,9 @@ function Shop(props) {
                       <h4 className="title-name">
                         {selectedProduct?.productName_en}
                       </h4>
-                      <h4 className="price">${selectedProduct?.addVarient[0]?.Price} </h4>
+                      <h4 className="price">
+                        ${selectedProduct?.addVarient[0]?.Price}{" "}
+                      </h4>
                       <div className="product-rating">
                         <Star rating={averageRating} />
                         <span className="ms-2">

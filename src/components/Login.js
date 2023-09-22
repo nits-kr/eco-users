@@ -49,8 +49,8 @@ function Login() {
         title: "Login Successful!",
         icon: "success",
         text: "You have successfully logged in.",
-        showConfirmButton: false, // Hide the confirm button
-        timer: 500, // Automatically close the alert after 1.5 seconds
+        showConfirmButton: false, 
+        timer: 500,
       }).then((result) => {
         navigate("*");
         setTimeout(() => {
