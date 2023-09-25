@@ -789,7 +789,7 @@ console.log("selectedVariantData?._id", selectedVariantData?._id);
                                 % off)
                               </span>
                             )}
-                            {/* <span className="offer theme-color">(8% off)</span> */}
+                            
                           </h3>
 
                           <div>
