@@ -48,15 +48,16 @@ function Cart() {
   const handleIncrement = (id) => {
     setCartListItems((prevCartListItems) => {
       return prevCartListItems.map((item) =>
-        id === item?._id
+        id === item.varient?._id
           ? {
               ...item,
-              products: [
-                {
-                  ...item.products[0],
-                  quantity: item.products[0]?.quantity + 1,
-                },
-              ],
+              quantity: item?.quantity + 1,
+              // products: [
+              //   {
+              //     ...item,
+              //     quantity: item?.quantity + 1,
+              //   },
+              // ],
             }
           : item
       );
@@ -139,7 +140,7 @@ function Cart() {
   }, [cartListQuery, count1]);
   const fetchCartListData = () => {
     if (isSuccess) {
-      const items = cartListQuery?.results?.list || [];
+      const items = cartListQuery?.results?.carts || [];
       // localStorage?.setItem("allCartItems", items);
       localStorage?.setItem(
         "allCartItems",
@@ -168,14 +169,12 @@ function Cart() {
     ?.slice()
     ?.reverse()
     ?.forEach((item) => {
-      const subtotal =
-        (item?.products[0]?.product_Id?.addVarient[0]?.Price || 0) *
-        (item?.products[0]?.quantity || 1);
+      const subtotal = (item?.varient?.Price || 0) * (item?.quantity || 1);
       totalSubtotal += subtotal;
     });
 
   console.log("Total Subtotal:", totalSubtotal);
-  localStorage?.setItem("totalSubtotal", totalSubtotal)
+  localStorage?.setItem("totalSubtotal", totalSubtotal);
 
   // useEffect(() => {
   //   handleCoupan();
@@ -185,11 +184,9 @@ function Cart() {
 
     cartList =
       cartListItems?.map((order) => ({
-        product_Id: order?.products[0]?.product_Id?._id,
-        quantity: order?.products[0]?.quantity,
-        Price:
-          order?.products[0]?.product_Id?.addVarient[0]?.Price *
-          order?.products[0]?.quantity,
+        product_Id: order?.product_Id?._id,
+        quantity: order?.quantity,
+        Price: order?.varient?.Price * order?.quantity,
       })) || [];
 
     const newOrderData = {
@@ -229,10 +226,17 @@ function Cart() {
     };
     console.log("cart subtotal", item);
   };
-  const handleCoupan2 = async (item, quantity, id) => {
+  const handleCoupan2 = async (item, quantity, id, varientId) => {
     const newOrderData = {
       coupanCode: coupanCode2,
-      carts: [{ product_Id: id, Price: item * quantity, quantity: quantity }],
+      carts: [
+        {
+          product_Id: id,
+          Price: item * quantity,
+          quantity: quantity,
+          varient_Id: varientId,
+        },
+      ],
       user_Id: userId,
     };
 
@@ -369,17 +373,7 @@ function Cart() {
                         ?.reverse()
                         ?.map((item, index) => {
                           const subtotal =
-                            (item?.products[0]?.product_Id?.addVarient[0]
-                              ?.Price || 0) *
-                            (item?.products[0]?.quantity || 1);
-                          console.log(
-                            "item?.products[0]?.Price",
-                            item?.products[0]?.Price
-                          );
-                          console.log(
-                            "item?.products[0]?.quantity",
-                            item?.products[0]?.quantity
-                          );
+                            (item?.varient?.Price || 0) * (item?.quantity || 1);
 
                           // let totalSubtotal = 0;
                           // cartListItems
@@ -401,10 +395,7 @@ function Cart() {
                                 <div className="product border-0">
                                   <Link to="/product" className="product-image">
                                     <img
-                                      src={
-                                        item?.products[0]?.product_Id
-                                          ?.addVarient[0]?.product_Pic[0]
-                                      }
+                                      src={item?.varient?.product_Pic[0]}
                                       className="img-fluid  lazyload"
                                       alt=""
                                     />
@@ -435,10 +426,7 @@ function Cart() {
                                         <span className="text-title">
                                           SKU :
                                         </span>{" "}
-                                        {
-                                          item?.products[0]?.product_Id
-                                            ?.addVarient[0]?.SKU
-                                        }
+                                        {item?.varient?.SKU}
                                       </li>
                                       {/* <li className="quantity-price-box">
                                         <div className="cart_qty">
@@ -523,7 +511,7 @@ function Cart() {
                                           }}
                                         >
                                           {" "}
-                                          {item?.products[0]?.quantity === 1 ? (
+                                          {item?.quantity === 1 ? (
                                             <div
                                               style={{
                                                 cursor: "not-allowed",
@@ -565,9 +553,7 @@ function Cart() {
                                               </button>
                                             </div>
                                           )}
-                                          <div>
-                                            {item?.products[0]?.quantity}
-                                          </div>
+                                          <div>{item?.quantity}</div>
                                           <div>
                                             <button
                                               type="button"
@@ -575,7 +561,9 @@ function Cart() {
                                               data-type="plus"
                                               data-field=""
                                               onClick={() =>
-                                                handleIncrement(item?._id)
+                                                handleIncrement(
+                                                  item?.varient?._id
+                                                )
                                               }
                                             >
                                               <i
@@ -695,10 +683,10 @@ function Cart() {
                           className="btn-apply"
                           onClick={() =>
                             handleCoupan2(
-                              singleItemPrice?.products[0]?.product_Id
-                                ?.addVarient[0]?.Price,
-                              singleItemPrice?.products[0]?.quantity,
-                              singleItemPrice?.products[0]?.product_Id?._id
+                              singleItemPrice?.varient?.Price,
+                              singleItemPrice?.quantity,
+                              singleItemPrice?.product_Id?._id,
+                              singleItemPrice?.varient?._id
                             )
                           }
                         >
@@ -735,9 +723,8 @@ function Cart() {
                         <h4>Subtotal</h4>
                         <h4 className="price">
                           $
-                          {singleItemPrice?.products[0]?.product_Id
-                            ?.addVarient[0]?.Price *
-                            singleItemPrice?.products[0]?.quantity}
+                          {singleItemPrice?.varient?.Price *
+                            singleItemPrice?.quantity}
                         </h4>
                       </li>
                       <li>
@@ -791,9 +778,8 @@ function Cart() {
                         $
                         {coupan2.length !== 0
                           ? coupan2?.cartsTotalSum?.toFixed(2)
-                          : singleItemPrice?.products[0]?.product_Id
-                              ?.addVarient[0]?.Price *
-                            singleItemPrice?.products[0]?.quantity}
+                          : singleItemPrice?.varient?.Price *
+                            singleItemPrice?.quantity}
                       </h4>
                     ) : (
                       <h4 className="price theme-color">

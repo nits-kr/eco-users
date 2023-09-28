@@ -59,14 +59,26 @@ function CheckOut() {
       orderList = coupan.product.map((product) => ({
         product_Id: product.product_Id,
         quantity: product.quantity,
+        varient_Id: product?.varient?._id,
+        Price: items?.Price,
       }));
     } else {
       orderList =
         orderItemSummary?.map((order) => ({
-          product_Id: order.products[0].product_Id._id,
-          quantity: order.products[0].quantity,
+          product_Id: order.product_Id._id,
+          quantity: order.quantity,
           cartsTotal: orderItemSummaryPrice?.cartsTotalSum,
+          varient_Id: order?.addVarient[0]?._id,
+          Price: order?.Price,
         })) || [];
+      // orderList =
+      //   orderItemSummary?.map((order) => ({
+      //     product_Id: order[0].product_Id._id,
+      //     quantity: order[0].quantity,
+      //     // cartsTotal: coupan.cartsTotalSum,
+      //     varient_Id: order[0]?.varient_Id,
+      //     Price: order[0].Price,
+      //   })) || [];
     }
 
     const newOrderData = {
@@ -1034,7 +1046,9 @@ function CheckOut() {
 
                   <ul className="summery-total">
                     <li>
-                      <h4>Subtotal(<span>Coupan Applied</span>) </h4>
+                      <h4>
+                        Subtotal(<span>Coupan Applied</span>){" "}
+                      </h4>
                       {coupan?.length !== 0 ? (
                         <h4 className="price">
                           ${coupan?.cartsTotalSum?.toFixed(2)}

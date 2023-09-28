@@ -80,7 +80,7 @@ function Product(props) {
     try {
       const { data, error } = await CartList();
       error ? console.log(error) : console.log(data);
-      setCartListItems(data.results.list);
+      setCartListItems(data.results.carts);
     } catch (error) {
       console.log(error);
     }
@@ -105,7 +105,8 @@ function Product(props) {
       return product?.product_Id?._id === selectedVariantData?._id;
     });
   });
-console.log("selectedVariantData?._id", selectedVariantData?._id);
+  console.log("selectedVariantData?._id", selectedVariantData?._id);
+  const variantId = selectedVariantData?._id;
   console.log("selectedVariantData", selectedVariantData);
   const [formData, setFormData] = useState({
     r1: "",
@@ -243,7 +244,7 @@ console.log("selectedVariantData?._id", selectedVariantData?._id);
 
   const handleAddToCart = async (item, index) => {
     try {
-      const { data, error } = await AddToCart(id, count, price);
+      const { data, error } = await AddToCart(id, count, price, variantId);
       if (error) {
         console.log(error);
         return;
@@ -259,7 +260,7 @@ console.log("selectedVariantData?._id", selectedVariantData?._id);
   };
   const fetchCartListData = () => {
     if (isSuccess) {
-      setCartListItems(data?.results?.list);
+      setCartListItems(data?.results?.carts);
     }
   };
   useEffect(() => {
@@ -789,7 +790,6 @@ console.log("selectedVariantData?._id", selectedVariantData?._id);
                                 % off)
                               </span>
                             )}
-                            
                           </h3>
 
                           <div>
@@ -806,7 +806,7 @@ console.log("selectedVariantData?._id", selectedVariantData?._id);
                         <div className="border mt-2"></div>
                         <Carousel />
                         {/* <hr/> */}
-                        <Carousel3/>
+                        <Carousel3 />
                         <div className="border my-2"></div>
                         <div className="product-packege">
                           <div className="product-title">

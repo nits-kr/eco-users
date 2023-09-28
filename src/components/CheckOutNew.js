@@ -62,13 +62,17 @@ function CheckOutNew() {
 
     if (items.length !== 0) {
       orderList.push({
-        product_Id: items.products[0]?.product_Id?._id,
-        quantity: items.products[0]?.quantity,
+        product_Id: items.product_Id?._id,
+        quantity: items?.quantity,
+        varient_Id: items?.varient?._id,
+        Price: items?.Price,
       });
     } else if (items2.length !== 0) {
       orderList = items2.map((product) => ({
-        product_Id: product?.products[0]?.product_Id?._id,
-        quantity: product?.products[0]?.quantity,
+        product_Id: product?.product_Id?._id,
+        quantity: product?.quantity,
+        varient_Id: product?.varient?._id,
+        Price: product?.Price,
       }));
     }
 

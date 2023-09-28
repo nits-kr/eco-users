@@ -7,7 +7,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faPhoneVolume } from "@fortawesome/free-solid-svg-icons";
 import { ProductSearch } from "./HttpServices";
 import { DeleteCartProduct } from "./HttpServices";
-import { useGetCategoryListQuery } from "../services/Post";
+import {
+  useGetCategoryListQuery,
+  useTopBannerListMutation,
+} from "../services/Post";
 import { useSubCategoryListMutation } from "../services/Post";
 import { useGetCartListQuery } from "../services/Post";
 import { useGetTrendingProductQuery } from "../services/Post";
@@ -15,12 +18,14 @@ import { useGetTrendingProductQuery } from "../services/Post";
 function Header({ Dash }) {
   const categoryListItems = useGetCategoryListQuery();
   const [subCategoryList] = useSubCategoryListMutation();
+  const [bannerList] = useTopBannerListMutation();
   const trendingProduct = useGetTrendingProductQuery();
   const [trendingList, setTrendingList] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
   const [subCategoryItems, setSubCategoryItems] = useState([]);
-
+  const [bannerItems, setBannerItems] = useState([]);
+  // console.log("bannerItems", bannerItems);
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showWelcome, setShowWelcome] = useState(true);
@@ -30,6 +35,7 @@ function Header({ Dash }) {
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
   localStorage?.setItem("productSearch", searchQuery);
+
   const totalSubtotal = localStorage?.getItem("totalSubtotal");
 
   useEffect(() => {
@@ -40,7 +46,7 @@ function Header({ Dash }) {
   useEffect(() => {
     const fetchCartListData = () => {
       if (isSuccess) {
-        setCartListItems(cartListQuery?.results?.list);
+        setCartListItems(cartListQuery?.results?.carts);
       }
     };
 
@@ -55,6 +61,7 @@ function Header({ Dash }) {
 
   const handleOnhover = (categoryId) => {
     handleSaveChanges1(categoryId);
+    // handleBannerChanges(categoryId);
   };
 
   const handleSaveChanges1 = async (categoryId) => {
@@ -64,6 +71,19 @@ function Header({ Dash }) {
     const result = await subCategoryList(editAddress);
     if (result) {
       setSubCategoryItems(result?.data?.results?.listData);
+    }
+  };
+  const handleBannerChanges = async (categoryId) => {
+    const editAddress = {
+      id: categoryId,
+    };
+    const result = await bannerList(editAddress);
+    if (result) {
+      localStorage?.setItem(
+        "bannerItems",
+        encodeURIComponent(JSON.stringify(result?.data?.results?.topBanner))
+      );
+      // setBannerItems(result?.data?.results?.banner);
     }
   };
 
@@ -530,14 +550,11 @@ function Header({ Dash }) {
                                   >
                                     <div className="drop-cart">
                                       <Link
-                                        to={`/product/${item?.products[0]?.product_Id?._id}`}
+                                        // to={`/product/${item?.products[0]?.product_Id?._id}`}
                                         className="drop-image"
                                       >
                                         <img
-                                          src={
-                                            item?.products[0]?.product_Id
-                                              ?.addVarient[0]?.product_Pic[0]
-                                          }
+                                          src={item?.varient?.product_Pic[0]}
                                           className="img-fluid  lazyload"
                                           alt=""
                                         />

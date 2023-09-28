@@ -8,7 +8,11 @@ import Slider from "react-slick";
 import { HandleOkButtonClick, UseCountdownTimer } from "./JavaScriptFunction";
 import Header from "./Header";
 import Footer from "./Footer";
-import { useGetTrendingProductQuery } from "../services/Post";
+import {
+  useGetBannerListQuery,
+  useGetTrendingProductQuery,
+  useTopBannerListMutation,
+} from "../services/Post";
 import Spinner from "./Spinner";
 import {
   AddToCart,
@@ -31,6 +35,7 @@ import { useAddToWislistListMutation } from "../services/Post";
 function IndexGrocary(props) {
   const categoryListItems = useGetCategoryListQuery();
   const trendingProduct = useGetTrendingProductQuery();
+  const { data: categoryBanner } = useGetBannerListQuery();
   const [trendingList, setTrendingList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [discountProduct, setDiscountProduct] = useState([]);
@@ -43,6 +48,16 @@ function IndexGrocary(props) {
   const [quantity, setQuantity] = useState([]);
   const [wishAdd, res] = useAddToWislistListMutation();
   const [count, setCount] = useState([]);
+  const [items, setItems] = useState([]);
+  console.log("set items for buy", items);
+  const [bannerListnew] = useTopBannerListMutation();
+  const [bannerList, setBannerList] = useState([]);
+  console.log("bannerList", bannerList);
+  useEffect(() => {
+    if (categoryBanner) {
+      setBannerList(categoryBanner?.results);
+    }
+  }, [categoryBanner]);
   useEffect(() => {
     const initialCounts = trendingList?.map(() => 1);
     setCount(initialCounts);
@@ -60,6 +75,36 @@ function IndexGrocary(props) {
   const [blogList, setBlogList] = useState();
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
+  const buyItem = localStorage?.getItem("bannerItems");
+
+  const handleBannerChanges = async (categoryId) => {
+    const editAddress = {
+      id: categoryId,
+    };
+    const result = await bannerListnew(editAddress);
+    if (result) {
+      localStorage?.setItem(
+        "bannerItems",
+        encodeURIComponent(JSON.stringify(result?.data?.results?.topBanner))
+      );
+      // setBannerItems(result?.data?.results?.banner);
+    }
+  };
+
+  useEffect(() => {
+    if (buyItem) {
+      try {
+        const decodedBuyItem = JSON.parse(decodeURIComponent(buyItem));
+        setItems(decodedBuyItem);
+        console.log("banners item at index grocary", decodedBuyItem);
+      } catch (error) {
+        console.error("Error parsing buyItem:", error);
+      }
+    } else {
+      console.log("buyItem not found in localStorage");
+    }
+  }, [buyItem]);
+
   useEffect(() => {
     feather.replace();
     props.setProgress(10);
@@ -85,7 +130,7 @@ function IndexGrocary(props) {
     try {
       const { data, error } = await CartList();
       error ? console.log(error) : console.log(data);
-      setCartListItems(data.results.list);
+      setCartListItems(data.results.carts);
     } catch (error) {
       console.log(error);
     }
@@ -168,12 +213,13 @@ function IndexGrocary(props) {
       console.log(error);
     }
   };
-  const handleAddToCart = async (item, price, index) => {
+  const handleAddToCart = async (item, price, index, variantId) => {
     try {
       const { data, error } = await AddToCart(
         item._id,
         count[index],
-        price * count[index]
+        price * count[index],
+        variantId
       );
       if (error) {
         console.log(error);
@@ -209,7 +255,7 @@ function IndexGrocary(props) {
     infinite: true,
     speed: 500,
     slidesToShow: w > 500 ? 3 : 1,
-    // autoplay: true,
+    autoplay: true,
     slidesToScroll: 1,
   };
   const settings1 = {
@@ -224,7 +270,7 @@ function IndexGrocary(props) {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 2,
+    slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
   };
@@ -274,8 +320,8 @@ function IndexGrocary(props) {
         0
       );
       const averageRating = totalRatings / item.ratings.length;
-      const isItemInCart = cartListItems.some(
-        (cartItem) => cartItem?.products?.[0]?.product_Id?._id === item._id
+      const isItemInCart = cartListItems?.some(
+        (cartItem) => cartItem?.product_Id?._id === item._id
       );
       console.log("Item ID:", item?._id);
       console.log("Cart Items:", cartListItems);
@@ -520,7 +566,8 @@ function IndexGrocary(props) {
                           handleAddToCart(
                             item,
                             item?.addVarient[0]?.Price,
-                            index
+                            index,
+                            item?.addVarient[0]?._id
                           )
                         }
                       >
@@ -586,40 +633,37 @@ function IndexGrocary(props) {
           <div className="row g-4">
             <div className="col-xl-8 ratio_65">
               <div className="home-contain h-100">
-                <div
-                  className="h-100 bg-size  lazyloaded"
-                  style={{
-                    backgroundImage:
-                      'url("../../assets/images/vegetable/banner/1.jpg")',
-                    backgroundSize: "cover",
-                    backgroundPosition: "center center",
-                    backgroundRepeat: "no-repeat",
-                    display: "block",
-                  }}
-                >
-                  <img
-                    src="../../assets/images/vegetable/banner/1.jpg"
-                    className="bg-img  lazyloaded"
-                    alt=""
-                    style={{ display: "none" }}
-                  />
+                <div className="h-100 blur-up lazyloaded">
+                  {bannerList?.topBanner?.slice(0, 1)?.map((item, index) => (
+                    <Link to={`/Banner-list/${item.subCategory_Id._id}`}>
+                      <div
+                        key={index}
+                        style={{
+                          backgroundImage: `url(${item?.categoryBanner[0]})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center center",
+                          backgroundRepeat: "no-repeat",
+                          display: "block",
+                          height: "555px",
+                        }}
+                        className="hover-effect"
+                      >
+                        <img
+                          src={item.categoryBanner[0]}
+                          className="bg-img lazyloaded"
+                          alt=""
+                          style={{ height: "555px" }}
+                        />
+                      </div>
+                    </Link>
+                  ))}
                 </div>
+
                 <div className="home-detail p-center-left w-75">
-                  <div>
-                    <h6>
-                      Exclusive offer <span>30% Off</span>
-                    </h6>
-                    <h1 className="text-uppercase">
-                      Stay home &amp; delivered your{" "}
-                      <span className="daily">Daily Needs</span>
-                    </h1>
-                    <p className="w-75 d-none d-sm-block">
-                      Vegetables contain many vitamins and minerals that are
-                      good for your health.
-                    </p>
+                  <div style={{ marginTop: "400px" }}>
                     <button
                       onClick={() => {
-                        window.location.href = "/shop";
+                        window.location.href = "/shop/:id";
                       }}
                       className="btn btn-animation mt-xxl-4 mt-2 home-button mend-auto"
                     >
@@ -631,74 +675,47 @@ function IndexGrocary(props) {
             </div>
             <div className="col-xl-4 ratio_65">
               <div className="row g-4">
-                <div className="col-xl-12 col-md-6">
-                  <div
-                    className="home-contain bg-size  lazyloaded"
-                    style={{
-                      backgroundImage:
-                        'url("../../assets/images/vegetable/banner/2.jpg")',
-                      backgroundSize: "cover",
-                      backgroundPosition: "center center",
-                      backgroundRepeat: "no-repeat",
-                      display: "block",
-                    }}
-                  >
-                    <img
-                      src="../../assets/images/vegetable/banner/2.jpg"
-                      className="bg-img  lazyloaded"
-                      alt=""
-                      style={{ display: "none" }}
-                    />
-                    <div className="home-detail p-center-left home-p-sm w-75">
-                      <div>
-                        <h2 className="mt-0 text-danger">
-                          45% <span className="discount text-title">OFF</span>
-                        </h2>
-                        <h3 className="theme-color">Nut Collection</h3>
-                        <p className="w-75">
-                          We deliver organic vegetables &amp; fruits
-                        </p>
-                        <Link to="shop" className="shop-button">
-                          Shop Now <i className="fa-solid fa-right-long" />
-                        </Link>
-                      </div>
+                {bannerList?.topBanner?.slice(1, 3)?.map((item, index) => {
+                  return (
+                    <div className="col-xl-12 col-md-6" key={index}>
+                      <Link to={`/Banner-list/${item.subCategory_Id._id}`}>
+                        <div
+                          className="home-contain bg-size blur-up lazyloaded hover-effect"
+                          style={{
+                            backgroundImage: `url(${item?.categoryBanner[0]})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center center",
+                            backgroundRepeat: "no-repeat",
+                            display: "block",
+                          }}
+                        >
+                          <img
+                            src={item?.categoryBanner[0]}
+                            className="bg-img hover-effect lazyloaded"
+                            alt=""
+                            style={{ display: "none" }}
+                          />
+                          <div className="home-detail p-center-left home-p-sm w-75">
+                            <div>
+                              <h2 className="mt-0 text-danger">
+                                45%{" "}
+                                <span className="discount text-title">OFF</span>
+                              </h2>
+                              <h3 className="theme-color">Nut Collection</h3>
+                              <p className="w-75">
+                                We deliver organic vegetables &amp; fruits
+                              </p>
+                              <Link to="shop" className="shop-button">
+                                Shop Now{" "}
+                                <i className="fa-solid fa-right-long" />
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
                     </div>
-                  </div>
-                </div>
-                <div className="col-xl-12 col-md-6">
-                  <div
-                    className="home-contain bg-size  lazyloaded"
-                    style={{
-                      backgroundImage:
-                        'url("../../assets/images/vegetable/banner/3.jpg")',
-                      backgroundSize: "cover",
-                      backgroundPosition: "center center",
-                      backgroundRepeat: "no-repeat",
-                      display: "block",
-                    }}
-                  >
-                    <img
-                      src="../../assets/images/vegetable/banner/3.jpg"
-                      className="bg-img  lazyloaded"
-                      alt=""
-                      style={{ display: "none" }}
-                    />
-                    <div className="home-detail p-center-left home-p-sm w-75">
-                      <div>
-                        <h3 className="mt-0 theme-color fw-bold">
-                          Healthy Food
-                        </h3>
-                        <h4 className="text-danger">Organic Market</h4>
-                        <p className="organic">
-                          Start your daily shopping with some Organic food
-                        </p>
-                        <Link to="shop" className="shop-button">
-                          Shop Now <i className="fa-solid fa-right-long" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -711,7 +728,36 @@ function IndexGrocary(props) {
         <div className="container-fluid-lg">
           <div className="banner-slider ">
             <Slider {...settings}>
-              <div className="banner-contain hover-effect ">
+              {bannerList?.scrollBanner?.map((item, index) => {
+                return (
+                  <div className="banner-contain hover-effect " key={index}>
+                    <Link to={`/Banner-list/${item.subCategory_Id._id}`}>
+                      <img
+                        src={item?.scrollBanner[0]}
+                        className="bg-img  lazyload"
+                        alt=""
+                        style={{ width: "455px", height: "250px" }}
+                      />
+                      <div className="banner-details">
+                        <div className="banner-box">
+                          <h6 className="text-danger">5% OFF</h6>
+                          <h5>Hot Deals on New Items</h5>
+                          <h6 className="text-content">
+                            Daily Essentials Eggs &amp; Dairy
+                          </h6>
+                        </div>
+                        <Link
+                          to="/shop/:id"
+                          className="banner-button text-white"
+                        >
+                          Shop Now <i className="fa-solid fa-right-long ms-2" />
+                        </Link>
+                      </div>
+                    </Link>
+                  </div>
+                );
+              })}
+              {/* <div className="banner-contain hover-effect ">
                 <img
                   src="../../assets/images/vegetable/banner/4.jpg"
                   className="bg-img  lazyload"
@@ -786,7 +832,7 @@ function IndexGrocary(props) {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </Slider>
           </div>
         </div>
@@ -825,21 +871,21 @@ function IndexGrocary(props) {
                     <li>
                       <div className="category-list">
                         <h5 className="ms-0 text-title">
-                          <Link to="/shop">Value of the Day</Link>
+                          <Link to="/shop/:id">Value of the Day</Link>
                         </h5>
                       </div>
                     </li>
                     <li>
                       <div className="category-list">
                         <h5 className="ms-0 text-title">
-                          <Link to="/shop">Top 50 Offers</Link>
+                          <Link to="/shop/:id">Top 50 Offers</Link>
                         </h5>
                       </div>
                     </li>
                     <li className="mb-0">
                       <div className="category-list">
                         <h5 className="ms-0 text-title">
-                          <Link to="/shop">New Arrivals</Link>
+                          <Link to="/shop/:id">New Arrivals</Link>
                         </h5>
                       </div>
                     </li>
@@ -847,63 +893,85 @@ function IndexGrocary(props) {
                 </div>
                 <div className="ratio_156 section-t-space">
                   <div className="home-contain hover-effect">
-                    <img
-                      src="../../assets/images/vegetable/banner/8.jpg"
+                    {/* <img
+                      src={bannerList?.sideBanner[0]?.slice(0,1)?.sideBanner[0]}
                       className="bg-img  lazyload w-100"
                       alt=""
-                    />
-                    <div className="home-detail p-top-left home-p-medium">
-                      <div>
-                        <h6 className="text-yellow home-banner">Seafood</h6>
-                        <h3 className="text-uppercase fw-normal">
-                          <span className="theme-color fw-bold">Freshes</span>{" "}
-                          Products
-                        </h3>
-                        <h3 className="fw-light">every hour</h3>
-                        <button
-                          onClick={() => {
-                            window.location.href = "/shop";
-                          }}
-                          className="btn btn-animation btn-md mend-auto"
-                        >
-                          Shop Now{" "}
-                          <i className="fa-solid fa-arrow-right icon" />
-                        </button>
+                    /> */}
+                    <Link to="/shop/:id">
+                      {bannerList?.sideBanner?.[0]?.sideBanner?.[0] && (
+                        <img
+                          src={bannerList.sideBanner[0].sideBanner[0]}
+                          className="bg-img lazyload w-100"
+                          alt=""
+                          style={{ height: "455px" }}
+                        />
+                      )}
+
+                      <div className="home-detail p-top-left home-p-medium">
+                        <div>
+                          <h6 className="text-yellow home-banner">Seafood</h6>
+                          <h3 className="text-uppercase fw-normal">
+                            <span className="theme-color fw-bold">Freshes</span>{" "}
+                            Products
+                          </h3>
+                          <h3 className="fw-light">every hour</h3>
+                          <button
+                            onClick={() => {
+                              window.location.href = "/shop/:id";
+                            }}
+                            className="btn btn-animation btn-md mend-auto"
+                          >
+                            Shop Now{" "}
+                            <i className="fa-solid fa-arrow-right icon" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                 </div>
                 <div className="ratio_medium section-t-space">
-                  <div className="home-contain hover-effect">
-                    <img
+                  <Link to="/shop/:id">
+                    <div className="home-contain hover-effect">
+                      {/* <img
                       src="../../assets/images/vegetable/banner/11.jpg"
                       className="img-fluid  lazyload"
                       alt=""
-                    />
-                    <div className="home-detail p-top-left home-p-medium">
-                      <div>
-                        <h4 className="text-yellow text-exo home-banner">
-                          Organic
-                        </h4>
-                        <h2 className="text-uppercase fw-normal mb-0 text-russo theme-color">
-                          fresh
-                        </h2>
-                        <h2 className="text-uppercase fw-normal text-title">
-                          Vegetables
-                        </h2>
-                        <p className="mb-3">Super Offer to 50% Off</p>
-                        <button
-                          onClick={() => {
-                            window.location.href = "/shop";
-                          }}
-                          className="btn btn-animation btn-md mend-auto"
-                        >
-                          Shop Now{" "}
-                          <i className="fa-solid fa-arrow-right icon" />
-                        </button>
+                    /> */}
+                      {bannerList?.sideBanner?.[1]?.sideBanner?.[0] && (
+                        <img
+                          src={bannerList.sideBanner[1].sideBanner[0]}
+                          className="bg-img lazyload w-100"
+                          alt=""
+                          style={{ height: "455px" }}
+                        />
+                      )}
+
+                      <div className="home-detail p-top-left home-p-medium">
+                        <div>
+                          <h4 className="text-yellow text-exo home-banner">
+                            Organic
+                          </h4>
+                          <h2 className="text-uppercase fw-normal mb-0 text-russo theme-color">
+                            fresh
+                          </h2>
+                          <h2 className="text-uppercase fw-normal text-title">
+                            Vegetables
+                          </h2>
+                          <p className="mb-3">Super Offer to 50% Off</p>
+                          <button
+                            onClick={() => {
+                              window.location.href = "/shop";
+                            }}
+                            className="btn btn-animation btn-md mend-auto"
+                          >
+                            Shop Now{" "}
+                            <i className="fa-solid fa-arrow-right icon" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 </div>
                 <div className="section-t-space">
                   {loading ? (
@@ -1055,40 +1123,6 @@ function IndexGrocary(props) {
                       </div>
                     </div>
                   </div>
-                  {/* <nav className="custome-pagination">
-                    <ul className="pagination justify-content-center">
-                      <li className="page-item disabled">
-                        <Link
-                          className="page-link"
-                          to="#"
-                          tabIndex={-1}
-                          aria-disabled="true"
-                        >
-                          <i className="fa-solid fa-angles-left" />
-                        </Link>
-                      </li>
-                      <li className="page-item active">
-                        <Link className="page-link" to="#">
-                          1
-                        </Link>
-                      </li>
-                      <li className="page-item" aria-current="page">
-                        <Link className="page-link" to="#">
-                          2
-                        </Link>
-                      </li>
-                      <li className="page-item">
-                        <Link className="page-link" to="#">
-                          3
-                        </Link>
-                      </li>
-                      <li className="page-item">
-                        <Link className="page-link" to="#">
-                          <i className="fa-solid fa-angles-right" />
-                        </Link>
-                      </li>
-                    </ul>
-                  </nav> */}
                 </>
               )}
               <div className="title">
@@ -1125,70 +1159,45 @@ function IndexGrocary(props) {
                   })}
                 </Slider>
               </div>
+
               <div className="section-t-space section-b-space">
                 <div className="row g-md-4 g-3">
-                  <div className="col-md-6">
-                    <div
-                      className="banner-contain hover-effect"
-                      style={{
-                        backgroundImage: `url(../../assets/images/vegetable/banner/9.jpg) `,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center center",
-                        backgroundRepeat: "no-repeat",
-                        display: "block",
-                      }}
-                    >
-                      <div className="banner-details p-center-left p-4">
-                        <div>
-                          <h3 className="text-exo">50% offer</h3>
-                          <h4 className="text-russo fw-normal theme-color mb-2">
-                            Testy Mushrooms
-                          </h4>
-                          <button
-                            onClick={() => {
-                              window.location.href = "/shop";
-                            }}
-                            className="btn btn-animation btn-sm mend-auto"
-                          >
-                            Shop Now{" "}
-                            <i className="fa-solid fa-arrow-right icon" />
-                          </button>
+                  {bannerList?.middleBanner?.slice(0, 2)?.map((item, index) => (
+                    <div className="col-md-6" key={index}>
+                      <Link
+                        to={`/Banner-list/${item.subCategory_Id._id}`}
+                        className="banner-contain hover-effect"
+                        style={{
+                          backgroundImage: `url(${item.middleBanner[0]})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center center",
+                          backgroundRepeat: "no-repeat",
+                          display: "block",
+                        }}
+                      >
+                        <div className="banner-details p-center-left p-4">
+                          <div>
+                            <h3 className="text-exo">50% offer</h3>
+                            <h4 className="text-russo fw-normal theme-color mb-2">
+                              {item.category_Id.categoryName_en}
+                            </h4>
+                            <button
+                              onClick={() => {
+                                window.location.href = `/Banner-list/${item.subCategory_Id._id}`;
+                              }}
+                              className="btn btn-animation btn-sm mend-auto"
+                            >
+                              Shop Now{" "}
+                              <i className="fa-solid fa-arrow-right icon" />
+                            </button>
+                          </div>
                         </div>
-                      </div>
+                      </Link>
                     </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div
-                      className="banner-contain hover-effect"
-                      style={{
-                        backgroundImage: `url(../../assets/images/vegetable/banner/10.jpg) `,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center center",
-                        backgroundRepeat: "no-repeat",
-                        display: "block",
-                      }}
-                    >
-                      <div className="banner-details p-center-left p-4">
-                        <div>
-                          <h3 className="text-exo">50% offer</h3>
-                          <h4 className="text-russo fw-normal theme-color mb-2">
-                            Fresh MEAT
-                          </h4>
-                          <button
-                            onClick={() => {
-                              window.location.href = "/shop";
-                            }}
-                            className="btn btn-animation btn-sm mend-auto"
-                          >
-                            Shop Now{" "}
-                            <i className="fa-solid fa-arrow-right icon" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
+
               <div className="title d-block">
                 <h2>Food Cupboard</h2>
                 <span className="title-leaf">
@@ -3439,13 +3448,14 @@ function IndexGrocary(props) {
                   </div>
                 </div>
               </div>
-              <div className="section-t-space section-b-space">
+              {/* <div className="section-t-space section-b-space">
                 <div className="row g-md-4 g-3">
-                  <div className="col-xxl-8 col-xl-12 col-md-7">
-                    <div
+                  <div className="col-xxl-6 col-xl-12 col-md-7">
+                    <Link
+                      to="/shop/:id"
                       className="banner-contain hover-effect"
                       style={{
-                        backgroundImage: `url(../../assets/images/vegetable/banner/12.jpg) `,
+                        backgroundImage: `url(${bannerList?.middleBanner?.[2]?.middleBanner?.[0]})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center center",
                         backgroundRepeat: "no-repeat",
@@ -3473,14 +3483,82 @@ function IndexGrocary(props) {
                           </button>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
-                  <div className="col-xxl-4 col-xl-12 col-md-5">
+
+                  <div className="col-xxl-6 col-xl-12 col-md-5">
                     <Link
-                      to="/shop"
+                      to="/shop/:id"
                       className="banner-contain hover-effect h-100"
                       style={{
-                        backgroundImage: `url(../../assets/images/vegetable/banner/13.jpg) `,
+                        backgroundImage: `url(${bannerList?.middleBanner?.[3]?.middleBanner?.[0]})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center center",
+                        backgroundRepeat: "no-repeat",
+                        display: "block",
+                      }}
+                    >
+                      <div className="banner-details p-center-left p-4 h-100">
+                        <div>
+                          <h2 className="text-kaushan fw-normal text-danger">
+                            20% Off
+                          </h2>
+                          <h3 className="mt-2 mb-2 theme-color">SUMMRY</h3>
+                          <h3 className="fw-normal product-name text-title">
+                            Product
+                          </h3>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              </div> */}
+              <div className="section-t-space section-b-space">
+                <div className="row g-md-4 g-3">
+                  {/* Middle Banner 1 */}
+                  <div className="col-xxl-6 col-xl-12 col-md-7">
+                    <Link
+                      to={`/Banner-list/${bannerList?.middleBanner?.[2]?.subCategory_Id?._id}`}
+                      className="banner-contain hover-effect"
+                      style={{
+                        backgroundImage: `url(${bannerList?.middleBanner?.[2]?.middleBanner?.[0]})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center center",
+                        backgroundRepeat: "no-repeat",
+                        display: "block",
+                      }}
+                    >
+                      <div className="banner-details p-center-left p-4">
+                        <div>
+                          <h2 className="text-kaushan fw-normal theme-color">
+                            Get Ready To
+                          </h2>
+                          <h3 className="mt-2 mb-3">TAKE ON THE DAY!</h3>
+                          <p className="text-content banner-text">
+                            In publishing and graphic design, Lorem ipsum is a
+                            placeholder text commonly used to demonstrate.
+                          </p>
+                          <button
+                            onClick={() => {
+                              window.location.href = `/Banner-list/${bannerList?.middleBanner?.[2]?.category_Id?._id}`;
+                            }}
+                            className="btn btn-animation btn-sm mend-auto"
+                          >
+                            Shop Now{" "}
+                            <i className="fa-solid fa-arrow-right icon" />
+                          </button>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+
+                  {/* Middle Banner 2 */}
+                  <div className="col-xxl-6 col-xl-12 col-md-5">
+                    <Link
+                      to={`/Banner-list/${bannerList?.middleBanner?.[3]?.subCategory_Id?._id}`}
+                      className="banner-contain hover-effect h-100"
+                      style={{
+                        backgroundImage: `url(${bannerList?.middleBanner?.[3]?.middleBanner?.[0]})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center center",
                         backgroundRepeat: "no-repeat",
@@ -3502,6 +3580,7 @@ function IndexGrocary(props) {
                   </div>
                 </div>
               </div>
+
               <div className="title d-block">
                 <div>
                   <h2>Our best Seller</h2>
@@ -3779,7 +3858,7 @@ function IndexGrocary(props) {
                   </div>
                 </Slider>
               </div>
-              <div className="section-t-space">
+              {/* <div className="section-t-space">
                 <div
                   className="banner-contain hover-effect"
                   style={{
@@ -3801,7 +3880,7 @@ function IndexGrocary(props) {
                       </h5>
                       <button
                         onClick={() => {
-                          window.location.href = "/shop";
+                          window.location.href = "/shop/:id";
                         }}
                         className="btn btn-animation btn-sm mx-auto mt-sm-3 mt-2"
                       >
@@ -3810,7 +3889,83 @@ function IndexGrocary(props) {
                     </div>
                   </div>
                 </div>
+              </div> */}
+              {/* <div className="section-t-space">
+              <Link to={`/shop/${bannerList?.bottomBanner[0]?.category_Id?._id}`}>
+                  {bannerList?.bottomBanner?.slice(0, 1)?.map((item, index) => (
+                    <div
+                      className="banner-contain hover-effect"
+                      style={{
+                        backgroundImage: `url(${item?.bottomBanner[0]})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center center",
+                        backgroundRepeat: "no-repeat",
+                        display: "block",
+                      }}
+                      key={index}
+                    >
+                      <div className="banner-details p-center banner-b-space w-100 text-center">
+                        <div>
+                          <h6 className="ls-expanded theme-color mb-sm-3 mb-1">
+                            SUMMER
+                          </h6>
+                          <h2 className="banner-title">VEGETABLE</h2>
+                          <h5 className="lh-sm mx-auto mt-1 text-content">
+                            Save up to 5% OFF
+                          </h5>
+                          <button
+                            onClick={() => {
+                              window.location.href = "/shop/:id";
+                            }}
+                            className="btn btn-animation btn-sm mx-auto mt-sm-3 mt-2"
+                          >
+                            Shop Now{" "}
+                            <i className="fa-solid fa-arrow-right icon" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </Link>
+              </div> */}
+              <div className="section-t-space">
+                {bannerList?.bottomBanner?.map((item, index) => (
+                  <Link to={`/Banner-list/${item.category_Id._id}`} key={index}>
+                    <div
+                      className="banner-contain hover-effect"
+                      style={{
+                        backgroundImage: `url(${item.bottomBanner[0]})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center center",
+                        backgroundRepeat: "no-repeat",
+                        display: "block",
+                      }}
+                    >
+                      <div className="banner-details p-center banner-b-space w-100 text-center">
+                        <div>
+                          <h6 className="ls-expanded theme-color mb-sm-3 mb-1">
+                            {item.category_Id.categoryName_en}
+                          </h6>
+                          <h2 className="banner-title">VEGETABLE</h2>
+                          <h5 className="lh-sm mx-auto mt-1 text-content">
+                            Save up to 5% OFF
+                          </h5>
+                          <button
+                            onClick={() => {
+                              window.location.href = `/Banner-list/${item.category_Id._id}`;
+                            }}
+                            className="btn btn-animation btn-sm mx-auto mt-sm-3 mt-2"
+                          >
+                            Shop Now{" "}
+                            <i className="fa-solid fa-arrow-right icon" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
+
               <div className="title section-t-space">
                 <h2>Featured Blog</h2>
                 <span className="title-leaf">

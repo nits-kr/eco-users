@@ -1,6 +1,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-const userId = localStorage?.getItem("loginId")
+const userId = localStorage?.getItem("loginId");
 
 // Define a service using a base URL and expected endpoints
 export const PostApi = createApi({
@@ -48,6 +48,18 @@ export const PostApi = createApi({
         };
       },
     }),
+    TopBannerList: builder.mutation({
+      query: (body) => {
+        console.log("update address", body);
+        const { id } = body;
+        console.log("update address body data", id);
+        return {
+          url: `user/category/category/category-banner/${id}`,
+          method: "post",
+          // body: data,
+        };
+      },
+    }),
     subCategoryProductList: builder.mutation({
       query: (body) => {
         console.log("update address", body);
@@ -87,6 +99,12 @@ export const PostApi = createApi({
     getProductList: builder.query({
       query: (name) => ({
         url: `user/product/product/list`,
+        method: "post",
+      }),
+    }),
+    getBannerList: builder.query({
+      query: (name) => ({
+        url: `user/category/category/banner-list`,
         method: "post",
       }),
     }),
@@ -437,4 +455,6 @@ export const {
   useApplyCoupanMutation,
   useSubCategoryProductListMutation,
   useApplyCoupan2Mutation,
+  useTopBannerListMutation,
+  useGetBannerListQuery,
 } = PostApi;

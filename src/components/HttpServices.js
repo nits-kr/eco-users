@@ -736,24 +736,16 @@ export async function HighDiscountList() {
     return error;
   }
 }
-export async function AddToCart(id, quantity, price) {
+export async function AddToCart(id, quantity, price, variantId) {
   try {
     const { data } = await UserHttpService.post(
       `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/add-cart`,
       {
-        // carts: [
-        //   {
-        //     product_Id: id,
-        //     quantity: Array.isArray(quantity) ? "1" : quantity,
-        //     Price: price,
-        //     user_Id: userId,
-        //   },
-        // ],
-        // user_Id: userId,
         product_Id: id,
         quantity: Array.isArray(quantity) ? "1" : quantity,
         Price: price,
         user_Id: userId,
+        varient_Id: variantId,
       }
     );
     console.log("Add to cart data at http", data);
