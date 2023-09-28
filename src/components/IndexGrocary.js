@@ -4374,7 +4374,7 @@ function IndexGrocary(props) {
           </div>
         </div>
       </div>
-      {/* Deal Box Modal End */}
+      
       {/* Tap to top start */}
       <div className="theme-option">
         <div className="back-to-top">
