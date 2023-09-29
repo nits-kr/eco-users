@@ -18,7 +18,7 @@ function OrderSuccess() {
   const [cancelOrder, re] = useCancelOrderMutation();
   const storeUser = localStorage?.getItem("userName");
   const getReversedList = (list) => {
-    return list?.data?.results?.orderList?.slice().reverse() ?? [];
+    return list?.data?.results?.carts?.slice().reverse() ?? [];
   };
   useEffect(() => {
     const reversedList = getReversedList(orderList);
@@ -56,12 +56,10 @@ function OrderSuccess() {
   }, []);
 
   function trimProductName(productName) {
-    const words = productName.split(" "); // Split the product name into words
-    if (words.length > 3) {
-      // If there are more than 3 words, keep the first 3 and join the rest with '...'
-      return words.slice(0, 3).join(" ") + " ...";
+    const words = productName?.split(" ");
+    if (words?.length > 3) {
+      return words?.slice(0, 3)?.join(" ") + " ...";
     } else {
-      // If there are 3 or fewer words, return the original product name
       return productName;
     }
   }
@@ -191,10 +189,10 @@ function OrderSuccess() {
                   </div>
                   <div className="order-contain">
                     <h3 className="theme-color">Order Success</h3>
-                    <h5 className="text-content">
+                    {/* <h5 className="text-content">
                       Payment Is Successfully And Your Order Is On The Way
                     </h5>
-                    <h6>Transaction ID: 1708031724431131</h6>
+                    <h6>Transaction ID: 1708031724431131</h6> */}
                   </div>
                 </div>
               </div>
@@ -226,8 +224,7 @@ function OrderSuccess() {
                                 >
                                   <img
                                     src={
-                                      item?.products[0]?.product_Id
-                                        ?.addVarient[0]?.product_Pic[0]
+                                      item?.varient?.product_Pic[0]
                                     }
                                     className="img-fluid  lazyload"
                                     alt=""
