@@ -53,6 +53,7 @@ function IndexGrocary(props) {
   const [bannerListnew] = useTopBannerListMutation();
   const [bannerList, setBannerList] = useState([]);
   console.log("bannerList", bannerList);
+  console.log("trendingList", trendingList);
   useEffect(() => {
     if (categoryBanner) {
       setBannerList(categoryBanner?.results);
@@ -315,19 +316,20 @@ function IndexGrocary(props) {
   const averageRating = totalRatings / selectedProduct?.ratings?.length;
   const sliders2 = () => {
     return trendingList?.map((item, index) => {
-      const totalRatings = item.ratings.reduce(
-        (sum, rating) => sum + rating.star,
+      const totalRatings = item?.ratings?.reduce(
+        (sum, rating) => sum + rating?.star,
         0
       );
-      const averageRating = totalRatings / item.ratings.length;
+      const averageRating = totalRatings / item?.ratings?.length;
       const isItemInCart = cartListItems?.some(
-        (cartItem) => cartItem?.product_Id?._id === item._id
+        (cartItem) => cartItem?.product_Id?._id === item?._id
       );
       console.log("Item ID:", item?._id);
       console.log("Cart Items:", cartListItems);
       console.log("Is Item In Cart:", isItemInCart);
       const totalPrice =
-        (item?.addVarient[0]?.Price || 0) * (count[index] || 1);
+        (item?.addVarient?.[0]?.Price || 0) * (count[index] || 1);
+
       return (
         <div key={index}>
           <div className="product-box-3 h-100 wow fadeInUp">
@@ -335,7 +337,7 @@ function IndexGrocary(props) {
               <div className="product-image">
                 <Link to="/product">
                   <img
-                    src={item?.addVarient[0]?.product_Pic[0]}
+                    src={item?.products?.[0]?.addVarient?.[0]?.product_Pic[0]}
                     className="img-fluid  lazyload"
                     alt=""
                   />
@@ -449,14 +451,14 @@ function IndexGrocary(props) {
                       className="unit"
                       style={{ margin: "0px", fontSize: "15px" }}
                     >
-                      {item?.addVarient[0]?.stockQuantity > 0 ? (
-                        item?.addVarient[0]?.stockQuantity <= 5 ? (
+                      {item?.addVarient?.[0]?.stockQuantity > 0 ? (
+                        item?.addVarient?.[0]?.stockQuantity <= 5 ? (
                           <span style={{ color: "rgb(199, 0, 85)" }}>
                             Only few left
                           </span>
-                        ) : item?.addVarient[0]?.stockQuantity <= 10 ? (
+                        ) : item?.addVarient?.[0]?.stockQuantity <= 10 ? (
                           <span style={{ color: "rgb(199, 0, 85)" }}>
-                            Only {item?.addVarient[0]?.stockQuantity} left
+                            Only {item?.addVarient?.[0]?.stockQuantity} left
                           </span>
                         ) : (
                           <span style={{ color: "green" }}>In Stock</span>
@@ -466,7 +468,7 @@ function IndexGrocary(props) {
                       )}
                     </h6>
                   </div>
-                  {item?.addVarient[0]?.stockQuantity <= 0 ? (
+                  {item?.addVarient?.[0]?.stockQuantity <= 0 ? (
                     <div className=" mt-3">
                       <div className="cart_qty qty-box product-qty">
                         <div
@@ -541,7 +543,7 @@ function IndexGrocary(props) {
                 </div>
                 <h5 className="price">
                   <span className="theme-color">${totalPrice}</span>{" "}
-                  <del>${item?.addVarient[0]?.oldPrice} </del>
+                  <del>${item?.addVarient?.[0]?.oldPrice} </del>
                 </h5>
 
                 {isItemInCart ? (
@@ -847,7 +849,7 @@ function IndexGrocary(props) {
                 <div className="category-menu">
                   <h3>Category</h3>
                   <ul>
-                    {categoryListData.map((item, index) => {
+                    {categoryListData?.map((item, index) => {
                       return (
                         <li key={index}>
                           <div className="category-list">
@@ -987,7 +989,9 @@ function IndexGrocary(props) {
                                 <div className="offer-product">
                                   <Link to="/product" className="offer-image">
                                     <img
-                                      src={item?.addVarient[0]?.product_Pic[0]}
+                                      src={
+                                        item?.addVarient?.[0]?.product_Pic[0]
+                                      }
                                       className=" lazyload"
                                       alt=""
                                     />
@@ -1005,13 +1009,13 @@ function IndexGrocary(props) {
                                       <span>
                                         {" "}
                                         {
-                                          item?.addVarient[0]?.stockQuantity
+                                          item?.addVarient?.[0]?.stockQuantity
                                         }{" "}
                                         left{" "}
                                       </span>
                                       <h6 className="price theme-color">
                                         $
-                                        {item?.addVarient[0]?.dollarPrice?.toFixed(
+                                        {item?.addVarient?.[0]?.dollarPrice?.toFixed(
                                           2
                                         )}{" "}
                                       </h6>
@@ -3929,7 +3933,7 @@ function IndexGrocary(props) {
                 </Link>
               </div> */}
               <div className="section-t-space">
-                {bannerList?.bottomBanner?.map((item, index) => (
+                {bannerList?.bottomBanner?.slice(0, 1)?.map((item, index) => (
                   <Link to={`/Banner-list/${item.category_Id._id}`} key={index}>
                     <div
                       className="banner-contain hover-effect"
@@ -4374,7 +4378,7 @@ function IndexGrocary(props) {
           </div>
         </div>
       </div>
-      
+
       {/* Tap to top start */}
       <div className="theme-option">
         <div className="back-to-top">

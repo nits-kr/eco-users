@@ -597,142 +597,8 @@ function Product(props) {
                                       </span>
                                     </button>
                                   </div>
-                                  {/* {selectedVariantData?.product_Pic?.length <
-                                  5 ? (
-                                    <div className="carousel-indicators">
-                                      {selectedVariantData?.product_Pic
-                                        ?.slice(0, 5)
-                                        ?.map((item, index) => (
-                                          <button
-                                            type="button"
-                                            data-bs-target="#carouselExampleIndicators"
-                                            data-bs-slide-to={index}
-                                            key={index}
-                                            aria-label={`Slide ${index + 1}`}
-                                            className={
-                                              index === 0 ? "active" : ""
-                                            }
-                                          >
-                                            <img
-                                              src={item}
-                                              className="thumnail_img"
-                                              alt={`Slide ${index + 1}`}
-                                            />
-                                          </button>
-                                        ))}
-                                    </div>
-                                  ) : (
-                                    <div className="carousel">
-                                      <button
-                                        type="button"
-                                        className="carousel-control-prev"
-                                        data-bs-target="#carouselExampleIndicators"
-                                        data-bs-slide="prev"
-                                      >
-                                        <span
-                                          className="carousel-control-prev-icon"
-                                          aria-hidden="true"
-                                        ></span>
-                                        <span className="visually-hidden">
-                                          Previous
-                                        </span>
-                                      </button>
-
-                                      <div className="carousel-indicators">
-                                        {selectedVariantData?.product_Pic
-                                          ?.map((item, index) => (
-                                            <button
-                                              type="button"
-                                              data-bs-target="#carouselExampleIndicators"
-                                              data-bs-slide-to={index}
-                                              key={index}
-                                              aria-label={`Slide ${index + 1}`}
-                                              className={
-                                                index === 0 ? "active" : ""
-                                              }
-                                            >
-                                              <img
-                                                src={item}
-                                                className="thumnail_img"
-                                                alt={`Slide ${index + 1}`}
-                                              />
-                                            </button>
-                                          ))}
-                                      </div>
-
-                                      <button
-                                        type="button"
-                                        className="carousel-control-next"
-                                        data-bs-target="#carouselExampleIndicators"
-                                        data-bs-slide="next"
-                                      >
-                                        <span
-                                          className="carousel-control-next-icon"
-                                          aria-hidden="true"
-                                        ></span>
-                                        <span className="visually-hidden">
-                                          Next
-                                        </span>
-                                      </button>
-                                    </div>
-                                  )} */}
                                 </div>
                               </div>
-                              {/* <Slider {...sliderSettings}>
-                                {selectedVariantData?.product_Pic?.map(
-                                  (item, index) => (
-                                    <div key={index}>
-                                      <div className="slider-image">
-                                        <img
-                                          src={item}
-                                          id={`img-${index}`}
-                                          data-zoom-image="../assets/images/product/category/1.jpg"
-                                          className="img-fluid image_zoom_cls-0 lazyload"
-                                          alt=""
-                                          style={{
-                                            width: "100%",
-                                            height: "45vh",
-                                          }}
-                                        />
-                                      </div>
-                                    </div>
-                                  )
-                                )}
-                              </Slider>
-                              {selectedVariantData?.product_Pic?.map(
-                                  (item, index) => (
-                                    <button
-                                      type="button"
-                                      data-bs-target="#carouselExampleIndicators"
-                                      data-bs-slide-to={index}
-                                      key={index}
-                                      aria-label={`Slide ${index + 1}`}
-                                      className={index === 0 ? "active" : ""}
-                                    >
-                                      <img
-                                        src={item}
-                                        className="thumnail_img"
-                                        alt={`Slide ${index + 1}`}
-                                      />
-                                    </button>
-                                  )
-                                )} */}
-
-                              {/* {selectedVariantData?.product_Pic?.map(
-                                (item, index) => (
-                                  <div key={index}>
-                                    <div className="slider-image">
-                                      <img
-                                        src={item}
-                                        id={`img-${index}`}
-                                        data-zoom-image="../assets/images/product/category/1.jpg"
-                                        className="img-fluid image_zoom_cls-0 lazyload"
-                                        alt=""
-                                      />
-                                    </div>
-                                  </div>
-                                )
-                              )} */}
                             </div>
                           </div>
                         </div>
@@ -1473,31 +1339,6 @@ function Product(props) {
                                         <div className="rating-list">
                                           <h5>5 Star</h5>
 
-                                          {/* <div
-                                            className="progress"
-                                            role="progressbar"
-                                            aria-label="Basic example"
-                                            aria-valuenow={100}
-                                            aria-valuemin={0}
-                                            aria-valuemax={100}
-                                          >
-                                            <div
-                                              className="progress-bar"
-                                              style={{ width: "100%" }}
-                                            />
-                                          </div> */}
-                                          {/* <div className="progress">
-                                            <div
-                                              className="progress-bar"
-                                              role="progressbar"
-                                              style={{ width: {`${fiveStar}%`} }}
-                                              aria-valuenow={100}
-                                              aria-valuemin={0}
-                                              aria-valuemax={100}
-                                            >
-                                              100%
-                                            </div>
-                                          </div> */}
                                           <div className="progress">
                                             <div
                                               className="progress-bar"
@@ -1535,36 +1376,12 @@ function Product(props) {
                                               {`${fourStar.toFixed(2)}%`}
                                             </div>
                                           </div>
-                                          {/* <div
-                                            className="progress"
-                                            role="progressbar"
-                                            aria-label="Basic example"
-                                            aria-valuenow={75}
-                                            aria-valuemin={0}
-                                            aria-valuemax={100}
-                                          >
-                                            <div
-                                              className="progress-bar"
-                                              style={{ width: "75%" }}
-                                            />
-                                          </div> */}
                                         </div>
                                       </li>
                                       <li>
                                         <div className="rating-list">
                                           <h5>3 Star</h5>
-                                          {/* <div className="progress">
-                                            <div
-                                              className="progress-bar"
-                                              role="progressbar"
-                                              style={{ width: `${threeStar?.slice(0,5)}%` }}
-                                              aria-valuenow={100}
-                                              aria-valuemin={0}
-                                              aria-valuemax={100}
-                                            >
-                                              {`${threeStar}%`}
-                                            </div>
-                                          </div> */}
+
                                           <div className="progress">
                                             <div
                                               className="progress-bar"
@@ -2191,133 +2008,7 @@ function Product(props) {
               <div className="row">
                 <div className="col-12">
                   <div className="slider-6_1 product-wrapper">
-                    <Slider {...settings}>
-                      {sliders2()}
-                      {/* {relatedProductItems?.map((item, index) => {
-                        return (
-                          <div key={index}>
-                            <div className="product-box-3 wow fadeInUp">
-                              <div className="product-header">
-                                <div className="product-image">
-                                  <Link to="/product-left-2">
-                                    <img
-                                      src={item?.product_Pic?.map(
-                                        (index) => index
-                                      )}
-                                      className="img-fluid  lazyload"
-                                      alt=""
-                                    />
-                                  </Link>
-                                  <ul className="product-option">
-                                    <li
-                                      data-bs-toggle="tooltip"
-                                      data-bs-placement="top"
-                                      title="View"
-                                    >
-                                      <Link
-                                        to="#"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#view"
-                                      >
-                                        <i data-feather="eye" />
-                                      </Link>
-                                    </li>
-                                    <li
-                                      data-bs-toggle="tooltip"
-                                      data-bs-placement="top"
-                                      title="Compare"
-                                    >
-                                      <Link to="/compare">
-                                        <i data-feather="refresh-cw" />
-                                      </Link>
-                                    </li>
-                                    <li
-                                      data-bs-toggle="tooltip"
-                                      data-bs-placement="top"
-                                      title="Wishlist"
-                                    >
-                                      <Link
-                                        to="/wishlist"
-                                        className="notifi-wishlist"
-                                      >
-                                        <i data-feather="heart" />
-                                      </Link>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                              <div className="product-footer">
-                                <div className="product-detail">
-                                  <span className="span-name">
-                                    {" "}
-                                    {item?.productName}{" "}
-                                  </span>
-                                  <Link to="/product">
-                                    <h5 className="name">
-                                      Chocolate Chip Cookies 250 g
-                                    </h5>
-                                  </Link>
-                                  <div className="product-rating mt-2">
-                                    <ul className="rating">
-                                      <Star />
-                                    </ul>
-                                    <span>(5.0)</span>
-                                  </div>
-                                  <h6 className="unit">500 G</h6>
-                                  <h5 className="price">
-                                    <span className="theme-color">
-                                      {" "}
-                                      ${item?.Price}{" "}
-                                    </span>{" "}
-                                    <del> ${item?.oldPrice} </del>
-                                  </h5>
-                                  <div className="add-to-cart-box bg-white">
-                                    <button className="btn btn-add-cart addcart-button">
-                                      Add
-                                      <span className="add-icon bg-light-gray">
-                                        <i className="fa-solid fa-plus" />
-                                      </span>
-                                    </button>
-                                    <div className="cart_qty qty-box">
-                                      <div className="input-group bg-white">
-                                        <button
-                                          type="button"
-                                          className="qty-left-minus bg-gray"
-                                          data-type="minus"
-                                          data-field=""
-                                        >
-                                          <i
-                                            className="fa fa-minus"
-                                            aria-hidden="true"
-                                          />
-                                        </button>
-                                        <input
-                                          className="form-control input-number qty-input"
-                                          type="text"
-                                          name="quantity"
-                                          defaultValue={0}
-                                        />
-                                        <button
-                                          type="button"
-                                          className="qty-right-plus bg-gray"
-                                          data-type="plus"
-                                          data-field=""
-                                        >
-                                          <i
-                                            className="fa fa-plus"
-                                            aria-hidden="true"
-                                          />
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })} */}
-                    </Slider>
+                    <Slider {...settings}>{sliders2()}</Slider>
                   </div>
                 </div>
               </div>

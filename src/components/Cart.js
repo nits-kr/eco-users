@@ -13,35 +13,34 @@ import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import TapToTop from "./TapToTop";
 import { useApplyCoupan2Mutation, useGetCartListQuery } from "../services/Post";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useUpdateQuantityMutation } from "../services/Post";
 import { useAddToWislistListMutation } from "../services/Post";
 import { useApplyCoupanMutation } from "../services/Post";
+import { addToCart, getAllCart } from "../app/slice/CartSlice";
 
 function Cart() {
   const [applyCoupan, response] = useApplyCoupanMutation();
   const [applyCoupan2, response2] = useApplyCoupan2Mutation();
-  console.log("applyCoupan", applyCoupan);
+
   const [cartListItems, setCartListItems] = useState([]);
-  console.log("cartListItems", cartListItems);
   const [cartTotal, setCartTotal] = useState(0);
   localStorage?.setItem("cartId", cartListItems[0]?._id);
   const [cartCount, setCartCount] = useState([]);
-  console.log("cartCount", cartCount);
   const [wishAdd] = useAddToWislistListMutation();
   const [updateQuantity] = useUpdateQuantityMutation();
   const [coupan, setCoupan] = useState([]);
-  console.log("coupan", coupan);
   const [coupan2, setCoupan2] = useState([]);
-  console.log("coupan2", coupan2);
   const [coupanCode, setCoupanCode] = useState("25753411");
   const [CreateWishItems, setCreateWishItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState([]);
   const coupanCode2 = coupanCode || "";
   const { data: cartListQuery, isSuccess } = useGetCartListQuery();
-  const cart = useSelector((state) => state.cart);
+  const cart = useSelector((state) => state?.cart?.carts);
+  // setCartListItems(cart?.cartItems);
+  console.log("useSelector", cart);
+  const dispatch = useDispatch();
   const [singleItemPrice, setSingleItemPrice] = useState([]);
-  console.log("singleItemPrice", singleItemPrice);
   localStorage?.setItem("cartTotal", cartTotal);
 
   const [count1, setCount1] = useState();
@@ -141,18 +140,17 @@ function Cart() {
   const fetchCartListData = () => {
     if (isSuccess) {
       const items = cartListQuery?.results?.carts || [];
-      // localStorage?.setItem("allCartItems", items);
       localStorage?.setItem(
         "allCartItems",
         encodeURIComponent(JSON.stringify(items))
       );
+      dispatch(getAllCart(items));
       let total = 0;
       items.forEach((item) => {
         if (item?.products && item.products.length > 0) {
           item.products.forEach((product) => {
             if (product.Price) {
               total += product.Price;
-              // total += product.Price * (item.quantity || 1);
               setTotalPrice(total);
             }
           });
@@ -176,9 +174,6 @@ function Cart() {
   console.log("Total Subtotal:", totalSubtotal);
   localStorage?.setItem("totalSubtotal", totalSubtotal);
 
-  // useEffect(() => {
-  //   handleCoupan();
-  // }, []);
   const applyCoupanCode = async () => {
     let cartList = [];
 
@@ -187,6 +182,7 @@ function Cart() {
         product_Id: order?.product_Id?._id,
         quantity: order?.quantity,
         Price: order?.varient?.Price * order?.quantity,
+        varient_Id: order?.varient?._id,
       })) || [];
 
     const newOrderData = {
@@ -212,7 +208,6 @@ function Cart() {
         cartsTotalSum: discountedPrice || cartTotal,
       });
       console.log(createNewOrder);
-      // setCoupan(createNewOrder?.data?.results);
     } catch (error) {
       console.error("An error occurred while placing the order.");
     }
@@ -246,7 +241,6 @@ function Cart() {
       let totalPrice = 0;
       createNewOrder?.data?.results.product.forEach((product) => {
         totalPrice += parseInt(product.Price);
-        // totalPrice += parseInt(product.Price) * parseInt(product.quantity);
       });
 
       const discountPercentage =
@@ -258,7 +252,6 @@ function Cart() {
         ...createNewOrder?.data?.results,
         cartsTotalSum: discountedPrice || cartTotal,
       });
-      // setCoupan2(createNewOrder?.data?.results);
     } catch (error) {
       console.error("An error occurred while placing the order.");
     }
@@ -283,12 +276,6 @@ function Cart() {
     feather.replace();
   }, []);
 
-  // const checkoutUrl =
-  //   coupan?.length !== 0
-  //     ? `/check-out/${encodeURIComponent(
-  //         JSON.stringify(coupan2.length !== 0 ? coupan2 : coupan)
-  //       )}`
-  //     : "/check-outall";
   const checkoutUrl =
     coupan2 && coupan2.length !== 0
       ? `/check-out/${encodeURIComponent(JSON.stringify(coupan2))}`
@@ -299,7 +286,6 @@ function Cart() {
   return (
     <>
       <Header />
-      {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
         <ul>
           <li className="active">
@@ -334,7 +320,6 @@ function Cart() {
           </li>
         </ul>
       </div>
-      {/* mobile fix menu end */}
       <section className="breadscrumb-section pt-0">
         <div className="container-fluid-lg">
           <div className="row">
@@ -358,7 +343,6 @@ function Cart() {
           </div>
         </div>
       </section>
-      {/* Breadcrumb Section End */}
       {/* Cart Section Start */}
       <section className="cart-section section-b-space">
         <div className="container-fluid-lg">
@@ -368,26 +352,12 @@ function Cart() {
                 <div className="table-responsive-xl">
                   <table className="table" style={{ marginLeft: "-21px" }}>
                     <tbody>
-                      {cartListItems
+                      {cart
                         ?.slice()
                         ?.reverse()
                         ?.map((item, index) => {
                           const subtotal =
                             (item?.varient?.Price || 0) * (item?.quantity || 1);
-
-                          // let totalSubtotal = 0;
-                          // cartListItems
-                          //   ?.slice()
-                          //   ?.reverse()
-                          //   ?.forEach((item) => {
-                          //     const subtotal =
-                          //       (item?.products[0]?.product_Id?.addVarient[0]
-                          //         ?.Price || 0) *
-                          //       (item?.products[0]?.quantity || 1);
-                          //     totalSubtotal += subtotal;
-                          //   });
-
-                          // console.log("Total Subtotal:", totalSubtotal);
 
                           return (
                             <tr className="product-box-contain" key={index}>
@@ -428,65 +398,11 @@ function Cart() {
                                         </span>{" "}
                                         {item?.varient?.SKU}
                                       </li>
-                                      {/* <li className="quantity-price-box">
-                                        <div className="cart_qty">
-                                          <div className="input-group">
-                                            <button
-                                              type="button"
-                                              className="btn qty-left-minus"
-                                              data-type="minus"
-                                              data-field=""
-                                            >
-                                              <i
-                                                className="fa fa-minus ms-0"
-                                                aria-hidden="true"
-                                              />
-                                            </button>
-                                            <button
-                                              type="button"
-                                              className="btn qty-right-plus"
-                                              data-type="plus"
-                                              data-field=""
-                                            >
-                                              <i
-                                                className="fa fa-plus ms-0"
-                                                aria-hidden="true"
-                                              />
-                                            </button>
-                                          </div>
-                                        </div>
-                                      </li> */}
-                                      {/* <li>
-                                        <h5>Total: $35.10</h5>
-                                      </li> */}
                                     </ul>
                                   </div>
                                 </div>
                               </td>
-                              {/* <td className="price">
-                                <h4 className="table-title text-content">
-                                  Price
-                                </h4>
-                                <h5>
-                                  $
-                                  {item?.products?.map(
-                                    (product) => product?.product_Id?.Price
-                                  )}{" "}
-                                  <del className="text-content">
-                                    {" "}
-                                    $
-                                    {item?.products?.map(
-                                      (product) => product?.product_Id?.oldPrice
-                                    )}{" "}
-                                  </del>
-                                </h5>
-                                <h6 className="theme-color">
-                                  {" "}
-                                  ${
-                                    item?.products[0]?.product_Id?.Discount
-                                  }{" "}
-                                </h6>
-                              </td> */}
+
                               <td className="quantity">
                                 <div className="quantity-price">
                                   <div className="cart_qty">
@@ -789,19 +705,6 @@ function Cart() {
                           : coupan?.cartsTotalSum?.toFixed(2) || totalSubtotal}
                       </h4>
                     )}
-                    {/* <h4 className="price theme-color">
-                      $
-                      {coupan2.length !== 0
-                        ? coupan2?.cartsTotalSum?.toFixed(2)
-                        : coupan?.cartsTotalSum?.toFixed(2) || cartTotal}
-                    </h4> */}
-
-                    {/* <h4 className="price theme-color">
-                      $
-                      {coupan2?.length !== 0
-                        ? coupan2?.cartsTotalSum
-                        : coupan?.cartsTotalSum}
-                    </h4> */}
                   </li>
                 </ul>
                 <div className="button-group cart-button">
@@ -822,25 +725,6 @@ function Cart() {
                       >
                         Process To Checkout
                       </Link>
-                      {/* {coupan || coupan2 ? (
-                        <Link
-                          to={`/check-out/${encodeURIComponent(
-                            JSON.stringify(
-                              coupan2.length !== 0 ? coupan2 : coupan
-                            )
-                          )}`}
-                          className="btn btn-animation proceed-btn fw-bold"
-                        >
-                          Process To Checkout
-                        </Link>
-                      ) : (
-                        <Link
-                          to="/check-out"
-                          className="btn btn-animation proceed-btn fw-bold"
-                        >
-                          Process To Checkout
-                        </Link>
-                      )} */}
                     </li>
                     <li>
                       <button
@@ -857,94 +741,18 @@ function Cart() {
                 </div>
               </div>
             </div>
-
-            {/* <div className="col-xxl-3">
-              <div className="summery-box p-sticky">
-                <div className="summery-header">
-                  <h3>Cart Total</h3>
-                </div>
-                <div className="summery-contain">
-                  <div className="coupon-cart">
-                    <h6 className="text-content mb-2">Coupon Apply</h6>
-                    <div className="mb-3 coupon-box input-group">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="coupanCode"
-                        name="coupanCode"
-                        placeholder="Enter Coupon Code Here..."
-                        value={coupanCode}
-                        onChange={(e) => setCoupanCode(e.target.value)}
-                      />
-                      <button
-                        className="btn-apply"
-                        onClick={() => handleCoupan()}
-                      >
-                        Apply
-                      </button>
-                    </div>
-                  </div>
-                  <ul>
-                    <li>
-                      <h4>Subtotal</h4>
-                      <h4 className="price">${coupan?.subtotal} </h4>
-                    </li>
-                    <li>
-                      <h4>Coupon Discount</h4>
-                      <h4 className="price"> - {coupan?.DiscountType} % </h4>
-                    </li>
-                  </ul>
-                </div>
-                <ul className="summery-total">
-                  <li className="list-total border-top-0">
-                    <h4>Total (USD)</h4>
-                    <h4 className="price theme-color">
-                      ${coupan && coupan?.cartsTotalSum}
-                    </h4>
-                  </li>
-                </ul>
-                <div className="button-group cart-button">
-                  <ul>
-                    <li>
-                      <Link
-                        to="/check-out"
-                        className="btn btn-animation proceed-btn fw-bold"
-                      >
-                        Process To Checkout
-                      </Link>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => {
-                          window.location.href = "/index";
-                        }}
-                        className="btn btn-light shopping-button text-dark"
-                      >
-                        <i className="fa-solid fa-arrow-left-long" />
-                        Return To Shopping
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div> */}
           </div>
         </div>
       </section>
-      {/* Cart Section End */}
-      {/* Footer Section Start */}
+
       <Footer />
-      {/* Footer Section End */}
-      {/* Location Modal Start */}
+
       <LocationModel />
-      {/* Location Modal End */}
-      {/* Deal Box Modal Start */}
+
       <DealBoxModel />
-      {/* Deal Box Modal End */}
-      {/* Tap to top start */}
+
       <TapToTop />
-      {/* Tap to top end */}
-      {/* Bg overlay Start */}
+
       <div className="bg-overlay" />
     </>
   );

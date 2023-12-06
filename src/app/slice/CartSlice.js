@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 
 const initialState = {
+  carts: [],
   cartItems: localStorage.getItem("cartItems")
     ? JSON.parse(localStorage.getItem("cartItems"))
     : [],
@@ -13,11 +14,15 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
+    getAllCart(state, action) {
+      state?.carts?.push(...action?.payload);
+      console.log("getAllCart slice", action?.payload);
+    },
     addToCart(state, action) {
       const existingIndex = state.cartItems.findIndex(
-        (item) => item.id === action.payload.id
+        (item) => item._id === action.payload._id
       );
-      console.log(action.payload);
+      console.log("addToCart", action.payload);
       if (existingIndex >= 0) {
         state.cartItems[existingIndex] = {
           ...state.cartItems[existingIndex],
@@ -105,8 +110,14 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, decreaseCart, removeFromCart, getTotals, clearCart } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  decreaseCart,
+  removeFromCart,
+  getTotals,
+  clearCart,
+  getAllCart,
+} = cartSlice.actions;
 
 export const selectCartItems = (state) => state.cart.cartItems; // Corrected selector
 export const selectCartCount = (state) => state.cart.cartTotalQuantity; // Corrected selector

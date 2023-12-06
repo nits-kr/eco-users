@@ -327,66 +327,6 @@ function Header({ Dash }) {
                         <i className="fas fa-angle-down" />
                       </button>
                     </div>
-                    {/* <form>
-                      <div className="search-box">
-                        <div className="input-group">
-                          <input
-                            type="search"
-                            className="form-control"
-                            placeholder="I'm searching for..."
-                            aria-label="Recipient's username"
-                            aria-describedby="button-addon2"
-                            value={searchQuery}
-                            onChange={handleInputChange}
-                          />
-                          <button
-                            className="btn"
-                            type="button"
-                            id="button-addon2"
-                            onClick={searchData}
-                          >
-                            Search
-                          </button>
-                        </div>
-                        {suggestions.length > 0 && (
-                          <div className="suggestion-list shadow">
-                            <ul
-                              className="suggestion-ul"
-                              style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                backgroundColor: "white",
-                              }}
-                            >
-                              {suggestions.map((product) => (
-                                <li
-                                  key={product._id}
-                                  className="suggestion-li ms-2"
-                                >
-                                  <Link
-                                    to={`/shop2?query=${searchQuery}`}
-                                    className="suggestion-item"
-                                    onClick={hideSuggestions}
-                                  >
-                                    <div className="product-image">
-                                      <img
-                                        src={product.product_Pic[0]}
-                                        alt={product.productName_en}
-                                        width={20}
-                                        height={20}
-                                      />
-                                    </div>
-                                    <div className="product-name">
-                                      {product.productName_en}
-                                    </div>
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    </form> */}
                     <form>
                       <div className="search-box">
                         <div className="input-group">
@@ -906,7 +846,7 @@ function Header({ Dash }) {
                         <div className="deal-offer-contain">
                           <Link to="/shop" className="deal-image">
                             <img
-                              src={item?.addVarient[0]?.product_Pic[0]}
+                              src={item?.addVarient?.[0]?.product_Pic[0]}
                               className=" lazyload"
                               alt=""
                             />
@@ -914,12 +854,12 @@ function Header({ Dash }) {
                           <Link to="/shop" className="deal-contain">
                             <h5> {item?.productName_en} </h5>
                             <h6>
-                              ${item?.addVarient[0]?.dollarPrice?.toFixed(2)}{" "}
+                              ${item?.addVarient?.[0]?.dollarPrice?.toFixed(2)}{" "}
                               <del> {item?.oldPrice}</del>{" "}
                               <span>
                                 {" "}
                                 {
-                                  item?.addVarient[0]?.values_Id?.valuesName_en
+                                  item?.addVarient?.[0]?.values_Id?.valuesName_en
                                 }{" "}
                               </span>
                             </h6>
