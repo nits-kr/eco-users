@@ -20,6 +20,7 @@ function CheckOutNew() {
   const userId = localStorage.getItem("loginId");
   const [coupan, setCoupan] = useState([]);
   console.log("check out coupan", coupan);
+  console.log("orderItemSummary", orderItemSummary);
   const [items, setItems] = useState([]);
   const [items2, setItems2] = useState([]);
   console.log("set items for buy", items);
@@ -32,7 +33,6 @@ function CheckOutNew() {
   console.log("check out totalPrice", totalPrice);
 
   window.onbeforeunload = function () {
-    // Remove the 'theme' item from local storage
     localStorage.removeItem("buyItem");
   };
 
@@ -175,7 +175,7 @@ function CheckOutNew() {
         });
 
         // Set the state variables
-        setOrderItemSummary(items);
+        setOrderItemSummary(data?.results?.carts);
         setOrderItemSummaryPrice(data.results);
         setTotalPrice(total);
       }
@@ -187,11 +187,8 @@ function CheckOutNew() {
   let totalSubtotal = 0;
 
   orderItemSummary?.forEach((cart) => {
-    cart.forEach((item) => {
-      const subtotal =
-        (item?.product_Id?.addVarient[0]?.Price || 0) * (item?.quantity || 1);
-      totalSubtotal += subtotal;
-    });
+    const subtotal = (cart?.varient?.Price || 0) * (cart?.quantity || 1);
+    totalSubtotal += subtotal;
   });
 
   console.log("Total Subtotal:", totalSubtotal);
@@ -206,17 +203,6 @@ function CheckOutNew() {
 
   return (
     <>
-      {/* Loader Start */}
-      {/* <div className="fullpage-loader">
-    <span />
-    <span />
-    <span />
-    <span />
-    <span />
-    <span />
-  </div> */}
-      {/* Loader End */}
-      {/* Header Start */}
       <Header />
       {/* Header End */}
       {/* mobile fix menu start */}
@@ -1009,33 +995,24 @@ function CheckOutNew() {
                       </li>
                     ) : (
                       <ul className="summery-contain">
-                        {orderItemSummary?.map((orderGroup, groupIndex) => (
-                          <React.Fragment key={groupIndex}>
-                            {orderGroup.map((order, index) => (
-                              <li key={index}>
-                                <img
-                                  src={
-                                    order.product_Id?.addVarient[0]
-                                      ?.product_Pic[0] || ""
-                                  }
-                                  className="img-fluid lazyloaded checkout-image"
-                                  alt=""
-                                />
-                                <h4>
-                                  {order.product_Id?.productName_en
-                                    ?.split(" ")
-                                    ?.slice(0, 3)
-                                    ?.join(" ")}{" "}
-                                  <span>X {order.quantity}</span>
-                                </h4>
-                                <h4 className="price">
-                                  $
-                                  {order?.product_Id?.addVarient[0]?.Price *
-                                    order.quantity}
-                                </h4>
-                              </li>
-                            ))}
-                          </React.Fragment>
+                        {orderItemSummary?.map((order, index) => (
+                          <li key={index}>
+                            <img
+                              src={order?.varient?.product_Pic[0] || ""}
+                              className="img-fluid lazyloaded checkout-image"
+                              alt=""
+                            />
+                            <h4>
+                              {order?.product?.productName_en
+                                ?.split(" ")
+                                ?.slice(0, 3)
+                                ?.join(" ")}{" "}
+                              <span>X {order.quantity}</span>
+                            </h4>
+                            <h4 className="price">
+                              ${order?.varient?.Price * order.quantity}
+                            </h4>
+                          </li>
                         ))}
                       </ul>
                     )}

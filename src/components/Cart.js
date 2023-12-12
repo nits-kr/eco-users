@@ -31,7 +31,7 @@ function Cart() {
   const [updateQuantity] = useUpdateQuantityMutation();
   const [coupan, setCoupan] = useState([]);
   const [coupan2, setCoupan2] = useState([]);
-  const [coupanCode, setCoupanCode] = useState("25753411");
+  const [coupanCode, setCoupanCode] = useState("");
   const [CreateWishItems, setCreateWishItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState([]);
   const coupanCode2 = coupanCode || "";
@@ -41,9 +41,12 @@ function Cart() {
   console.log("useSelector", cart);
   const dispatch = useDispatch();
   const [singleItemPrice, setSingleItemPrice] = useState([]);
+  console.log("singleItemPrice", singleItemPrice);
   localStorage?.setItem("cartTotal", cartTotal);
 
   const [count1, setCount1] = useState();
+  const [coupanresponse, setCoupanresponse] = useState("");
+  console.log("coupanresponse", coupanresponse);
   const handleIncrement = (id) => {
     setCartListItems((prevCartListItems) => {
       return prevCartListItems.map((item) =>
@@ -51,12 +54,12 @@ function Cart() {
           ? {
               ...item,
               quantity: item?.quantity + 1,
-              // products: [
-              //   {
-              //     ...item,
-              //     quantity: item?.quantity + 1,
-              //   },
-              // ],
+              products: [
+                {
+                  ...item,
+                  quantity: item?.quantity + 1,
+                },
+              ],
             }
           : item
       );
@@ -84,8 +87,8 @@ function Cart() {
               ...item,
               products: [
                 {
-                  ...item.products[0],
-                  quantity: item.products[0]?.quantity - 1,
+                  ...item,
+                  quantity: item?.quantity - 1,
                 },
               ],
             }
@@ -97,7 +100,7 @@ function Cart() {
       toast.info(
         <>
           Decreased quantity of{" "}
-          <strong>{item.products[0]?.product_Id?.productName_en}</strong>
+          <strong>{item?.product_Id?.productName_en}</strong>
         </>,
         {
           position: "bottom-left",
@@ -175,24 +178,12 @@ function Cart() {
   localStorage?.setItem("totalSubtotal", totalSubtotal);
 
   const applyCoupanCode = async () => {
-    let cartList = [];
-
-    cartList =
-      cartListItems?.map((order) => ({
-        product_Id: order?.product_Id?._id,
-        quantity: order?.quantity,
-        Price: order?.varient?.Price * order?.quantity,
-        varient_Id: order?.varient?._id,
-      })) || [];
-
-    const newOrderData = {
-      coupanCode: coupanCode2,
-      carts: cartList,
-      user_Id: userId,
-    };
-
     try {
-      const createNewOrder = await applyCoupan(newOrderData);
+      const createNewOrder = await applyCoupan({
+        coupanCode: coupanCode2,
+      });
+
+      setCoupanresponse(createNewOrder?.data?.results?.DiscountType);
       let totalPrice = 0;
       createNewOrder?.data?.results.product.forEach((product) => {
         totalPrice += parseInt(product.Price);
@@ -216,45 +207,9 @@ function Cart() {
     setSingleItemPrice(item);
     localStorage?.setItem("buyItem", encodeURIComponent(JSON.stringify(item)));
     window.onbeforeunload = function () {
-      // Remove the 'theme' item from local storage
       localStorage.removeItem("allCartItems");
     };
     console.log("cart subtotal", item);
-  };
-  const handleCoupan2 = async (item, quantity, id, varientId) => {
-    const newOrderData = {
-      coupanCode: coupanCode2,
-      carts: [
-        {
-          product_Id: id,
-          Price: item * quantity,
-          quantity: quantity,
-          varient_Id: varientId,
-        },
-      ],
-      user_Id: userId,
-    };
-
-    try {
-      const createNewOrder = await applyCoupan2(newOrderData);
-      console.log("createNewOrder", createNewOrder);
-      let totalPrice = 0;
-      createNewOrder?.data?.results.product.forEach((product) => {
-        totalPrice += parseInt(product.Price);
-      });
-
-      const discountPercentage =
-        createNewOrder?.data?.results.DiscountType[0] || 0;
-      const discountedPrice =
-        totalPrice - (totalPrice * discountPercentage) / 100;
-
-      setCoupan2({
-        ...createNewOrder?.data?.results,
-        cartsTotalSum: discountedPrice || cartTotal,
-      });
-    } catch (error) {
-      console.error("An error occurred while placing the order.");
-    }
   };
 
   const deleteCartItem = async (_id) => {
@@ -373,18 +328,14 @@ function Cart() {
                                   <div className="product-detail">
                                     <ul>
                                       <li className="name">
-                                        {item?.products?.map(
-                                          (product, index) => (
-                                            <Link to={`/product`} key={index}>
-                                              <strong>
-                                                {product?.product_Id?.productName_en
-                                                  ?.split(" ")
-                                                  ?.slice(0, 3)
-                                                  ?.join(" ")}
-                                              </strong>
-                                            </Link>
-                                          )
-                                        )}
+                                        <Link to={`/product`}>
+                                          <strong>
+                                            {item?.product_Id?.productName_en
+                                              ?.split(" ")
+                                              ?.slice(0, 3)
+                                              ?.join(" ")}
+                                          </strong>
+                                        </Link>
                                       </li>
                                       <li className="text-content">
                                         <span className="text-title">
@@ -595,14 +546,8 @@ function Cart() {
                         />
                         <button
                           className="btn-apply"
-                          onClick={() =>
-                            handleCoupan2(
-                              singleItemPrice?.varient?.Price,
-                              singleItemPrice?.quantity,
-                              singleItemPrice?.product_Id?._id,
-                              singleItemPrice?.varient?._id
-                            )
-                          }
+                          onClick={() => applyCoupanCode()}
+                          // onClick={() => handleCoupan2()}
                         >
                           Apply
                         </button>
@@ -643,7 +588,7 @@ function Cart() {
                       </li>
                       <li>
                         <h4>Coupon Discount</h4>
-                        <h4 className="price"> - {coupan2.DiscountType} %</h4>
+                        <h4 className="price"> {coupanresponse} %</h4>
                       </li>
                     </ul>
                   ) : (
@@ -656,7 +601,7 @@ function Cart() {
                       </li>
                       <li>
                         <h4>Coupon Discount</h4>
-                        <h4 className="price"> - {coupan?.DiscountType} %</h4>
+                        <h4 className="price"> {coupanresponse} %</h4>
                       </li>
                     </ul>
                   )}
@@ -690,17 +635,24 @@ function Cart() {
                     {singleItemPrice?.length !== 0 ? (
                       <h4 className="price theme-color">
                         $
-                        {coupan2.length !== 0
-                          ? coupan2?.cartsTotalSum?.toFixed(2)
+                        {coupanresponse
+                          ? (
+                              singleItemPrice?.varient?.Price *
+                              singleItemPrice?.quantity *
+                              (1 - coupanresponse / 100)
+                            )?.toFixed(2)
                           : singleItemPrice?.varient?.Price *
                             singleItemPrice?.quantity}
                       </h4>
                     ) : (
                       <h4 className="price theme-color">
                         $
-                        {coupan2.length !== 0
-                          ? coupan2?.cartsTotalSum?.toFixed(2)
-                          : coupan?.cartsTotalSum?.toFixed(2) || totalSubtotal}
+                        {coupanresponse
+                          ? (
+                              totalSubtotal *
+                              (1 - coupanresponse / 100)
+                            )?.toFixed(2)
+                          : totalSubtotal}
                       </h4>
                     )}
                   </li>
