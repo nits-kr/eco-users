@@ -19,6 +19,13 @@ function Compare() {
   const compareItems = useGetCompareListQuery();
   const [addToCart] = useAddToCartMutation();
   console.log("Compare items", compareItems);
+
+  useEffect(() => {
+    if (compareItems) {
+      setNewCompare(compareItems?.data?.results?.comparelist);
+    }
+  }, [compareItems]);
+
   const handleSaveChanges = (id, stockQuantity) => {
     const newAddress = {
       carts: [
@@ -56,6 +63,131 @@ function Compare() {
       }
     });
   };
+
+  const columnData = [
+    {
+      header: "Product",
+      accessor: (item) => (
+        <Link className="text-title" to="/product">
+          {item?.product_Id?.productName_en}
+        </Link>
+      ),
+    },
+    {
+      header: "Images",
+      accessor: (item) => (
+        <Link to="/product" className="compare-image">
+          <img
+            src={item?.product_Id?.addVarient[0]?.product_Pic[0]}
+            className="img-fluid lazyload"
+            alt=""
+          />
+        </Link>
+      ),
+    },
+    {
+      header: "Brand Name",
+      accessor: (item) => (
+        <span className="text-content">{item?.product_Id?.brand_Id}</span>
+      ),
+    },
+    {
+      header: "Color",
+      accessor: (item) => (
+        <span
+          className={`text-content ${
+            !item?.product_Id?.productColor ? "text-danger" : ""
+          }`}
+        >
+          {item?.product_Id?.productColor
+            ? item?.product_Id?.productColor
+            : "Color Not Available"}
+        </span>
+      ),
+    },
+    {
+      header: "Price",
+      accessor: (item) => (
+        <span className="price text-content">
+          ${item?.product_Id?.addVarient?.[0]?.Price}
+        </span>
+      ),
+    },
+    {
+      header: "Availability",
+      accessor: (item) => {
+        const stockStatus =
+          item?.product_Id?.stockQuantity > 0 ? "In Stock" : "Out Of Stock";
+        const backgroundColor =
+          stockStatus === "In Stock" ? "success" : "danger";
+        return (
+          <button
+            className={`btn btn-sm w-60 ms-4 text-light bg-${backgroundColor}`}
+          >
+            {stockStatus}
+          </button>
+        );
+      },
+    },
+    {
+      header: "Rating",
+      accessor: (item) => {
+        const totalRatings = item?.product_Id?.ratings.reduce(
+          (sum, rating) => sum + rating.star,
+          0
+        );
+        const averageRating = totalRatings / item?.product_Id?.ratings?.length;
+        return (
+          <div className="compare-rating">
+            <ul className="rating">
+              <Star
+                rating={averageRating || 0}
+                totalRating={item.totalRating}
+              />
+            </ul>
+            <span className="text-content">
+              {item?.product_Id?.ratings?.length}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      header: "Weight",
+      accessor: (item) => (
+        <span className="text-content">{item?.product_Id?.weight}</span>
+      ),
+    },
+    {
+      header: "Purchase",
+      accessor: (item) => (
+        <Link
+          to="/cart"
+          className="btn btn-animation btn-sm w-100"
+          onClick={() =>
+            handleSaveChanges(
+              item?.product_Id?._id,
+              item?.product_Id?.stockQuantity
+            )
+          }
+        >
+          Add To Cart
+        </Link>
+      ),
+    },
+    {
+      header: "",
+      accessor: (item) => (
+        <Link
+          to="#"
+          className="text-content remove_column"
+          onClick={() => handleRemoveAddress(item?._id)}
+        >
+          <i className="fa-solid fa-trash-can me-2" /> Remove
+        </Link>
+      ),
+    },
+  ];
 
   useEffect(() => {
     feather.replace();
@@ -134,184 +266,14 @@ function Compare() {
               <div className="table-responsive">
                 <table className="table compare-table">
                   <tbody>
-                    <tr>
-                      <th>Product</th>
-                      {compareItems?.data?.results?.comparelist?.map(
-                        (item, index) => {
-                          return (
-                            <td key={index}>
-                              <Link className="text-title" to="/product">
-                                {item?.product_Id?.productName_en}
-                              </Link>
-                            </td>
-                          );
-                        }
-                      )}
-                    </tr>
-                    <tr>
-                      <th>Images</th>
-                      {compareItems?.data?.results?.comparelist?.map(
-                        (item, index) => {
-                          return (
-                            <td key={index}>
-                              <Link to="/product" className="compare-image">
-                                <img
-                                  src={item?.product_Id?.addVarient[0]?.product_Pic[0]}
-                                  className="img-fluid  lazyload"
-                                  alt=""
-                                />
-                              </Link>
-                            </td>
-                          );
-                        }
-                      )}
-                    </tr>
-                    <tr>
-                      <th>Brand Name</th>
-                      {compareItems?.data?.results?.comparelist?.map(
-                        (item, index) => {
-                          return (
-                            <td className="text-content" key={index}>
-                              {" "}
-                              {item?.product_Id?.brand_Id}{" "}
-                            </td>
-                          );
-                        }
-                      )}
-                    </tr>
-                    <tr>
-                      <th>Color</th>
-                      {compareItems?.data?.results?.comparelist?.map(
-                        (item, index) => {
-                          return (
-                            <td className="text-content" key={index}>
-                              {item?.product_Id?.productColor}
-                            </td>
-                          );
-                        }
-                      )}
-                    </tr>
-                    <tr>
-                      <th>Price</th>
-                      {compareItems?.data?.results?.comparelist?.map(
-                        (item, index) => {
-                          return (
-                            <td className="price text-content" key={index}>
-                              ${item?.product_Id?.Price}{" "}
-                            </td>
-                          );
-                        }
-                      )}
-                    </tr>
-                    <tr>
-                      <th>Availability</th>
-                      {compareItems?.data?.results?.comparelist?.map(
-                        (item, index) => {
-                          const stockStatus =
-                            item?.product_Id?.stockQuantity > 0
-                              ? "In Stock"
-                              : "Out Of Stock";
-                          const backgroundColor =
-                            stockStatus === "In Stock" ? "success" : "danger";
-                          return (
-                            <td key={index}>
-                              <div style={{display:"flex", alignItems:"center", justifyContent:"center"}}>
-                                <button
-                                  className={`btn btn-sm w-60 ms-4 text-light bg-${backgroundColor}`}
-                                >
-                                  {stockStatus}
-                                </button>
-                              </div>
-                            </td>
-                          );
-                        }
-                      )}
-                    </tr>
-                    <tr>
-                      <th>Rating</th>
-                      {compareItems?.data?.results?.comparelist?.map(
-                        (item, index) => {
-                          const totalRatings = item?.product_Id?.ratings.reduce(
-                            (sum, rating) => sum + rating.star,
-                            0
-                          );
-                          const averageRating =
-                            totalRatings / item?.product_Id?.ratings?.length;
-                          return (
-                            <td key={index}>
-                              <div className="compare-rating">
-                                <ul className="rating">
-                                  <Star
-                                    rating={averageRating || 0}
-                                    totalRating={item.totalRating}
-                                  />
-                                </ul>
-                                <span className="text-content">
-                                  {item?.product_Id?.ratings?.length}
-                                </span>
-                              </div>
-                            </td>
-                          );
-                        }
-                      )}
-                    </tr>
-                    <tr>
-                      <th>Weight</th>
-                      {compareItems?.data?.results?.comparelist?.map(
-                        (item, index) => {
-                          return (
-                            <td className="text-content" key={index}>
-                              {" "}
-                              {item?.product_Id?.weight}{" "}
-                            </td>
-                          );
-                        }
-                      )}
-                    </tr>
-                    <tr>
-                      <th>Purchase</th>
-                      {compareItems?.data?.results?.comparelist?.map(
-                        (item, index) => {
-                          return (
-                            <td key={index}>
-                              <Link
-                                to="/cart"
-                                className="btn btn-animation btn-sm w-100"
-                                onClick={() =>
-                                  handleSaveChanges(
-                                    item?.product_Id?._id,
-                                    item?.product_Id?.stockQuantity
-                                  )
-                                }
-                              >
-                                Add To Cart
-                              </Link>
-                            </td>
-                          );
-                        }
-                      )}
-                    </tr>
-                    <tr>
-                      <th />
-                      {compareItems?.data?.results?.comparelist?.map(
-                        (item, index) => {
-                          return (
-                            <td key={index}>
-                              <Link
-                                to="#"
-                                className="text-content remove_column"
-                                onClick={() => {
-                                  handleRemoveAddress(item?._id);
-                                }}
-                              >
-                                <i className="fa-solid fa-trash-can me-2" />{" "}
-                                Remove
-                              </Link>
-                            </td>
-                          );
-                        }
-                      )}
-                    </tr>
+                    {columnData.map((column, columnIndex) => (
+                      <tr key={columnIndex}>
+                        <th>{column.header}</th>
+                        {newCompare?.map((item, itemIndex) => (
+                          <td key={itemIndex}>{column.accessor(item)}</td>
+                        ))}
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -319,6 +281,7 @@ function Compare() {
           </div>
         </div>
       </section>
+
       {/* Compare Section End */}
       {/* Footer Section Start */}
       <Footer />

@@ -134,7 +134,7 @@ export const PostApi = createApi({
     }),
     getCartList: builder.query({
       query: (name) => ({
-        url: `/user/carts/carts/carts-list/${userId}`,
+        url: `user/carts/carts/carts-list/${userId}`,
         method: "post",
       }),
     }),

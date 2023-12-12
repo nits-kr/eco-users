@@ -243,7 +243,7 @@ function App() {
             path="/Banner-list/:id"
             element={<BannerShop setProgress={setProgress} />}
           />
-          
+
           <Route
             exact
             className="active"

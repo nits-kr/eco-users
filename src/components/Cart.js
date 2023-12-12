@@ -66,7 +66,7 @@ function Cart() {
       toast.info(
         <>
           Increased quantity of{" "}
-          <strong>{item.products[0]?.product_Id?.productName_en}</strong>
+          <strong>{item?.product_Id?.productName_en}</strong>
         </>,
         {
           position: "bottom-left",
@@ -74,7 +74,7 @@ function Cart() {
       );
     }
     HandleIncrease(id);
-    applyCoupanCode();
+    // applyCoupanCode();
   };
   const handleDecrement = (id) => {
     setCartListItems((prevCartListItems) => {
@@ -477,9 +477,7 @@ function Cart() {
                                               data-type="plus"
                                               data-field=""
                                               onClick={() =>
-                                                handleIncrement(
-                                                  item?.varient?._id
-                                                )
+                                                handleIncrement(item?._id)
                                               }
                                             >
                                               <i
