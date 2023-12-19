@@ -13,24 +13,22 @@ import { useGetAddressListQuery } from "../services/Post";
 function CheckOutNew() {
   const [orderItemSummary, setOrderItemSummary] = useState([]);
   const [orderItemSummaryPrice, setOrderItemSummaryPrice] = useState([]);
-  const [createOrder, response] = useCreateOrderMutation();
+  const [createOrder] = useCreateOrderMutation();
   const [newAddress, setNewAddress] = useState([]);
   const addressList = useGetAddressListQuery();
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const userId = localStorage.getItem("loginId");
   const [coupan, setCoupan] = useState([]);
-  console.log("check out coupan", coupan);
-  console.log("orderItemSummary", orderItemSummary);
-  const [items, setItems] = useState([]);
+
+  const [items, setItems] = useState("");
   const [items2, setItems2] = useState([]);
-  console.log("set items for buy", items);
-  console.log("set All items for buy", items2);
-  console.log("coupan", coupan);
+
   const navigate = useNavigate();
   const { coupan2 } = useParams();
   const storeUser = localStorage?.getItem("userName");
   const [totalPrice, setTotalPrice] = useState([]);
-  console.log("check out totalPrice", totalPrice);
+
+  const coupanresponse = localStorage?.getItem("coupanresponse");
 
   window.onbeforeunload = function () {
     localStorage.removeItem("buyItem");
@@ -41,7 +39,6 @@ function CheckOutNew() {
     if (buyItem) {
       const decodedBuyItem = JSON.parse(decodeURIComponent(buyItem));
       setItems(decodedBuyItem);
-      console.log("buy item", decodedBuyItem);
     } else {
       console.log("buyItem not found in localStorage");
     }
@@ -51,7 +48,6 @@ function CheckOutNew() {
     if (buyAllItem) {
       const decodedBuyAllItem = JSON.parse(decodeURIComponent(buyAllItem));
       setItems2(decodedBuyAllItem);
-      console.log("buy item", decodedBuyAllItem);
     } else {
       console.log("buyItem not found in localStorage");
     }
@@ -60,7 +56,7 @@ function CheckOutNew() {
   const placeOrder = async () => {
     let orderList = [];
 
-    if (items.length !== 0) {
+    if (items) {
       orderList.push({
         product_Id: items.product_Id?._id,
         quantity: items?.quantity,
@@ -76,11 +72,17 @@ function CheckOutNew() {
       }));
     }
 
-    const cartsTotal =
-      items.length !== 0
-        ? items?.products[0]?.product_Id?.addVarient[0]?.Price *
-          items?.products[0]?.quantity
-        : totalSubtotal;
+    const cartsTotal = coupanresponse
+      ? items
+        ? (
+            items?.varient?.Price *
+            items?.quantity *
+            (1 - coupanresponse / 100)
+          )?.toFixed(2)
+        : totalSubtotal * (1 - coupanresponse / 100)?.toFixed(2)
+      : items
+      ? items?.varient?.Price * items?.quantity
+      : totalSubtotal;
 
     const newOrderData = {
       carts: orderList,
@@ -119,7 +121,6 @@ function CheckOutNew() {
           }
         });
       } catch (error) {
-        // Show an error alert
         await Swal.fire({
           title: "Error",
           text: "An error occurred while placing the order.",
@@ -133,8 +134,6 @@ function CheckOutNew() {
     if (coupan2) {
       const decodedItem = JSON.parse(decodeURIComponent(coupan2));
       setCoupan(decodedItem);
-      console.log("blog id", decodedItem);
-      console.log("coupon2", coupan2);
     }
   }, [coupan2]);
 
@@ -163,7 +162,6 @@ function CheckOutNew() {
         console.log(data);
         const items = data?.results?.cartsTotal || [];
 
-        // Initialize total price
         let total = 0;
 
         items.forEach((item) => {
@@ -174,7 +172,6 @@ function CheckOutNew() {
           });
         });
 
-        // Set the state variables
         setOrderItemSummary(data?.results?.carts);
         setOrderItemSummaryPrice(data.results);
         setTotalPrice(total);
@@ -190,8 +187,6 @@ function CheckOutNew() {
     const subtotal = (cart?.varient?.Price || 0) * (cart?.quantity || 1);
     totalSubtotal += subtotal;
   });
-
-  console.log("Total Subtotal:", totalSubtotal);
 
   useEffect(() => {
     fetchData();
@@ -966,30 +961,24 @@ function CheckOutNew() {
                     <h3>Order Summery</h3>
                   </div>
                   <ul className="summery-contain">
-                    {items && items.products && items.products.length > 0 ? (
+                    {items ? (
                       <li>
                         <img
-                          src={
-                            items.products[0]?.product_Id?.addVarient?.[0]
-                              ?.product_Pic[0] || ""
-                          }
+                          src={items.varient?.product_Pic[0] || ""}
                           className="img-fluid lazyloaded checkout-image"
                           alt=""
                         />
                         <h4>
-                          {items.products[0]?.product_Id?.productName_en &&
-                            items.products[0].product_Id.productName_en
-                              .split(" ")
-                              .slice(0, 3)
-                              .join(" ")}{" "}
-                          <span>X {items?.products[0]?.quantity}</span>
+                          {items?.product_Id?.productName_en
+                            .split(" ")
+                            .slice(0, 3)
+                            .join(" ")}{" "}
+                          <span>X {items?.quantity}</span>
                         </h4>
                         <h4 className="price">
                           {" "}
                           <span>
-                            $
-                            {items?.products[0]?.product_Id?.addVarient[0]
-                              ?.Price * items?.products[0]?.quantity}
+                            ${items?.varient?.Price * items?.quantity}
                           </span>{" "}
                         </h4>
                       </li>
@@ -1021,14 +1010,34 @@ function CheckOutNew() {
                   <ul className="summery-contain"></ul>
                   <ul className="summery-total">
                     <li>
-                      <h4>Subtotal(Discounted Price) </h4>
-                      {items && items.products && items.products.length > 0 ? (
+                      <h4>
+                        Subtotal
+                        {coupanresponse
+                          ? `(Coupan Applied ${coupanresponse}%)`
+                          : null}{" "}
+                      </h4>
+                      {coupanresponse ? (
+                        items ? (
+                          <h4 className="price">
+                            $
+                            {(
+                              items?.varient?.Price *
+                              items?.quantity *
+                              (1 - coupanresponse / 100)
+                            )?.toFixed(2)}
+                          </h4>
+                        ) : (
+                          <h4 className="price">
+                            $
+                            {(
+                              totalSubtotal *
+                              (1 - coupanresponse / 100)
+                            )?.toFixed(2)}
+                          </h4>
+                        )
+                      ) : items ? (
                         <h4 className="price">
-                          $
-                          {(
-                            items?.products[0]?.product_Id?.addVarient[0]
-                              ?.Price * items?.products[0]?.quantity
-                          )?.toFixed(2)}
+                          ${items?.varient?.Price * items?.quantity}
                         </h4>
                       ) : (
                         <h4 className="price">${totalSubtotal}</h4>
@@ -1061,11 +1070,25 @@ function CheckOutNew() {
                     <li className="list-total">
                       <h4>Total (USD)</h4>
                       <h4 className="price">
-                        {items && items.products && items.products.length > 0
+                        {coupanresponse
+                          ? items
+                            ? (
+                                (parseFloat(
+                                  items?.varient?.Price * items?.quantity
+                                ) || 0) *
+                                  (1 - coupanresponse / 100) +
+                                (parseFloat(orderItemSummaryPrice?.shipping) ||
+                                  0) +
+                                (parseFloat(orderItemSummaryPrice?.Tax) || 0)
+                              ).toFixed(2)
+                            : (
+                                (parseFloat(totalSubtotal) || 0) *
+                                (1 - coupanresponse / 100)
+                              ).toFixed(2)
+                          : items
                           ? (
                               (parseFloat(
-                                items?.products[0]?.product_Id?.addVarient[0]
-                                  ?.Price * items?.products[0]?.quantity
+                                items?.varient?.Price * items?.quantity
                               ) || 0) +
                               (parseFloat(orderItemSummaryPrice?.shipping) ||
                                 0) +

@@ -41,6 +41,9 @@ import { useFilterPriceMutation } from "../services/Post";
 import { addToCart } from "../app/slice/CartSlice";
 import { useDispatch } from "react-redux";
 import { useSubCategoryProductListMutation } from "../services/Post";
+import { default as ReactSelect } from "react-select";
+import Pagination from "./shopping/Pagination";
+import CategoryTop from "./shopping/CategoryTop";
 
 function Shop(props) {
   const [productListItems, setProductListItems] = useState([]);
@@ -254,35 +257,15 @@ function Shop(props) {
       console.log(error);
     }
   };
-  // const handleAddToCart = async (item, price, index) => {
-  //   try {
-  //     const { data, error } = await AddToCart(
-  //       item._id,
-  //       count[index],
-  //       price * count[index]
-  //     );
-  //     if (error) {
-  //       console.log(error);
-  //       return;
-  //     }
-  //     const newCartItems = [...cartListItems, data];
-  //     setCartListItems(newCartItems);
-  //     setTimeout(() => {
-  //       window?.location?.reload();
-  //     }, 500);
-  //     console.log("prevCartItems", newCartItems);
-  //     console.log("New cart items", cartListItems);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  //   dispatch(addToCart(item));
-  // };
-  const handleAddToCart = async (item, price, index) => {
+
+  const handleAddToCart = async (e, item, price, index, variantId) => {
+    e.preventDefault();
     try {
       const { data, error } = await AddToCart(
         item._id,
         count[index],
-        price * count[index]
+        price * count[index],
+        variantId
       );
       if (error) {
         console.log(error);
@@ -445,6 +428,54 @@ function Shop(props) {
       subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
     setSubCategoryListData(reversedList);
   }, [subCategoryListItems]);
+
+  const [selectOptions1, setSelectOptions1] = useState([]);
+
+  // useEffect(() => {
+  //   if (subCategoryListData) {
+  //     setSelectOptions1(
+  //       subCategoryListData.slice(0, 2).map((item) => ({
+  //         value: item._id,
+  //         label: item.subCategoryName_en,
+  //       }))
+  //     );
+  //   }
+  // }, [subCategoryListData]);
+
+  const handleChange1 = (selected) => {
+    setSelectOptions1(selected);
+
+    if (selected.length > 0) {
+      const selectedItemId = selected[selected.length - 1].value;
+      handleSaveChanges1(selectedItemId);
+    }
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [itemsPerPage, setItemsPerPage] = useState(2);
+
+  const onPageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+
+  const currentItems = productListItems?.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  const [selectedRowsPerPage, setSelectedRowsPerPage] = useState("");
+
+  const handleRowsPerPageChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedRowsPerPage(selectedValue);
+
+    const parsedValue = parseInt(selectedValue, 10);
+    setItemsPerPage(isNaN(parsedValue) ? 2 : parsedValue);
+  };
+
   return (
     <>
       {loading}
@@ -514,7 +545,7 @@ function Shop(props) {
       {/* Breadcrumb Section End */}
       {/* Category Section Start */}
 
-      <section className="wow fadeInUp">
+      {/* <section className="wow fadeInUp">
         <div className="container-fluid-lg">
           <div className="row">
             <div className="col-12">
@@ -669,7 +700,8 @@ function Shop(props) {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
+      <CategoryTop />
       {/* Category Section End */}
       {/* Shop Section Start */}
 
@@ -689,7 +721,22 @@ function Shop(props) {
                       <h2>Filters</h2>
                       <Link to="#">Clear All</Link>
                     </div>
-                    <ul>
+
+                    <ReactSelect
+                      options={
+                        subCategoryListData?.map((item) => ({
+                          value: item._id,
+                          label: item.subCategoryName_en,
+                        })) || []
+                      }
+                      isMulti
+                      closeMenuOnSelect={false}
+                      hideSelectedOptions={false}
+                      onChange={handleChange1}
+                      allowSelectAll={true}
+                      value={selectOptions1}
+                    />
+                    {/* <ul>
                       <li>
                         <Link to="#">Vegetable</Link>
                       </li>
@@ -705,7 +752,7 @@ function Shop(props) {
                       <li>
                         <Link to="#">Meat</Link>
                       </li>
-                    </ul>
+                    </ul> */}
                   </div>
                   <div
                     className="accordion custome-accordion"
@@ -990,15 +1037,15 @@ function Shop(props) {
                     </div>
                   </div>
                   <div className="row g-sm-4 g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 product-list-section">
-                    {productListItems?.map((item, index) => {
-                      const totalRatings = item.ratings.reduce(
-                        (sum, rating) => sum + rating.star,
+                    {currentItems?.map((item, index) => {
+                      const totalRatings = item?.ratings?.reduce(
+                        (sum, rating) => sum + rating?.star,
                         0
                       );
-                      const averageRating = totalRatings / item.ratings.length;
-                      const isItemInCart = cartListItems.some(
-                        (cartItem) =>
-                          cartItem?.product_Id?._id === item._id
+                      const averageRating =
+                        totalRatings / item?.ratings?.length;
+                      const isItemInCart = cartListItems?.some(
+                        (cartItem) => cartItem?.product_Id?._id === item._id
                       );
                       console.log("Item ID:", item?._id);
                       console.log("Cart Items:", cartListItems);
@@ -1231,11 +1278,13 @@ function Shop(props) {
                                     <button className="btn btn-add-cart addcart-button">
                                       <Link
                                         to="/cart"
-                                        onClick={() =>
+                                        onClick={(e) =>
                                           handleAddToCart(
+                                            e,
                                             item,
                                             item?.addVarient[0]?.Price,
-                                            index
+                                            index,
+                                            item?.addVarient[0]?._id
                                           )
                                         }
                                       >
@@ -1253,7 +1302,12 @@ function Shop(props) {
                   </div>
                   <nav className="custome-pagination">
                     <ul className="pagination justify-content-center">
-                      <li className="page-item disabled">
+                      <Pagination
+                        totalItems={productListItems?.length}
+                        itemsPerPage={itemsPerPage}
+                        onPageChange={onPageChange}
+                      />
+                      {/* <li className="page-item disabled">
                         <Link
                           className="page-link"
                           to="#"
@@ -1282,7 +1336,7 @@ function Shop(props) {
                         <Link className="page-link" to="#">
                           <i className="fa-solid fa-angles-right" />
                         </Link>
-                      </li>
+                      </li> */}
                     </ul>
                   </nav>
                 </div>

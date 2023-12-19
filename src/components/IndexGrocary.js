@@ -49,11 +49,9 @@ function IndexGrocary(props) {
   const [wishAdd, res] = useAddToWislistListMutation();
   const [count, setCount] = useState([]);
   const [items, setItems] = useState([]);
-  console.log("set items for buy", items);
+
   const [bannerListnew] = useTopBannerListMutation();
   const [bannerList, setBannerList] = useState([]);
-  console.log("bannerList", bannerList);
-  console.log("trendingList", trendingList);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -65,7 +63,7 @@ function IndexGrocary(props) {
     const initialCounts = trendingList?.map(() => 1);
     setCount(initialCounts);
   }, [trendingList]);
-  console.log("count", count);
+
   const handleCountChange = (index, newCount) => {
     const newCounts = [...count];
     newCounts[index] = newCount >= 0 ? newCount : 0;
@@ -73,7 +71,6 @@ function IndexGrocary(props) {
   };
   console.log(count);
   const blog = useGetAllPostQuery();
-  console.log("useGetAllPostQuery", blog);
 
   const [blogList, setBlogList] = useState();
   axios.defaults.headers.common["x-auth-token-user"] =
@@ -99,7 +96,6 @@ function IndexGrocary(props) {
       try {
         const decodedBuyItem = JSON.parse(decodeURIComponent(buyItem));
         setItems(decodedBuyItem);
-        console.log("banners item at index grocary", decodedBuyItem);
       } catch (error) {
         console.error("Error parsing buyItem:", error);
       }
@@ -370,16 +366,8 @@ function IndexGrocary(props) {
                       <FontAwesomeIcon icon={faArrowsRotate} />
                     </Link>
                   </li>
-                  <li
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    // title="Wishlist"
-                    // onClick={() => handleWishClick(item)}
-                  >
-                    {/* <Link to="/wishlist" className="notifi-wishlist">
-                    <FontAwesomeIcon icon={faHeart} />
-                  </Link> */}
-                    {item?.like === "false" ? (
+                  <li data-bs-toggle="tooltip" data-bs-placement="top">
+                    {item?.products[0]?.like === "false" ? (
                       <Link
                         className="btn p-0 position-relative header-wishlist me-2"
                         to="/wishlist"

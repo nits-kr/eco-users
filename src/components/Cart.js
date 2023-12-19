@@ -47,10 +47,11 @@ function Cart() {
   const [count1, setCount1] = useState();
   const [coupanresponse, setCoupanresponse] = useState("");
   console.log("coupanresponse", coupanresponse);
+  localStorage?.setItem("coupanresponse", coupanresponse);
   const handleIncrement = (id) => {
     setCartListItems((prevCartListItems) => {
       return prevCartListItems.map((item) =>
-        id === item.varient?._id
+        id === item?._id
           ? {
               ...item,
               quantity: item?.quantity + 1,
@@ -77,7 +78,6 @@ function Cart() {
       );
     }
     HandleIncrease(id);
-    // applyCoupanCode();
   };
   const handleDecrement = (id) => {
     setCartListItems((prevCartListItems) => {
@@ -85,6 +85,7 @@ function Cart() {
         id === item?._id
           ? {
               ...item,
+              quantity: item?.quantity - 1,
               products: [
                 {
                   ...item,
@@ -108,7 +109,6 @@ function Cart() {
       );
     }
     HandleDecrease(id);
-    applyCoupanCode();
   };
   const HandleIncrease = async (id) => {
     console.log("HandleIncrease", id);
@@ -174,7 +174,6 @@ function Cart() {
       totalSubtotal += subtotal;
     });
 
-  console.log("Total Subtotal:", totalSubtotal);
   localStorage?.setItem("totalSubtotal", totalSubtotal);
 
   const applyCoupanCode = async () => {
@@ -204,6 +203,7 @@ function Cart() {
     }
   };
   const handlePrice = (item) => {
+    localStorage.removeItem("allCartItems");
     setSingleItemPrice(item);
     localStorage?.setItem("buyItem", encodeURIComponent(JSON.stringify(item)));
     window.onbeforeunload = function () {
@@ -226,17 +226,11 @@ function Cart() {
   };
   const userId = localStorage?.getItem("loginId");
 
-  // console.log("coupan", coupan);
   useEffect(() => {
     feather.replace();
   }, []);
 
-  const checkoutUrl =
-    coupan2 && coupan2.length !== 0
-      ? `/check-out/${encodeURIComponent(JSON.stringify(coupan2))}`
-      : coupan && coupan.length !== 0
-      ? `/check-out/${encodeURIComponent(JSON.stringify(coupan))}`
-      : "/check-outall";
+  const checkoutUrl = "/check-outall";
 
   return (
     <>
@@ -307,7 +301,7 @@ function Cart() {
                 <div className="table-responsive-xl">
                   <table className="table" style={{ marginLeft: "-21px" }}>
                     <tbody>
-                      {cart
+                      {cartListItems
                         ?.slice()
                         ?.reverse()
                         ?.map((item, index) => {
@@ -474,11 +468,6 @@ function Cart() {
                                     className="btn btn-animation proceed-btn fw-bold me-2"
                                     style={{ height: "35px", width: "35px" }}
                                     onClick={() => {
-                                      // handleCoupan2(
-                                      //   item,
-                                      //   item?.products[0]?.quantity,
-                                      //   item?.products[0]?.product_Id?._id
-                                      // );
                                       handlePrice(item);
                                     }}
                                   >
@@ -491,23 +480,8 @@ function Cart() {
                                     title4="Wishlist"
                                     onClick={() => deleteCartItem(item._id)}
                                   >
-                                    <FontAwesomeIcon
-                                      icon={faTrash}
-                                      // style={{ color: "#fa0000" }}
-                                    />
+                                    <FontAwesomeIcon icon={faTrash} />
                                   </Link>
-
-                                  {/* <Link
-                                  className="btn  p-0 position-relative header-wishlist ms-2"
-                                  to="#"
-                                  title4="Wishlist"
-                                  onClick={() => deleteCartItem(item._id)}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faTrash}
-                                    style={{ color: "#fa0000" }}
-                                  />
-                                </Link> */}
                                 </div>
                               </td>
                             </tr>
@@ -547,7 +521,6 @@ function Cart() {
                         <button
                           className="btn-apply"
                           onClick={() => applyCoupanCode()}
-                          // onClick={() => handleCoupan2()}
                         >
                           Apply
                         </button>

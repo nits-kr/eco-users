@@ -166,7 +166,8 @@ function WishList() {
                 totalRatings / item?.product_Id?.ratings?.length;
               return (
                 <div
-                  className="col-xxl-2 col-lg-3 col-md-4 col-6 product-box-contain" style={{width:"32vh"}}
+                  className="col-xxl-2 col-lg-3 col-md-4 col-6 product-box-contain"
+                  style={{ width: "32vh" }}
                   key={index}
                 >
                   <div className="product-box-3 h-100">
@@ -174,7 +175,9 @@ function WishList() {
                       <div className="product-image">
                         <Link to="/product">
                           <img
-                            src={item?.product_Id?.addVarient[0]?.product_Pic[0]}
+                            src={
+                              item?.product_Id?.addVarient[0]?.product_Pic[0]
+                            }
                             className="img-fluid  lazyload"
                             alt=""
                           />
@@ -192,7 +195,7 @@ function WishList() {
                     <div className="product-footer">
                       <Link to="/product">
                         <h5 className="name">
-                          {item?.product_Id?.productName_en}
+                          <strong>{item?.product_Id?.productName_en}</strong>
                         </h5>
                       </Link>
                       <div className="product-detail">
@@ -204,7 +207,10 @@ function WishList() {
                             {item?.product_Id?.productName_en}
                           </h5>
                         </Link> */}
-                        <div className="product-rating mt-2">
+                        <div
+                          className="product-rating mt-2"
+                          style={{ marginLeft: "-10px" }}
+                        >
                           <Star
                             rating={averageRating || 0}
                             totalRating={item?.totalRating}
@@ -270,9 +276,11 @@ function WishList() {
                         </div>
                         <h5 className="price">
                           <span className="theme-color">
-                            ${item?.product_Id?.Price}{" "}
+                            ${item?.product_Id?.addVarient?.[0]?.Price}{" "}
                           </span>
-                          <del>${item?.product_Id?.oldPrice}</del>
+                          <del>
+                            ${item?.product_Id?.addVarient?.[0]?.oldPrice}
+                          </del>
                         </h5>
                         <div className="add-to-cart-box bg-white mt-2">
                           <Link

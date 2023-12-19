@@ -502,56 +502,27 @@ function Header({ Dash }) {
                                       <div className="drop-contain">
                                         <div>
                                           <h5>
-                                            {item?.products?.map(
-                                              (product, index) => {
-                                                const productName =
-                                                  product?.product_Id
-                                                    ?.productName_en;
-                                                const trimmedProductName =
-                                                  productName
-                                                    ? productName
-                                                        .split(" ")
-                                                        .slice(0, 3)
-                                                        .join(" ")
-                                                    : "";
-
-                                                return (
-                                                  <Link
-                                                    to={`/product/${item?.products[0]?.product_Id?._id}`}
-                                                    key={index}
-                                                  >
-                                                    <strong>
-                                                      {trimmedProductName.slice(
-                                                        0,
-                                                        8
-                                                      )}{" "}
-                                                      {
-                                                        product?.product_Id
-                                                          ?.weight
-                                                      }
-                                                    </strong>
-                                                  </Link>
-                                                );
-                                              }
-                                            )}
+                                            <Link
+                                              to={`/product/${item?.product_Id?._id}`}
+                                              key={index}
+                                            >
+                                              <strong>
+                                                {item?.product_Id?.productName_en
+                                                  ?.split(" ")
+                                                  ?.slice(0, 3)
+                                                  ?.join(" ")}{" "}
+                                                {/* {item?.product_Id?.weight} */}
+                                              </strong>
+                                            </Link>
                                           </h5>
                                         </div>
                                         <h6>
-                                          {item?.products?.map(
-                                            (product, index) => (
-                                              <span
-                                                key={product?.product_Id?._id}
-                                              >
-                                                <strong>
-                                                  {product?.quantity || 0} x $
-                                                  {product?.Price}
-                                                </strong>
-                                                {index <
-                                                  item.products.length - 1 &&
-                                                  ", "}
-                                              </span>
-                                            )
-                                          )}
+                                          <span>
+                                            <strong>
+                                              {item?.quantity || 0} x $
+                                              {item?.Price}
+                                            </strong>
+                                          </span>
                                         </h6>
 
                                         <button
@@ -585,7 +556,7 @@ function Header({ Dash }) {
                                 View Cart
                               </Link>
                               <Link
-                                to="/check-out"
+                                to="/check-outall"
                                 className="btn btn-sm cart-button theme-bg-color
                                        text-white"
                               >
@@ -846,22 +817,32 @@ function Header({ Dash }) {
                         <div className="deal-offer-contain">
                           <Link to="/shop" className="deal-image">
                             <img
-                              src={item?.addVarient?.[0]?.product_Pic[0]}
+                              src={
+                                item?.products?.[0]?.addVarient?.[0]
+                                  ?.product_Pic[0]
+                              }
                               className=" lazyload"
                               alt=""
                             />
                           </Link>
                           <Link to="/shop" className="deal-contain">
-                            <h5> {item?.productName_en} </h5>
+                            <h5> {item?.products[0]?.productName_en} </h5>
                             <h6>
-                              ${item?.addVarient?.[0]?.dollarPrice?.toFixed(2)}{" "}
-                              <del> {item?.oldPrice}</del>{" "}
-                              <span>
+                              $
+                              {item?.products[0]?.addVarient?.[0]?.Price?.toFixed(
+                                2
+                              )}{" "}
+                              <del>
+                                {" "}
+                                ${item?.products[0]?.addVarient?.[0]?.oldPrice}
+                              </del>{" "}
+                              {/* <span>
                                 {" "}
                                 {
-                                  item?.addVarient?.[0]?.values_Id?.valuesName_en
+                                  item?.products[0]?.addVarient?.[0]?.values_Id
+                                    ?.valuesName_en
                                 }{" "}
-                              </span>
+                              </span> */}
                             </h6>
                           </Link>
                         </div>

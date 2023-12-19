@@ -23,6 +23,8 @@ import { useGetOrderListQuery } from "../services/Post";
 import { useGetPendingOrderQuery } from "../services/Post";
 import { WishListItems, DeleteWishList } from "./HttpServices";
 import { AddToCart } from "./HttpServices";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 function UserDashboard() {
   const [wishList, setWishList] = useState([]);
@@ -54,7 +56,7 @@ function UserDashboard() {
   const addressList = useGetAddressListQuery();
   const orderList = useGetOrderListQuery();
   const [orderListData, setOrderListData] = useState([]);
-  console.log("order list", orderList);
+  console.log("order list", orderListData);
   const cardList = useGetCardListQuery();
   const { data } = useGetPendingOrderQuery();
   console.log("pending data", data?.results?.pending);
@@ -93,8 +95,6 @@ function UserDashboard() {
         console.log(error);
         return;
       }
-      // const newCartItems = [...wishList, data];
-      // setWishList(newCartItems);
     } catch (error) {
       console.log(error);
     }
@@ -140,6 +140,7 @@ function UserDashboard() {
     const reversedList = getReversedList(addressList);
     setNewAddress(reversedList);
   }, [addressList]);
+
   const getNewCardList = (list) => {
     return list?.data?.results?.list?.slice().reverse() ?? [];
   };
@@ -150,7 +151,7 @@ function UserDashboard() {
 
   useEffect(() => {
     const reversedList =
-      orderList?.data?.results?.orderList?.slice().reverse() ?? [];
+      orderList?.data?.results?.carts?.slice().reverse() ?? [];
     setOrderListData(reversedList);
   }, [orderList]);
 
@@ -226,8 +227,13 @@ function UserDashboard() {
 
     try {
       const createdAddress = await createAddress(newAddressData);
-      setNewAddress([createdAddress, ...newAddress]);
-    } catch (error) {}
+
+      if (createdAddress) {
+        setNewAddress([createdAddress, ...newAddress]);
+      }
+    } catch (error) {
+      console.error("Error creating address:", error);
+    }
   };
 
   const handleRemoveAddress = (addressId) => {
@@ -315,17 +321,28 @@ function UserDashboard() {
     setFormData({ ...formData, uploadImage: event.target.files[0] });
     // setImageUrl1(URL.createObjectURL(file));
   };
+
+  useEffect(() => {
+    handleOnSave();
+  }, [formData]);
+
   const handleOnSave = () => {
     const data = new FormData();
-    data.append("address_Id", addressId);
+    if (addressId) {
+      data.append("address_Id", addressId);
+    }
+
     // data.append("password", "userEmail");
     // data.append("mobileNumber", "userName");
     // data.append("gender", "userEmail");
     // data.append("birthDay", "userEmail");
-    data.append("profile_Pic", formData.uploadImage);
+    if (formData.uploadImage) {
+      data.append("profile_Pic", formData.uploadImage);
+    }
+
     axios
       .post(
-        `http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/user/user/edit-profile/${storedId}`,
+        `${process.env.REACT_APP_APIENDPOINT}user/user/user/edit-profile/${storedId}`,
         data
       )
       .then((response) => {
@@ -820,7 +837,10 @@ function UserDashboard() {
                                   <div className="product-image">
                                     <Link to="/product">
                                       <img
-                                        src={item?.product_Id?.product_Pic[0]}
+                                        src={
+                                          item?.product_Id?.addVarient[0]
+                                            ?.product_Pic[0]
+                                        }
                                         className="img-fluid  lazyload"
                                         alt=""
                                       />
@@ -830,7 +850,7 @@ function UserDashboard() {
                                         className="btn wishlist-button close_button"
                                         onClick={() => deleteWishList(item._id)}
                                       >
-                                        <i data-feather="x" />
+                                        <FontAwesomeIcon icon={faXmark} />
                                       </button>
                                     </div>
                                   </div>
@@ -888,7 +908,7 @@ function UserDashboard() {
                                               {" "}
                                               {count[index]
                                                 ? count[index]
-                                                : "0"}
+                                                : "1"}
                                             </div>
 
                                             <button
@@ -914,9 +934,19 @@ function UserDashboard() {
                                     </div>
                                     <h5 className="price">
                                       <span className="theme-color">
-                                        ${item?.product_Id?.Price}
+                                        $
+                                        {
+                                          item?.product_Id?.addVarient?.[0]
+                                            ?.Price
+                                        }
                                       </span>
-                                      <del>${item?.product_Id?.oldPrice}</del>
+                                      <del>
+                                        $
+                                        {
+                                          item?.product_Id?.addVarient?.[0]
+                                            ?.oldPrice
+                                        }
+                                      </del>
                                     </h5>
                                     <div className="add-to-cart-box mt-2">
                                       <Link
@@ -990,118 +1020,106 @@ function UserDashboard() {
                         </span>
                       </div>
                       <div className="order-contain">
-                        {orderListData?.map((item, index) => {
-                          const totalRatings =
-                            item?.products[0]?.product_Id?.ratings?.reduce(
-                              (sum, rating) => sum + rating?.star,
-                              0
-                            );
-                          const averageRating =
-                            totalRatings /
-                            item?.products[0]?.product_Id?.ratings?.length;
-                          return (
-                            <div
-                              className="order-box dashboard-bg-box"
-                              key={index}
-                            >
-                              <div className="order-container">
-                                <div className="order-icon">
-                                  <i data-feather="box" />
-                                </div>
-                                <div className="order-detail">
-                                  <h4>
-                                    {
-                                      item?.products[0]?.product_Id
-                                        ?.productName_en
-                                    }{" "}
-                                    <span> {item?.orderStatus} </span>
-                                  </h4>
-                                  <h6 className="text-content">
-                                    {
-                                      item?.products[0]?.product_Id
-                                        ?.careInstuctions
-                                    }
-                                  </h6>
-                                </div>
-                              </div>
-                              <div className="product-order-detail">
-                                <Link to="/product" className="order-image">
-                                  <img
-                                    src={
-                                      item?.products[0]?.product_Id
-                                        ?.product_Pic[0]
-                                    }
-                                    className=" lazyload"
-                                    alt=""
-                                    height="200px"
-                                    width="200px"
-                                  />
-                                </Link>
-                                <div className="order-wrap">
-                                  <Link to="/product">
-                                    <h3>
+                        {orderListData
+                          ?.slice()
+                          ?.reverse()
+                          ?.map((item, index) => {
+                            const totalRatings =
+                              item?.products[0]?.product_Id?.ratings?.reduce(
+                                (sum, rating) => sum + rating?.star,
+                                0
+                              );
+                            const averageRating =
+                              totalRatings /
+                              item?.products[0]?.product_Id?.ratings?.length;
+                            return (
+                              <div
+                                className="order-box dashboard-bg-box"
+                                key={index}
+                              >
+                                <div className="order-container">
+                                  <div className="order-icon">
+                                    <i data-feather="box" />
+                                  </div>
+                                  <div className="order-detail">
+                                    <h4>
                                       {
                                         item?.products[0]?.product_Id
                                           ?.productName_en
-                                      }
-                                    </h3>
+                                      }{" "}
+                                      <span> {item?.orderStatus} </span>
+                                    </h4>
+                                    <h6 className="text-content">
+                                      {item?.products?.careInstuctions}
+                                    </h6>
+                                  </div>
+                                </div>
+                                <div className="product-order-detail">
+                                  <Link to="/product" className="order-image">
+                                    <img
+                                      src={item?.varient?.product_Pic[0]}
+                                      className=" lazyload"
+                                      alt=""
+                                      height="200px"
+                                      width="200px"
+                                    />
                                   </Link>
-                                  <p className="text-content">
-                                    {item?.products[0]?.product_Id?.Description}
-                                  </p>
-                                  <ul className="product-size">
-                                    <li>
-                                      <div className="size-box">
-                                        <h6 className="text-content">
-                                          Price :{" "}
-                                        </h6>
-                                        <h5>
-                                          {" "}
-                                          $
-                                          {item?.products[0]?.product_Id?.Price}
-                                        </h5>
-                                      </div>
-                                    </li>
-                                    <li>
-                                      <div className="size-box">
-                                        <h6 className="text-content">
-                                          Rate :{" "}
-                                        </h6>
-                                        <div className="product-rating ms-2">
-                                          <ul className="rating">
-                                            <Star rating={averageRating} />
-                                          </ul>
+                                  <div className="order-wrap">
+                                    <Link to="/product">
+                                      <h3>{item?.products?.productName_en}</h3>
+                                    </Link>
+                                    <p className="text-content">
+                                      {item?.products?.Description}
+                                    </p>
+                                    <ul className="product-size">
+                                      <li>
+                                        <div className="size-box">
+                                          <h6 className="text-content">
+                                            Price :{" "}
+                                          </h6>
+                                          <h5> ${item?.cartsTotal}</h5>
                                         </div>
-                                      </div>
-                                    </li>
-                                    <li>
-                                      <div className="size-box">
-                                        <h6 className="text-content">
-                                          Sold By :{" "}
-                                        </h6>
-                                        <h5>Fresho</h5>
-                                      </div>
-                                    </li>
-                                    <li>
-                                      <div className="size-box">
-                                        <h6 className="text-content">
-                                          Quantity :{" "}
-                                        </h6>
-                                        <h5>
-                                          {" "}
-                                          {
-                                            item?.products[0]?.product_Id
-                                              ?.stockQuantity
-                                          }
-                                        </h5>
-                                      </div>
-                                    </li>
-                                  </ul>
+                                      </li>
+                                      <li>
+                                        <div className="size-box">
+                                          <h6 className="text-content">
+                                            Rate :{" "}
+                                          </h6>
+                                          <div className="product-rating ms-2">
+                                            <ul className="rating">
+                                              <Star rating={averageRating} />
+                                            </ul>
+                                          </div>
+                                        </div>
+                                      </li>
+                                      <li>
+                                        <div className="size-box">
+                                          <h6 className="text-content">
+                                            Sold By :{" "}
+                                          </h6>
+                                          <h5>Fresho</h5>
+                                        </div>
+                                      </li>
+                                      <li>
+                                        <div className="size-box">
+                                          <h6 className="text-content">
+                                            Quantity :{" "}
+                                          </h6>
+                                          <h5>
+                                            {" "}
+                                            {
+                                              item?.products[0]?.product_Id
+                                                ?.stockQuantity
+                                            }
+                                          </h5>
+                                        </div>
+                                      </li>
+                                    </ul>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
                       </div>
                     </div>
                   </div>
