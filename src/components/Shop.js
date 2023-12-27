@@ -161,7 +161,7 @@ function Shop(props) {
 
     try {
       const result = await filterProduct(newAddress);
-      setProductListItems(result.data?.results?.filterData);
+      setProductListItems(result.data?.results?.list);
     } catch (error) {
       console.error("Error filtering products:", error);
     }

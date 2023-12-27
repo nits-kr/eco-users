@@ -142,7 +142,8 @@ function Cart() {
   }, [cartListQuery, count1]);
   const fetchCartListData = () => {
     if (isSuccess) {
-      const items = cartListQuery?.results?.carts || [];
+      const items = cartListQuery?.carts || [];
+      console.log("cart items", items);
       localStorage?.setItem(
         "allCartItems",
         encodeURIComponent(JSON.stringify(items))

@@ -105,7 +105,7 @@ function Shop2(props) {
 
   const [currentValue, setCurrentValue] = useState(0);
   const storedId = localStorage.getItem("loginId");
-  // const searchQuery = localStorage?.getItem("productSearch");
+  
   const { id } = useParams();
   const { query } = useParams();
   console.log("query", query);
