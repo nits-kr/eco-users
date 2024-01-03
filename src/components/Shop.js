@@ -39,7 +39,7 @@ import { useAddToWislistListMutation } from "../services/Post";
 import { useSubSubProductMutation } from "../services/Post";
 import { useFilterPriceMutation } from "../services/Post";
 import { addToCart } from "../app/slice/CartSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useSubCategoryProductListMutation } from "../services/Post";
 import { default as ReactSelect } from "react-select";
 import Pagination from "./shopping/Pagination";
@@ -48,13 +48,9 @@ import CategoryTop from "./shopping/CategoryTop";
 function Shop(props) {
   const [productListItems, setProductListItems] = useState([]);
   const [subCategoryProduct] = useSubCategoryProductListMutation();
-  console.log("subCategoryProduct", subCategoryProduct?.data);
   const subCategoryListItems = useGetSubCategoryListQuery();
   const [subCategoryListData, setSubCategoryListData] = useState([]);
-  console.log("subCategoryListData", subCategoryListData);
-  // const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [wishAdd, res] = useAddToWislistListMutation();
-  console.log("productListItems", productListItems);
   const [productListDetails, setProductListDetails] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [CreateWishItems, setCreateWishItems] = useState([]);
@@ -65,15 +61,21 @@ function Shop(props) {
   const [subSubProduct, r] = useSubSubProductMutation();
   const [filterProduct, re] = useFilterPriceMutation();
   const [quantity, setQuantity] = useState([]);
+  const [selectedProductId, setSelectedProductId] = useState("");
+  const location = useLocation();
+  let id = location.state?.id;
+  console.log("id", id);
+
+  const selector = useSelector((data) => data?.search?.query);
+  console.log("selector data", selector);
+
   const [count, setCount] = useState([]);
   useEffect(() => {
     const initialCounts = productListItems?.map(() => 1);
     setCount(initialCounts);
   }, [productListItems]);
   const [subCategoryProductItems, setSubCategoryProductItems] = useState([]);
-  console.log("subCategoryProductItems", subCategoryProductItems);
-  // const [subCategoryListData, setSubCategoryListData] = useState([]);
-  // const [productListItems, setProductListItems] = useState([]);
+
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
 
   axios.defaults.headers.common["x-auth-token-user"] =
@@ -88,26 +90,11 @@ function Shop(props) {
       }
     });
   };
-  useEffect(() => {
-    fetchData1();
-  }, []);
+
   useEffect(() => {
     fetchProductsForSelectedSubcategories();
   }, [selectedSubcategories]);
-  const fetchData1 = async () => {
-    try {
-      props.setProgress(10);
-      setLoading(true);
-      const { data, error } = await ProductList();
-      error ? console.log(error) : console.log(data);
-      setProductListItems(data?.results?.list);
-      setLoading(true);
-      props.setProgress(50);
-      console.log(data?.results?.list);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   const fetchProductsForSelectedSubcategories = async () => {
     const selectedProducts = await Promise.all(
       selectedSubcategories.map(async (categoryId) => {
@@ -118,7 +105,6 @@ function Shop(props) {
     const flattenedProducts = selectedProducts.flat();
     setProductListItems(flattenedProducts);
   };
-  const dispatch = useDispatch();
 
   const handleCountChange = (index, newCount) => {
     const newCounts = [...count];
@@ -128,16 +114,23 @@ function Shop(props) {
   const [currentValue, setCurrentValue] = useState(0);
   const storedId = localStorage.getItem("loginId");
   const [searchQuery, setSearchQuery] = useState("");
-  const { id } = useParams();
   const totalRatings = selectedProduct?.ratings?.reduce(
     (sum, rating) => sum + rating.star,
     0
   );
   const averageRating = totalRatings / selectedProduct?.ratings?.length;
   useEffect(() => {
-    handleSubSubProduct();
-  }, [id]);
-  const handleSubSubProduct = async () => {
+    if (id) {
+      handleSubSubProduct(id);
+      localStorage?.removeItem("searchQuerymain");
+    } else if (selector || searchQuery) {
+      handleSearch(selector || searchQuery);
+    } else if (!id || !selector || !searchQuery) {
+      localStorage?.removeItem("searchQuerymain");
+      fetchData();
+    }
+  }, [id, selector, searchQuery]);
+  const handleSubSubProduct = async (id) => {
     try {
       const { data, error } = await subSubProduct(id);
       if (error) {
@@ -171,55 +164,31 @@ function Shop(props) {
   }, []);
   const cartData = async () => {
     try {
-      const { data, error } = await CartList();
-      error ? console.log(error) : console.log(data);
-      setCartListItems(data.results.carts);
-      console.log(data.results.carts);
+      const data = await CartList();
+      setCartListItems(data?.data?.carts);
     } catch (error) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   localStorage?.removeItem("searchQuerymain");
+  //   fetchData();
+  // }, []);
   const fetchData = async () => {
     try {
       props.setProgress(10);
       setLoading(true);
       const { data, error } = await ProductList();
-      error ? console.log(error) : console.log(data);
       setProductListItems(data?.results?.list);
-      setLoading(true);
-      props.setProgress(50);
-      console.log(data?.results?.list);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    if (productListItems?.length > 0) {
-      getData();
-    }
-  }, [productListItems]);
-  const getData = async () => {
-    try {
-      props.setProgress(70);
-      setLoading(true);
-      const ids = productListItems.map((item) => item._id);
-      const promises = ids.map((id) => ProductDetails(id));
-      const results = await Promise.all(promises);
-      const details = results.map((result) => result?.data?.results?.details);
-      setProductListDetails(details);
       props.setProgress(100);
       setLoading(false);
-      console.log(details);
     } catch (error) {
       console.log(error);
     }
   };
+
   const handleViewClick = (item) => {
     setSelectedProduct(item);
-    console.log(item?._id);
   };
   const handleWishClick = async (item) => {
     try {
@@ -228,7 +197,6 @@ function Shop(props) {
         userId: storedId,
         like: true,
       };
-      console.log(item?._id);
       const { data, error } = await wishAdd(editAddress);
       if (error) {
         console.log(error);
@@ -252,7 +220,6 @@ function Shop(props) {
       }
       const newCreateCompareItems = [...addCompareItems, data];
       setAddCompareItems(newCreateCompareItems);
-      console.log("newCreateCompareItems", newCreateCompareItems);
     } catch (error) {
       console.log(error);
     }
@@ -288,7 +255,6 @@ function Shop(props) {
         return;
       }
       setProductListItems(data?.results?.productlist || []);
-      console.log("Trending product", data);
     } catch (error) {
       console.log(error);
     }
@@ -301,7 +267,6 @@ function Shop(props) {
         return;
       }
       setProductListItems(data?.results?.productlist);
-      console.log("low to high setProductListItems", data);
     } catch (error) {
       console.log(error);
     }
@@ -314,7 +279,6 @@ function Shop(props) {
         return;
       }
       setProductListItems(data?.results?.productList || []);
-      console.log("high to low setProductListItems", data);
     } catch (error) {
       console.log(error);
     }
@@ -327,7 +291,6 @@ function Shop(props) {
         return;
       }
       setProductListItems(data?.results?.productList || []);
-      console.log("Ascending order product", data);
     } catch (error) {
       console.log(error);
     }
@@ -340,7 +303,6 @@ function Shop(props) {
         return;
       }
       setProductListItems(data?.results?.productList || []);
-      console.log("Descending order product", data);
     } catch (error) {
       console.log(error);
     }
@@ -353,7 +315,6 @@ function Shop(props) {
         return;
       }
       setProductListItems(data?.results?.productData);
-      console.log("Discount product", data);
     } catch (error) {
       console.log(error);
     }
@@ -371,22 +332,23 @@ function Shop(props) {
     slidesToScroll: 1,
   };
   const handleViewDetails = () => {
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
+    document?.getElementById("closeModal").click();
+    // setTimeout(() => {
+    //   window.location.reload();
+    // }, 1000);
   };
   useEffect(() => {
     if (searchQuery) {
-      handleSearch1();
+      handleSearch();
     }
   }, [searchQuery]);
 
-  const handleSearch1 = async () => {
+  const handleSearch = async () => {
     try {
       const url1 =
         searchQuery !== ""
-          ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/search-product"
-          : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/list";
+          ? `${process.env.REACT_APP_APIENDPOINT}user/product/product/search-product`
+          : `${process.env.REACT_APP_APIENDPOINT}user/product/product/list`;
       const response = await axios.post(url1, {
         productName_en: searchQuery,
       });
@@ -431,17 +393,6 @@ function Shop(props) {
 
   const [selectOptions1, setSelectOptions1] = useState([]);
 
-  // useEffect(() => {
-  //   if (subCategoryListData) {
-  //     setSelectOptions1(
-  //       subCategoryListData.slice(0, 2).map((item) => ({
-  //         value: item._id,
-  //         label: item.subCategoryName_en,
-  //       }))
-  //     );
-  //   }
-  // }, [subCategoryListData]);
-
   const handleChange1 = (selected) => {
     setSelectOptions1(selected);
 
@@ -453,7 +404,7 @@ function Shop(props) {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [itemsPerPage, setItemsPerPage] = useState(2);
+  const [itemsPerPage, setItemsPerPage] = useState(4);
 
   const onPageChange = (page) => {
     setCurrentPage(page);
@@ -479,10 +430,8 @@ function Shop(props) {
   return (
     <>
       {loading}
-      {/* Header Start */}
       <Header setProductListItems={setProductListItems} Dash={"shop"} />
-      {/* Header End */}
-      {/* mobile fix menu start */}
+
       <div className="mobile-menu d-md-none d-block mobile-cart">
         <ul>
           <li className="active">
@@ -517,8 +466,7 @@ function Shop(props) {
           </li>
         </ul>
       </div>
-      {/* mobile fix menu end */}
-      {/* Breadcrumb Section Start */}
+
       <section className="breadscrumb-section pt-0">
         <div className="container-fluid-lg">
           <div className="row">
@@ -542,168 +490,8 @@ function Shop(props) {
           </div>
         </div>
       </section>
-      {/* Breadcrumb Section End */}
-      {/* Category Section Start */}
 
-      {/* <section className="wow fadeInUp">
-        <div className="container-fluid-lg">
-          <div className="row">
-            <div className="col-12">
-              <div className="slider-7_1 no-space shop-box no-arrow">
-                <Slider {...settings1}>
-                  <div>
-                    <div className="shop-category-box">
-                      <Link to="/shop">
-                        <div className="shop-category-image">
-                          <img
-                            src="../assets/svg/1/vegetable.svg"
-                            className=" lazyload"
-                            alt=""
-                          />
-                        </div>
-                        <div className="category-box-name">
-                          <h6>Vegetables &amp; Fruit</h6>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="shop-category-box">
-                      <Link to="/shop">
-                        <div className="shop-category-image">
-                          <img
-                            src="../assets/svg/1/cup.svg"
-                            className=" lazyload"
-                            alt=""
-                          />
-                        </div>
-                        <div className="category-box-name">
-                          <h6>Beverages</h6>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="shop-category-box">
-                      <Link to="/shop">
-                        <div className="shop-category-image">
-                          <img
-                            src="../assets/svg/1/meats.svg"
-                            className=" lazyload"
-                            alt=""
-                          />
-                        </div>
-                        <div className="category-box-name">
-                          <h6>Meats &amp; Seafood</h6>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="shop-category-box">
-                      <Link to="/shop">
-                        <div className="shop-category-image">
-                          <img
-                            src="../assets/svg/1/breakfast.svg"
-                            className=" lazyload"
-                            alt=""
-                          />
-                        </div>
-                        <div className="category-box-name">
-                          <h6>Breakfast</h6>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="shop-category-box">
-                      <Link to="/shop">
-                        <div className="shop-category-image">
-                          <img
-                            src="../assets/svg/1/frozen.svg"
-                            className=" lazyload"
-                            alt=""
-                          />
-                        </div>
-                        <div className="category-box-name">
-                          <h6>Frozen Foods</h6>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="shop-category-box">
-                      <Link to="/shop">
-                        <div className="shop-category-image">
-                          <img
-                            src="../assets/svg/1/milk.svg"
-                            className=" lazyload"
-                            alt=""
-                          />
-                        </div>
-                        <div className="category-box-name">
-                          <h6>Milk &amp; Dairies</h6>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="shop-category-box">
-                      <Link to="/shop">
-                        <div className="shop-category-image">
-                          <img
-                            src="../assets/svg/1/pet.svg"
-                            className=" lazyload"
-                            alt=""
-                          />
-                        </div>
-                        <div className="category-box-name">
-                          <h6>Pet Food</h6>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="shop-category-box">
-                      <Link to="/shop">
-                        <div className="shop-category-image">
-                          <img
-                            src="../assets/svg/1/biscuit.svg"
-                            className=" lazyload"
-                            alt=""
-                          />
-                        </div>
-                        <div className="category-box-name">
-                          <h6>Biscuits &amp; Snacks</h6>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="shop-category-box">
-                      <Link to="/shop">
-                        <div className="shop-category-image">
-                          <img
-                            src="../assets/svg/1/grocery.svg"
-                            className=" lazyload"
-                            alt=""
-                          />
-                        </div>
-                        <div className="category-box-name">
-                          <h6>Grocery &amp; Staples</h6>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-                </Slider>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section> */}
-      <CategoryTop />
-      {/* Category Section End */}
-      {/* Shop Section Start */}
+      <CategoryTop subCategoryListData={subCategoryListData} />
 
       <section className="section-b-space shop-section">
         <div className="container-fluid-lg">
@@ -736,23 +524,6 @@ function Shop(props) {
                       allowSelectAll={true}
                       value={selectOptions1}
                     />
-                    {/* <ul>
-                      <li>
-                        <Link to="#">Vegetable</Link>
-                      </li>
-                      <li>
-                        <Link to="#">Fruit</Link>
-                      </li>
-                      <li>
-                        <Link to="#">Fresh</Link>
-                      </li>
-                      <li>
-                        <Link to="#">Milk</Link>
-                      </li>
-                      <li>
-                        <Link to="#">Meat</Link>
-                      </li>
-                    </ul> */}
                   </div>
                   <div
                     className="accordion custome-accordion"
@@ -890,102 +661,89 @@ function Shop(props) {
                 </div>
               </div>
             </div>
-            {loading ? (
-              <div
-                className=""
-                style={{ marginTop: "-600px", marginLeft: "150px" }}
-              >
-                {" "}
-                <Spinner />
-              </div>
-            ) : (
-              <>
-                <div className="col-9 wow fadeInUp">
-                  <div className="show-button">
-                    <div className="filter-button-group mt-0">
-                      <div className="filter-button d-inline-block d-lg-none">
-                        <Link>
-                          <i className="fa-solid fa-filter" /> Filter Menu
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="top-filter-menu">
-                      <div className="category-dropdown">
-                        <h5 className="text-content">Sort By :</h5>
-                        <div className="dropdown">
-                          <button
-                            className="dropdown-toggle"
-                            type="button"
-                            id="dropdownMenuButton1"
-                            data-bs-toggle="dropdown"
+
+            <div className="col-9 wow fadeInUp">
+              <div className="show-button">
+                <div className="filter-button-group mt-0">
+                  <div className="filter-button d-inline-block d-lg-none">
+                    <Link>
+                      <i className="fa-solid fa-filter" /> Filter Menu
+                    </Link>
+                  </div>
+                </div>
+                <div className="top-filter-menu">
+                  <div className="category-dropdown">
+                    <h5 className="text-content">Sort By :</h5>
+                    <div className="dropdown">
+                      <button
+                        className="dropdown-toggle"
+                        type="button"
+                        id="dropdownMenuButton1"
+                        data-bs-toggle="dropdown"
+                      >
+                        <span>Most Popular</span>{" "}
+                        <i className="fa-solid fa-angle-down" />
+                      </button>
+                      <ul
+                        className="dropdown-menu"
+                        aria-labelledby="dropdownMenuButton1"
+                      >
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            id="pop"
+                            to="#"
+                            onClick={() => handleTranding()}
                           >
-                            <span>Most Popular</span>{" "}
-                            <i className="fa-solid fa-angle-down" />
-                          </button>
-                          <ul
-                            className="dropdown-menu"
-                            aria-labelledby="dropdownMenuButton1"
+                            Popularity
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            id="low"
+                            to="#"
+                            onClick={() => handleLowToHigh()}
                           >
-                            <li>
-                              <Link
-                                className="dropdown-item"
-                                id="pop"
-                                to="#"
-                                onClick={() => handleTranding()}
-                              >
-                                Popularity
-                              </Link>
-                            </li>
-                            <li>
-                              <Link
-                                className="dropdown-item"
-                                id="low"
-                                to="#"
-                                onClick={() => handleLowToHigh()}
-                              >
-                                Low - High Price
-                              </Link>
-                            </li>
-                            <li>
-                              <Link
-                                className="dropdown-item"
-                                id="high"
-                                to="#"
-                                onClick={() => handleHighToLow()}
-                              >
-                                High - Low Price
-                              </Link>
-                            </li>
-                            <li>
-                              <Link
-                                className="dropdown-item"
-                                id="rating"
-                                to="#"
-                              >
-                                Average Rating
-                              </Link>
-                            </li>
-                            <li>
-                              <Link
-                                className="dropdown-item"
-                                id="aToz"
-                                to="#"
-                                onClick={() => handleAscending()}
-                              >
-                                A - Z Order
-                              </Link>
-                            </li>
-                            <li>
-                              <Link
-                                className="dropdown-item"
-                                id="zToa"
-                                to="#"
-                                onClick={() => handleDescending()}
-                              >
-                                Z - A Order
-                              </Link>
-                            </li>
-                            {/* <li>
+                            Low - High Price
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            id="high"
+                            to="#"
+                            onClick={() => handleHighToLow()}
+                          >
+                            High - Low Price
+                          </Link>
+                        </li>
+                        <li>
+                          <Link className="dropdown-item" id="rating" to="#">
+                            Average Rating
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            id="aToz"
+                            to="#"
+                            onClick={() => handleAscending()}
+                          >
+                            A - Z Order
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            id="zToa"
+                            to="#"
+                            onClick={() => handleDescending()}
+                          >
+                            Z - A Order
+                          </Link>
+                        </li>
+                        {/* <li>
                               <Link
                                 className="dropdown-item"
                                 id="off"
@@ -995,47 +753,54 @@ function Shop(props) {
                                 % Off - Hight To Low
                               </Link>
                             </li> */}
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="grid-option d-none d-md-block">
-                        <ul>
-                          <li className="three-grid">
-                            <Link to="#">
-                              <img
-                                src="../assets/svg/grid-3.svg"
-                                className=" lazyload"
-                                alt=""
-                              />
-                            </Link>
-                          </li>
-                          <li className="grid-btn d-xxl-inline-block d-none active">
-                            <Link to="#">
-                              <img
-                                src="../assets/svg/grid-4.svg"
-                                className=" lazyload d-lg-inline-block d-none"
-                                alt=""
-                              />
-                              <img
-                                src="../assets/svg/grid.svg"
-                                className=" lazyload img-fluid d-lg-none d-inline-block"
-                                alt=""
-                              />
-                            </Link>
-                          </li>
-                          <li className="list-btn">
-                            <Link to="#">
-                              <img
-                                src="../assets/svg/list.svg"
-                                className=" lazyload"
-                                alt=""
-                              />
-                            </Link>
-                          </li>
-                        </ul>
-                      </div>
+                      </ul>
                     </div>
                   </div>
+                  <div className="grid-option d-none d-md-block">
+                    <ul>
+                      <li className="three-grid">
+                        <Link to="#">
+                          <img
+                            src="../assets/svg/grid-3.svg"
+                            className=" lazyload"
+                            alt=""
+                          />
+                        </Link>
+                      </li>
+                      <li className="grid-btn d-xxl-inline-block d-none active">
+                        <Link to="#">
+                          <img
+                            src="../assets/svg/grid-4.svg"
+                            className=" lazyload d-lg-inline-block d-none"
+                            alt=""
+                          />
+                          <img
+                            src="../assets/svg/grid.svg"
+                            className=" lazyload img-fluid d-lg-none d-inline-block"
+                            alt=""
+                          />
+                        </Link>
+                      </li>
+                      <li className="list-btn">
+                        <Link to="#">
+                          <img
+                            src="../assets/svg/list.svg"
+                            className=" lazyload"
+                            alt=""
+                          />
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              {loading ? (
+                <div className="" style={{ marginLeft: "150px" }}>
+                  {" "}
+                  <Spinner />
+                </div>
+              ) : (
+                <>
                   <div className="row g-sm-4 g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 product-list-section">
                     {currentItems?.map((item, index) => {
                       const totalRatings = item?.ratings?.reduce(
@@ -1047,9 +812,7 @@ function Shop(props) {
                       const isItemInCart = cartListItems?.some(
                         (cartItem) => cartItem?.product_Id?._id === item._id
                       );
-                      console.log("Item ID:", item?._id);
-                      console.log("Cart Items:", cartListItems);
-                      console.log("Is Item In Cart:", isItemInCart);
+
                       const totalPrice =
                         (item?.addVarient[0]?.Price || 0) * (count[index] || 1);
                       return (
@@ -1300,48 +1063,18 @@ function Shop(props) {
                       );
                     })}
                   </div>
-                  <nav className="custome-pagination">
-                    <ul className="pagination justify-content-center">
-                      <Pagination
-                        totalItems={productListItems?.length}
-                        itemsPerPage={itemsPerPage}
-                        onPageChange={onPageChange}
-                      />
-                      {/* <li className="page-item disabled">
-                        <Link
-                          className="page-link"
-                          to="#"
-                          tabIndex={-1}
-                          aria-disabled="true"
-                        >
-                          <i className="fa-solid fa-angles-left" />
-                        </Link>
-                      </li>
-                      <li className="page-item active">
-                        <Link className="page-link" to="#">
-                          1
-                        </Link>
-                      </li>
-                      <li className="page-item" aria-current="page">
-                        <Link className="page-link" to="#">
-                          2
-                        </Link>
-                      </li>
-                      <li className="page-item">
-                        <Link className="page-link" to="#">
-                          3
-                        </Link>
-                      </li>
-                      <li className="page-item">
-                        <Link className="page-link" to="#">
-                          <i className="fa-solid fa-angles-right" />
-                        </Link>
-                      </li> */}
-                    </ul>
-                  </nav>
-                </div>
-              </>
-            )}
+                </>
+              )}
+              <nav className="custome-pagination">
+                <ul className="pagination justify-content-center">
+                  <Pagination
+                    totalItems={productListItems?.length}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={onPageChange}
+                  />
+                </ul>
+              </nav>
+            </div>
           </div>
         </div>
       </section>
@@ -1367,6 +1100,7 @@ function Shop(props) {
                 className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
+                id="closeModal"
               >
                 <i className="fa-solid fa-xmark" />
               </button>

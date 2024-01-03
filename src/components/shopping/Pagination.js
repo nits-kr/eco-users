@@ -10,8 +10,6 @@ const Pagination = ({
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const [currentPage, setCurrentPage] = useState(goToPageInput || 1);
 
-  console.log("goToPageInput at pagination", goToPageInput);
-
   useEffect(() => {
     onPageChange(currentPage);
   }, [currentPage, onPageChange]);

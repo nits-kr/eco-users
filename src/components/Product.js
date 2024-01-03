@@ -100,7 +100,7 @@ function Product(props) {
   const quantity = selectedVariantData?.stockQuantity;
   console.log("quantity", quantity);
 
-  const isVariantInCart = cartListItems.some((item) => {
+  const isVariantInCart = cartListItems?.some((item) => {
     return item?.products?.some((product) => {
       return product?.product_Id?._id === selectedVariantData?._id;
     });
@@ -534,6 +534,7 @@ function Product(props) {
                                             src={item}
                                             className="d-block w-100"
                                             alt={`Slide ${index + 1}`}
+                                            style={{ height: "335px" }}
                                           />
                                           <span className="label_s">
                                             {item.label}
@@ -543,7 +544,7 @@ function Product(props) {
                                     )}
                                   </div>
 
-                                  <div className="carousel">
+                                  <div className="carousel mt-4">
                                     <button
                                       type="button"
                                       className="carousel-control-prev"
@@ -643,10 +644,6 @@ function Product(props) {
                             {oldPrice && (
                               <del className="text-content">${oldPrice}</del>
                             )}
-                            {/* ${productDetail?.Price}{" "}
-                            <del className="text-content">
-                              ${productDetail?.oldPrice}{" "}
-                            </del>{" "} */}
                             {oldPrice && (
                               <span className="offer theme-color">
                                 (~
@@ -881,51 +878,6 @@ function Product(props) {
                             <span>Add To Compare</span>
                           </Link>
                         </div>
-                        {/* <div className="pickup-box">
-                          <div className="product-title">
-                            <h4>Store Information</h4>
-                          </div>
-                          <div className="pickup-detail">
-                            <h4 className="text-content">
-                              Lollipop cake chocolate chocolate cake dessert
-                              jujubes. Shortbread sugar plum dessert powder
-                              cookie sweet brownie.
-                            </h4>
-                          </div>
-                          <div className="product-info">
-                            <ul className="product-info-list product-info-list-2">
-                              <li>
-                                Type : <Link to="#">Black Forest</Link>
-                              </li>
-                              <li>
-                                SKU : <Link to="#"> {productDetail?.SKU} </Link>
-                              </li>
-                              <li>
-                                MFG :{" "}
-                                <Link to="#">
-                                  {" "}
-                                  {productDetail?.publishDate?.slice(
-                                    0,
-                                    10
-                                  )}{" "}
-                                </Link>
-                              </li>
-                              <li>
-                                Stock :{" "}
-                                <Link to="#">
-                                  {" "}
-                                  {productDetail?.stockQuantity}{" "}
-                                </Link>
-                              </li>
-                              <li>
-                                Tags :{" "}
-                                <Link to="#"> {productDetail?.Tags} </Link>{" "}
-                              </li>
-                            </ul>
-                          </div>
-                        </div> */}
-
-                        {/* Other product details */}
 
                         <div className="pickup-box">
                           {area ? (
@@ -1329,7 +1281,11 @@ function Product(props) {
                                       </ul>
                                     </div>
                                     <h6 className="ms-3">
-                                      {averageRating?.toFixed(2)} Out Of 5
+                                      {isNaN(averageRating)
+                                        ? "Not Rated"
+                                        : `${averageRating.toFixed(
+                                            2
+                                          )} Out Of 5`}
                                     </h6>
                                   </div>
 
@@ -1352,7 +1308,9 @@ function Product(props) {
                                               aria-valuemin={0}
                                               aria-valuemax={100}
                                             >
-                                              {`${fiveStar.toFixed(2)}%`}
+                                              {isNaN(fiveStar)
+                                                ? null
+                                                : `${fiveStar.toFixed(2)}%`}
                                             </div>
                                           </div>
                                         </div>
@@ -1373,7 +1331,9 @@ function Product(props) {
                                               aria-valuemin={0}
                                               aria-valuemax={100}
                                             >
-                                              {`${fourStar.toFixed(2)}%`}
+                                              {isNaN(fourStar)
+                                                ? null
+                                                : `${fourStar.toFixed(2)}%`}
                                             </div>
                                           </div>
                                         </div>
@@ -1395,7 +1355,9 @@ function Product(props) {
                                               aria-valuemin={0}
                                               aria-valuemax={100}
                                             >
-                                              {`${threeStar.toFixed(2)}%`}
+                                              {isNaN(threeStar)
+                                                ? null
+                                                : `${threeStar.toFixed(2)}%`}
                                             </div>
                                           </div>
 
@@ -1428,7 +1390,9 @@ function Product(props) {
                                               aria-valuemin={0}
                                               aria-valuemax={100}
                                             >
-                                              {`${twoStar.toFixed(2)}%`}
+                                              {isNaN(twoStar)
+                                                ? null
+                                                : `${twoStar.toFixed(2)}%`}
                                             </div>
                                           </div>
                                           {/* <div
@@ -1460,7 +1424,9 @@ function Product(props) {
                                               aria-valuemin={0}
                                               aria-valuemax={100}
                                             >
-                                              {`${oneStar.toFixed(2)}%`}
+                                              {isNaN(oneStar)
+                                                ? null
+                                                : `${oneStar.toFixed(2)}%`}
                                             </div>
                                             {/* <div
                                               className="progress"
@@ -1920,7 +1886,10 @@ function Product(props) {
                                 <div className="offer-product">
                                   <Link to="/product" className="offer-image">
                                     <img
-                                      src={item?.products[0]?.addVarient[0]?.product_Pic[0]}
+                                      src={
+                                        item?.products[0]?.addVarient[0]
+                                          ?.product_Pic[0]
+                                      }
                                       className="img-fluid  lazyload"
                                       alt=""
                                     />
@@ -1936,8 +1905,8 @@ function Product(props) {
                                         <strong>
                                           {" "}
                                           {
-                                            item?.products[0]?.addVarient[0]?.values_Id
-                                              ?.valuesName_en
+                                            item?.products[0]?.addVarient[0]
+                                              ?.values_Id?.valuesName_en
                                           }
                                         </strong>{" "}
                                       </span>
@@ -2377,67 +2346,7 @@ function Product(props) {
           <h6>Added to Cart</h6>
         </div>
       </div>
-      {/* Add to cart Modal End */}
-      {/* Tap to top start */}
-      {/* <div className="theme-option theme-option-2">
-                <div className="setting-box">
-                    <button className="btn setting-button">
-                        <i className="fa-solid fa-gear" />
-                    </button>
-                    <div className="theme-setting-2">
-                        <div className="theme-box">
-                            <ul>
-                                <li>
-                                    <div className="setting-name">
-                                        <h4>Color</h4>
-                                    </div>
-                                    <div className="theme-setting-button color-picker">
-                                        <form className="form-control">
-                                            <label htmlFor="colorPick" className="form-label mb-0">
-                                                Theme Color
-                                            </label>
-                                            <input
-                                                type="color"
-                                                className="form-control form-control-color"
-                                                id="colorPick"
-                                                defaultValue="#0da487"
-                                                title="Choose your color"
-                                            />
-                                        </form>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div className="setting-name">
-                                        <h4>Dark</h4>
-                                    </div>
-                                    <div className="theme-setting-button">
-                                        <button className="btn btn-2 outline" id="darkButton">
-                                            Dark
-                                        </button>
-                                        <button className="btn btn-2 unline" id="lightButton">
-                                            Light
-                                        </button>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div className="setting-name">
-                                        <h4>RTL</h4>
-                                    </div>
-                                    <div className="theme-setting-button rtl">
-                                        <button className="btn btn-2 rtl-unline">LTR</button>
-                                        <button className="btn btn-2 rtl-outline">RTL</button>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div className="back-to-top">
-                    <Link id="back-to-top" to="#">
-                        <i className="fas fa-chevron-up" />
-                    </Link>
-                </div>
-            </div> */}
+
       <div className="theme-option theme-option-2">
         <div className="setting-box">
           <button className="btn setting-button">

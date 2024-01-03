@@ -13,4 +13,3 @@ const CartsSlice = createSlice({
 });
 
 export default CartsSlice.reducer;
-console.log(CartsSlice?.actions);

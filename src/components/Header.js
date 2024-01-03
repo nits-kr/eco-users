@@ -14,6 +14,8 @@ import {
 import { useSubCategoryListMutation } from "../services/Post";
 import { useGetCartListQuery } from "../services/Post";
 import { useGetTrendingProductQuery } from "../services/Post";
+import { useDispatch } from "react-redux";
+import { searchQuerydata } from "../app/slice/SearchSlice";
 
 function Header({ Dash }) {
   const categoryListItems = useGetCategoryListQuery();
@@ -25,7 +27,6 @@ function Header({ Dash }) {
   const [cartListItems, setCartListItems] = useState([]);
   const [subCategoryItems, setSubCategoryItems] = useState([]);
   const [bannerItems, setBannerItems] = useState([]);
-  // console.log("bannerItems", bannerItems);
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showWelcome, setShowWelcome] = useState(true);
@@ -61,7 +62,6 @@ function Header({ Dash }) {
 
   const handleOnhover = (categoryId) => {
     handleSaveChanges1(categoryId);
-    // handleBannerChanges(categoryId);
   };
 
   const handleSaveChanges1 = async (categoryId) => {
@@ -123,9 +123,12 @@ function Header({ Dash }) {
     setSuggestions([]);
   };
 
+  const dispatch = useDispatch();
+
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     setSearchQuery(inputValue);
+    dispatch(searchQuerydata(inputValue));
     searchData();
   };
 
@@ -348,7 +351,7 @@ function Header({ Dash }) {
                             Search
                           </button>
                         </div>
-                        {suggestions.length > 0 && (
+                        {suggestions?.length > 0 && (
                           <div
                             className="suggestion-list shadow"
                             style={{
@@ -371,9 +374,11 @@ function Header({ Dash }) {
                                   className="suggestion-li ms-2"
                                 >
                                   <Link
-                                    to={`/shop2/${encodeURIComponent(
-                                      searchQuery
-                                    )}`}
+                                    // to={`/shop2/${encodeURIComponent(
+                                    //   searchQuery
+                                    // )}`}
+                                    to="/shop"
+                                    state={{ id: searchQuery }}
                                     className="suggestion-item"
                                     onClick={hideSuggestions}
                                   >
@@ -658,7 +663,8 @@ function Header({ Dash }) {
                                           key={indexes}
                                         >
                                           <Link
-                                            to={`/shop3/${items._id}`}
+                                            to="/shop"
+                                            state={{ id: items._id }}
                                             className="category-name"
                                           >
                                             <img
@@ -716,7 +722,7 @@ function Header({ Dash }) {
                               className={
                                 Dash === "shop" ? "nav-link active" : "nav-link"
                               }
-                              to="/shop/:id"
+                              to="/shop"
                             >
                               Shop
                             </Link>
@@ -808,118 +814,53 @@ function Header({ Dash }) {
                 <i className="fa-solid fa-xmark" />
               </button>
             </div>
-            <div className="modal-body">
-              <div className="deal-offer-box">
-                <ul className="deal-offer-list">
-                  {trendingList?.map((item, index) => {
-                    return (
-                      <li className={`list-${index + 1}`} key={index}>
-                        <div className="deal-offer-contain">
-                          <Link to="/shop" className="deal-image">
-                            <img
-                              src={
-                                item?.products?.[0]?.addVarient?.[0]
-                                  ?.product_Pic[0]
-                              }
-                              className=" lazyload"
-                              alt=""
-                            />
-                          </Link>
-                          <Link to="/shop" className="deal-contain">
-                            <h5> {item?.products[0]?.productName_en} </h5>
-                            <h6>
-                              $
-                              {item?.products[0]?.addVarient?.[0]?.Price?.toFixed(
-                                2
-                              )}{" "}
-                              <del>
-                                {" "}
-                                ${item?.products[0]?.addVarient?.[0]?.oldPrice}
-                              </del>{" "}
-                              {/* <span>
-                                {" "}
-                                {
-                                  item?.products[0]?.addVarient?.[0]?.values_Id
-                                    ?.valuesName_en
-                                }{" "}
-                              </span> */}
-                            </h6>
-                          </Link>
-                        </div>
-                      </li>
-                    );
-                  })}
-                  {/* <li className="list-1">
-                    <div className="deal-offer-contain">
-                      <Link to="/shop" className="deal-image">
-                        <img
-                          src="../assets/images/vegetable/product/10.png"
-                          className=" lazyload"
-                          alt=""
-                        />
-                      </Link>
-                      <Link to="/shop" className="deal-contain">
-                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                        <h6>
-                          $52.57 <del>57.62</del> <span>500 G</span>
-                        </h6>
-                      </Link>
-                    </div>
-                  </li>
-                  <li className="list-2">
-                    <div className="deal-offer-contain">
-                      <Link to="/shop" className="deal-image">
-                        <img
-                          src="../assets/images/vegetable/product/11.png"
-                          className=" lazyload"
-                          alt=""
-                        />
-                      </Link>
-                      <Link to="/shop" className="deal-contain">
-                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                        <h6>
-                          $52.57 <del>57.62</del> <span>500 G</span>
-                        </h6>
-                      </Link>
-                    </div>
-                  </li>
-                  <li className="list-3">
-                    <div className="deal-offer-contain">
-                      <Link to="/shop" className="deal-image">
-                        <img
-                          src="../assets/images/vegetable/product/12.png"
-                          className=" lazyload"
-                          alt=""
-                        />
-                      </Link>
-                      <Link to="/shop" className="deal-contain">
-                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                        <h6>
-                          $52.57 <del>57.62</del> <span>500 G</span>
-                        </h6>
-                      </Link>
-                    </div>
-                  </li>
-                  <li className="list-1">
-                    <div className="deal-offer-contain">
-                      <Link to="/shop" className="deal-image">
-                        <img
-                          src="../assets/images/vegetable/product/13.png"
-                          className=" lazyload"
-                          alt=""
-                        />
-                      </Link>
-                      <Link to="/shop" className="deal-contain">
-                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                        <h6>
-                          $52.57 <del>57.62</del> <span>500 G</span>
-                        </h6>
-                      </Link>
-                    </div>
-                  </li> */}
-                </ul>
+            {trendingList?.length > 0 ? (
+              <div className="modal-body">
+                <div className="deal-offer-box">
+                  <ul className="deal-offer-list">
+                    {trendingList?.map((item, index) => {
+                      return (
+                        <li className={`list-${index + 1}`} key={index}>
+                          <div className="deal-offer-contain">
+                            <Link to="/shop" className="deal-image">
+                              <img
+                                src={
+                                  item?.products?.[0]?.addVarient?.[0]
+                                    ?.product_Pic[0]
+                                }
+                                className=" lazyload"
+                                alt=""
+                              />
+                            </Link>
+                            <Link to="/shop" className="deal-contain">
+                              <h5> {item?.products[0]?.productName_en} </h5>
+                              <h6>
+                                $
+                                {item?.products[0]?.addVarient?.[0]?.Price?.toFixed(
+                                  2
+                                )}{" "}
+                                <del>
+                                  {" "}
+                                  $
+                                  {item?.products[0]?.addVarient?.[0]?.oldPrice}
+                                </del>{" "}
+                              </h6>
+                            </Link>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div
+                className="d-flex align-items-center justify-content-center text-danger my-5"
+                style={{ fontSize: "18px", color: "#333" }}
+              >
+                No list available
+              </div>
+            )}
           </div>
         </div>
       </div>

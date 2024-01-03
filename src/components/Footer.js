@@ -7,11 +7,9 @@ import {
 
 function Footer() {
   const categoryListItems = useGetCategoryListQuery();
-  console.log("categoryListItems", categoryListItems);
   const [subCategoryList] = useSubCategoryListMutation();
   const [subCategoryItems, setSubCategoryItems] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
-  console.log("categoryListData", categoryListData);
   useEffect(() => {
     const reversedList =
       categoryListItems?.data?.results?.list?.slice().reverse() ?? [];
@@ -123,7 +121,6 @@ function Footer() {
                         </li>
                       );
                     })}
-                   
                   </ul>
                 </div>
               </div>

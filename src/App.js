@@ -222,7 +222,7 @@ function App() {
           <Route
             exact
             className="active"
-            path="/shop/:id"
+            path="/shop"
             element={<Shop setProgress={setProgress} />}
           />
           <Route

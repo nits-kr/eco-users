@@ -308,7 +308,6 @@ export async function ProductList() {
     const { data } = await UserHttpService.post(
       `${process.env.REACT_APP_APIENDPOINT}user/product/product/list`
     );
-    console.log(data);
     // if (data?.error) {
     //     Swal.fire({
     //         title: data?.message,
@@ -337,7 +336,6 @@ export async function ProductDetails(id) {
     const { data } = await UserHttpService.post(
       `${process.env.REACT_APP_APIENDPOINT}user/product/product/details/${id}`
     );
-    console.log(data);
     return { data };
   } catch (error) {
     return error;
@@ -806,7 +804,6 @@ export async function CartList() {
     const { data } = await UserHttpService.post(
       `${process.env.REACT_APP_APIENDPOINT}user/carts/carts/carts-list/${userId}`
     );
-    console.log(data);
     if (data?.error) {
       Swal.fire({
         title: data?.message,
