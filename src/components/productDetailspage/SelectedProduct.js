@@ -27,16 +27,18 @@ function SelectedProduct({ selectedVariantData }) {
                 ))}
             </div>
             <div className="carousel-inner">
-              {selectedVariantData?.product_Pic?.map((image, index) => (
-                <div
-                  key={index}
-                  className={`carousel-item ${index === 0 ? "active" : ""}`}
-                >
-                  <div className="d-flex h-100 align-items-center justify-content-center">
-                    <img src={image} alt={`Product ${index + 1}`} />
+              {selectedVariantData?.product_Pic
+                ?.slice(0, 8)
+                ?.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`carousel-item ${index === 0 ? "active" : ""}`}
+                  >
+                    <div className="d-flex h-100 align-items-center justify-content-center">
+                      <img src={image} alt={`Product ${index + 1}`} />
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </div>
