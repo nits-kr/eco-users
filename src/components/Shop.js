@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import feather from "feather-icons";
@@ -65,6 +65,8 @@ function Shop(props) {
   const location = useLocation();
   let id = location.state?.id;
   console.log("id", id);
+
+  const navigate = useNavigate();
 
   const selector = useSelector((data) => data?.search?.query);
   console.log("selector data", selector);
@@ -226,6 +228,7 @@ function Shop(props) {
   };
 
   const handleAddToCart = async (e, item, price, index, variantId) => {
+    console.log("item added id", item?._id);
     e.preventDefault();
     try {
       const { data, error } = await AddToCart(
@@ -240,6 +243,7 @@ function Shop(props) {
       }
       const newCartItems = [...cartListItems, data];
       setCartListItems(newCartItems);
+      navigate("/cart");
     } catch (error) {
       console.log(error);
     }

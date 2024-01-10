@@ -38,6 +38,7 @@ import Blog from "./indexgrocary/Blog";
 import Topbanner from "./indexgrocary/Topbanner";
 import Middlebanner from "./indexgrocary/Middlebanner";
 import Bottombanner from "./indexgrocary/Bottombanner";
+import Spinners2 from "./Spinners2";
 function IndexGrocary(props) {
   const categoryListItems = useGetCategoryListQuery();
   const trendingProduct = useGetTrendingProductQuery();
@@ -50,6 +51,8 @@ function IndexGrocary(props) {
   const [CreateWishItems, setCreateWishItems] = useState([]);
   const [addCompareItems, setAddCompareItems] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
+
+  console.log("cartListItems", cartListItems);
   const [categoryListData, setCategoryListData] = useState([]);
   const [quantity, setQuantity] = useState([]);
   const [wishAdd, res] = useAddToWislistListMutation();
@@ -132,9 +135,9 @@ function IndexGrocary(props) {
   }, []);
   const cartData = async () => {
     try {
-      const { data, error } = await CartList();
+      const res = await CartList();
 
-      setCartListItems(data?.results?.carts);
+      setCartListItems(res?.data?.carts);
     } catch (error) {
       console.log(error);
     }
@@ -217,6 +220,7 @@ function IndexGrocary(props) {
     }
   };
   const handleAddToCart = async (e, item, price, index, variantId) => {
+    console.log("item added id", item?._id);
     e.preventDefault();
 
     try {
@@ -334,6 +338,8 @@ function IndexGrocary(props) {
       const totalPrice =
         (item?.productDetails?.[0]?.addVarient?.[0]?.Price || 0) *
         (count[index] || 1);
+      const imageUrl =
+        item?.productDetails?.[0]?.addVarient?.[0]?.product_Pic[0];
 
       return (
         <div key={index}>
@@ -341,11 +347,7 @@ function IndexGrocary(props) {
             <div className="product-header">
               <div className="product-image">
                 <Link to="/product">
-                  <img
-                    src={item?.products?.[0]?.addVarient?.[0]?.product_Pic[0]}
-                    className="img-fluid  lazyload"
-                    alt=""
-                  />
+                  <img src={imageUrl} className="img-fluid  lazyload" alt="" />
                 </Link>
                 <ul className="product-option">
                   <li
@@ -354,9 +356,10 @@ function IndexGrocary(props) {
                     title="View"
                   >
                     <Link
-                      to="#"
-                      data-bs-toggle="modal"
-                      data-bs-target="#view"
+                      // to="#"
+                      // data-bs-toggle="modal"
+                      // data-bs-target="#view"
+                      to={`/product-details-page/${item?._id}`}
                       onClick={() => handleViewClick(item)}
                     >
                       <FontAwesomeIcon icon={faEye} />
@@ -817,24 +820,25 @@ function IndexGrocary(props) {
                 </div>
                 <div className="section-t-space">
                   {loading ? (
-                    <Spinner />
+                    <Spinners2 />
                   ) : (
                     <>
                       <div className="category-menu">
                         <h3>Trending Products</h3>
                         <ul className="product-list border-0 p-0 d-block">
                           {trendingList.map((item, index) => {
-                            console.log(
-                              "image",
-                              item?.productDetails?.[0]?.addVarient?.[0]?.product_Pic[0]
-                            );
                             const imageUrl =
-                              item?.productDetails?.[0]?.addVarient?.[0]?.product_Pic[0];
+                              item?.productDetails?.[0]?.addVarient?.[0]
+                                ?.product_Pic[0];
                             return (
                               <li key={index}>
                                 <div className="offer-product">
                                   <Link to="/product" className="offer-image">
-                                    <img src={imageUrl} className="" alt="" />
+                                    <img
+                                      src={imageUrl}
+                                      className=""
+                                      alt="Test Alt Text"
+                                    />
                                   </Link>
                                   <div className="offer-detail">
                                     <div>
@@ -859,7 +863,7 @@ function IndexGrocary(props) {
                                       </span>
                                       <h6 className="price theme-color">
                                         $
-                                        {item?.productDetails?.[0]?.addVarient?.[0]?.dollarPrice?.toFixed(
+                                        {item?.productDetails?.[0]?.addVarient?.[0]?.Price?.toFixed(
                                           2
                                         )}{" "}
                                       </h6>
@@ -961,7 +965,7 @@ function IndexGrocary(props) {
                 </div>
               </div>
               {loading ? (
-                <Spinner />
+                <Spinners2 />
               ) : (
                 <>
                   <div className="col-12 wow fadeInUp">
