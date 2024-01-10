@@ -143,11 +143,11 @@ function TrendingProductHome(props) {
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
-    // autoplay: true,
+    autoplay: true,
     centerMode: true,
     focusOnSelect: true,
     arrows: true,
-    lazyLoad: 'ondemand',
+    lazyLoad: "ondemand",
   };
 
   const sliders2 = () => {
@@ -162,7 +162,7 @@ function TrendingProductHome(props) {
         (cartItem) => cartItem?.product_Id?._id === item?._id
       );
 
-      console.log("averageRating at trending",averageRating);
+      console.log("averageRating at trending", averageRating);
 
       const totalPrice =
         (item?.productDetails?.[0]?.addVarient?.[0]?.Price || 0) *
