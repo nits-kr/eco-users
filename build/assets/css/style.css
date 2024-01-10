@@ -30808,7 +30808,7 @@ button.btn.btn-add-cart.addcart-button {
 }
 
 .carousel-item:hover {
-  transform: scale(1.05); 
+  transform: scale(1.05);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
@@ -30925,12 +30925,18 @@ button.btn.btn-add-cart.addcart-button {
   border: 2px;
   transition: opacity .6s ease;
 }
-[type=button]:not(:disabled), [type=reset]:not(:disabled), [type=submit]:not(:disabled), button:not(:disabled) {
+
+[type=button]:not(:disabled),
+[type=reset]:not(:disabled),
+[type=submit]:not(:disabled),
+button:not(:disabled) {
   cursor: pointer;
 }
+
 .carousel-indicators .active {
   opacity: 1;
 }
+
 /* Read more */
 .product-description {
   max-height: 3em;
@@ -30945,10 +30951,62 @@ button.btn.btn-add-cart.addcart-button {
 .read-more-button::before {
   content: "Read More...";
   display: block;
-  color: blue; /* You can change the color as needed */
+  color: blue;
+  /* You can change the color as needed */
   cursor: pointer;
 }
 
 .read-more-button.expanded::before {
   content: "Read Less...";
+}
+
+
+.product-left-box .carousel-indicators {
+  position: relative;
+  margin: 0 15px 0 0;
+  display: block;
+}
+
+.product-left-box .carousel-indicators button {
+  width: 70px !important;
+  height: 70px;
+  text-indent: 0;
+  overflow: hidden;
+  display: block;
+  margin: 0 0 15px;
+  border: 0;
+  background-color: #F2F2F2 !important;
+  opacity: 1;
+  border-radius: 6px;
+  padding: 2px;
+  border: 2px solid #F2F2F2;
+}
+
+.product-left-box .carousel-indicators button img {
+  max-width: 100%;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.product-left-box .carousel {
+  position: relative;
+  display: flex;
+}
+
+.product-left-box .carousel-item {
+  background-color: #F2F2F2;
+  border-radius: 4px;
+  text-align: center;
+  height: calc(100vh - 120px);
+}
+
+.product-left-box .carousel-item img {
+  max-width: 100%;
+  width: 100%;
+}
+
+.product-left-box .carousel-indicators button.active {
+  border: 2px solid #0DA487;
 }

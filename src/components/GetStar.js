@@ -3,7 +3,6 @@ import { FaStar } from "react-icons/fa";
 
 const GetStar = ({ totalStars = 5 }) => {
   const [rating, setRating] = useState(0);
-  console.log(rating);
   localStorage?.setItem("userRating", rating);
   const [hover, setHover] = useState(0);
 

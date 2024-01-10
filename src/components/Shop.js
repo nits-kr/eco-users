@@ -834,9 +834,11 @@ function Shop(props) {
                                     title="View"
                                   >
                                     <Link
-                                      to="#"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#view"
+                                      // to="/product-details-page"
+                                      // state={{ id: item?._id }}
+                                      to={`/product-details-page/${item?._id}`}
+                                      // data-bs-toggle="modal"
+                                      // data-bs-target="#view"
                                       onClick={() => handleViewClick(item)}
                                     >
                                       <FontAwesomeIcon icon={faEye} />
@@ -1181,7 +1183,9 @@ function Shop(props) {
                           </button>
                         </Link>
                         <Link
-                          to={`/product/${selectedProduct?._id}`}
+                          to="/product-details-page"
+                          state={{ id: selectedProduct?._id }}
+                          // to={`/product/${selectedProduct?._id}`}
                           className="btn theme-bg-color view-button icon text-white fw-bold btn-md"
                           onClick={handleViewDetails}
                         >

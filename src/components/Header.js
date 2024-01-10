@@ -36,8 +36,18 @@ function Header({ Dash }) {
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
   localStorage?.setItem("productSearch", searchQuery);
+  const loginId = localStorage?.getItem("loginId");
 
-  const totalSubtotal = localStorage?.getItem("totalSubtotal");
+  let totalSubtotal = 0;
+  cartListItems
+    ?.slice()
+    ?.reverse()
+    ?.forEach((item) => {
+      const subtotal = (item?.varient?.Price || 0) * (item?.quantity || 1);
+      totalSubtotal += subtotal;
+    });
+
+  // const totalSubtotal = localStorage?.getItem("totalSubtotal");
 
   useEffect(() => {
     if (trendingProduct?.data?.results?.productlist) {
@@ -47,7 +57,7 @@ function Header({ Dash }) {
   useEffect(() => {
     const fetchCartListData = () => {
       if (isSuccess) {
-        setCartListItems(cartListQuery?.results?.carts);
+        setCartListItems(cartListQuery?.carts);
       }
     };
 
@@ -586,10 +596,13 @@ function Header({ Dash }) {
                         </div>
                         <div className="onhover-div onhover-div-login">
                           <ul className="user-box-name">
-                            <li className="product-box-contain">
-                              <i />
-                              <Link to="/">Log In</Link>
-                            </li>
+                            {loginId ? null : (
+                              <li className="product-box-contain">
+                                <i />
+                                <Link to="/">Log In</Link>
+                              </li>
+                            )}
+
                             <li className="product-box-contain">
                               <Link to="/sign-up">Register</Link>
                             </li>
@@ -825,7 +838,7 @@ function Header({ Dash }) {
                             <Link to="/shop" className="deal-image">
                               <img
                                 src={
-                                  item?.products?.[0]?.addVarient?.[0]
+                                  item?.productDetails?.[0]?.addVarient?.[0]
                                     ?.product_Pic[0]
                                 }
                                 className=" lazyload"
@@ -833,16 +846,22 @@ function Header({ Dash }) {
                               />
                             </Link>
                             <Link to="/shop" className="deal-contain">
-                              <h5> {item?.products[0]?.productName_en} </h5>
+                              <h5>
+                                {" "}
+                                {item?.productDetails?.[0]?.productName_en}{" "}
+                              </h5>
                               <h6>
                                 $
-                                {item?.products[0]?.addVarient?.[0]?.Price?.toFixed(
+                                {item?.productDetails?.[0]?.addVarient?.[0]?.Price?.toFixed(
                                   2
                                 )}{" "}
                                 <del>
                                   {" "}
                                   $
-                                  {item?.products[0]?.addVarient?.[0]?.oldPrice}
+                                  {
+                                    item?.productDetails?.[0]?.addVarient?.[0]
+                                      ?.oldPrice
+                                  }
                                 </del>{" "}
                               </h6>
                             </Link>

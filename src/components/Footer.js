@@ -185,7 +185,7 @@ function Footer() {
                       </Link>
                     </li>
                     <li>
-                      <Link to="/shop/:id" className="text-content">
+                      <Link to="/shop" className="text-content">
                         Search
                       </Link>
                     </li>
@@ -208,7 +208,9 @@ function Footer() {
                         <i data-feather="phone" />
                         <div className="contact-number">
                           <h6 className="text-content">Hotline 24/7 :</h6>
-                          <h5>+91 888 104 2340</h5>
+                          <Link to="tel:+918881042340">
+                            <h5>+91 888 104 2340</h5>
+                          </Link>
                         </div>
                       </div>
                     </li>
@@ -217,7 +219,9 @@ function Footer() {
                         <i data-feather="mail" />
                         <div className="contact-number">
                           <h6 className="text-content">Email Address :</h6>
-                          <h5>dummy@hotmail.com</h5>
+                          <Link to="mailto:dummy@hotmail.com">
+                            <h5>dummy@hotmail.com</h5>
+                          </Link>
                         </div>
                       </div>
                     </li>

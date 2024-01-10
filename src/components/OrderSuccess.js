@@ -111,7 +111,7 @@ function OrderSuccess() {
             <div className="col-12">
               <div className="breadscrumb-contain breadscrumb-order">
                 <div className="order-box">
-                  <div className="order-image">
+                  {/* <div className="order-image">
                     <div className="checkmark">
                       <svg
                         className="star"
@@ -186,9 +186,9 @@ function OrderSuccess() {
                         <path d="M107.332 72.938c-1.798 5.557 4.564 15.334 1.21 19.96-3.387 4.674-14.646 1.605-19.298 5.003-4.61 3.368-5.163 15.074-10.695 16.878-5.344 1.743-12.628-7.35-18.545-7.35-5.922 0-13.206 9.088-18.543 7.345-5.538-1.804-6.09-13.515-10.696-16.877-4.657-3.398-15.91-.334-19.297-5.002-3.356-4.627 3.006-14.404 1.208-19.962C10.93 67.576 0 63.442 0 57.5c0-5.943 10.93-10.076 12.668-15.438 1.798-5.557-4.564-15.334-1.21-19.96 3.387-4.674 14.646-1.605 19.298-5.003C35.366 13.73 35.92 2.025 41.45.22c5.344-1.743 12.628 7.35 18.545 7.35 5.922 0 13.206-9.088 18.543-7.345 5.538 1.804 6.09 13.515 10.696 16.877 4.657 3.398 15.91.334 19.297 5.002 3.356 4.627-3.006 14.404-1.208 19.962C109.07 47.424 120 51.562 120 57.5c0 5.943-10.93 10.076-12.668 15.438z"></path>
                       </svg>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="order-contain">
-                    <h3 className="theme-color">Order Success</h3>
+                    <h3 className="theme-color">Your Order List</h3>
                     {/* <h5 className="text-content">
                       Payment Is Successfully And Your Order Is On The Way
                     </h5>
@@ -253,12 +253,11 @@ function OrderSuccess() {
                                       </li>
 
                                       <li className="text-content">
-                                        Sold By: Fresho
+                                        {item?.products?.productName_en}
                                       </li>
-                                      <li className="text-content">
-                                        Quantity -{" "}
-                                        {item?.products[0]?.product_Id?.weight}
-                                      </li>
+                                      {/* <li className="text-content">
+                                        Quantity - {item?.quantity}
+                                      </li> */}
                                     </ul>
                                   </div>
                                 </div>
@@ -268,16 +267,16 @@ function OrderSuccess() {
                                   Price
                                 </h4>
                                 <h6 className="theme-color">
-                                  $ {item?.cartsTotal?.toFixed(2)}
+                                  ${" "}
+                                  {item?.cartsTotal?.toFixed(2) /
+                                    item?.quantity}
                                 </h6>
                               </td>
                               <td className="quantity">
                                 <h4 className="table-title text-content">
                                   Qty
                                 </h4>
-                                <h4 className="text-title">
-                                  {item?.products[0]?.quantity}
-                                </h4>
+                                <h4 className="text-title">{item?.quantity}</h4>
                               </td>
                               <td className="subtotal">
                                 <h4 className="table-title text-content">

@@ -48,6 +48,7 @@ import GetStar from "./components/GetStar";
 import Shop3 from "./components/Shop3";
 import CheckOutNew from "./components/CheckOutNew";
 import BannerShop from "./components/BannerShop";
+import Products from "./components/productDetailspage/Products";
 
 function App() {
   const [progress, setProgress] = useState(0);
@@ -194,6 +195,13 @@ function App() {
             path="/product/:id"
             element={<Product setProgress={setProgress} />}
           />
+          <Route
+            exact
+            className="active"
+            path="/product-details-page/:id"
+            element={<Products setProgress={setProgress} />}
+          />
+
           <Route exact className="active" path="/search" element={<Search />} />
           <Route
             exact

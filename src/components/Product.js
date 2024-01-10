@@ -1887,8 +1887,8 @@ function Product(props) {
                                   <Link to="/product" className="offer-image">
                                     <img
                                       src={
-                                        item?.products[0]?.addVarient[0]
-                                          ?.product_Pic[0]
+                                        item?.productDetails?.[0]
+                                          ?.addVarient?.[0]?.product_Pic[0]
                                       }
                                       className="img-fluid  lazyload"
                                       alt=""
@@ -1898,21 +1898,25 @@ function Product(props) {
                                     <div>
                                       <Link to="/product">
                                         <h6 className="name">
-                                          {item?.products[0]?.productName_en}
+                                          {
+                                            item?.productDetails?.[0]
+                                              ?.productName_en
+                                          }
                                         </h6>
                                       </Link>
                                       <span>
                                         <strong>
                                           {" "}
                                           {
-                                            item?.products[0]?.addVarient[0]
-                                              ?.values_Id?.valuesName_en
+                                            item?.productDetails?.[0]
+                                              ?.addVarient?.[0]?.values_Id
+                                              ?.valuesName_en
                                           }
                                         </strong>{" "}
                                       </span>
                                       <h6 className="price theme-color">
                                         $
-                                        {item?.products[0]?.addVarient[0]?.dollarPrice?.toFixed(
+                                        {item?.productDetails?.[0]?.addVarient?.[0]?.dollarPrice?.toFixed(
                                           2
                                         )}{" "}
                                       </h6>

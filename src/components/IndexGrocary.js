@@ -75,7 +75,6 @@ function IndexGrocary(props) {
     newCounts[index] = newCount >= 0 ? newCount : 0;
     setCount(newCounts);
   };
-  console.log(count);
   const blog = useGetAllPostQuery();
 
   const [blogList, setBlogList] = useState();
@@ -134,8 +133,8 @@ function IndexGrocary(props) {
   const cartData = async () => {
     try {
       const { data, error } = await CartList();
-      error ? console.log(error) : console.log(data);
-      setCartListItems(data.results.carts);
+
+      setCartListItems(data?.results?.carts);
     } catch (error) {
       console.log(error);
     }
@@ -148,7 +147,7 @@ function IndexGrocary(props) {
       props.setProgress(10);
       setLoading(true);
       const { data, error } = await DiscountProduct();
-      error ? console.log(error) : console.log(data);
+
       setDiscountProduct(data?.results?.productData);
       setLoading(true);
       props.setProgress(50);
@@ -173,7 +172,6 @@ function IndexGrocary(props) {
       setProductListDetails(details);
       props.setProgress(100);
       setLoading(false);
-      console.log(details);
     } catch (error) {
       console.log(error);
     }
@@ -190,7 +188,7 @@ function IndexGrocary(props) {
         userId: userId,
         like: true,
       };
-      console.log(item?._id);
+
       const { data, error } = await wishAdd(editAddress);
       if (error) {
         console.log(error);
@@ -220,7 +218,7 @@ function IndexGrocary(props) {
   };
   const handleAddToCart = async (e, item, price, index, variantId) => {
     e.preventDefault();
-    console.log("price * count[index]", price);
+
     try {
       const { data, error } = await AddToCart(
         item._id,
@@ -323,17 +321,19 @@ function IndexGrocary(props) {
   const averageRating = totalRatings / selectedProduct?.ratings?.length;
   const sliders2 = () => {
     return trendingList?.map((item, index) => {
-      const totalRatings = item?.products[0]?.ratings?.reduce(
+      const totalRatings = item?.productDetails?.[0]?.ratings?.reduce(
         (sum, rating) => sum + rating?.star,
         0
       );
-      const averageRating = totalRatings / item?.products[0]?.ratings?.length;
+      const averageRating =
+        totalRatings / item?.productDetails?.[0]?.ratings?.length;
       const isItemInCart = cartListItems?.some(
         (cartItem) => cartItem?.product_Id?._id === item?._id
       );
 
       const totalPrice =
-        (item?.products[0]?.addVarient?.[0]?.Price || 0) * (count[index] || 1);
+        (item?.productDetails?.[0]?.addVarient?.[0]?.Price || 0) *
+        (count[index] || 1);
 
       return (
         <div key={index}>
@@ -373,7 +373,7 @@ function IndexGrocary(props) {
                     </Link>
                   </li>
                   <li data-bs-toggle="tooltip" data-bs-placement="top">
-                    {item?.products[0]?.like === "false" ? (
+                    {item?.productDetails?.[0]?.like === "false" ? (
                       <Link
                         className="btn p-0 position-relative header-wishlist me-2"
                         to="/wishlist"
@@ -422,7 +422,9 @@ function IndexGrocary(props) {
             <div className="product-footer">
               <div className="product-detail">
                 <Link to="/product">
-                  <h5 className="name">{item?.products[0]?.productName_en}</h5>
+                  <h5 className="name">
+                    {item?.productDetails?.[0]?.productName_en}
+                  </h5>
                 </Link>
                 <p className="text-content mt-1 mb-2 product-content">
                   Cheesy feet cheesy grin brie. Mascarpone cheese and wine hard
@@ -434,7 +436,10 @@ function IndexGrocary(props) {
                     rating={averageRating || 0}
                     totalRating={item.totalRating}
                   />
-                  <span> {item?.products[0]?.ratings?.length} reviews </span>
+                  <span>
+                    {" "}
+                    {item?.productDetails?.[0]?.ratings?.length} reviews{" "}
+                  </span>
                 </div>
                 <div
                   style={{
@@ -448,17 +453,21 @@ function IndexGrocary(props) {
                       className="unit"
                       style={{ margin: "0px", fontSize: "15px" }}
                     >
-                      {item?.products[0]?.addVarient?.[0]?.stockQuantity > 0 ? (
-                        item?.products[0]?.addVarient?.[0]?.stockQuantity <=
-                        5 ? (
+                      {item?.productDetails?.[0]?.addVarient?.[0]
+                        ?.stockQuantity > 0 ? (
+                        item?.productDetails?.[0]?.addVarient?.[0]
+                          ?.stockQuantity <= 5 ? (
                           <span style={{ color: "rgb(199, 0, 85)" }}>
                             Only few left
                           </span>
-                        ) : item?.products[0]?.addVarient?.[0]?.stockQuantity <=
-                          10 ? (
+                        ) : item?.productDetails?.[0]?.addVarient?.[0]
+                            ?.stockQuantity <= 10 ? (
                           <span style={{ color: "rgb(199, 0, 85)" }}>
                             Only{" "}
-                            {item?.products[0]?.addVarient?.[0]?.stockQuantity}{" "}
+                            {
+                              item?.productDetails?.[0]?.addVarient?.[0]
+                                ?.stockQuantity
+                            }{" "}
                             left
                           </span>
                         ) : (
@@ -469,7 +478,8 @@ function IndexGrocary(props) {
                       )}
                     </h6>
                   </div>
-                  {item?.products[0]?.addVarient?.[0]?.stockQuantity <= 0 ? (
+                  {item?.productDetails?.[0]?.addVarient?.[0]?.stockQuantity <=
+                  0 ? (
                     <div className=" mt-3">
                       <div className="cart_qty qty-box product-qty">
                         <div
@@ -544,7 +554,9 @@ function IndexGrocary(props) {
                 </div>
                 <h5 className="price">
                   <span className="theme-color">${totalPrice}</span>{" "}
-                  <del>${item?.products[0]?.addVarient?.[0]?.oldPrice} </del>
+                  <del>
+                    ${item?.productDetails?.[0]?.addVarient?.[0]?.oldPrice}{" "}
+                  </del>
                 </h5>
 
                 {isItemInCart ? (
@@ -569,9 +581,9 @@ function IndexGrocary(props) {
                           handleAddToCart(
                             e,
                             item,
-                            item?.products[0]?.addVarient?.[0]?.Price,
+                            item?.productDetails?.[0]?.addVarient?.[0]?.Price,
                             index,
-                            item?.products[0]?.addVarient?.[0]?._id
+                            item?.productDetails?.[0]?.addVarient?.[0]?._id
                           )
                         }
                       >
@@ -812,18 +824,17 @@ function IndexGrocary(props) {
                         <h3>Trending Products</h3>
                         <ul className="product-list border-0 p-0 d-block">
                           {trendingList.map((item, index) => {
+                            console.log(
+                              "image",
+                              item?.productDetails?.[0]?.addVarient?.[0]?.product_Pic[0]
+                            );
+                            const imageUrl =
+                              item?.productDetails?.[0]?.addVarient?.[0]?.product_Pic[0];
                             return (
                               <li key={index}>
                                 <div className="offer-product">
                                   <Link to="/product" className="offer-image">
-                                    <img
-                                      src={
-                                        item?.products[0]?.addVarient?.[0]
-                                          ?.product_Pic[0]
-                                      }
-                                      className=" lazyload"
-                                      alt=""
-                                    />
+                                    <img src={imageUrl} className="" alt="" />
                                   </Link>
                                   <div className="offer-detail">
                                     <div>
@@ -832,20 +843,23 @@ function IndexGrocary(props) {
                                         className="text-title"
                                       >
                                         <h6 className="name">
-                                          {item?.products[0]?.productName_en}
+                                          {
+                                            item?.productDetails?.[0]
+                                              ?.productName_en
+                                          }
                                         </h6>
                                       </Link>
                                       <span>
                                         {" "}
                                         {
-                                          item?.products[0]?.addVarient?.[0]
-                                            ?.stockQuantity
+                                          item?.productDetails?.[0]
+                                            ?.addVarient?.[0]?.stockQuantity
                                         }{" "}
                                         left{" "}
                                       </span>
                                       <h6 className="price theme-color">
                                         $
-                                        {item?.products[0]?.addVarient?.[0]?.dollarPrice?.toFixed(
+                                        {item?.productDetails?.[0]?.addVarient?.[0]?.dollarPrice?.toFixed(
                                           2
                                         )}{" "}
                                       </h6>
@@ -1149,7 +1163,6 @@ function IndexGrocary(props) {
                           rating={averageRating || 0}
                           totalRating={selectedProduct?.ratings?.length}
                         />
-                        {console.log("selectedProduct", selectedProduct)}
                       </ul>
                       <span className="ms-2">
                         {selectedProduct?.ratings?.length}Reviews
