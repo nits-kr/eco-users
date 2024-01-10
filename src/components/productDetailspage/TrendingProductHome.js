@@ -147,6 +147,7 @@ function TrendingProductHome(props) {
     centerMode: true,
     focusOnSelect: true,
     arrows: true,
+    lazyLoad: 'ondemand',
   };
 
   const sliders2 = () => {
