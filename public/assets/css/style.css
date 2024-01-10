@@ -31010,3 +31010,20 @@ button:not(:disabled) {
 .product-left-box .carousel-indicators button.active {
   border: 2px solid #0DA487;
 }
+
+
+.slick-prev:before {
+  content: '←';
+}
+
+.slick-next:before,
+.slick-prev:before {
+  font-size: 50px;
+  line-height: 1;
+  opacity: .75;
+  color: #0da487;
+}
+
+.slick-slider .slick-list {
+  margin: 0 0 0 30px;
+}

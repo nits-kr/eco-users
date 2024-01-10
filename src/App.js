@@ -49,6 +49,7 @@ import Shop3 from "./components/Shop3";
 import CheckOutNew from "./components/CheckOutNew";
 import BannerShop from "./components/BannerShop";
 import Products from "./components/productDetailspage/Products";
+import TrendingProductHome from "./components/productDetailspage/TrendingProductHome";
 
 function App() {
   const [progress, setProgress] = useState(0);
@@ -124,6 +125,13 @@ function App() {
             path="/contact-us"
             element={<ContactUs setProgress={setProgress} />}
           />
+          <Route
+            exact
+            className="active"
+            path="/trending-details"
+            element={<TrendingProductHome setProgress={setProgress} />}
+          />
+
           <Route exact className="active" path="/faq" element={<Faq />} />
           <Route exact className="active" path="/forgot" element={<Forgot />} />
           <Route

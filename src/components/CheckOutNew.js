@@ -117,7 +117,8 @@ function CheckOutNew() {
           icon: "success",
         }).then((result) => {
           if (result.isConfirmed) {
-            navigate("/shop/:id");
+            navigate("/shop");
+            window?.location?.reload();
           }
         });
       } catch (error) {

@@ -20,6 +20,7 @@ import GetStar from "../GetStar";
 import Addreview from "./Addreview";
 import Footer from "../Footer";
 import TrendingProductDetails from "./TrendingProductDetails";
+import TrendingProductHome from "./TrendingProductHome";
 
 function Products(props) {
   const [loading, setLoading] = useState(false);
@@ -53,7 +54,7 @@ function Products(props) {
     if (id) {
       handleProductDetails(id);
     }
-  }, []);
+  }, [id]);
 
   const handleProductDetails = async (id) => {
     try {
@@ -654,7 +655,7 @@ function Products(props) {
                           </ul>
                         </div>
                       </div>
-                      <TrendingProductDetails />
+                      {/* <TrendingProductDetails /> */}
                     </div>
                   </div>
                 </div>
@@ -663,8 +664,9 @@ function Products(props) {
           </div>
         </div>
       </section>
+      <TrendingProductHome />
       {/* Product Left Sidebar End */}
-      {/* <RelatedProductSlider /> */}
+      <RelatedProductSlider id={id} />
       {/* Footer Section Start */}
       <Footer />
       {/* Footer Section End */}
