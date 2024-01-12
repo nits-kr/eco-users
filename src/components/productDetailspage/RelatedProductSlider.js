@@ -18,7 +18,7 @@ function RelatedProductSlider({ id }) {
   const [relatedDetails, respons] = useRelatedProductDetailsMutation();
   const relatedProduct = useGetRelatedProductQuery();
   const [relatedProductItems, setRelatedProductItems] = useState([]);
-  console.log("relatedProductItems", relatedProductItems);
+
   useEffect(() => {
     if (relatedProduct?.data?.results?.productData) {
       setRelatedProductItems(relatedProduct?.data?.results?.productData);
@@ -29,8 +29,7 @@ function RelatedProductSlider({ id }) {
     related();
   }, [id]);
   const relatedProductDetail = respons?.data?.results?.productData;
-  console.log(relatedProductDetail);
-  console.log(respons);
+
   const related = () => {
     const newAddress = {
       id: id,

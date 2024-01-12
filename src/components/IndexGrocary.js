@@ -586,7 +586,8 @@ function IndexGrocary(props) {
                             item,
                             item?.productDetails?.[0]?.addVarient?.[0]?.Price,
                             index,
-                            item?.productDetails?.[0]?.addVarient?.[0]?._id
+                            item?.productDetails?.[0]?.addVarient?.[0]
+                              ?.varient_Id[0]
                           )
                         }
                       >

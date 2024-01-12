@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import Header from "../Header";
 import {
+  AddCompare,
   AddReview,
   AddToCart,
   CartList,
@@ -9,7 +10,11 @@ import {
   RelatedProduct,
 } from "../HttpServices";
 import RelatedProductSlider from "./RelatedProductSlider";
-import { useGetRelatedProductQuery } from "../../services/Post";
+import {
+  useAddToWislistListMutation,
+  useGetCompareListQuery,
+  useGetRelatedProductQuery,
+} from "../../services/Post";
 import SelectedProduct from "./SelectedProduct";
 import feather from "feather-icons";
 import CustomTimer from "./CustomTimer";
@@ -21,13 +26,27 @@ import Addreview from "./Addreview";
 import Footer from "../Footer";
 import TrendingProductDetails from "./TrendingProductDetails";
 import TrendingProductHome from "./TrendingProductHome";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEye,
+  faArrowsRotate,
+  faHeart,
+} from "@fortawesome/free-solid-svg-icons";
 
 function Products(props) {
   const [loading, setLoading] = useState(false);
+  const [wishAdd, res] = useAddToWislistListMutation();
   const relatedProduct = useGetRelatedProductQuery();
+  const compareItems = useGetCompareListQuery();
+
   const [productDetail, setProductDetail] = useState("");
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [cartListItems, setCartListItems] = useState([]);
+  const [CreateWishItems, setCreateWishItems] = useState([]);
+  const [addCompareItems, setAddCompareItems] = useState([]);
+  const [newCompare, setNewCompare] = useState([]);
+
+  const storedId = localStorage.getItem("loginId");
 
   const [count, setCount] = useState(1);
 
@@ -41,8 +60,6 @@ function Products(props) {
   const cartData = async () => {
     try {
       const data = await CartList();
-
-      console.log("data", data);
 
       setCartListItems(data?.carts);
     } catch (error) {
@@ -60,7 +77,7 @@ function Products(props) {
     try {
       props.setProgress(10);
       setLoading(true);
-      console.log(id);
+
       const { data, error } = await ProductDetails(id);
       setProductDetail(data?.results?.details);
       setLoading(false);
@@ -91,7 +108,6 @@ function Products(props) {
     ? selectedVariantData?.oldPrice * count
     : selectedVariantData?.oldPrice;
   const quantity = selectedVariantData?.stockQuantity;
-  console.log("quantity", quantity);
 
   const isVariantInCart = cartListItems?.some((item) => {
     return item?.products?.some((product) => {
@@ -111,7 +127,58 @@ function Products(props) {
     } catch (error) {
       console.log(error);
     }
+    setTimeout(() => {
+      window?.location?.reload();
+    }, 500);
   };
+
+  const handleWishClick = async (id) => {
+    try {
+      const editAddress = {
+        product_Id: id,
+        userId: storedId,
+        like: true,
+      };
+      const { data, error } = await wishAdd(editAddress);
+      if (error) {
+        console.log(error);
+        return;
+      }
+      const newCreateWishItems = [...CreateWishItems, data];
+      setCreateWishItems(newCreateWishItems);
+      setTimeout(() => {
+        window?.location?.reload();
+      }, 500);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleCompareClick = async (id) => {
+    try {
+      const { data, error } = await AddCompare(id);
+      if (error) {
+        console.log(error);
+        return;
+      }
+      const newCreateCompareItems = [...addCompareItems, data];
+      setAddCompareItems(newCreateCompareItems);
+    } catch (error) {
+      console.log(error);
+    }
+    setTimeout(() => {
+      window?.location?.reload();
+    }, 500);
+  };
+
+  useEffect(() => {
+    if (compareItems) {
+      setNewCompare(compareItems?.data?.results?.comparelist);
+    }
+  }, [compareItems]);
+
+  const isCompareItems = newCompare?.some(
+    (compareItem) => compareItem?.product_Id?._id === id
+  );
 
   const handleExpand = () => {
     setArea(false);
@@ -386,25 +453,79 @@ function Products(props) {
                               Go to Cart
                             </Link>
                           ) : (
-                            <button
+                            <Link
+                              to="/cart"
                               className="btn btn-md bg-dark cart-button text-white w-100"
                               onClick={() => handleAddToCart()}
                             >
                               Add to Cart
-                            </button>
+                            </Link>
                           )}
                         </div>
                       </div>
                     </div>
                     <div className="buy-box">
-                      <a href="wishlist.html">
-                        <i data-feather="heart" />
-                        <span>Add To Wishlist</span>
-                      </a>
-                      <a href="compare.html">
-                        <i data-feather="shuffle" />
-                        <span>Add To Compare</span>
-                      </a>
+                      {productDetail?.like === "false" ? (
+                        <Link
+                          to="/wishlist"
+                          title="Add To Wishlist"
+                          onClick={() => handleWishClick(id)}
+                        >
+                          {/* <i data-feather="heart" /> */}
+                          <FontAwesomeIcon
+                            icon={faHeart}
+                            style={{
+                              fontSize: "20px",
+                              color: "black",
+                            }}
+                            data-tip="Add to Wishlist"
+                            data-for="wishlist-tooltip"
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = "red";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = "black";
+                            }}
+                          />
+                          <span>Add To Wishlist</span>
+                        </Link>
+                      ) : (
+                        <Link
+                          to="/wishlist"
+                          title="Wishlist"
+                          // onClick={() => handleWishClick(id)}
+                        >
+                          {/* <i data-feather="heart" /> */}
+                          <FontAwesomeIcon
+                            icon={faHeart}
+                            style={{
+                              fontSize: "20px",
+                              color: "red",
+                            }}
+                            // data-tip="Add to Wishlist"
+                            // data-for="wishlist-tooltip"
+                          />
+                          <span>Added To Wishlist</span>
+                        </Link>
+                      )}
+
+                      {isCompareItems ? (
+                        <Link
+                          to="/compare"
+                          // onClick={() => handleCompareClick(id)}
+                        >
+                          <i data-feather="shuffle" />
+                          <span>Add To Compare</span>
+                        </Link>
+                      ) : (
+                        <Link
+                          to="/compare"
+                          onClick={() => handleCompareClick(id)}
+                        >
+                          <i data-feather="shuffle" />
+                          <span>Add To Compare</span>
+                        </Link>
+                      )}
                     </div>
                     <div className="pickup-box">
                       {area ? (

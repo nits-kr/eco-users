@@ -12,13 +12,11 @@ import { useDeleteCompareMutation } from "../services/Post";
 import { useAddToCartMutation } from "../services/Post";
 import Star from "./Star";
 function Compare() {
-  const [deleteCompare, responseInfo] = useDeleteCompareMutation();
+  const [deleteCompare] = useDeleteCompareMutation();
   const [newCompare, setNewCompare] = useState([]);
-  // const [itemId, setItemId] = useState("")
-  // const [quantity, setQuantity] = useState("")
+
   const compareItems = useGetCompareListQuery();
   const [addToCart] = useAddToCartMutation();
-  console.log("Compare items", compareItems);
 
   useEffect(() => {
     if (compareItems) {
@@ -54,7 +52,7 @@ function Compare() {
       if (result.isConfirmed) {
         deleteCompare(addressId)
           .then(() => {
-            const updatedList = newCompare.filter(
+            const updatedList = newCompare?.filter(
               (address) => address._id !== addressId
             );
             setNewCompare(updatedList);
@@ -68,7 +66,10 @@ function Compare() {
     {
       header: "Product",
       accessor: (item) => (
-        <Link className="text-title" to="/product">
+        <Link
+          className="text-title"
+          to={`/product-details-page/${item?.product_Id?._id}`}
+        >
           {item?.product_Id?.productName_en}
         </Link>
       ),
@@ -76,7 +77,10 @@ function Compare() {
     {
       header: "Images",
       accessor: (item) => (
-        <Link to="/product" className="compare-image">
+        <Link
+          to={`/product-details-page/${item?.product_Id?._id}`}
+          className="compare-image"
+        >
           <img
             src={item?.product_Id?.addVarient[0]?.product_Pic[0]}
             className="img-fluid lazyload"
@@ -88,7 +92,9 @@ function Compare() {
     {
       header: "Brand Name",
       accessor: (item) => (
-        <span className="text-content">{item?.product_Id?.brand_Id}</span>
+        <span className="text-content">
+          {item?.product_Id?.brand_Id?.brandName_en}
+        </span>
       ),
     },
     {
@@ -121,18 +127,20 @@ function Compare() {
         const backgroundColor =
           stockStatus === "In Stock" ? "success" : "danger";
         return (
-          <button
-            className={`btn btn-sm w-60 ms-4 text-light bg-${backgroundColor}`}
-          >
-            {stockStatus}
-          </button>
+          <div className="d-flex align-items-center justify-content-center">
+            <button
+              className={`btn btn-sm w-60 ms-4 text-light bg-${backgroundColor}`}
+            >
+              {stockStatus}
+            </button>
+          </div>
         );
       },
     },
     {
       header: "Rating",
       accessor: (item) => {
-        const totalRatings = item?.product_Id?.ratings.reduce(
+        const totalRatings = item?.product_Id?.ratings?.reduce(
           (sum, rating) => sum + rating.star,
           0
         );
@@ -161,18 +169,20 @@ function Compare() {
     {
       header: "Purchase",
       accessor: (item) => (
-        <Link
-          to="/cart"
-          className="btn btn-animation btn-sm w-100"
-          onClick={() =>
-            handleSaveChanges(
-              item?.product_Id?._id,
-              item?.product_Id?.stockQuantity
-            )
-          }
-        >
-          Add To Cart
-        </Link>
+        <div className="d-flex align-items-center justify-content-center">
+          <Link
+            to="/cart"
+            className="btn btn-animation btn-sm w-60 "
+            onClick={() =>
+              handleSaveChanges(
+                item?.product_Id?._id,
+                item?.product_Id?.stockQuantity
+              )
+            }
+          >
+            Add To Cart
+          </Link>
+        </div>
       ),
     },
     {
@@ -268,10 +278,11 @@ function Compare() {
                   <tbody>
                     {columnData.map((column, columnIndex) => (
                       <tr key={columnIndex}>
-                        <th>{column.header}</th>
-                        {newCompare?.map((item, itemIndex) => (
-                          <td key={itemIndex}>{column.accessor(item)}</td>
-                        ))}
+                        <th>{column?.header}</th>
+                        {newCompare?.length > 0 &&
+                          newCompare?.map((item, itemIndex) => (
+                            <td key={itemIndex}>{column?.accessor(item)}</td>
+                          ))}
                       </tr>
                     ))}
                   </tbody>

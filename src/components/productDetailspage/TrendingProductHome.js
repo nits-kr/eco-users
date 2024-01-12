@@ -38,11 +38,10 @@ function TrendingProductHome(props) {
     setCount(newCounts);
   };
   useEffect(() => {
-    // props.setProgress(10);
     setLoading(true);
     if (trendingProduct?.data?.results?.productlist) {
       setTrendingList(trendingProduct?.data?.results?.productlist);
-      //   props.setProgress(100);
+
       setLoading(false);
     }
   });
@@ -61,7 +60,6 @@ function TrendingProductHome(props) {
   };
 
   const handleViewClick = (item) => {
-    // setSelectedProduct(item);
     setTimeout(() => {
       window?.location?.reload();
     }, 500);
@@ -104,7 +102,6 @@ function TrendingProductHome(props) {
     }
   };
   const handleAddToCart = async (e, item, price, index, variantId) => {
-    console.log("item added id", item?._id);
     e.preventDefault();
 
     try {
@@ -161,8 +158,6 @@ function TrendingProductHome(props) {
       const isItemInCart = cartListItems?.some(
         (cartItem) => cartItem?.product_Id?._id === item?._id
       );
-
-      console.log("averageRating at trending", averageRating);
 
       const totalPrice =
         (item?.productDetails?.[0]?.addVarient?.[0]?.Price || 0) *
@@ -421,7 +416,8 @@ function TrendingProductHome(props) {
                             item,
                             item?.productDetails?.[0]?.addVarient?.[0]?.Price,
                             index,
-                            item?.productDetails?.[0]?.addVarient?.[0]?._id
+                            item?.productDetails?.[0]?.addVarient?.[0]
+                              ?.varient_Id[0]
                           )
                         }
                       >

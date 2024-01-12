@@ -8,6 +8,9 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { useUserSignUpMutation } from "../services/Post";
 import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
+import classNames from "classnames";
+import { Button } from "rsuite";
 
 function SignUp() {
   const [signup, res] = useUserSignUpMutation();
@@ -21,6 +24,7 @@ function SignUp() {
   const [mobileError, setMobileError] = useState("");
   const [longitude, setLongitude] = useState(null);
   const [latitude, setLatitude] = useState(null);
+  const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(function (position) {
@@ -32,6 +36,13 @@ function SignUp() {
   }, []);
   console.log(longitude);
   console.log(latitude);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    trigger,
+  } = useForm();
   useEffect(() => {
     if (res.isSuccess) {
       Swal.fire({
@@ -65,37 +76,13 @@ function SignUp() {
     }
   }, [res, navigate]);
 
-  const handleSaveChanges = async (e) => {
-    e.preventDefault();
-    setFullNameError("");
-    setPasswordError("");
-    setEmailError("");
-    setMobileError("");
-
-    if (fullName.trim() === "") {
-      setFullNameError("Full Name is required.");
-      return;
-    }
-
-    if (password.trim() === "") {
-      setPasswordError("Password is required.");
-      return;
-    }
-    if (email.trim() === "") {
-      setEmailError("Email is required.");
-      return;
-    }
-    if (mobileNumber.trim() === "") {
-      setMobileError("Mobile Number is required.");
-      return;
-    }
-
+  const handleSaveChanges = async (data) => {
     try {
       const requestBody = {
-        userName: fullName,
-        userEmail: email,
+        userName: data?.fullname,
+        userEmail: data?.email,
         password: password,
-        mobileNumber: mobileNumber,
+        mobileNumber: data?.phoneNumber,
       };
 
       if (longitude !== null && latitude !== null) {
@@ -107,7 +94,6 @@ function SignUp() {
       console.log("response login", response);
     } catch (error) {
       console.error("Sign up error:", error);
-      // Show a generic error message if something goes wrong
       Swal.fire({
         title: "SignUp Failed!",
         icon: "error",
@@ -1028,21 +1014,35 @@ function SignUp() {
                   <h4>Create New Account</h4>
                 </div>
                 <div className="input-box">
-                  <form className="row g-4">
+                  <form
+                    className="row g-4"
+                    onSubmit={handleSubmit(handleSaveChanges)}
+                  >
                     <div className="col-12">
                       <div className="form-floating theme-form-floating">
                         <input
                           type="text"
-                          className="form-control"
+                          // className="form-control"
                           id="fullname"
                           placeholder="Full Name"
                           // value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
+                          // onChange={(e) => setFullName(e.target.value)}
+                          className={classNames(
+                            "form-control  border border-secondary signup_fields",
+                            { "is-invalid": errors.fullname }
+                          )}
+                          {...register("fullname", {
+                            required: "Enter Your Full Name*",
+                            pattern: {
+                              value: /^[^*|\":<>[\]{}`\\()';@$]+$/,
+                              message: "Special Character not allowed",
+                            },
+                          })}
                         />
-                        {fullNameError && (
-                          <span className="error-message text-danger">
-                            {fullNameError}
-                          </span>
+                        {errors.fullname && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.fullname?.message}
+                          </small>
                         )}
                         <label htmlFor="fullname">Full Name</label>
                       </div>
@@ -1055,12 +1055,20 @@ function SignUp() {
                           id="email"
                           placeholder="Email Address"
                           // value={email}
-                          onChange={(e) => setEmail(e.target.value)}
+                          // onChange={(e) => setEmail(e.target.value)}
+                          {...register("email", {
+                            required: "Email is Required*",
+                            pattern: {
+                              value:
+                                /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                              message: "Invalid email address",
+                            },
+                          })}
                         />
-                        {emailError && (
-                          <span className="error-message text-danger">
-                            {emailError}
-                          </span>
+                        {errors.email && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.email?.message}
+                          </small>
                         )}
                         <label htmlFor="email">Email Address</label>
                       </div>
@@ -1069,16 +1077,31 @@ function SignUp() {
                       <div className="form-floating theme-form-floating">
                         <input
                           type="number"
-                          className="form-control"
+                          // className="form-control"
+                          className={classNames(
+                            "form-control  border border-secondary signup_fields ",
+                            { "is-invalid": errors.phoneNumber }
+                          )}
                           id="mobileNumber"
                           placeholder="**********"
                           // value={email}
-                          onChange={(e) => setMobileNumber(e.target.value)}
+                          // onChange={(e) => setMobileNumber(e.target.value)}
+                          {...register("phoneNumber", {
+                            required: "Phone Number is Required*",
+                            maxLength: {
+                              value: 10,
+                              message: "maximium 10 Charcarters",
+                            },
+                            minLength: {
+                              value: 8,
+                              message: "minimium 8 Charcarters",
+                            },
+                          })}
                         />
-                        {mobileError && (
-                          <span className="error-message text-danger">
-                            {mobileError}
-                          </span>
+                        {errors.phoneNumber && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.phoneNumber?.message}
+                          </small>
                         )}
                         <label htmlFor="email">Mobile Number</label>
                       </div>
@@ -1123,7 +1146,10 @@ function SignUp() {
                       <button
                         className="btn btn-animation w-100"
                         type="submit"
-                        onClick={handleSaveChanges}
+                        // onClick={handleSaveChanges}
+                        loading={loader}
+                        appearance="primary"
+                        style={{ backgroundColor: "#3e4093", color: "#fff" }}
                       >
                         Sign Up
                       </button>

@@ -297,344 +297,350 @@ function Cart() {
       <section className="cart-section section-b-space">
         <div className="container-fluid-lg">
           <div className="row g-sm-5 g-3">
-            <div className="col-xxl-9">
-              <div className="cart-table">
-                <div className="table-responsive-xl">
-                  <table className="table" style={{ marginLeft: "-21px" }}>
-                    <tbody>
-                      {cartListItems
-                        ?.slice()
-                        ?.reverse()
-                        ?.map((item, index) => {
-                          const subtotal =
-                            (item?.varient?.Price || 0) * (item?.quantity || 1);
+            <div
+              className={`col-xxl-${
+                cartListItems && cartListItems.length > 0 ? "9" : "12"
+              }`}
+            >
+              {cartListItems?.length > 0 ? (
+                <div className="cart-table">
+                  <div className="table-responsive-xl">
+                    <table className="table" style={{ marginLeft: "-21px" }}>
+                      <tbody>
+                        {cartListItems
+                          ?.slice()
+                          ?.reverse()
+                          ?.map((item, index) => {
+                            const subtotal =
+                              (item?.varient?.Price || 0) *
+                              (item?.quantity || 1);
 
-                          return (
-                            <tr className="product-box-contain" key={index}>
-                              <td className="product-detail">
-                                <div className="product border-0">
-                                  <Link to="/product" className="product-image">
-                                    <img
-                                      src={item?.varient?.product_Pic[0]}
-                                      className="img-fluid  lazyload"
-                                      alt=""
-                                    />
-                                  </Link>
-                                  <div className="product-detail">
-                                    <ul>
-                                      <li className="name">
-                                        <Link to={`/product`}>
-                                          <strong>
-                                            {item?.product_Id?.productName_en
-                                              ?.split(" ")
-                                              ?.slice(0, 3)
-                                              ?.join(" ")}
-                                          </strong>
-                                        </Link>
-                                      </li>
-                                      <li className="text-content">
-                                        <span className="text-title">
-                                          Sold By:
-                                        </span>{" "}
-                                        Fresho
-                                      </li>
-                                      <li className="text-content">
-                                        <span className="text-title">
-                                          SKU :
-                                        </span>{" "}
-                                        {item?.varient?.SKU}
-                                      </li>
-                                    </ul>
+                            return (
+                              <tr className="product-box-contain" key={index}>
+                                <td className="product-detail">
+                                  <div className="product border-0">
+                                    <Link
+                                      to="/product"
+                                      className="product-image"
+                                    >
+                                      <img
+                                        src={item?.varient?.product_Pic[0]}
+                                        className="img-fluid  lazyload"
+                                        alt=""
+                                      />
+                                    </Link>
+                                    <div className="product-detail">
+                                      <ul>
+                                        <li className="name">
+                                          <Link to={`/product`}>
+                                            <strong>
+                                              {item?.product_Id?.productName_en
+                                                ?.split(" ")
+                                                ?.slice(0, 3)
+                                                ?.join(" ")}
+                                            </strong>
+                                          </Link>
+                                        </li>
+                                        <li className="text-content">
+                                          <span className="text-title">
+                                            Sold By:
+                                          </span>{" "}
+                                          Fresho
+                                        </li>
+                                        <li className="text-content">
+                                          <span className="text-title">
+                                            SKU :
+                                          </span>{" "}
+                                          {item?.varient?.SKU}
+                                        </li>
+                                      </ul>
+                                    </div>
                                   </div>
-                                </div>
-                              </td>
+                                </td>
 
-                              <td className="quantity">
-                                <div className="quantity-price">
-                                  <div className="cart_qty">
-                                    <div className="input-group">
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "column",
-                                          alignItems: "center",
-                                          justifyContent: "center",
-                                        }}
-                                      >
-                                        <div className="table-title text-content">
-                                          Qty
-                                        </div>
+                                <td className="quantity">
+                                  <div className="quantity-price">
+                                    <div className="cart_qty">
+                                      <div className="input-group">
                                         <div
                                           style={{
                                             display: "flex",
-                                            flexDirection: "row",
+                                            flexDirection: "column",
                                             alignItems: "center",
-                                            justifyContent: "space-between",
+                                            justifyContent: "center",
                                           }}
                                         >
-                                          {" "}
-                                          {item?.quantity === 1 ? (
-                                            <div
-                                              style={{
-                                                cursor: "not-allowed",
-                                              }}
-                                            >
-                                              <button
-                                                type="button"
-                                                className="btn qty-left-minus me-2"
-                                                data-type="minus"
-                                                data-field=""
+                                          <div className="table-title text-content">
+                                            Qty
+                                          </div>
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              flexDirection: "row",
+                                              alignItems: "center",
+                                              justifyContent: "space-between",
+                                            }}
+                                          >
+                                            {" "}
+                                            {item?.quantity === 1 ? (
+                                              <div
                                                 style={{
-                                                  filter: "blur(0.7px)",
-                                                  background: "lightgray",
-                                                  color: "darkgray",
+                                                  cursor: "not-allowed",
                                                 }}
-                                                disabled
                                               >
-                                                <i
-                                                  className="fa fa-minus ms-0"
-                                                  aria-hidden="true"
-                                                />
-                                              </button>
-                                            </div>
-                                          ) : (
+                                                <button
+                                                  type="button"
+                                                  className="btn qty-left-minus me-2"
+                                                  data-type="minus"
+                                                  data-field=""
+                                                  style={{
+                                                    filter: "blur(0.7px)",
+                                                    background: "lightgray",
+                                                    color: "darkgray",
+                                                  }}
+                                                  disabled
+                                                >
+                                                  <i
+                                                    className="fa fa-minus ms-0"
+                                                    aria-hidden="true"
+                                                  />
+                                                </button>
+                                              </div>
+                                            ) : (
+                                              <div>
+                                                <button
+                                                  type="button"
+                                                  className="btn qty-left-minus me-2"
+                                                  data-type="minus"
+                                                  data-field=""
+                                                  onClick={() =>
+                                                    handleDecrement(item?._id)
+                                                  }
+                                                >
+                                                  <i
+                                                    className="fa fa-minus ms-0"
+                                                    aria-hidden="true"
+                                                  />
+                                                </button>
+                                              </div>
+                                            )}
+                                            <div>{item?.quantity}</div>
                                             <div>
                                               <button
                                                 type="button"
-                                                className="btn qty-left-minus me-2"
-                                                data-type="minus"
+                                                className="btn qty-right-plus ms-2"
+                                                data-type="plus"
                                                 data-field=""
                                                 onClick={() =>
-                                                  handleDecrement(item?._id)
+                                                  handleIncrement(item?._id)
                                                 }
                                               >
                                                 <i
-                                                  className="fa fa-minus ms-0"
+                                                  className="fa fa-plus ms-0"
                                                   aria-hidden="true"
                                                 />
                                               </button>
                                             </div>
-                                          )}
-                                          <div>{item?.quantity}</div>
-                                          <div>
-                                            <button
-                                              type="button"
-                                              className="btn qty-right-plus ms-2"
-                                              data-type="plus"
-                                              data-field=""
-                                              onClick={() =>
-                                                handleIncrement(item?._id)
-                                              }
-                                            >
-                                              <i
-                                                className="fa fa-plus ms-0"
-                                                aria-hidden="true"
-                                              />
-                                            </button>
                                           </div>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
-                              </td>
-                              <td className="subtotal">
-                                <h4 className="table-title text-content">
-                                  Total
-                                </h4>
-                                {/* <h5>${item?.products[0]?.Price}</h5> */}
-                                <h5>${subtotal}</h5>
-                              </td>
-                              <td className="save-remove">
-                                <h3
-                                  className="table-title text-content"
-                                  style={{
-                                    display: "flex",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  <strong>Action</strong>
-                                </h3>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  <Link
-                                    to="#"
-                                    className="btn btn-animation proceed-btn fw-bold me-2"
-                                    style={{ height: "35px", width: "35px" }}
-                                    onClick={() => {
-                                      handlePrice(item);
+                                </td>
+                                <td className="subtotal">
+                                  <h4 className="table-title text-content">
+                                    Total
+                                  </h4>
+
+                                  <h5>${subtotal}</h5>
+                                </td>
+                                <td className="save-remove">
+                                  <h3
+                                    className="table-title text-content"
+                                    style={{
+                                      display: "flex",
+                                      textAlign: "center",
+                                      justifyContent: "center",
                                     }}
                                   >
-                                    Buy
-                                  </Link>
-                                  <Link
-                                    to="#"
-                                    className="btn btn-animation proceed-btn fw-bold"
-                                    style={{ height: "35px", width: "35px" }}
-                                    title4="Wishlist"
-                                    onClick={() => deleteCartItem(item._id)}
+                                    <strong>Action</strong>
+                                  </h3>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                    }}
                                   >
-                                    <FontAwesomeIcon icon={faTrash} />
-                                  </Link>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
+                                    <Link
+                                      to="#"
+                                      className="btn btn-animation proceed-btn fw-bold me-2"
+                                      style={{ height: "35px", width: "35px" }}
+                                      onClick={() => {
+                                        handlePrice(item);
+                                      }}
+                                    >
+                                      Buy
+                                    </Link>
+                                    <Link
+                                      to="#"
+                                      className="btn btn-animation proceed-btn fw-bold"
+                                      style={{ height: "35px", width: "35px" }}
+                                      title4="Wishlist"
+                                      onClick={() => deleteCartItem(item._id)}
+                                    >
+                                      <FontAwesomeIcon icon={faTrash} />
+                                    </Link>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
-              {/* <Link
-                to="#"
-                className="btn btn-animation proceed-btn fw-bold me-2 mt-2"
-                style={{ height: "35px", width: "125px", marginLeft: "792px" }}
-              >
-                Buy All
-              </Link> */}
+              ) : (
+                // <div className="cart-table">
+                // <div className="table-responsive-xl d-flex align-items-center justify-content-center">
+                <div className="d-flex flex-column align-items-center justify-content-center">
+                  <img
+                    src="../assets/images/emptycart.webp"
+                    className="img-fluid  lazyload "
+                    alt=""
+                    height={500}
+                    width={500}
+                  />
+                  <div className="d-flex align-items-center justify-content-center mt-3">
+                    <h2>
+                      <strong>Your Cart Is Empty</strong>
+                    </h2>
+                  </div>
+                  <Link
+                    to="/shop"
+                    className=" btn btn-animation proceed-btn fw-bold d-flex align-items-center justify-content-center mt-3"
+                  >
+                    Shop Now
+                  </Link>
+                </div>
+                //   </div>
+                // </div>
+              )}
             </div>
-            <div className="col-xxl-3">
-              <div className="summery-box p-sticky">
-                <div className="summery-header">
-                  <h3>Cart Total</h3>
-                </div>
-                <div className="summery-contain">
-                  {singleItemPrice.length !== 0 ? (
-                    <div className="coupon-cart">
-                      <h6 className="text-content mb-2">Coupon Apply</h6>
-                      <div className="mb-3 coupon-box input-group">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="coupanCode"
-                          name="coupanCode"
-                          placeholder="Enter Coupon Code Here..."
-                          value={coupanCode}
-                          onChange={(e) => setCoupanCode(e.target.value)}
-                        />
-                        <button
-                          className="btn-apply"
-                          onClick={() => applyCoupanCode()}
-                        >
-                          Apply
-                        </button>
+            {cartListItems?.length > 0 ? (
+              <div className="col-xxl-3">
+                <div className="summery-box p-sticky">
+                  <div className="summery-header">
+                    <h3>Cart Total</h3>
+                  </div>
+                  <div className="summery-contain">
+                    {singleItemPrice.length !== 0 ? (
+                      <div className="coupon-cart">
+                        <h6 className="text-content mb-2">Coupon Apply</h6>
+                        <div className="mb-3 coupon-box input-group">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="coupanCode"
+                            name="coupanCode"
+                            placeholder="Enter Coupon Code Here..."
+                            value={coupanCode}
+                            onChange={(e) => setCoupanCode(e.target.value)}
+                          />
+                          <button
+                            className="btn-apply"
+                            onClick={() => applyCoupanCode()}
+                          >
+                            Apply
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="coupon-cart">
-                      <h6 className="text-content mb-2">Coupon Apply</h6>
-                      <div className="mb-3 coupon-box input-group">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="coupanCode"
-                          name="coupanCode"
-                          placeholder="Enter Coupon Code Here..."
-                          value={coupanCode}
-                          onChange={(e) => setCoupanCode(e.target.value)}
-                        />
-                        <button
-                          className="btn-apply"
-                          onClick={() => applyCoupanCode()}
-                        >
-                          Apply
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {singleItemPrice.length !== 0 ? (
-                    <ul>
-                      <li>
-                        <h4>Subtotal</h4>
-                        <h4 className="price">
-                          $
-                          {singleItemPrice?.varient?.Price *
-                            singleItemPrice?.quantity}
-                        </h4>
-                      </li>
-                      <li>
-                        <h4>Coupon Discount</h4>
-                        <h4 className="price"> {coupanresponse} %</h4>
-                      </li>
-                    </ul>
-                  ) : (
-                    <ul>
-                      <li>
-                        <h4>Subtotal</h4>
-                        <h4 className="price">
-                          ${coupan?.subtotal || totalSubtotal}
-                        </h4>
-                      </li>
-                      <li>
-                        <h4>Coupon Discount</h4>
-                        <h4 className="price"> {coupanresponse} %</h4>
-                      </li>
-                    </ul>
-                  )}
-
-                  {/* <ul>
-                    <li>
-                      <h4>Subtotal</h4>
-                      <h4 className="price">
-                        $
-                        {coupan2?.length !== 0
-                          ? coupan2?.subtotal
-                          : coupan?.subtotal}
-                      </h4>
-                    </li>
-                    <li>
-                      <h4>Coupon Discount</h4>
-                      <h4 className="price">
-                        {" "}
-                        -{" "}
-                        {coupan2?.length !== 0
-                          ? coupan2?.DiscountType
-                          : coupan?.DiscountType}{" "}
-                        %
-                      </h4>
-                    </li>
-                  </ul> */}
-                </div>
-                <ul className="summery-total">
-                  <li className="list-total border-top-0">
-                    <h4>Total (USD)</h4>
-                    {singleItemPrice?.length !== 0 ? (
-                      <h4 className="price theme-color">
-                        $
-                        {coupanresponse
-                          ? (
-                              singleItemPrice?.varient?.Price *
-                              singleItemPrice?.quantity *
-                              (1 - coupanresponse / 100)
-                            )?.toFixed(2)
-                          : singleItemPrice?.varient?.Price *
-                            singleItemPrice?.quantity}
-                      </h4>
                     ) : (
-                      <h4 className="price theme-color">
-                        $
-                        {coupanresponse
-                          ? (
-                              totalSubtotal *
-                              (1 - coupanresponse / 100)
-                            )?.toFixed(2)
-                          : totalSubtotal}
-                      </h4>
+                      <div className="coupon-cart">
+                        <h6 className="text-content mb-2">Coupon Apply</h6>
+                        <div className="mb-3 coupon-box input-group">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="coupanCode"
+                            name="coupanCode"
+                            placeholder="Enter Coupon Code Here..."
+                            value={coupanCode}
+                            onChange={(e) => setCoupanCode(e.target.value)}
+                          />
+                          <button
+                            className="btn-apply"
+                            onClick={() => applyCoupanCode()}
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      </div>
                     )}
-                  </li>
-                </ul>
-                <div className="button-group cart-button">
-                  <ul>
-                    <li>
-                      {/* <Link
+
+                    {singleItemPrice.length !== 0 ? (
+                      <ul>
+                        <li>
+                          <h4>Subtotal</h4>
+                          <h4 className="price">
+                            $
+                            {singleItemPrice?.varient?.Price *
+                              singleItemPrice?.quantity}
+                          </h4>
+                        </li>
+                        <li>
+                          <h4>Coupon Discount</h4>
+                          <h4 className="price"> {coupanresponse} %</h4>
+                        </li>
+                      </ul>
+                    ) : (
+                      <ul>
+                        <li>
+                          <h4>Subtotal</h4>
+                          <h4 className="price">
+                            ${coupan?.subtotal || totalSubtotal}
+                          </h4>
+                        </li>
+                        <li>
+                          <h4>Coupon Discount</h4>
+                          <h4 className="price"> {coupanresponse} %</h4>
+                        </li>
+                      </ul>
+                    )}
+                  </div>
+                  <ul className="summery-total">
+                    <li className="list-total border-top-0">
+                      <h4>Total (USD)</h4>
+                      {singleItemPrice?.length !== 0 ? (
+                        <h4 className="price theme-color">
+                          $
+                          {coupanresponse
+                            ? (
+                                singleItemPrice?.varient?.Price *
+                                singleItemPrice?.quantity *
+                                (1 - coupanresponse / 100)
+                              )?.toFixed(2)
+                            : singleItemPrice?.varient?.Price *
+                              singleItemPrice?.quantity}
+                        </h4>
+                      ) : (
+                        <h4 className="price theme-color">
+                          $
+                          {coupanresponse
+                            ? (
+                                totalSubtotal *
+                                (1 - coupanresponse / 100)
+                              )?.toFixed(2)
+                            : totalSubtotal}
+                        </h4>
+                      )}
+                    </li>
+                  </ul>
+                  <div className="button-group cart-button">
+                    <ul>
+                      <li>
+                        {/* <Link
                         // to="/check-out"
                         to={`/check-out/${encodeURIComponent(
                           JSON.stringify(coupan2)
@@ -643,28 +649,29 @@ function Cart() {
                       >
                         Process To Checkout
                       </Link> */}
-                      <Link
-                        to={checkoutUrl}
-                        className="btn btn-animation proceed-btn fw-bold"
-                      >
-                        Process To Checkout
-                      </Link>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => {
-                          window.location.href = "/index";
-                        }}
-                        className="btn btn-light shopping-button text-dark"
-                      >
-                        <i className="fa-solid fa-arrow-left-long" />
-                        Return To Shopping
-                      </button>
-                    </li>
-                  </ul>
+                        <Link
+                          to={checkoutUrl}
+                          className="btn btn-animation proceed-btn fw-bold"
+                        >
+                          Process To Checkout
+                        </Link>
+                      </li>
+                      <li>
+                        <button
+                          onClick={() => {
+                            window.location.href = "/index";
+                          }}
+                          className="btn btn-light shopping-button text-dark"
+                        >
+                          <i className="fa-solid fa-arrow-left-long" />
+                          Return To Shopping
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </section>

@@ -31018,12 +31018,12 @@ button:not(:disabled) {
 
 .slick-next:before,
 .slick-prev:before {
-  font-size: 50px;
+  font-size: 30px;
   line-height: 1;
   opacity: .75;
   color: #0da487;
 }
 
 .slick-slider .slick-list {
-  margin: 0 0 0 30px;
+  margin: 0 0 0 15px;
 }

@@ -54,6 +54,23 @@ function CheckOutNew() {
   }, []);
 
   const placeOrder = async () => {
+    if (!selectedAddressId) {
+      Swal.fire({
+        title: "Update Address",
+        text: "Please update your address before placing the order.",
+        icon: "warning",
+        showCancelButton: false,
+        confirmButtonColor: "#0da487",
+        // confirmButtonText: "Update Address ➡️",
+        confirmButtonText: "Update Address →",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/user-dashboard");
+        }
+      });
+      return;
+    }
+
     let orderList = [];
 
     if (items) {
@@ -98,7 +115,7 @@ function CheckOutNew() {
       text: "Are you sure you want to place the order?",
       icon: "question",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
+      confirmButtonColor: "#0da487",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, Place Order",
       cancelButtonText: "Cancel",

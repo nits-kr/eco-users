@@ -7,6 +7,7 @@ const SearchSlice = createSlice({
     query: localStorage?.getItem("searchQuerymain") || "",
     results: [],
     stars: [],
+    compare: localStorage?.getItem("comparelist") || "",
   },
   reducers: {
     searchQuerydata: (state, action) => {
@@ -18,11 +19,18 @@ const SearchSlice = createSlice({
     },
     setUserStarRatings: (state, action) => {
       state.stars = action.payload;
-      console.log("star action.payload", action.payload);
+    },
+    setCompareList: (state, action) => {
+      state.compare = action.payload;
+      localStorage?.setItem("comparelist", action.payload);
     },
   },
 });
 
-export const { searchQuerydata, setSearchResults, setUserStarRatings } =
-  SearchSlice.actions;
+export const {
+  searchQuerydata,
+  setSearchResults,
+  setUserStarRatings,
+  setCompareList,
+} = SearchSlice.actions;
 export default SearchSlice.reducer;

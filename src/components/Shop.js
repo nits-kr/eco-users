@@ -64,12 +64,10 @@ function Shop(props) {
   const [selectedProductId, setSelectedProductId] = useState("");
   const location = useLocation();
   let id = location.state?.id;
-  console.log("id", id);
 
   const navigate = useNavigate();
 
   const selector = useSelector((data) => data?.search?.query);
-  console.log("selector data", selector);
 
   const [count, setCount] = useState([]);
   useEffect(() => {
@@ -328,11 +326,11 @@ function Shop(props) {
     feather.replace();
   }, []);
   var settings1 = {
-    dots: true,
+    // dots: true,
     infinite: true,
     speed: 500,
     slidesToShow: w > 500 ? 6 : 1,
-    autoplay: true,
+    // autoplay: true,
     slidesToScroll: 1,
   };
   const handleViewDetails = () => {
@@ -421,14 +419,45 @@ function Shop(props) {
     startIndex + itemsPerPage
   );
 
-  const [selectedRowsPerPage, setSelectedRowsPerPage] = useState("");
-
-  const handleRowsPerPageChange = (event) => {
-    const selectedValue = event.target.value;
-    setSelectedRowsPerPage(selectedValue);
-
-    const parsedValue = parseInt(selectedValue, 10);
-    setItemsPerPage(isNaN(parsedValue) ? 2 : parsedValue);
+  const slidersTop = () => {
+    return subCategoryListData?.map((item, index) => {
+      return (
+        <div key={index}>
+          <div
+            className="shop-category-box d-flex align-items-center justify-content-center"
+            style={{
+              backgroundColor: "#e0e0e0",
+              padding: "5px",
+              borderRadius: "5px",
+            }}
+          >
+            <Link to="#" onClick={() => handleSaveChanges1(item?._id)}>
+              <div className="shop-category-image d-flex align-items-center justify-content-center">
+                <img
+                  src={
+                    item
+                      ? item?.subCategoryPic
+                      : "../assets/svg/1/vegetable.svg"
+                  }
+                  className=" lazyload mt-2"
+                  alt=""
+                  style={{
+                    height: "100px",
+                    width: "162px",
+                    borderRadius: "5px",
+                  }}
+                />
+              </div>
+              <div className="category-box-name d-flex align-items-center justify-content-center m-2">
+                <h6 style={{ whiteSpace: "nowrap" }}>
+                  <strong className="m-2">{item?.subCategoryName_en || ""}</strong>{" "}
+                </h6>
+              </div>
+            </Link>
+          </div>
+        </div>
+      );
+    });
   };
 
   return (
@@ -495,7 +524,12 @@ function Shop(props) {
         </div>
       </section>
 
-      <CategoryTop subCategoryListData={subCategoryListData} />
+      {/* <CategoryTop subCategoryListData={subCategoryListData} /> */}
+      <section className="product-list-section ">
+        <div className="container-fluid-lg">
+          <Slider {...settings1}>{slidersTop()}</Slider>
+        </div>
+      </section>
 
       <section className="section-b-space shop-section">
         <div className="container-fluid-lg">

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Star from "../Star";
 import GetStar from "../GetStar";
 import { Link, useLocation } from "react-router-dom";
-import { AddReview } from "../HttpServices";
+
 import Swal from "sweetalert2";
 import { useAddReviewMutation } from "../../services/Post";
 
@@ -70,7 +70,7 @@ function Addreview({ averageRating, productDetail, id }) {
       console.error("Error creating contact:", error);
     }
   };
-  console.log("averageRating", averageRating);
+
   return (
     <>
       <div className="tab-content custom-tab" id="myTabContent">
@@ -293,7 +293,6 @@ function Addreview({ averageRating, productDetail, id }) {
                   <button
                     className="btn btn-animation btn-md fw-bold ms-auto"
                     type="submit"
-                    // onClick={handleCreateReview}
                   >
                     Send Reviews
                   </button>
@@ -473,19 +472,9 @@ function Addreview({ averageRating, productDetail, id }) {
           role="tabpanel"
           aria-labelledby="description-tab"
         >
-          <div className="product-description">
+          <div className="product-description mb-4">
             <div className="nav-desh">
-              <p>
-                Jelly beans carrot cake icing biscuit oat cake gummi bears tart.
-                Lemon drops carrot cake pudding sweet gummi bears. Chocolate
-                cake tart cupcake donut topping liquorice sugar plum chocolate
-                bar. Jelly beans tiramisu caramels jujubes biscuit liquorice
-                chocolate. Pudding toffee jujubes oat cake sweet roll. Lemon
-                drops dessert croissant danish cake cupcake. Sweet roll candy
-                chocolate toffee jelly sweet roll halvah brownie topping.
-                Marshmallow powder candy sesame snaps jelly beans candy canes
-                marshmallow gingerbread pie.
-              </p>
+              <p>{productDetail?.Description}</p>
             </div>
             <div className="nav-desh">
               <div className="desh-title">
@@ -604,25 +593,12 @@ function Addreview({ averageRating, productDetail, id }) {
         >
           <div className="information-box">
             <ul>
-              <li>
-                Store cream cakes in a refrigerator. Fondant cakes should be
-                stored in an air conditioned environment.
-              </li>
-              <li>
-                Slice and serve the cake at room temperature and make sure it is
-                not exposed to heat.
-              </li>
-              <li>Use a serrated knife to cut a fondant cake.</li>
-              <li>
-                Sculptural elements and figurines may contain wire supports or
-                toothpicks or wooden skewers for support.
-              </li>
-              <li>
-                Please check the placement of these items before serving to
-                small children.
-              </li>
-              <li>The cake should be consumed within 24 hours.</li>
-              <li>Enjoy your cake!</li>
+              {productDetail?.careInstuctions &&
+                productDetail.careInstuctions
+                  .split(".")
+                  .map((instruction, index) => (
+                    <li key={index}>{instruction.trim()}</li>
+                  ))}
             </ul>
           </div>
         </div>
