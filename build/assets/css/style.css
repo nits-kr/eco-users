@@ -484,7 +484,7 @@
 
 @media (max-width: 480px) {
   .breadscrumb-section .breadscrumb-contain {
-    display: block;
+    display: flex;
   }
 }
 

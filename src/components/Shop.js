@@ -450,7 +450,9 @@ function Shop(props) {
               </div>
               <div className="category-box-name d-flex align-items-center justify-content-center m-2">
                 <h6 style={{ whiteSpace: "nowrap" }}>
-                  <strong className="m-2">{item?.subCategoryName_en || ""}</strong>{" "}
+                  <strong className="m-2">
+                    {item?.subCategoryName_en || ""}
+                  </strong>{" "}
                 </h6>
               </div>
             </Link>
@@ -505,7 +507,7 @@ function Shop(props) {
           <div className="row">
             <div className="col-12">
               <div className="breadscrumb-contain">
-                <h2>Shop Right Sidebar</h2>
+                <h2>Shop </h2>
                 <nav>
                   <ol className="breadcrumb mb-0">
                     <li className="breadcrumb-item">
@@ -514,7 +516,7 @@ function Shop(props) {
                       </Link>
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
-                      Shop Right Sidebar
+                      Shop
                     </li>
                   </ol>
                 </nav>

@@ -7,9 +7,9 @@ export const PostApi = createApi({
   reducerPath: "PostApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://euser.techgropsedev.com:2087",
-    headers: {
-      "x-auth-token-user": localStorage.getItem("token"),
-    },
+    // headers: {
+    //   "x-auth-token-user": localStorage.getItem("ecomWebtoken"),
+    // },
   }),
   endpoints: (builder) => ({
     getAllPost: builder.query({
@@ -132,10 +132,14 @@ export const PostApi = createApi({
         method: "post",
       }),
     }),
+
     getCartList: builder.query({
-      query: (name) => ({
-        url: `user/carts/carts/carts-list/${userId}`,
+      query: ({ ecommercetoken, ecomuserId }) => ({
+        url: `user/carts/carts/carts-list/${ecomuserId}`,
         method: "post",
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
       }),
     }),
     getAddressList: builder.query({

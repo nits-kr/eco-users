@@ -68,7 +68,7 @@ function App() {
         <ToastContainer />
         <LoadingBar height={3} color="#f11946" progress={progress} />
         <Routes>
-          <Route exact className="active" path="/" element={<Login />} />
+          <Route exact className="active" path="/login" element={<Login />} />
           <Route
             exact
             className="active"
@@ -143,7 +143,7 @@ function App() {
           <Route
             exact
             className="active"
-            path="*"
+            path="/"
             element={<IndexGrocary setProgress={setProgress} />}
           />
           <Route

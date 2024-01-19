@@ -14,10 +14,12 @@ import {
 import { useSubCategoryListMutation } from "../services/Post";
 import { useGetCartListQuery } from "../services/Post";
 import { useGetTrendingProductQuery } from "../services/Post";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { searchQuerydata } from "../app/slice/SearchSlice";
 
 function Header({ Dash }) {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomuserId = useSelector((data) => data?.local?.ecomUserid);
   const categoryListItems = useGetCategoryListQuery();
   const [subCategoryList] = useSubCategoryListMutation();
   const [bannerList] = useTopBannerListMutation();
@@ -32,7 +34,10 @@ function Header({ Dash }) {
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSale, setShowSale] = useState(false);
   const cartTotal = localStorage?.getItem("cartTotal");
-  const { data: cartListQuery, isSuccess } = useGetCartListQuery();
+  const { data: cartListQuery } = useGetCartListQuery({
+    ecommercetoken,
+    ecomuserId,
+  });
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
   localStorage?.setItem("productSearch", searchQuery);
@@ -47,22 +52,29 @@ function Header({ Dash }) {
       totalSubtotal += subtotal;
     });
 
-  // const totalSubtotal = localStorage?.getItem("totalSubtotal");
-
   useEffect(() => {
     if (trendingProduct?.data?.results?.productlist) {
       setTrendingList(trendingProduct?.data?.results?.productlist);
     }
   }, [trendingProduct?.data?.results?.productlist]);
-  useEffect(() => {
-    const fetchCartListData = () => {
-      if (isSuccess) {
-        setCartListItems(cartListQuery?.carts);
-      }
-    };
 
-    fetchCartListData();
-  }, [cartListQuery, isSuccess]);
+  useEffect(() => {
+    if (cartListQuery && ecommercetoken !== null) {
+      setCartListItems(cartListQuery?.carts);
+    }
+  }, [cartListQuery, ecommercetoken]);
+
+  // console.log("ecommercetoken", ecommercetoken);
+
+  // useEffect(() => {
+  //   const fetchCartListData = () => {
+  //     if (ecommercetoken) {
+  //       setCartListItems(cartListQuery?.carts);
+  //     }
+  //   };
+
+  //   fetchCartListData();
+  // }, [cartListQuery, ecommercetoken]);
 
   useEffect(() => {
     const reversedList =
@@ -599,7 +611,7 @@ function Header({ Dash }) {
                             {loginId ? null : (
                               <li className="product-box-contain">
                                 <i />
-                                <Link to="/">Log In</Link>
+                                <Link to="/login">Log In</Link>
                               </li>
                             )}
 
@@ -609,9 +621,11 @@ function Header({ Dash }) {
                             <li className="product-box-contain">
                               <Link to="/forgot">Forgot Password</Link>
                             </li>
-                            <li className="product-box-contain">
-                              <Link to="/">Logout</Link>
-                            </li>
+                            {ecommercetoken ? (
+                              <li className="product-box-contain">
+                                <Link to="/">Logout</Link>
+                              </li>
+                            ) : null}
                           </ul>
                         </div>
                       </li>

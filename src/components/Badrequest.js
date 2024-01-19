@@ -17,6 +17,7 @@ import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Header from "./Header";
 import Footer from "./Footer";
+import Spinner from "./Spinner";
 
 function Badrequest() {
   useEffect(() => {
@@ -25,17 +26,11 @@ function Badrequest() {
   return (
     <>
       {/* Loader Start */}
-      {/* <div className="fullpage-loader">
-          <span />
-          <span />
-          <span />
-          <span />
-          <span />
-          <span />
-        </div> */}
+
+      {/* <Spinner /> */}
       {/* Loader End */}
       {/* Header Start */}
-     <Header/>
+      <Header />
       {/* Header End */}
       {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
@@ -79,7 +74,7 @@ function Badrequest() {
           <div className="row">
             <div className="col-12">
               <div className="breadscrumb-contain">
-                <h2>404 Page</h2>
+                <h2>Product not found</h2>
                 <nav>
                   <ol className="breadcrumb mb-0">
                     <li className="breadcrumb-item">
@@ -88,7 +83,7 @@ function Badrequest() {
                       </Link>
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
-                      404
+                      Not
                     </li>
                   </ol>
                 </nav>
@@ -105,7 +100,7 @@ function Badrequest() {
             <div className="col-12">
               <div className="image-404">
                 <img
-                  src="../assets/images/inner-page/404.png"
+                  src="../assets/images/inner-page/dashboard-profile.png"
                   className="img-fluid  lazyload"
                   alt=""
                 />
@@ -114,18 +109,16 @@ function Badrequest() {
             <div className="col-12">
               <div className="contain-404">
                 <h3 className="text-content">
-                  The page you are looking for could not be found. The link to
-                  this address may be outdated or we may have moved the since
-                  you last bookmarked it.
+                  <strong>Product Not Found</strong>{" "}
                 </h3>
                 <button
                   // onclick="location.href = 'index.html';"
                   onClick={() => {
-                    window.location.href = "/index";
+                    window.location.href = "/";
                   }}
                   className="btn btn-md text-white theme-bg-color mt-4 mx-auto"
                 >
-                  Back To Home Screen
+                  Continue Shopping
                 </button>
               </div>
             </div>
@@ -134,7 +127,7 @@ function Badrequest() {
       </section>
       {/* 404 Section End */}
       {/* Footer Section Start */}
-      <Footer/>
+      <Footer />
       {/* Footer Section End */}
       {/* Location Modal Start */}
       <div

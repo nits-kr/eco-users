@@ -231,7 +231,8 @@ function WishList() {
                         >
                           <div>
                             <h6 className="unit">
-                              {item?.product_Id?.stockQuantity} units{" "}
+                              {item?.product_Id?.addVarient?.[0]?.stockQuantity}{" "}
+                              units{" "}
                             </h6>
                           </div>
                           <div className="">
