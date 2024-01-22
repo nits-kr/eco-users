@@ -24,7 +24,10 @@ import {
   DiscountProduct,
   AddCompare,
 } from "./HttpServices";
-import { useGetSubCategoryListQuery } from "../services/Post";
+import {
+  useGetCartListheaderMutation,
+  useGetSubCategoryListQuery,
+} from "../services/Post";
 import Star from "./Star";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -46,6 +49,9 @@ import Pagination from "./shopping/Pagination";
 import CategoryTop from "./shopping/CategoryTop";
 
 function Shop(props) {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const [cartListQuery] = useGetCartListheaderMutation();
   const [productListItems, setProductListItems] = useState([]);
   const [subCategoryProduct] = useSubCategoryProductListMutation();
   const subCategoryListItems = useGetSubCategoryListQuery();
@@ -80,6 +86,27 @@ function Shop(props) {
 
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
+
+  useEffect(() => {
+    if (ecomUserId) {
+      handleCartList(ecomUserId);
+    }
+  }, [ecomUserId]);
+
+  const handleCartList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await cartListQuery(datas);
+
+      setCartListItems(respone?.carts);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSaveChanges1 = async (categoryId) => {
     setSelectedSubcategories((prevSelected) => {
@@ -159,21 +186,7 @@ function Shop(props) {
       console.error("Error filtering products:", error);
     }
   };
-  useEffect(() => {
-    cartData();
-  }, []);
-  const cartData = async () => {
-    try {
-      const data = await CartList();
-      setCartListItems(data?.data?.carts);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  // useEffect(() => {
-  //   localStorage?.removeItem("searchQuerymain");
-  //   fetchData();
-  // }, []);
+
   const fetchData = async () => {
     try {
       props.setProgress(10);
@@ -226,6 +239,25 @@ function Shop(props) {
   };
 
   const handleAddToCart = async (e, item, price, index, variantId) => {
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to cart.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
     console.log("item added id", item?._id);
     e.preventDefault();
     try {
@@ -1085,33 +1117,24 @@ function Shop(props) {
                                 {isItemInCart ? (
                                   <div className="add-to-cart-box bg-white mt-2">
                                     <button className="btn btn-add-cart addcart-button">
-                                      <Link
-                                        to="/cart"
-                                        // onClick={() =>
-                                        //   handleAddToCart(item, item?.addVarient[0]?.Price, index)
-                                        // }
-                                      >
-                                        Go To Cart
-                                      </Link>
+                                      <Link to="/cart">Go To Cart</Link>
                                     </button>
                                   </div>
                                 ) : (
                                   <div className="add-to-cart-box bg-white mt-2">
-                                    <button className="btn btn-add-cart addcart-button">
-                                      <Link
-                                        to="/cart"
-                                        onClick={(e) =>
-                                          handleAddToCart(
-                                            e,
-                                            item,
-                                            item?.addVarient[0]?.Price,
-                                            index,
-                                            item?.addVarient[0]?._id
-                                          )
-                                        }
-                                      >
-                                        Add To Cart
-                                      </Link>
+                                    <button
+                                      className="btn btn-add-cart addcart-button"
+                                      onClick={(e) =>
+                                        handleAddToCart(
+                                          e,
+                                          item,
+                                          item?.addVarient[0]?.Price,
+                                          index,
+                                          item?.addVarient[0]?._id
+                                        )
+                                      }
+                                    >
+                                      Add To Cart
                                     </button>
                                   </div>
                                 )}

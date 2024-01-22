@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -21,7 +21,6 @@ import Swal from "sweetalert2";
 function Header({ Dash }) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
-  console.log("ecomUserId header", ecomUserId);
   const categoryListItems = useGetCategoryListQuery();
   const [subCategoryList] = useSubCategoryListMutation();
   const [bannerList] = useTopBannerListMutation();
@@ -39,8 +38,8 @@ function Header({ Dash }) {
   const cartTotal = localStorage?.getItem("cartTotal");
   const [cartListQuery] = useGetCartListheaderMutation();
 
-  axios.defaults.headers.common["x-auth-token-user"] =
-    localStorage.getItem("token");
+  const navigate = useNavigate();
+
   localStorage?.setItem("productSearch", searchQuery);
   const loginId = localStorage?.getItem("loginId");
 
@@ -188,11 +187,27 @@ function Header({ Dash }) {
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.href = "/login";
+          navigate("/login");
         }
       });
     }
   };
+
+  const handleLogout = () => {
+    const itemsToRemove = [
+      "ecomWebtoken",
+      "userEmail",
+      "ecomUserId",
+      "loginId",
+      "mobileNumber",
+      "userName",
+    ];
+
+    itemsToRemove.forEach((item) => {
+      localStorage.removeItem(item);
+    });
+  };
+
   return (
     <>
       <header className="pb-md-4 pb-0">
@@ -649,7 +664,9 @@ function Header({ Dash }) {
                             </li>
                             {ecommercetoken ? (
                               <li className="product-box-contain">
-                                <Link to="/">Logout</Link>
+                                <Link to="/" onClick={handleLogout}>
+                                  Logout
+                                </Link>
                               </li>
                             ) : null}
                           </ul>
