@@ -419,6 +419,23 @@ function Shop(props) {
     startIndex + itemsPerPage
   );
 
+  const [inputWidth, setInputWidth] = useState("9");
+  const handleResize = () => {
+    if (window.innerWidth <= 767) {
+      setInputWidth("12");
+    } else {
+      setInputWidth("9");
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   const slidersTop = () => {
     return subCategoryListData?.map((item, index) => {
       return (
@@ -702,7 +719,7 @@ function Shop(props) {
               </div>
             </div>
 
-            <div className="col-9 wow fadeInUp">
+            <div className={`col-${inputWidth} wow fadeInUp`}>
               <div className="show-button">
                 <div className="filter-button-group mt-0">
                   <div className="filter-button d-inline-block d-lg-none">

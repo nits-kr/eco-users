@@ -10,6 +10,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import {
   useGetBannerListQuery,
+  useGetCartListheaderMutation,
   useGetTrendingProductQuery,
   useTopBannerListMutation,
 } from "../services/Post";
@@ -18,7 +19,7 @@ import {
   AddToCart,
   CreateWish,
   ProductDetails,
-  CartList,
+  // CartList,
   DiscountProduct,
   AddCompare,
 } from "./HttpServices";
@@ -39,9 +40,13 @@ import Topbanner from "./indexgrocary/Topbanner";
 import Middlebanner from "./indexgrocary/Middlebanner";
 import Bottombanner from "./indexgrocary/Bottombanner";
 import Spinners2 from "./Spinners2";
+import { useSelector } from "react-redux";
 function IndexGrocary(props) {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const categoryListItems = useGetCategoryListQuery();
   const trendingProduct = useGetTrendingProductQuery();
+  const [cartListQuery] = useGetCartListheaderMutation();
   const { data: categoryBanner } = useGetBannerListQuery();
   const [trendingList, setTrendingList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -130,12 +135,19 @@ function IndexGrocary(props) {
     setCategoryListData(reversedList);
   }, [categoryListItems]);
 
+  // useEffect(() => {
+  //   cartData();
+  // }, []);
+
   useEffect(() => {
-    cartData();
-  }, []);
+    if (ecomUserId) {
+      console.log("ecomUserId useeffect", ecomUserId);
+      cartData(ecomUserId);
+    }
+  }, [ecomUserId]);
   const cartData = async () => {
     try {
-      const res = await CartList();
+      const res = await cartListQuery({ ecomUserId, ecommercetoken });
 
       setCartListItems(res?.data?.carts);
     } catch (error) {
@@ -913,71 +925,76 @@ function IndexGrocary(props) {
               </div>
             </div>
             <div className="col-xxl-9 col-xl-8">
-              <div className="title title-flex">
-                <div>
-                  <h2>Top Save Today</h2>
-                  <span className="title-leaf">
-                    <svg className="icon-width">
-                      <use xlinkHref="../assets/svg/leaf.svg#leaf" />
-                    </svg>
-                  </span>
-                  <p>
-                    Don't miss this opportunity at a special discount just for
-                    this week.
-                  </p>
-                </div>
-                <div className="timing-box">
-                  <div className="timing ">
-                    <i data-feather="clock" />
-                    <h6 className="name">Expires in:</h6>
-                    <div className="time" id="clockdiv-1">
-                      <ul>
-                        <li>
-                          <div className="counter">
-                            <div className="days">
-                              <h6 id="days">0</h6>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="counter">
-                            <div className="hours">
-                              <h6 id="hours">00</h6>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="counter">
-                            <div className="minutes">
-                              <h6 id="minutes">00</h6>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="counter">
-                            <div className="seconds">
-                              <h6 id="seconds">00</h6>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {loading ? (
-                <Spinners2 />
-              ) : (
+              {trendingList?.length > 0 ? (
                 <>
-                  <div className="col-12 wow fadeInUp">
-                    <div className="row g-sm-4 g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 product-list-section heading11">
-                      <div className="heading11 mb-5">
-                        <Slider {...settings1}>{sliders2()}</Slider>
+                  <div className="title title-flex">
+                    <div>
+                      <h2>Top Save Today</h2>
+                      <span className="title-leaf">
+                        <svg className="icon-width">
+                          <use xlinkHref="../assets/svg/leaf.svg#leaf" />
+                        </svg>
+                      </span>
+                      <p>
+                        Don't miss this opportunity at a special discount just
+                        for this week.
+                      </p>
+                    </div>
+                    <div className="timing-box">
+                      <div className="timing ">
+                        <i data-feather="clock" />
+                        <h6 className="name">Expires in:</h6>
+                        <div className="time" id="clockdiv-1">
+                          <ul>
+                            <li>
+                              <div className="counter">
+                                <div className="days">
+                                  <h6 id="days">0</h6>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div className="counter">
+                                <div className="hours">
+                                  <h6 id="hours">00</h6>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div className="counter">
+                                <div className="minutes">
+                                  <h6 id="minutes">00</h6>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div className="counter">
+                                <div className="seconds">
+                                  <h6 id="seconds">00</h6>
+                                </div>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
+                  {loading ? (
+                    <Spinners2 />
+                  ) : (
+                    <>
+                      <div className="col-12 wow fadeInUp">
+                        <div className="row g-sm-4 g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 product-list-section heading11">
+                          <div className="heading11 mb-5">
+                            <Slider {...settings1}>{sliders2()}</Slider>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </>
-              )}
+              ) : null}
+
               <div className="title">
                 <h2>Browse by Categories</h2>
                 <span className="title-leaf">

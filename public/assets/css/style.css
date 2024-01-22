@@ -5079,7 +5079,7 @@ section,
 }
 
 .product-rating {
-  display: -webkit-box;
+  display: -webkit-box !important;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-align: center;
@@ -6960,6 +6960,10 @@ footer .main-footer {
     border: none;
     padding-top: 0;
   }
+  .row-cols-xxl-4>* {
+    flex: 0 0 auto;
+    width: 50% !important;
+}
 }
 
 footer .main-footer .footer-theme .footer-theme-contain {

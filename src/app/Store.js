@@ -10,8 +10,8 @@ import { localSlice } from "./slice/localSlice";
 export const store = configureStore({
   reducer: {
     [PostApi.reducerPath]: PostApi.reducer,
-    cart: cartReducer,
-    carts: cartsReducer,
+    // cart: cartReducer,
+    // carts: cartsReducer,
     search: SearchSliceReducer,
     local: localSlice.reducer,
   },

@@ -1,6 +1,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-const userId = localStorage?.getItem("loginId");
+const userId = localStorage?.getItem("ecomUserId");
 
 // Define a service using a base URL and expected endpoints
 export const PostApi = createApi({
@@ -135,13 +135,25 @@ export const PostApi = createApi({
 
     getCartList: builder.query({
       query: ({ ecommercetoken, ecomuserId }) => ({
-        url: `user/carts/carts/carts-list/${ecomuserId}`,
+        url: `user/carts/carts/carts-list/${userId}`,
         method: "post",
         headers: {
           "x-auth-token-user": ecommercetoken,
         },
       }),
     }),
+    getCartListheader: builder.mutation({
+      query: ({ ecomUserId, ecommercetoken }) => {
+        return {
+          url: `user/carts/carts/carts-list/${ecomUserId}`,
+          method: "post",
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
+
     getAddressList: builder.query({
       query: (name) => ({
         url: `/user/address/address/address-list/${userId}`,
@@ -445,6 +457,7 @@ export const {
   useOrderDetailsMutation,
   useCreateReportMutation,
   useGetCartListQuery,
+  useGetCartListheaderMutation,
   useAddToWislistListMutation,
   useCreateContactMutation,
   useAddReviewMutation,

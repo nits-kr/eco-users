@@ -8,18 +8,20 @@ import { faHeart, faPhoneVolume } from "@fortawesome/free-solid-svg-icons";
 import { ProductSearch } from "./HttpServices";
 import { DeleteCartProduct } from "./HttpServices";
 import {
+  useGetCartListheaderMutation,
   useGetCategoryListQuery,
   useTopBannerListMutation,
 } from "../services/Post";
 import { useSubCategoryListMutation } from "../services/Post";
-import { useGetCartListQuery } from "../services/Post";
 import { useGetTrendingProductQuery } from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
 import { searchQuerydata } from "../app/slice/SearchSlice";
+import Swal from "sweetalert2";
 
 function Header({ Dash }) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
-  const ecomuserId = useSelector((data) => data?.local?.ecomUserid);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  console.log("ecomUserId header", ecomUserId);
   const categoryListItems = useGetCategoryListQuery();
   const [subCategoryList] = useSubCategoryListMutation();
   const [bannerList] = useTopBannerListMutation();
@@ -27,6 +29,7 @@ function Header({ Dash }) {
   const [trendingList, setTrendingList] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
+
   const [subCategoryItems, setSubCategoryItems] = useState([]);
   const [bannerItems, setBannerItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,14 +37,33 @@ function Header({ Dash }) {
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSale, setShowSale] = useState(false);
   const cartTotal = localStorage?.getItem("cartTotal");
-  const { data: cartListQuery } = useGetCartListQuery({
-    ecommercetoken,
-    ecomuserId,
-  });
+  const [cartListQuery] = useGetCartListheaderMutation();
+
   axios.defaults.headers.common["x-auth-token-user"] =
     localStorage.getItem("token");
   localStorage?.setItem("productSearch", searchQuery);
   const loginId = localStorage?.getItem("loginId");
+
+  useEffect(() => {
+    if (ecomUserId) {
+      handleCartList(ecomUserId);
+    }
+  }, [ecomUserId]);
+
+  const handleCartList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await cartListQuery(datas);
+
+      setCartListItems(respone?.carts);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   let totalSubtotal = 0;
   cartListItems
@@ -57,24 +79,6 @@ function Header({ Dash }) {
       setTrendingList(trendingProduct?.data?.results?.productlist);
     }
   }, [trendingProduct?.data?.results?.productlist]);
-
-  useEffect(() => {
-    if (cartListQuery && ecommercetoken !== null) {
-      setCartListItems(cartListQuery?.carts);
-    }
-  }, [cartListQuery, ecommercetoken]);
-
-  // console.log("ecommercetoken", ecommercetoken);
-
-  // useEffect(() => {
-  //   const fetchCartListData = () => {
-  //     if (ecommercetoken) {
-  //       setCartListItems(cartListQuery?.carts);
-  //     }
-  //   };
-
-  //   fetchCartListData();
-  // }, [cartListQuery, ecommercetoken]);
 
   useEffect(() => {
     const reversedList =
@@ -109,22 +113,22 @@ function Header({ Dash }) {
     }
   };
 
-  useEffect(() => {
-    const welcomeInterval = setInterval(() => {
-      setShowWelcome(true);
-      setShowSale(false);
-    }, 1000);
+  // useEffect(() => {
+  //   const welcomeInterval = setInterval(() => {
+  //     setShowWelcome(true);
+  //     setShowSale(false);
+  //   }, 1000);
 
-    const saleInterval = setInterval(() => {
-      setShowWelcome(false);
-      setShowSale(true);
-    }, 2000);
+  //   const saleInterval = setInterval(() => {
+  //     setShowWelcome(false);
+  //     setShowSale(true);
+  //   }, 2000);
 
-    return () => {
-      clearInterval(welcomeInterval);
-      clearInterval(saleInterval);
-    };
-  }, []);
+  //   return () => {
+  //     clearInterval(welcomeInterval);
+  //     clearInterval(saleInterval);
+  //   };
+  // }, []);
 
   const searchData = async () => {
     try {
@@ -166,6 +170,29 @@ function Header({ Dash }) {
       console.log(error);
     }
   };
+
+  const handleCartButtonClick = () => {
+    if (ecommercetoken) {
+    } else {
+      Swal.fire({
+        icon: "info",
+        title: "Login Required",
+        text: "Please login to access the shopping cart.",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+          // cancelButton: "swal-button-margin",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/login";
+        }
+      });
+    }
+  };
   return (
     <>
       <header className="pb-md-4 pb-0">
@@ -180,7 +207,7 @@ function Header({ Dash }) {
                   </span>
                 </div>
               </div>
-              <div className="col-xxl-6 col-lg-9 d-lg-block d-none">
+              {/* <div className="col-xxl-6 col-lg-9 d-lg-block d-none">
                 <div className="header-offer">
                   <div className="notification-slider">
                     {showWelcome && (
@@ -221,7 +248,7 @@ function Header({ Dash }) {
                     )}
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               <div className="col-lg-3">
                 <ul className="about-list right-nav-about">
@@ -495,19 +522,23 @@ function Header({ Dash }) {
                           <button
                             type="button"
                             className="btn p-0 position-relative header-wishlist"
+                            onClick={() => handleCartButtonClick()}
                           >
                             <i
                               data-feather="shopping-cart"
                               style={{ color: "var(--theme-color)" }}
                             />
                             <span className="position-absolute top-0 start-100 translate-middle badge">
-                              {cartListItems?.length}
+                              {cartListItems?.length || 0}
                               <span className="visually-hidden">
                                 unread messages
                               </span>
                             </span>
                           </button>
-                          <div className="onhover-div overflow-container">
+                          <div
+                            className="onhover-div overflow-container"
+                            style={{ display: ecommercetoken ? "" : "none" }}
+                          >
                             <ul className="cart-list overflow">
                               {cartListItems?.map((item, index) => {
                                 return (
@@ -516,10 +547,7 @@ function Header({ Dash }) {
                                     key={index}
                                   >
                                     <div className="drop-cart">
-                                      <Link
-                                        // to={`/product/${item?.products[0]?.product_Id?._id}`}
-                                        className="drop-image"
-                                      >
+                                      <Link className="drop-image">
                                         <img
                                           src={item?.varient?.product_Pic[0]}
                                           className="img-fluid  lazyload"
@@ -538,7 +566,6 @@ function Header({ Dash }) {
                                                   ?.split(" ")
                                                   ?.slice(0, 3)
                                                   ?.join(" ")}{" "}
-                                                {/* {item?.product_Id?.weight} */}
                                               </strong>
                                             </Link>
                                           </h5>
@@ -564,7 +591,6 @@ function Header({ Dash }) {
                                       </div>
                                     </div>
                                     {index < cartListItems.length - 1 && <hr />}{" "}
-                                    {/* Horizontal bar */}
                                   </li>
                                 );
                               })}
