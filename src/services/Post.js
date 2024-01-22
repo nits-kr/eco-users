@@ -126,13 +126,24 @@ export const PostApi = createApi({
         method: "post",
       }),
     }),
-    getCardList: builder.query({
-      query: (name) => ({
-        url: `user/carts/carts/saveCarts-list`,
-        method: "post",
-      }),
-    }),
+    // getCardList: builder.query({
+    //   query: (name) => ({
+    //     url: `user/carts/carts/saveCarts-list`,
+    //     method: "post",
+    //   }),
+    // }),
 
+    getCardList: builder.mutation({
+      query: ({ ecomUserId, ecommercetoken }) => {
+        return {
+          url: `user/carts/carts/saveCarts-list/${ecomUserId}`,
+          method: "post",
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
     getCartList: builder.query({
       query: ({ ecommercetoken, ecomuserId }) => ({
         url: `user/carts/carts/carts-list/${userId}`,
@@ -153,13 +164,35 @@ export const PostApi = createApi({
         };
       },
     }),
-
-    getAddressList: builder.query({
-      query: (name) => ({
-        url: `/user/address/address/address-list/${userId}`,
-        method: "post",
-      }),
+    getCartListSummery: builder.mutation({
+      query: ({ ecomUserId, ecommercetoken }) => {
+        return {
+          url: `user/carts/carts/carts-summery/${ecomUserId}`,
+          method: "post",
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
     }),
+    getAddressList: builder.mutation({
+      query: ({ ecomUserId, ecommercetoken }) => {
+        return {
+          url: `user/address/address/address-list/${ecomUserId}`,
+          method: "post",
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
+
+    // getAddressList: builder.query({
+    //   query: (name) => ({
+    //     url: `/user/address/address/address-list/${userId}`,
+    //     method: "post",
+    //   }),
+    // }),
     getCompareList: builder.query({
       query: (body) => ({
         url: `user/compare/compare/compare-list`,
@@ -167,12 +200,20 @@ export const PostApi = createApi({
       }),
     }),
     createAddress: builder.mutation({
-      query: (body) => ({
-        url: `user/address/address/create-address`,
-        method: "post",
-        body,
-      }),
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: "user/address/address/create-address",
+          method: "post",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
     }),
+
     createBlogComment: builder.mutation({
       query: (body) => ({
         url: "/user/blog/blog/blog-comments",
@@ -180,20 +221,55 @@ export const PostApi = createApi({
         body,
       }),
     }),
+
     createCard: builder.mutation({
-      query: (body) => ({
-        url: `user/carts/carts/create-carts`,
-        method: "post",
-        body,
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: "user/carts/carts/create-carts",
+          method: "post",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
+
+    updateProfile: builder.mutation({
+      query: ({ ecomUserId, formData, ecommercetoken }) => ({
+        url: `user/user/user/edit-profile/${ecomUserId}`,
+        method: "POST",
+        body: formData,
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
       }),
     }),
+    // createCard: builder.mutation({
+    //   query: (body) => ({
+    //     url: `user/carts/carts/create-carts`,
+    //     method: "post",
+    //     body,
+    //   }),
+    // }),
+
     createOrder: builder.mutation({
-      query: (body) => ({
-        url: "/user/order/order/create-order",
-        method: "post",
-        body,
-      }),
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: "/user/order/order/create-order",
+          method: "post",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
     }),
+
     showProductRating: builder.mutation({
       query: (body) => ({
         url: "/user/product/product/product-rating",
@@ -201,17 +277,46 @@ export const PostApi = createApi({
         body,
       }),
     }),
+    // addToCart: builder.mutation({
+    //   query: (body) => ({
+    //     url: "user/carts/carts/add-cart",
+    //     method: "post",
+    //     body,
+    //     headers: {
+    //       "x-auth-token-user": ecommercetoken,
+    //     },
+    //   }),
+    // }),
     addToCart: builder.mutation({
-      query: (body) => ({
-        url: "user/carts/carts/add-cart",
-        method: "post",
-        body,
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: "user/carts/carts/add-cart",
+          method: "post",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
+    deleteCartItems: builder.mutation({
+      query: ({ ecommercetoken, id }) => ({
+        url: `user/carts/carts/delete-product/${id}`,
+        method: "DELETE",
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
       }),
     }),
     deleteAddress: builder.mutation({
-      query: (id) => ({
-        url: `user/address/address/delete-address/${id}`,
+      query: ({ ecommercetoken, addressId }) => ({
+        url: `user/address/address/delete-address/${addressId}`,
         method: "DELETE",
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
       }),
     }),
     deleteCard: builder.mutation({
@@ -307,13 +412,15 @@ export const PostApi = createApi({
     }),
     updateQuantity: builder.mutation({
       query: (body) => {
-        console.log("update address", body);
-        const { id, ...data } = body;
-        console.log("update address body data", data);
+        const { ecommercetoken, id, ...data } = body;
+
         return {
           url: `/user/carts/carts/edit-card/${id}`,
           method: "post",
           body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
         };
       },
     }),
@@ -432,10 +539,12 @@ export const {
   useGetProductListQuery,
   useGetProductListDetailsQuery,
   useCreateAddressMutation,
+  useGetAddressListMutation,
   useGetAddressListQuery,
   useDeleteAddressMutation,
   useUpdateAddressMutation,
   useGetCardListQuery,
+  useGetCardListMutation,
   useCreateCardMutation,
   useDeleteCardMutation,
   useUpdateCardMutation,
@@ -473,4 +582,7 @@ export const {
   useApplyCoupan2Mutation,
   useTopBannerListMutation,
   useGetBannerListQuery,
+  useDeleteCartItemsMutation,
+  useUpdateProfileMutation,
+  useGetCartListSummeryMutation,
 } = PostApi;

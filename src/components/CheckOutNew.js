@@ -7,15 +7,23 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import Header from "./Header";
 import Footer from "./Footer";
 import { OrderSummary } from "./HttpServices";
-import { useCreateOrderMutation } from "../services/Post";
+import {
+  useCreateOrderMutation,
+  useGetAddressListMutation,
+  useGetCartListSummeryMutation,
+} from "../services/Post";
 import { useGetAddressListQuery } from "../services/Post";
+import { useDispatch, useSelector } from "react-redux";
 
 function CheckOutNew() {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const [addressList] = useGetAddressListMutation();
+  const [OrderSummarys] = useGetCartListSummeryMutation();
   const [orderItemSummary, setOrderItemSummary] = useState([]);
   const [orderItemSummaryPrice, setOrderItemSummaryPrice] = useState([]);
   const [createOrder] = useCreateOrderMutation();
   const [newAddress, setNewAddress] = useState([]);
-  const addressList = useGetAddressListQuery();
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const userId = localStorage.getItem("loginId");
   const [coupan, setCoupan] = useState([]);
@@ -53,7 +61,91 @@ function CheckOutNew() {
     }
   }, []);
 
+  useEffect(() => {
+    if (ecomUserId) {
+      handleAddressList(ecomUserId);
+      handleCartSummery(ecomUserId);
+    }
+  }, [ecomUserId]);
+
+  const handleAddressList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await addressList(datas);
+
+      setNewAddress(respone?.data?.results?.addressData?.slice().reverse());
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleCartSummery = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await OrderSummarys(datas);
+
+      console.log("respone summery", respone);
+
+      setOrderItemSummary(respone?.data?.results?.carts?.slice().reverse());
+      const items = respone?.data?.results?.carts || [];
+      let total = 0;
+
+      items.forEach((item) => {
+        item.forEach((product) => {
+          if (product.Price) {
+            total += product.Price;
+          }
+        });
+      });
+
+      setOrderItemSummaryPrice(respone?.data.results);
+      setTotalPrice(total);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const placeOrder = async () => {
+    if (newAddress?.length > 0 && !selectedAddressId) {
+      // Show Swal for selecting the address
+      Swal.fire({
+        title: "Select Address",
+        text: "Please select an address before placing the order.",
+        icon: "warning",
+        showCancelButton: false,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Ok",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Add logic to handle address selection
+        }
+      });
+      return;
+    }
+
+    // if (!selectedAddressId) {
+    //   // Show Swal for updating the address
+    //   Swal.fire({
+    //     title: "Update Address",
+    //     text: "Please update your address before placing the order.",
+    //     icon: "warning",
+    //     showCancelButton: false,
+    //     confirmButtonColor: "#0da487",
+    //     confirmButtonText: "Update Address →",
+    //   }).then((result) => {
+    //     if (result.isConfirmed) {
+    //       navigate("/user-dashboard");
+    //     }
+    //   });
+    //   return;
+    // }
     if (!selectedAddressId) {
       Swal.fire({
         title: "Update Address",
@@ -71,6 +163,32 @@ function CheckOutNew() {
       return;
     }
 
+    // let orderList = [];
+
+    // if (items) {
+    //   orderList.push({
+    //     product_Id: items.product_Id?._id,
+    //     quantity: items?.quantity,
+    //     varient_Id: items?.varient?._id,
+    //     Price: items?.Price,
+    //   });
+    // } else if (items2.length !== 0) {
+    //   orderList = items2.map((product) => ({
+    //     product_Id: product?.product_Id?._id,
+    //     quantity: product?.quantity,
+    //     varient_Id: product?.varient?._id,
+    //     Price: product?.Price,
+    //   }));
+    // } else {
+    //   orderItemSummary?.map((order) => ({
+    //     product_Id: order.product_Id._id,
+    //     quantity: order.quantity,
+    //     cartsTotal: orderItemSummaryPrice?.cartsTotalSum,
+    //     varient_Id: order?.addVarient[0]?._id,
+    //     Price: order?.Price,
+    //   })) || [];
+    // }
+
     let orderList = [];
 
     if (items) {
@@ -87,6 +205,15 @@ function CheckOutNew() {
         varient_Id: product?.varient?._id,
         Price: product?.Price,
       }));
+    } else {
+      orderList =
+        orderItemSummary?.map((order) => ({
+          product_Id: order.product?._id,
+          quantity: order.quantity,
+          cartsTotal: orderItemSummaryPrice?.cartsTotalSum,
+          varient_Id: order?.varient?._id,
+          Price: order?.Price,
+        })) || [];
     }
 
     const cartsTotal = coupanresponse
@@ -108,6 +235,7 @@ function CheckOutNew() {
       cartsTotal: cartsTotal,
       shippingPrice: "30",
       taxPrice: "20",
+      ecommercetoken: ecommercetoken,
     };
 
     const confirmationResult = await Swal.fire({
@@ -155,49 +283,41 @@ function CheckOutNew() {
     }
   }, [coupan2]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   const handleAddressSelection = (addressId) => {
     setSelectedAddressId(addressId);
   };
 
-  const getReversedList = (list) => {
-    return list?.data?.results?.addressData?.slice().reverse() ?? [];
-  };
-  useEffect(() => {
-    const reversedList = getReversedList(addressList);
-    setNewAddress(reversedList);
-  }, [addressList]);
+  // const fetchData = async () => {
+  //   try {
+  //     const { data, error } = await OrderSummary();
+  //     if (error) {
+  //       console.log(error);
+  //     } else {
+  //       console.log(data);
+  //       const items = data?.results?.cartsTotal || [];
 
-  const fetchData = async () => {
-    try {
-      const { data, error } = await OrderSummary();
-      if (error) {
-        console.log(error);
-      } else {
-        console.log(data);
-        const items = data?.results?.cartsTotal || [];
+  //       let total = 0;
 
-        let total = 0;
+  //       items.forEach((item) => {
+  //         item.forEach((product) => {
+  //           if (product.Price) {
+  //             total += product.Price;
+  //           }
+  //         });
+  //       });
 
-        items.forEach((item) => {
-          item.forEach((product) => {
-            if (product.Price) {
-              total += product.Price;
-            }
-          });
-        });
-
-        setOrderItemSummary(data?.results?.carts);
-        setOrderItemSummaryPrice(data.results);
-        setTotalPrice(total);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //       setOrderItemSummary(data?.results?.carts);
+  //       setOrderItemSummaryPrice(data.results);
+  //       setTotalPrice(total);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   let totalSubtotal = 0;
 
@@ -206,9 +326,9 @@ function CheckOutNew() {
     totalSubtotal += subtotal;
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
     feather.replace();

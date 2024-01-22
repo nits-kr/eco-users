@@ -12,7 +12,12 @@ import { ApplyCoupan, DeleteCartProduct, ApplyCoupan2 } from "./HttpServices";
 import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import TapToTop from "./TapToTop";
-import { useApplyCoupan2Mutation, useGetCartListQuery } from "../services/Post";
+import {
+  useApplyCoupan2Mutation,
+  useDeleteCartItemsMutation,
+  useGetCartListQuery,
+  useGetCartListheaderMutation,
+} from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
 import { useUpdateQuantityMutation } from "../services/Post";
 import { useAddToWislistListMutation } from "../services/Post";
@@ -20,12 +25,16 @@ import { useApplyCoupanMutation } from "../services/Post";
 import { addToCart, getAllCart } from "../app/slice/CartSlice";
 
 function Cart() {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const [cartListQuery] = useGetCartListheaderMutation();
   const [applyCoupan, response] = useApplyCoupanMutation();
   const [applyCoupan2, response2] = useApplyCoupan2Mutation();
+  const [deletecart] = useDeleteCartItemsMutation();
 
   const [cartListItems, setCartListItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
-  localStorage?.setItem("cartId", cartListItems[0]?._id);
+  // localStorage?.setItem("cartId", cartListItems[0]?._id);
   const [cartCount, setCartCount] = useState([]);
   const [wishAdd] = useAddToWislistListMutation();
   const [updateQuantity] = useUpdateQuantityMutation();
@@ -35,7 +44,7 @@ function Cart() {
   const [CreateWishItems, setCreateWishItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState([]);
   const coupanCode2 = coupanCode || "";
-  const { data: cartListQuery, isSuccess } = useGetCartListQuery();
+  // const { data: cartListQuery, isSuccess } = useGetCartListQuery();
   const cart = useSelector((state) => state?.cart?.carts);
   // setCartListItems(cart?.cartItems);
   console.log("useSelector", cart);
@@ -115,10 +124,10 @@ function Cart() {
     const formData = {
       id: id,
       quantity: 1,
+      ecommercetoken: ecommercetoken,
     };
     try {
-      const { data } = await updateQuantity(formData);
-      console.log(data);
+      const respone = await updateQuantity(formData);
     } catch (error) {
       console.error("Error updating quantity:", error);
     }
@@ -128,6 +137,7 @@ function Cart() {
     const formData = {
       id: id,
       quantity: -1,
+      ecommercetoken: ecommercetoken,
     };
     try {
       const { data } = await updateQuantity(formData);
@@ -138,34 +148,28 @@ function Cart() {
   };
 
   useEffect(() => {
-    fetchCartListData();
-  }, [cartListQuery, count1]);
-  const fetchCartListData = () => {
-    if (isSuccess) {
-      const items = cartListQuery?.carts || [];
-      console.log("cart items", items);
-      localStorage?.setItem(
-        "allCartItems",
-        encodeURIComponent(JSON.stringify(items))
-      );
-      dispatch(getAllCart(items));
-      let total = 0;
-      items.forEach((item) => {
-        if (item?.products && item.products.length > 0) {
-          item.products.forEach((product) => {
-            if (product.Price) {
-              total += product.Price;
-              setTotalPrice(total);
-            }
-          });
-        }
-      });
+    if (ecomUserId) {
+      handleCartList(ecomUserId);
+    }
+  }, [ecomUserId]);
 
-      setCartTotal(total);
-      setCartListItems(items);
-      console.log("total", total);
+  const handleCartList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await cartListQuery(datas);
+
+      console.log("respone cart", respone);
+
+      setCartListItems(respone?.data?.carts);
+    } catch (error) {
+      console.log(error);
     }
   };
+
   let totalSubtotal = 0;
   cartListItems
     ?.slice()
@@ -182,6 +186,15 @@ function Cart() {
       const createNewOrder = await applyCoupan({
         coupanCode: coupanCode2,
       });
+
+      console.log("createNewOrder coupan", createNewOrder);
+      if (createNewOrder?.error?.data?.message === "Coupan Code is Expired") {
+        toast.error(`${createNewOrder?.error?.data?.message}`);
+      } else if (createNewOrder?.data?.message === "Success") {
+        toast.success(
+          `Wow🤩🤩! coupan applied of ${createNewOrder?.data?.results?.DiscountType}%`
+        );
+      }
 
       setCoupanresponse(createNewOrder?.data?.results?.DiscountType);
       let totalPrice = 0;
@@ -200,7 +213,7 @@ function Cart() {
       });
       console.log(createNewOrder);
     } catch (error) {
-      console.error("An error occurred while placing the order.");
+      console.error("An error occurred while applying coupan.");
     }
   };
   const handlePrice = (item) => {
@@ -213,12 +226,12 @@ function Cart() {
     console.log("cart subtotal", item);
   };
 
-  const deleteCartItem = async (_id) => {
+  const deleteCartItem = async (id) => {
     try {
-      const { data, error } = await DeleteCartProduct(_id);
-      error ? console.log(error) : console.log(data);
+      const response = await deletecart({ ecommercetoken, id });
+
       setCartListItems((prevCartList) =>
-        prevCartList.filter((item) => item._id !== _id)
+        prevCartList.filter((item) => item._id !== id)
       );
       // console.log(data.results.deleteDta);
     } catch (error) {
@@ -502,8 +515,6 @@ function Cart() {
                   </div>
                 </div>
               ) : (
-                // <div className="cart-table">
-                // <div className="table-responsive-xl d-flex align-items-center justify-content-center">
                 <div className="d-flex flex-column align-items-center justify-content-center">
                   <img
                     src="../assets/images/emptycart.webp"
@@ -524,8 +535,6 @@ function Cart() {
                     Shop Now
                   </Link>
                 </div>
-                //   </div>
-                // </div>
               )}
             </div>
             {cartListItems?.length > 0 ? (

@@ -12,6 +12,9 @@ import {
   useCreateAddressMutation,
   useCreateCardMutation,
   useDeleteAccountMutation,
+  useGetAddressListMutation,
+  useGetCardListMutation,
+  useUpdateProfileMutation,
 } from "../services/Post";
 import { useGetAddressListQuery } from "../services/Post";
 import { useDeleteAddressMutation } from "../services/Post";
@@ -25,8 +28,12 @@ import { WishListItems, DeleteWishList } from "./HttpServices";
 import { AddToCart } from "./HttpServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useSelector } from "react-redux";
 
 function UserDashboard() {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const [updateProfile] = useUpdateProfileMutation();
   const [wishList, setWishList] = useState([]);
   const [title, setTitle] = useState("");
   const [fullName, setFullName] = useState("");
@@ -53,11 +60,11 @@ function UserDashboard() {
   const [updateAddress, res] = useUpdateAddressMutation();
   const [updateCard, re] = useUpdateCardMutation();
   const [createCard, r] = useCreateCardMutation();
-  const addressList = useGetAddressListQuery();
+  const [addressList] = useGetAddressListMutation();
   const orderList = useGetOrderListQuery();
   const [orderListData, setOrderListData] = useState([]);
   console.log("order list", orderListData);
-  const cardList = useGetCardListQuery();
+  const [cardList] = useGetCardListMutation();
   const { data } = useGetPendingOrderQuery();
   console.log("pending data", data?.results?.pending);
   const [deleteAddress, deleteAddressInfo] = useDeleteAddressMutation();
@@ -133,21 +140,49 @@ function UserDashboard() {
     }
   };
 
-  const getReversedList = (list) => {
-    return list?.data?.results?.addressData?.slice().reverse() ?? [];
-  };
   useEffect(() => {
-    const reversedList = getReversedList(addressList);
-    setNewAddress(reversedList);
-  }, [addressList]);
+    if (ecomUserId) {
+      handleAddressList(ecomUserId);
+      handleCardList(ecomUserId);
+    }
+  }, [ecomUserId]);
 
-  const getNewCardList = (list) => {
-    return list?.data?.results?.list?.slice().reverse() ?? [];
+  const handleAddressList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await addressList(datas);
+
+      setNewAddress(respone?.data?.results?.addressData?.slice().reverse());
+    } catch (error) {
+      console.log(error);
+    }
   };
-  useEffect(() => {
-    const reversedList = getNewCardList(cardList);
-    setNewCard(reversedList);
-  }, [cardList]);
+  const handleCardList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await cardList(datas);
+
+      setNewCard(respone?.data?.results?.list?.slice().reverse());
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // const getNewCardList = (list) => {
+  //   return list?.data?.results?.list?.slice().reverse() ?? [];
+  // };
+  // useEffect(() => {
+  //   const reversedList = getNewCardList(cardList);
+  //   setNewCard(reversedList);
+  // }, [cardList]);
 
   useEffect(() => {
     const reversedList =
@@ -208,8 +243,10 @@ function UserDashboard() {
     });
   };
 
-  localStorage?.setItem("addressId", newAddress[0]?._id);
+  // localStorage?.setItem("addressId", newAddress[0]?._id);
   const addressId = localStorage?.getItem("addressId");
+
+  console.log("addressId", addressId);
 
   const handleSaveChanges = async () => {
     const newAddressData = {
@@ -223,14 +260,13 @@ function UserDashboard() {
       state: state,
       mobileNumber: mobileNumber,
       user_Id: storedId,
+      ecommercetoken: ecommercetoken,
     };
 
     try {
       const createdAddress = await createAddress(newAddressData);
 
-      if (createdAddress) {
-        setNewAddress([createdAddress, ...newAddress]);
-      }
+      handleAddressList();
     } catch (error) {
       console.error("Error creating address:", error);
     }
@@ -250,7 +286,7 @@ function UserDashboard() {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        deleteAddress(addressId)
+        deleteAddress({ ecommercetoken, addressId })
           .then(() => {
             const updatedList = newAddress.filter(
               (address) => address._id !== addressId
@@ -268,13 +304,15 @@ function UserDashboard() {
       cardHolderName: cardHolder,
       validTime: cardValid,
       cvv: cvv,
+      ecommercetoken: ecommercetoken,
     };
     createCard(newAddress).then(() => {
       Swal.fire({
         title: "Card Created!",
         text: "Your card has been successfully created.",
         icon: "success",
-        confirmButtonText: "OK",
+        timer: 1500,
+        // confirmButtonText: "OK",
       }).then((result) => {
         if (result.isConfirmed) {
           setIsSaveCardDisabled(true);
@@ -322,15 +360,15 @@ function UserDashboard() {
     // setImageUrl1(URL.createObjectURL(file));
   };
 
-  useEffect(() => {
-    handleOnSave();
-  }, [formData]);
+  // useEffect(() => {
+  //   handleOnSave();
+  // }, [formData.uploadImage]);
 
-  const handleOnSave = () => {
+  const handleOnSave = async () => {
     const data = new FormData();
-    if (addressId) {
-      data.append("address_Id", addressId);
-    }
+    // if (addressId !== undefined || addressId !== null) {
+    //   data.append("address_Id", addressId);
+    // }
 
     // data.append("password", "userEmail");
     // data.append("mobileNumber", "userName");
@@ -340,33 +378,27 @@ function UserDashboard() {
       data.append("profile_Pic", formData.uploadImage);
     }
 
-    axios
-      .post(
-        `${process.env.REACT_APP_APIENDPOINT}user/user/user/edit-profile/${storedId}`,
-        data
-      )
-      .then((response) => {
-        setFormData(response.data.results);
-        localStorage.setItem(
-          "profilePic",
-          response?.data?.results?.profile?.profile_Pic
-        );
-        console.log(response.data.results);
-        Swal.fire({
-          title: "Profile Updated!",
-          text: "Your Profile has been updated successfully.",
-          icon: "success",
-          confirmButtonColor: "#3085d6",
-          confirmButtonText: "OK",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate("/dashboard");
-          }
-        });
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-      });
+    const response = await updateProfile({
+      formData: data,
+      ecommercetoken,
+      ecomUserId,
+    });
+    localStorage.setItem(
+      "profilePic",
+      response?.data?.results?.profile?.profile_Pic
+    );
+
+    Swal.fire({
+      title: "Profile Updated!",
+      text: "Your Profile has been updated successfully.",
+      icon: "success",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "OK",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/dashboard");
+      }
+    });
   };
   return (
     <>
@@ -2282,6 +2314,7 @@ function UserDashboard() {
                 type="button"
                 className="btn-close"
                 data-bs-dismiss="modal"
+                id="addCarddissmissbutton"
               >
                 <i className="fa-solid fa-xmark" />
               </button>
@@ -2380,7 +2413,14 @@ function UserDashboard() {
               <button
                 type="button"
                 className="btn theme-bg-color btn-md fw-bold text-light"
-                onClick={handleSaveCards}
+                onClick={() => {
+                  handleSaveCards();
+                  const dismissButton = document.getElementById("addCarddissmissbutton");
+                  if (dismissButton) {
+                    dismissButton.click();
+                  }
+                }}
+                
                 disabled={isSaveCardDisabled}
                 // style={{ cursor: isSaveCardDisabled ? 'not-allowed' : 'pointer' }}
               >

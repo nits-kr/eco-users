@@ -25,6 +25,7 @@ import {
   AddCompare,
 } from "./HttpServices";
 import {
+  useAddToCartMutation,
   useGetCartListheaderMutation,
   useGetSubCategoryListQuery,
 } from "../services/Post";
@@ -52,6 +53,7 @@ function Shop(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [cartListQuery] = useGetCartListheaderMutation();
+  const [addtocart] = useAddToCartMutation();
   const [productListItems, setProductListItems] = useState([]);
   const [subCategoryProduct] = useSubCategoryProductListMutation();
   const subCategoryListItems = useGetSubCategoryListQuery();
@@ -102,7 +104,7 @@ function Shop(props) {
     try {
       const respone = await cartListQuery(datas);
 
-      setCartListItems(respone?.carts);
+      setCartListItems(respone?.data?.carts);
     } catch (error) {
       console.log(error);
     }
@@ -260,26 +262,21 @@ function Shop(props) {
     }
     console.log("item added id", item?._id);
     e.preventDefault();
+    const data = {
+      product_Id: item._id,
+      quantity: count[index],
+      Price: price * count[index],
+      varient_Id: variantId,
+      user_Id: ecomUserId,
+      ecommercetoken: ecommercetoken,
+    };
     try {
-      const { data, error } = await AddToCart(
-        item._id,
-        count[index],
-        price * count[index],
-        variantId
-      );
-      if (error) {
-        console.log(error);
-        return;
-      }
-      const newCartItems = [...cartListItems, data];
-      setCartListItems(newCartItems);
+      const response = await addtocart(data);
+
       navigate("/cart");
     } catch (error) {
       console.log(error);
     }
-    setTimeout(() => {
-      window?.location?.reload();
-    }, 500);
   };
   const handleTranding = async () => {
     try {

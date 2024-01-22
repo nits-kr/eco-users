@@ -8,6 +8,7 @@ import { faHeart, faPhoneVolume } from "@fortawesome/free-solid-svg-icons";
 import { ProductSearch } from "./HttpServices";
 import { DeleteCartProduct } from "./HttpServices";
 import {
+  useDeleteCartItemsMutation,
   useGetCartListheaderMutation,
   useGetCategoryListQuery,
   useTopBannerListMutation,
@@ -24,6 +25,7 @@ function Header({ Dash }) {
   const categoryListItems = useGetCategoryListQuery();
   const [subCategoryList] = useSubCategoryListMutation();
   const [bannerList] = useTopBannerListMutation();
+  const [deletecart] = useDeleteCartItemsMutation();
   const trendingProduct = useGetTrendingProductQuery();
   const [trendingList, setTrendingList] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
@@ -58,7 +60,7 @@ function Header({ Dash }) {
     try {
       const respone = await cartListQuery(datas);
 
-      setCartListItems(respone?.carts);
+      setCartListItems(respone?.data?.carts);
     } catch (error) {
       console.log(error);
     }
@@ -157,18 +159,31 @@ function Header({ Dash }) {
     searchData();
   };
 
-  const deleteCartItem = async (_id) => {
+  const deleteCartItem = async (id) => {
     try {
-      const { data, error } = await DeleteCartProduct(_id);
-      error ? console.log(error) : console.log(data);
+      const response = await deletecart({ ecommercetoken, id });
+
       setCartListItems((prevCartList) =>
-        prevCartList.filter((item) => item._id !== _id)
+        prevCartList.filter((item) => item._id !== id)
       );
-      console.log(data.results.deleteDta);
+      // console.log(data.results.deleteDta);
     } catch (error) {
       console.log(error);
     }
   };
+
+  // const deleteCartItem = async (_id) => {
+  //   try {
+  //     const { data, error } = await DeleteCartProduct(_id);
+  //     error ? console.log(error) : console.log(data);
+  //     setCartListItems((prevCartList) =>
+  //       prevCartList.filter((item) => item._id !== _id)
+  //     );
+  //     console.log(data.results.deleteDta);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handleCartButtonClick = () => {
     if (ecommercetoken) {
