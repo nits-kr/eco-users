@@ -43,9 +43,7 @@ import MobileFixMenu from "./components/MobileFixMenu";
 import BreadCrumb from "./components/BreadCrumb";
 import LoadingBar from "react-top-loading-bar";
 import OrderTracking from "./components/OrderTracking";
-import Shop2 from "./components/Shop2";
 import GetStar from "./components/GetStar";
-import Shop3 from "./components/Shop3";
 import CheckOutNew from "./components/CheckOutNew";
 import BannerShop from "./components/BannerShop";
 import Products from "./components/productDetailspage/Products";
@@ -69,12 +67,7 @@ function App() {
         <LoadingBar height={3} color="#f11946" progress={progress} />
         <Routes>
           <Route exact className="active" path="/login" element={<Login />} />
-          <Route
-            exact
-            className="active"
-            path="/Badrequest"
-            element={<Badrequest />}
-          />
+          <Route exact className="active" path="*" element={<Badrequest />} />
           <Route
             exact
             className="active"
@@ -197,12 +190,12 @@ function App() {
           />
 
           <Route exact className="active" path="/otp" element={<Otp />} />
-          <Route
+          {/* <Route
             exact
             className="active"
             path="/product/:id"
             element={<Product setProgress={setProgress} />}
-          />
+          /> */}
           <Route
             exact
             className="active"
@@ -241,18 +234,7 @@ function App() {
             path="/shop"
             element={<Shop setProgress={setProgress} />}
           />
-          <Route
-            exact
-            className="active"
-            path="/shop2/:query"
-            element={<Shop2 setProgress={setProgress} />}
-          />
-          <Route
-            exact
-            className="active"
-            path="/shop3/:id"
-            element={<Shop3 setProgress={setProgress} />}
-          />
+
           <Route
             exact
             className="active"

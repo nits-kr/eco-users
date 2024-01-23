@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
@@ -7,13 +7,13 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faHeart } from "@fortawesome/free-solid-svg-icons";
 import Slider from "react-slick";
+
 import {
-  ProductDetails,
-  ProductList,
-  ProductSearch,
-  CartList,
-} from "./HttpServices";
-import { useGetCartListQuery } from "../services/Post";
+  useAddToCartMutation,
+  // useGetCartListQuery,
+  useGetCartListheaderMutation,
+  useGetProductListDetailsMutation,
+} from "../services/Post";
 import {
   InitializeColorPicker,
   StickyCartScroll,
@@ -26,7 +26,7 @@ import { useGetRelatedProductQuery } from "../services/Post";
 import Spinner from "./Spinner";
 import { useGetTrendingProductQuery } from "../services/Post";
 import { useCreateReportMutation } from "../services/Post";
-import { AddToCart } from "./HttpServices";
+// import { AddToCart } from "./HttpServices";
 import { useAddReviewMutation } from "../services/Post";
 import GetStar from "./GetStar";
 import { useRelatedProductDetailsMutation } from "../services/Post";
@@ -34,8 +34,14 @@ import CountdownTimer from "./CountdownTimer";
 import Carousel from "./Carousel ";
 import SetupReadMore from "./javascript/Readmore";
 import Carousel3 from "./Carousel3";
+import { useSelector } from "react-redux";
 
 function Product(props) {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const [productDetails] = useGetProductListDetailsMutation();
+  const [cartListQuery] = useGetCartListheaderMutation();
+  const [addtocart] = useAddToCartMutation();
   const relatedProduct = useGetRelatedProductQuery();
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -47,7 +53,7 @@ function Product(props) {
   const [productDetail, setProductDetail] = useState("");
   console.log("productDetail", productDetail);
   const trendingProduct = useGetTrendingProductQuery();
-  const { data, error, isLoading, isSuccess } = useGetCartListQuery();
+  // const { data, error, isLoading, isSuccess } = useGetCartListQuery();
   console.log("useGetTrendingProductQuery", trendingProduct);
   const [trendingList, setTrendingList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -73,14 +79,47 @@ function Product(props) {
   const [area, setArea] = useState(true);
   console.log("variant", variants);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    cartData();
-  }, []);
-  const cartData = async () => {
+    if (id) {
+      handleProductDetails(id);
+    }
+  }, [id]);
+
+  const handleProductDetails = async () => {
+    const datas = {
+      id,
+      ecommercetoken,
+    };
+
     try {
-      const { data, error } = await CartList();
-      error ? console.log(error) : console.log(data);
-      setCartListItems(data.results.carts);
+      const respone = await productDetails(datas);
+
+      setProductDetail(respone?.data?.results?.details);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (ecomUserId) {
+      handleCartList(ecomUserId);
+    }
+  }, [ecomUserId]);
+
+  const handleCartList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await cartListQuery(datas);
+
+      console.log("respone cart", respone);
+
+      setCartListItems(respone?.data?.carts);
     } catch (error) {
       console.log(error);
     }
@@ -218,22 +257,6 @@ function Product(props) {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        props.setProgress(10);
-        setLoading(true);
-        console.log(id);
-        const { data, error } = await ProductDetails(id);
-        error ? console.log(error) : console.log(data);
-        setProductDetail(data?.results?.details);
-        props.setProgress(50);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
-  useEffect(() => {
     props.setProgress(70);
     if (relatedProduct?.data?.results?.productData) {
       setRelatedProductItems(relatedProduct?.data?.results?.productData);
@@ -242,30 +265,67 @@ function Product(props) {
     }
   });
 
-  const handleAddToCart = async (item, index) => {
+  const handleAddToCart = async (e, item) => {
+    e.preventDefault();
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to cart.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
+    console.log("item added id", item?._id);
+    // e.preventDefault();
+    const data = {
+      product_Id: id,
+      quantity: count,
+      Price: price,
+      varient_Id: variantId,
+      user_Id: ecomUserId,
+      ecommercetoken: ecommercetoken,
+    };
     try {
-      const { data, error } = await AddToCart(id, count, price, variantId);
-      if (error) {
-        console.log(error);
-        return;
-      }
-      // const newCartItems = [...cartListItems, data];
-      // setCartListItems(newCartItems);
+      const response = await addtocart(data);
+
+      // navigate("/cart");
     } catch (error) {
       console.log(error);
     }
-    // setTimeout(() => {
-    //   window?.location?.reload();
-    // }, 500);
   };
-  const fetchCartListData = () => {
-    if (isSuccess) {
-      setCartListItems(data?.results?.carts);
-    }
-  };
-  useEffect(() => {
-    fetchCartListData();
-  }, [data]);
+
+  // const handleAddToCarts = async (item, index) => {
+  //   try {
+  //     const { data, error } = await AddToCart(id, count, price, variantId);
+  //     if (error) {
+  //       console.log(error);
+  //       return;
+  //     }
+
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+
+  // };
+  // const fetchCartListData = () => {
+  //   if (isSuccess) {
+  //     setCartListItems(data?.results?.carts);
+  //   }
+  // };
+  // useEffect(() => {
+  //   fetchCartListData();
+  // }, [data]);
 
   const handleSearch = () => {
     setSearchKey(searchKey);
@@ -862,7 +922,7 @@ function Product(props) {
                           ) : (
                             <button
                               className="btn btn-md bg-dark cart-button text-white w-100"
-                              onClick={() => handleAddToCart()}
+                              onClick={(e) => handleAddToCart(e)}
                             >
                               Add to Cart
                             </button>

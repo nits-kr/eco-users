@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Spinners2 from "../Spinners2";
 import {
+  useAddToCartMutation,
   useAddToWislistListMutation,
+  useGetCartListheaderMutation,
   useGetTrendingProductQuery,
 } from "../../services/Post";
-import { AddCompare, AddToCart, CartList } from "../HttpServices";
+import { AddCompare, AddToCart } from "../HttpServices";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,11 +16,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Star from "../Star";
 import Slider from "react-slick";
+import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
 
 function TrendingProductHome(props) {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const [cartListQuery] = useGetCartListheaderMutation();
   const [loading, setLoading] = useState(false);
   const trendingProduct = useGetTrendingProductQuery();
   const [wishAdd, res] = useAddToWislistListMutation();
+  const [addtocart] = useAddToCartMutation();
   const [cartListItems, setCartListItems] = useState([]);
   const [trendingList, setTrendingList] = useState([]);
   const [CreateWishItems, setCreateWishItems] = useState([]);
@@ -26,6 +34,29 @@ function TrendingProductHome(props) {
   const [count, setCount] = useState([]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (ecomUserId) {
+      handleCartList(ecomUserId);
+    }
+  }, [ecomUserId]);
+
+  const handleCartList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await cartListQuery(datas);
+
+      console.log("respone cart", respone);
+
+      setCartListItems(respone?.data?.carts);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     const initialCounts = trendingList?.map(() => 1);
@@ -45,19 +76,6 @@ function TrendingProductHome(props) {
       setLoading(false);
     }
   });
-
-  useEffect(() => {
-    cartData();
-  }, []);
-  const cartData = async () => {
-    try {
-      const res = await CartList();
-
-      setCartListItems(res?.data?.carts);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const handleViewClick = (item) => {
     setTimeout(() => {
@@ -102,28 +120,42 @@ function TrendingProductHome(props) {
     }
   };
   const handleAddToCart = async (e, item, price, index, variantId) => {
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to cart.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
+    console.log("item added id", item?._id);
     e.preventDefault();
-
+    const data = {
+      product_Id: item._id,
+      quantity: count[index],
+      Price: price * count[index],
+      varient_Id: variantId,
+      user_Id: ecomUserId,
+      ecommercetoken: ecommercetoken,
+    };
     try {
-      const { data, error } = await AddToCart(
-        item._id,
-        count[index],
-        price * count[index],
-        variantId
-      );
-      if (error) {
-        console.log(error);
-        return;
-      }
-      const newCartItems = [...cartListItems, data];
-      setCartListItems(newCartItems);
+      const response = await addtocart(data);
+
       navigate("/cart");
     } catch (error) {
       console.log(error);
     }
-    setTimeout(() => {
-      window?.location?.reload();
-    }, 500);
   };
 
   const handleViewDetails = () => {
@@ -409,7 +441,7 @@ function TrendingProductHome(props) {
                   <div className="add-to-cart-box bg-white mt-2">
                     <button className="btn btn-add-cart addcart-button">
                       <Link
-                        to="/cart"
+                        to="#"
                         onClick={(e) =>
                           handleAddToCart(
                             e,

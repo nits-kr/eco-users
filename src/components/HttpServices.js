@@ -816,13 +816,13 @@ export async function CartList() {
   } catch (error) {
     if (error.response) {
       console.log(error?.response?.data.message);
-      Swal.fire({
-        title: error?.response?.data.message,
-        text: "",
-        icon: "error",
-        confirmButtonText: "ok",
-        confirmButtonColor: "red",
-      });
+      // Swal.fire({
+      //   title: error?.response?.data.message,
+      //   text: "",
+      //   icon: "error",
+      //   confirmButtonText: "ok",
+      //   confirmButtonColor: "red",
+      // });
     }
     return error;
   }

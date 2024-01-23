@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import Star from "../Star";
 import GetStar from "../GetStar";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import Swal from "sweetalert2";
 import { useAddReviewMutation } from "../../services/Post";
+import { useSelector } from "react-redux";
 
 function Addreview({ averageRating, productDetail, id }) {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [addReview] = useAddReviewMutation();
   const [name, setName] = useState([]);
   const [email, setEmail] = useState([]);
@@ -19,6 +22,8 @@ function Addreview({ averageRating, productDetail, id }) {
   });
   const userRating = localStorage?.getItem("userRating");
   const userId = localStorage.getItem("loginId");
+
+  const navigate = useNavigate();
 
   const ratings = productDetail?.ratings;
 
@@ -39,8 +44,41 @@ function Addreview({ averageRating, productDetail, id }) {
   // const location = useLocation();
   // let id = location.state?.id;
 
+  console.log("userRating", userRating);
+
   const handleCreateReview = async (e) => {
     e.preventDefault();
+
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please log in before creating a review.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
+    if (userRating < 1) {
+      Swal.fire({
+        title: "Add Star",
+        text: "Please add star before creating a review.",
+        icon: "error",
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Ok",
+      });
+      return;
+    }
+
     const newContactData = {
       yourName: name,
       Email: email,
@@ -53,9 +91,11 @@ function Addreview({ averageRating, productDetail, id }) {
       user_Id: userId,
       postedby: userId,
     };
+
     try {
       const createdReview = await addReview(newContactData);
       console.log("Review created successfully:", createdReview);
+
       Swal.fire({
         title: "Review Created!",
         text: "Your review has been successfully created.",
@@ -67,7 +107,7 @@ function Addreview({ averageRating, productDetail, id }) {
         }
       });
     } catch (error) {
-      console.error("Error creating contact:", error);
+      console.error("Error creating review:", error);
     }
   };
 

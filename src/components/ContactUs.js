@@ -5,21 +5,23 @@ import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from "google-maps-react";
+import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
+
 // import { CreateContact } from "./HttpServices";
 import Header from "./Header";
 import Footer from "./Footer";
 import Spinner from "./Spinner";
 import { useCreateContactMutation } from "../services/Post";
 import { useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import classNames from "classnames";
 
 function ContactUs(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
-  const [firstName, setFirstName] = useState("");
+
   const [CreateContact, res] = useCreateContactMutation();
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+
   const [message, setMessage] = useState("");
   const [currentLocation, setCurrentLocation] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -38,63 +40,52 @@ function ContactUs(props) {
   console.log(longitude);
   console.log(latitude);
 
-  // useEffect(() => {
-  //   // Get current location using Geolocation API
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       (position) => {
-  //         const { latitude, longitude } = position.coords;
-  //         setCurrentLocation({ latitude, longitude });
-  //       },
-  //       (error) => {
-  //         console.error("Error getting current location:", error);
-  //       }
-  //     );
-  //   } else {
-  //     console.error("Geolocation is not supported by this browser.");
-  //   }
-  // }, []);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    trigger,
+  } = useForm();
 
-  // const handleCreateContact = async (e) => {
-  //   e.preventDefault();
+  const position = {
+    lat: +latitude ? +latitude : 50,
+    lng: +longitude ? +longitude : 50,
+  };
+  const containerStyle = {
+    width: "100%",
+    height: "400px",
+  };
+  const center = {
+    lat: +latitude ? +latitude : 50,
+    lng: +longitude ? +longitude : 50,
+  };
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: "AIzaSyA1X0VM5k6DeAGJSWM6W8KkPCVYnohdTg8",
+  });
 
-  //   if (currentLocation) {
-  //     const { latitude, longitude } = currentLocation;
-  //     try {
-  //       props.setProgress(50);
-  //       setLoading(true);
-  //       const { data, error } = await CreateContact({
-  //         firstName: firstName,
-  //         lastName: lastName,
-  //         Email: email,
-  //         mobileNumber: phoneNumber,
-  //         message: message,
-  //         longitude:latitude,
-  //         latitude:longitude,
-  //       });
-  //       setLoading(false);
-  //       props.setProgress(100);
-  //       if (error) {
-  //         console.log(error);
-  //       } else {
-  //         console.log(data);
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   } else {
-  //     console.error("Current location is not available.");
-  //   }
-  // };
+  const [map, setMap] = React.useState(null);
 
-  const handleCreateContact = async (e) => {
-    e.preventDefault();
+  const onLoad = React.useCallback(function callback(map) {
+    const bounds = new window.google.maps.LatLngBounds(center);
+    // map.fitBounds(bounds);
+    setMap(map);
+  }, []);
+  const onLoadMark = (marker) => {
+    console.log("marker: ", marker);
+  };
+
+  const handleCreateContact = async (data) => {
+    // e.preventDefault();
     const newContactData = {
-      firstName: firstName,
-      lastName: lastName,
-      Email: email,
-      mobileNumber: phoneNumber,
+      firstName: data?.firstName,
+      lastName: data?.lastName,
+      Email: data?.email,
+      mobileNumber: data?.phoneNumber,
       message: message,
+      ...(longitude && { longitude: longitude }),
+      ...(latitude && { latitude: latitude }),
+      // latitude,
       ecommercetoken: ecommercetoken,
     };
 
@@ -118,16 +109,7 @@ function ContactUs(props) {
   return (
     <>
       {loading && <Spinner />}
-      {/* Loader Start */}
-      {/* <div className="fullpage-loader">
-     <span />
-     <span />
-     <span />
-     <span />
-     <span />
-     <span />
-   </div> */}
-      {/* Loader End */}
+
       {/* Header Start */}
       <Header Dash={"contact"} />
       {/* Header End */}
@@ -277,89 +259,163 @@ function ContactUs(props) {
                 <h2>Contact Us</h2>
               </div>
               <div className="right-sidebar-box">
-                <form>
+                <form onSubmit={handleSubmit(handleCreateContact)}>
                   <div className="row">
                     <div className="col-xxl-6 col-lg-12 col-sm-6">
                       <div className="mb-md-4 mb-3 custom-form">
                         <label htmlFor="firstName" className="form-label">
-                          First Name
+                          First Name<span className="text-danger">*</span>
                         </label>
-                        <div className="custom-input">
+                        <div className="custom-input mb-2">
                           <input
                             type="text"
-                            className="form-control"
+                            // className="form-control"
                             id="firstName"
                             placeholder="Enter First Name"
                             // value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
+                            // onChange={(e) => setFirstName(e.target.value)}
+                            className={classNames(
+                              "form-control  border border-secondary signup_fields",
+                              { "is-invalid": errors.firstName }
+                            )}
+                            {...register("firstName", {
+                              required: "Enter Your FirstName Name*",
+                              pattern: {
+                                value: /^[A-Za-z]+$/,
+                                message: "First Name must contain only letters",
+                              },
+                              minLength: {
+                                value: 3,
+                                message: "minimium 3 Charcarters",
+                              },
+                              maxLength: {
+                                value: 20,
+                                message: "maximum 20 Charcarters",
+                              },
+                            })}
                           />
                           <i className="fa-solid fa-user" />
                         </div>
+                        {errors.firstName && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.firstName?.message}
+                          </small>
+                        )}
                       </div>
                     </div>
+
                     <div className="col-xxl-6 col-lg-12 col-sm-6">
                       <div className="mb-md-4 mb-3 custom-form">
                         <label htmlFor="lastName" className="form-label">
-                          Last Name
+                          Last Name<span className="text-danger">*</span>
                         </label>
-                        <div className="custom-input">
+                        <div className="custom-input mb-2">
                           <input
                             type="text"
-                            className="form-control"
+                            // className="form-control"
                             id="lastName"
                             placeholder="Enter Last Name"
                             // value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
+                            // onChange={(e) => setLastName(e.target.value)}
+                            className={classNames(
+                              "form-control  border border-secondary signup_fields",
+                              { "is-invalid": errors.lastName }
+                            )}
+                            {...register("lastName", {
+                              required: "Enter Your LastName Name*",
+                              pattern: {
+                                value: /^[A-Za-z]+$/,
+                                message: "Last Name must contain only letters",
+                              },
+                              minLength: {
+                                value: 3,
+                                message: "minimium 3 Charcarters",
+                              },
+                              maxLength: {
+                                value: 20,
+                                message: "maximum 20 Charcarters",
+                              },
+                            })}
                           />
                           <i className="fa-solid fa-user" />
                         </div>
+                        {errors.lastName && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.lastName?.message}
+                          </small>
+                        )}
                       </div>
                     </div>
+
                     <div className="col-xxl-6 col-lg-12 col-sm-6">
                       <div className="mb-md-4 mb-3 custom-form">
                         <label htmlFor="email" className="form-label">
-                          Email Address
+                          Email Address<span className="text-danger">*</span>
                         </label>
-                        <div className="custom-input">
+                        <div className="custom-input mb-2">
                           <input
                             type="email"
-                            className="form-control"
+                            className="form-control border border-secondary"
                             id="email"
                             placeholder="Enter Email Address"
                             // value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            // onChange={(e) => setEmail(e.target.value)}
+                            {...register("email", {
+                              required: "Email is Required*",
+                              pattern: {
+                                value:
+                                  /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                message: "Invalid email address",
+                              },
+                            })}
                           />
                           <i className="fa-solid fa-envelope" />
                         </div>
+                        {errors.email && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.email?.message}
+                          </small>
+                        )}
                       </div>
                     </div>
+
                     <div className="col-xxl-6 col-lg-12 col-sm-6">
                       <div className="mb-md-4 mb-3 custom-form">
                         <label htmlFor="phoneNumber" className="form-label">
-                          Phone Number
+                          Phone Number<span className="text-danger">*</span>
                         </label>
-                        <div className="custom-input">
+                        <div className="custom-input mb-2">
                           <input
                             type="tel"
-                            className="form-control"
+                            // className="form-control"
                             id="phoneNumber"
                             placeholder="Enter Your Phone Number"
-                            maxLength={10}
-                            // value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            onInput={(e) => {
-                              if (e.target.value.length > e.target.maxLength) {
-                                e.target.value = e.target.value.slice(
-                                  0,
-                                  e.target.maxLength
-                                );
-                              }
-                            }}
+                            className={classNames(
+                              "form-control  border border-secondary signup_fields ",
+                              { "is-invalid": errors.phoneNumber }
+                            )}
+                            {...register("phoneNumber", {
+                              required: "Phone Number is Required*",
+                              maxLength: {
+                                value: 10,
+                                message: "maximium 10 Charcarters",
+                              },
+                              minLength: {
+                                value: 10,
+                                message: "minimium 10 Charcarters",
+                              },
+                            })}
                           />
                           <i className="fa-solid fa-mobile-screen-button" />
                         </div>
+                        {errors.phoneNumber && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.phoneNumber?.message}
+                          </small>
+                        )}
                       </div>
                     </div>
+
                     <div className="col-12">
                       <div className="mb-md-4 mb-3 custom-form">
                         <label htmlFor="message" className="form-label">
@@ -382,9 +438,8 @@ function ContactUs(props) {
                   <button
                     className="btn btn-animation btn-md fw-bold ms-auto"
                     type="submit"
-                    onClick={handleCreateContact}
                   >
-                    Send Message
+                    Create Contact
                   </button>
                 </form>
               </div>
@@ -394,7 +449,7 @@ function ContactUs(props) {
       </section>
       {/* Contact Box Section End */}
       {/* Map Section Start */}
-      <section className="map-section">
+      {/* <section className="map-section">
         <div className="container-fluid p-0">
           <div className="map-box">
             {latitude !== null && longitude !== null ? (
@@ -410,32 +465,26 @@ function ContactUs(props) {
             )}
           </div>
         </div>
-      </section>
-      {/* <section className="map-section">
+      </section> */}
+      <section className="map-section">
         <div className="container-fluid p-0">
           <div className="map-box">
-            {currentLocation ? (
-              <Map
-                google={google}
+            {isLoaded ? (
+              <GoogleMap
+                mapContainerStyle={containerStyle}
                 zoom={14}
-                initialCenter={{
-                  lat: currentLocation.latitude,
-                  lng: currentLocation.longitude
-                }}
+                center={center}
+                onLoad={onLoad}
+                // onUnmount={onUnmount}
               >
-                <Marker
-                  position={{
-                    lat: currentLocation.latitude,
-                    lng: currentLocation.longitude
-                  }}
-                />
-              </Map>
-            ) : (
-              <p>Loading map...</p>
-            )}
+                <>
+                  <MarkerF onLoad={onLoadMark} position={position} />
+                </>
+              </GoogleMap>
+            ) : null}
           </div>
         </div>
-      </section> */}
+      </section>
       {/* Map Section End */}
       {/* Footer Section Start */}
       <Footer />

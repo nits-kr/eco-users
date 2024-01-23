@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import Header from "../Header";
 import {
   AddCompare,
@@ -11,8 +17,12 @@ import {
 } from "../HttpServices";
 import RelatedProductSlider from "./RelatedProductSlider";
 import {
+  useAddToCartMutation,
   useAddToWislistListMutation,
+  useCreateReportMutation,
+  useGetCartListheaderMutation,
   useGetCompareListQuery,
+  useGetProductListDetailsMutation,
   useGetRelatedProductQuery,
 } from "../../services/Post";
 import SelectedProduct from "./SelectedProduct";
@@ -32,10 +42,17 @@ import {
   faArrowsRotate,
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
+import { useSelector } from "react-redux";
 
 function Products(props) {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const [productDetails] = useGetProductListDetailsMutation();
+  const [cartListQuery] = useGetCartListheaderMutation();
+  const [reportData] = useCreateReportMutation();
+  const [addtocart] = useAddToCartMutation();
   const [loading, setLoading] = useState(false);
-  const [wishAdd, res] = useAddToWislistListMutation();
+  const [wishAdd] = useAddToWislistListMutation();
   const relatedProduct = useGetRelatedProductQuery();
   const compareItems = useGetCompareListQuery();
 
@@ -46,7 +63,23 @@ function Products(props) {
   const [addCompareItems, setAddCompareItems] = useState([]);
   const [newCompare, setNewCompare] = useState([]);
 
+  const userEmail = localStorage?.getItem("userEmail");
+  const mobileNumber = localStorage?.getItem("mobileNumber");
+  const userName = localStorage?.getItem("userName");
+  const [formData, setFormData] = useState({
+    r1: "",
+    description: "",
+  });
+  const [report, setReport] = useState("");
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
   const storedId = localStorage.getItem("loginId");
+
+  const navigate = useNavigate();
 
   const [count, setCount] = useState(1);
 
@@ -55,33 +88,44 @@ function Products(props) {
   const { id } = useParams();
 
   useEffect(() => {
-    cartData();
-  }, []);
-  const cartData = async () => {
-    try {
-      const data = await CartList();
+    if (id) {
+      handleProductDetails(id);
+    }
+  }, [id]);
 
-      setCartListItems(data?.carts);
+  const handleProductDetails = async () => {
+    const datas = {
+      id,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await productDetails(datas);
+
+      setProductDetail(respone?.data?.results?.details);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    if (id) {
-      handleProductDetails(id);
+    if (ecomUserId) {
+      handleCartList(ecomUserId);
     }
-  }, [id]);
+  }, [ecomUserId]);
 
-  const handleProductDetails = async (id) => {
+  const handleCartList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
     try {
-      props.setProgress(10);
-      setLoading(true);
+      const respone = await cartListQuery(datas);
 
-      const { data, error } = await ProductDetails(id);
-      setProductDetail(data?.results?.details);
-      setLoading(false);
-      props.setProgress(100);
+      console.log("respone cart", respone);
+
+      setCartListItems(respone?.data?.carts);
     } catch (error) {
       console.log(error);
     }
@@ -115,21 +159,50 @@ function Products(props) {
     });
   });
 
+  const isItemInCart = cartListItems?.some(
+    (cartItem) => cartItem?.product_Id?._id === id
+  );
+
   const variantId = selectedVariantData?._id;
 
-  const handleAddToCart = async (item, index) => {
+  const handleAddToCart = async (e, item) => {
+    // e.preventDefault();
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to cart.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
+    console.log("item added id", item?._id);
+    // e.preventDefault();
+    const data = {
+      product_Id: id,
+      quantity: count,
+      Price: price,
+      varient_Id: variantId,
+      user_Id: ecomUserId,
+      ecommercetoken: ecommercetoken,
+    };
     try {
-      const { data, error } = await AddToCart(id, count, price, variantId);
-      if (error) {
-        console.log(error);
-        return;
-      }
+      const response = await addtocart(data);
+
+      navigate("/cart");
     } catch (error) {
       console.log(error);
     }
-    setTimeout(() => {
-      window?.location?.reload();
-    }, 500);
   };
 
   const handleWishClick = async (id) => {
@@ -185,6 +258,58 @@ function Products(props) {
   };
   const handleCompress = () => {
     setArea(true);
+  };
+
+  const handleSaveReport = () => {
+    Swal.fire({
+      title: "Confirm",
+      text: "Are you sure you want to save this report?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      customClass: {
+        confirmButton: "btn btn-primary mx-2",
+        cancelButton: "btn btn-secondary mx-2",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const newAddress = {
+          reason: formData.r1,
+          description: report,
+          user_Id: ecomUserId,
+          product_Id: id,
+          reporterName: userName,
+          reporterNumber: mobileNumber,
+          reporterEmail: userEmail,
+          ecommercetoken: ecommercetoken,
+        };
+        reportData(newAddress);
+        document?.getElementById("cancelReport").click();
+      }
+    });
+  };
+
+  const handleReportAuth = () => {
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add report.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
   };
 
   useEffect(() => {
@@ -295,7 +420,12 @@ function Products(props) {
                       <div className="col-6 text-end">
                         <a
                           className="report_btns"
-                          data-bs-toggle="modal"
+                          data-bs-toggle={`${
+                            ecommercetoken ? "modal" : "click"
+                          }`}
+                          onClick={() =>
+                            ecommercetoken ? null : handleReportAuth()
+                          }
                           data-bs-target="#report_modal"
                           href="javascript:;"
                         >
@@ -445,7 +575,7 @@ function Products(props) {
                             </div>
                           )}
 
-                          {isVariantInCart ? (
+                          {isItemInCart ? (
                             <Link
                               to="/cart"
                               className="btn btn-md bg-dark cart-button text-white w-100"
@@ -454,7 +584,7 @@ function Products(props) {
                             </Link>
                           ) : (
                             <Link
-                              to="/cart"
+                              // to="/cart"
                               className="btn btn-md bg-dark cart-button text-white w-100"
                               onClick={() => handleAddToCart()}
                             >
@@ -1220,6 +1350,7 @@ function Products(props) {
                 className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
+                id="cancelReport"
               />
               <div className="report_modal_inner">
                 <h3>Report Product</h3>
@@ -1232,6 +1363,8 @@ function Products(props) {
                         id="r1"
                         name="r1"
                         className="d-none"
+                        value="Inppropriate"
+                        onChange={handleInputChange}
                       />
                       <label htmlFor="r1">Inppropriate</label>
                     </div>
@@ -1244,6 +1377,8 @@ function Products(props) {
                         id="r2"
                         name="r1"
                         className="d-none"
+                        value="Spam"
+                        onChange={handleInputChange}
                       />
                       <label htmlFor="r2">Spam</label>
                     </div>
@@ -1256,6 +1391,8 @@ function Products(props) {
                         id="r3"
                         name="r1"
                         className="d-none"
+                        value="None of the Above"
+                        onChange={handleInputChange}
                       />
                       <label htmlFor="r3">None of the Above</label>
                     </div>
@@ -1267,15 +1404,18 @@ function Products(props) {
                       id=""
                       style={{ height: 100 }}
                       defaultValue={""}
+                      // value={formData.description}
+                      onChange={(e) => setReport(e.target.value)}
                     />
                   </div>
                   <div className="form-group col-12 mb-0">
-                    <a
+                    <Link
                       className="btn btn-animation btn-sm mx-auto"
-                      href="javascript:;"
+                      to="#"
+                      onClick={handleSaveReport}
                     >
                       Send
-                    </a>
+                    </Link>
                   </div>
                 </form>
               </div>

@@ -405,7 +405,31 @@ function OrderTracking({ orderStatus }) {
           <div className="row">
             <div className="col-12">
               <div className="table-responsive">
-                <table className="table order-tab-table">
+                {order && order?.statusTime && (
+                  <table className="table order-tab-table">
+                    <thead>
+                      <tr>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Location</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(order?.statusTime).map(
+                        ([status, time]) => (
+                          <tr key={status}>
+                            <td>{status}</td>
+                            <td>{new Date(time).toLocaleDateString()}</td>
+                            <td>{new Date(time).toLocaleTimeString()}</td>
+                            <td>Location Data</td>
+                          </tr>
+                        )
+                      )}
+                    </tbody>
+                  </table>
+                )}
+                {/* <table className="table order-tab-table">
                   <thead>
                     <tr>
                       <th>Description</th>
@@ -440,7 +464,7 @@ function OrderTracking({ orderStatus }) {
                       <td>Germany</td>
                     </tr>
                   </tbody>
-                </table>
+                </table> */}
               </div>
             </div>
           </div>

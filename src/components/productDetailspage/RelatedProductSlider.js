@@ -149,7 +149,10 @@ function RelatedProductSlider({ id }) {
   };
   return (
     <>
-      <section className="product-list-section section-b-space">
+      <section
+        className="product-list-section section-b-space"
+        style={{ display: relatedProductDetail?.length > 0 ? "" : "none" }}
+      >
         <div className="container-fluid-lg">
           <div className="title">
             <h2>Related Products</h2>

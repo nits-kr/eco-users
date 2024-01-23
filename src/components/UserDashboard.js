@@ -317,6 +317,7 @@ function UserDashboard() {
       cardHolderName: cardHolder,
       validTime: cardValid,
       cvv: cvv,
+      user_Id: ecomUserId,
       ecommercetoken: ecommercetoken,
     };
     createCard(newAddress).then(() => {

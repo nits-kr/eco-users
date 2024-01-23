@@ -9,6 +9,7 @@ import { HandleOkButtonClick, UseCountdownTimer } from "./JavaScriptFunction";
 import Header from "./Header";
 import Footer from "./Footer";
 import {
+  useAddToCartMutation,
   useGetBannerListQuery,
   useGetCartListheaderMutation,
   useGetTrendingProductQuery,
@@ -41,12 +42,14 @@ import Middlebanner from "./indexgrocary/Middlebanner";
 import Bottombanner from "./indexgrocary/Bottombanner";
 import Spinners2 from "./Spinners2";
 import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
 function IndexGrocary(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const categoryListItems = useGetCategoryListQuery();
   const trendingProduct = useGetTrendingProductQuery();
   const [cartListQuery] = useGetCartListheaderMutation();
+  const [addtocart] = useAddToCartMutation();
   const { data: categoryBanner } = useGetBannerListQuery();
   const [trendingList, setTrendingList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -232,29 +235,42 @@ function IndexGrocary(props) {
     }
   };
   const handleAddToCart = async (e, item, price, index, variantId) => {
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to cart.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
     console.log("item added id", item?._id);
     e.preventDefault();
-
+    const data = {
+      product_Id: item._id,
+      quantity: count[index],
+      Price: price * count[index],
+      varient_Id: variantId,
+      user_Id: ecomUserId,
+      ecommercetoken: ecommercetoken,
+    };
     try {
-      const { data, error } = await AddToCart(
-        item._id,
-        count[index],
-        price * count[index],
-        variantId
-      );
-      if (error) {
-        console.log(error);
-        return;
-      }
-      const newCartItems = [...cartListItems, data];
-      setCartListItems(newCartItems);
+      const response = await addtocart(data);
+
       navigate("/cart");
     } catch (error) {
       console.log(error);
     }
-    setTimeout(() => {
-      window?.location?.reload();
-    }, 500);
   };
   useEffect(() => {
     props.setProgress(10);
@@ -591,7 +607,7 @@ function IndexGrocary(props) {
                   <div className="add-to-cart-box bg-white mt-2">
                     <button className="btn btn-add-cart addcart-button">
                       <Link
-                        to="/cart"
+                        to="#"
                         onClick={(e) =>
                           handleAddToCart(
                             e,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
@@ -34,28 +34,27 @@ function Cart() {
 
   const [cartListItems, setCartListItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
-  // localStorage?.setItem("cartId", cartListItems[0]?._id);
+
   const [cartCount, setCartCount] = useState([]);
   const [wishAdd] = useAddToWislistListMutation();
   const [updateQuantity] = useUpdateQuantityMutation();
   const [coupan, setCoupan] = useState([]);
-  const [coupan2, setCoupan2] = useState([]);
+
   const [coupanCode, setCoupanCode] = useState("");
-  const [CreateWishItems, setCreateWishItems] = useState([]);
-  const [totalPrice, setTotalPrice] = useState([]);
+
   const coupanCode2 = coupanCode || "";
-  // const { data: cartListQuery, isSuccess } = useGetCartListQuery();
+
   const cart = useSelector((state) => state?.cart?.carts);
-  // setCartListItems(cart?.cartItems);
-  console.log("useSelector", cart);
+
   const dispatch = useDispatch();
   const [singleItemPrice, setSingleItemPrice] = useState([]);
-  console.log("singleItemPrice", singleItemPrice);
+
   localStorage?.setItem("cartTotal", cartTotal);
+  const navigate = useNavigate();
 
   const [count1, setCount1] = useState();
   const [coupanresponse, setCoupanresponse] = useState("");
-  console.log("coupanresponse", coupanresponse);
+
   localStorage?.setItem("coupanresponse", coupanresponse);
   const handleIncrement = (id) => {
     setCartListItems((prevCartListItems) => {
@@ -187,7 +186,6 @@ function Cart() {
         coupanCode: coupanCode2,
       });
 
-      console.log("createNewOrder coupan", createNewOrder);
       if (createNewOrder?.error?.data?.message === "Coupan Code is Expired") {
         toast.error(`${createNewOrder?.error?.data?.message}`);
       } else if (createNewOrder?.data?.message === "Success") {
@@ -245,6 +243,10 @@ function Cart() {
   }, []);
 
   const checkoutUrl = "/check-outall";
+
+  const handleShopping = () => {
+    navigate("/shop");
+  };
 
   return (
     <>
@@ -667,8 +669,8 @@ function Cart() {
                       </li>
                       <li>
                         <button
-                          onClick={() => {
-                            window.location.href = "/index";
+                          onClick={(e) => {
+                            handleShopping(e);
                           }}
                           className="btn btn-light shopping-button text-dark"
                         >

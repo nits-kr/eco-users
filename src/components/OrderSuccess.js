@@ -8,23 +8,44 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faTrash, faHeart } from "@fortawesome/free-solid-svg-icons";
 import Header from "./Header";
 import Footer from "./Footer";
-import { useGetOrderListQuery } from "../services/Post";
+import {
+  useGetOrderListMutation,
+  useGetOrderListQuery,
+} from "../services/Post";
 import { useCancelOrderMutation } from "../services/Post";
+import { useSelector } from "react-redux";
 function OrderSuccess() {
-  const orderList = useGetOrderListQuery();
-  console.log("order list", orderList);
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const [orderLists] = useGetOrderListMutation();
+
   const [newOrder, setNewOrder] = useState([]);
   localStorage?.setItem("totalOrder", newOrder?.length);
   const [cancelOrder, re] = useCancelOrderMutation();
   const storeUser = localStorage?.getItem("userName");
-  const getReversedList = (list) => {
-    return list?.data?.results?.carts?.slice().reverse() ?? [];
-  };
+
   useEffect(() => {
-    const reversedList = getReversedList(orderList);
-    setNewOrder(reversedList);
-  }, [orderList]);
-  const handleRemoveAddress = (orderId) => {
+    if (ecomUserId) {
+      handleOrderList(ecomUserId);
+    }
+  }, [ecomUserId]);
+
+  const handleOrderList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await orderLists(datas);
+
+      setNewOrder(respone?.data?.results?.carts?.slice().reverse() ?? []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCancelOrder = (orderId) => {
     Swal.fire({
       title: "Confirm Cancellation",
       text: "Are you sure you want to cancel this address?",
@@ -38,9 +59,10 @@ function OrderSuccess() {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        cancelOrder(orderId)
+        cancelOrder({ ecommercetoken, orderId })
           .then(() => {
-            setNewOrder(orderList?.data?.results?.orderList);
+            const updatedList = newOrder.filter((card) => card._id !== orderId);
+            setNewOrder(updatedList);
           })
           .catch((error) => {});
       }
@@ -322,7 +344,7 @@ function OrderSuccess() {
                                   </Link>
                                 ) : item?.orderStatus === "Delivered" ? (
                                   <Link
-                                    to={`/product/${item?.products[0]?.product_Id?._id}`}
+                                    to={`/product-details-page/${item?.products?._id}`}
                                     className="text-primary"
                                   >
                                     <div className="text-danger">Delivered</div>
@@ -333,7 +355,7 @@ function OrderSuccess() {
                                   <Link
                                     className="text-danger"
                                     onClick={() => {
-                                      handleRemoveAddress(item?._id);
+                                      handleCancelOrder(item?._id);
                                     }}
                                   >
                                     Cancel Order{" "}

@@ -15,7 +15,7 @@ import {
   CreateWish,
   ProductDetails,
   ProductList,
-  CartList,
+  // CartList,
   LowPriceProduct,
   HighPriceProduct,
   AscendingProduct,
