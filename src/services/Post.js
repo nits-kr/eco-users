@@ -120,12 +120,23 @@ export const PostApi = createApi({
         method: "post",
       }),
     }),
-    getOrderList: builder.query({
-      query: (name) => ({
-        url: `user/order/order/order-list/${userId}`,
-        method: "post",
-      }),
+    getOrderList: builder.mutation({
+      query: ({ ecomUserId, ecommercetoken }) => {
+        return {
+          url: `user/order/order/order-list/${ecomUserId}`,
+          method: "post",
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
     }),
+    // getOrderList: builder.query({
+    //   query: (name) => ({
+    //     url: `user/order/order/order-list/${userId}`,
+    //     method: "post",
+    //   }),
+    // }),
     // getCardList: builder.query({
     //   query: (name) => ({
     //     url: `user/carts/carts/saveCarts-list`,
@@ -157,6 +168,17 @@ export const PostApi = createApi({
       query: ({ ecomUserId, ecommercetoken }) => {
         return {
           url: `user/carts/carts/carts-list/${ecomUserId}`,
+          method: "post",
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
+    getWishList: builder.mutation({
+      query: ({ ecomUserId, ecommercetoken }) => {
+        return {
+          url: `user/wish/wish/wish-List/${ecomUserId}`,
           method: "post",
           headers: {
             "x-auth-token-user": ecommercetoken,
@@ -320,23 +342,51 @@ export const PostApi = createApi({
       }),
     }),
     deleteCard: builder.mutation({
-      query: (id) => ({
-        url: `user/carts/carts/saveCarts-delete/${id}`,
+      query: ({ ecommercetoken, cardId }) => ({
+        url: `user/carts/carts/saveCarts-delete/${cardId}`,
         method: "DELETE",
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
       }),
     }),
+    deleteWishList: builder.mutation({
+      query: ({ ecommercetoken, wishId }) => ({
+        url: `user/wish/wish/wish-delete/${wishId}`,
+        method: "DELETE",
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
+      }),
+    }),
+    // deleteCard: builder.mutation({
+    //   query: (id) => ({
+    //     url: `user/carts/carts/saveCarts-delete/${id}`,
+    //     method: "DELETE",
+    //   }),
+    // }),
     deleteCompare: builder.mutation({
       query: (id) => ({
         url: `user/compare/compare/compare-delete/${id}`,
         method: "post",
       }),
     }),
+
     deleteAccount: builder.mutation({
-      query: (id) => ({
-        url: `/user/user/user/delete-account/${id}`,
+      query: ({ ecommercetoken, ecomUserId }) => ({
+        url: `user/user/user/delete-account/${ecomUserId}`,
         method: "DELETE",
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
       }),
     }),
+    // deleteAccount: builder.mutation({
+    //   query: (id) => ({
+    //     url: `/user/user/user/delete-account/${id}`,
+    //     method: "DELETE",
+    //   }),
+    // }),
     cancelOrder: builder.mutation({
       query: (id) => ({
         url: `/user/order/order/user-cancelled-order/${id}`,
@@ -456,16 +506,31 @@ export const PostApi = createApi({
         };
       },
     }),
+
     createContact: builder.mutation({
       query: (body) => {
-        console.log("update login data", body);
+        const { ecommercetoken, ...data } = body;
+
         return {
-          url: "/user/contact/contact/create-contact",
+          url: "user/contact/contact/create-contact",
           method: "post",
-          body,
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
         };
       },
     }),
+    // createContact: builder.mutation({
+    //   query: (body) => {
+    //     console.log("update login data", body);
+    //     return {
+    //       url: "/user/contact/contact/create-contact",
+    //       method: "post",
+    //       body,
+    //     };
+    //   },
+    // }),
     addReview: builder.mutation({
       query: (body) => {
         console.log("update login data", body);
@@ -535,6 +600,7 @@ export const {
   useGetAllPostQuery,
   useGetTrendingProductQuery,
   useGetRelatedProductQuery,
+  useGetOrderListMutation,
   useGetOrderListQuery,
   useGetProductListQuery,
   useGetProductListDetailsQuery,
@@ -585,4 +651,6 @@ export const {
   useDeleteCartItemsMutation,
   useUpdateProfileMutation,
   useGetCartListSummeryMutation,
+  useGetWishListMutation,
+  useDeleteWishListMutation,
 } = PostApi;

@@ -12,19 +12,18 @@ import {
   useCreateAddressMutation,
   useCreateCardMutation,
   useDeleteAccountMutation,
+  useDeleteWishListMutation,
   useGetAddressListMutation,
   useGetCardListMutation,
+  useGetOrderListMutation,
+  useGetWishListMutation,
   useUpdateProfileMutation,
 } from "../services/Post";
-import { useGetAddressListQuery } from "../services/Post";
 import { useDeleteAddressMutation } from "../services/Post";
 import { useUpdateAddressMutation } from "../services/Post";
-import { useGetCardListQuery } from "../services/Post";
 import { useDeleteCardMutation } from "../services/Post";
 import { useUpdateCardMutation } from "../services/Post";
-import { useGetOrderListQuery } from "../services/Post";
 import { useGetPendingOrderQuery } from "../services/Post";
-import { WishListItems, DeleteWishList } from "./HttpServices";
 import { AddToCart } from "./HttpServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -34,6 +33,9 @@ function UserDashboard() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [updateProfile] = useUpdateProfileMutation();
+  const [wishLists] = useGetWishListMutation();
+  const [orderLists] = useGetOrderListMutation();
+  const [deleteWishList] = useDeleteWishListMutation();
   const [wishList, setWishList] = useState([]);
   const [title, setTitle] = useState("");
   const [fullName, setFullName] = useState("");
@@ -61,14 +63,14 @@ function UserDashboard() {
   const [updateCard, re] = useUpdateCardMutation();
   const [createCard, r] = useCreateCardMutation();
   const [addressList] = useGetAddressListMutation();
-  const orderList = useGetOrderListQuery();
+  // const orderList = useGetOrderListQuery();
   const [orderListData, setOrderListData] = useState([]);
   console.log("order list", orderListData);
   const [cardList] = useGetCardListMutation();
   const { data } = useGetPendingOrderQuery();
   console.log("pending data", data?.results?.pending);
-  const [deleteAddress, deleteAddressInfo] = useDeleteAddressMutation();
-  const [deleteCard, deleteCardInfo] = useDeleteCardMutation();
+  const [deleteAddress] = useDeleteAddressMutation();
+  const [deleteCard] = useDeleteCardMutation();
   const [deleteAccount] = useDeleteAccountMutation();
   const [newAddress, setNewAddress] = useState([]);
   const [newCard, setNewCard] = useState([]);
@@ -110,40 +112,12 @@ function UserDashboard() {
     }, 500);
   };
 
-  const deleteWishList = (_id) => {
-    deleteData(_id);
-  };
-  const deleteData = async (_id) => {
-    try {
-      const { data, error } = await DeleteWishList(_id);
-      error ? console.log(error) : console.log(data);
-      setWishList((prevWishList) =>
-        prevWishList.filter((item) => item._id !== _id)
-      );
-      console.log(data.results.deleteDta);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-  const fetchData = async () => {
-    try {
-      const { data, error } = await WishListItems();
-      error ? console.log(error) : console.log(data);
-      setWishList(data?.results?.list);
-      console.log(data?.results?.list);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
     if (ecomUserId) {
       handleAddressList(ecomUserId);
       handleCardList(ecomUserId);
+      handleWishList(ecomUserId);
+      handleOrderList(ecomUserId);
     }
   }, [ecomUserId]);
 
@@ -157,6 +131,34 @@ function UserDashboard() {
       const respone = await addressList(datas);
 
       setNewAddress(respone?.data?.results?.addressData?.slice().reverse());
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleOrderList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await orderLists(datas);
+
+      setOrderListData(respone?.data?.results?.carts?.slice().reverse() ?? []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleWishList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await wishLists(datas);
+
+      setWishList(respone?.data?.results?.list?.slice().reverse());
     } catch (error) {
       console.log(error);
     }
@@ -176,20 +178,31 @@ function UserDashboard() {
     }
   };
 
-  // const getNewCardList = (list) => {
-  //   return list?.data?.results?.list?.slice().reverse() ?? [];
-  // };
-  // useEffect(() => {
-  //   const reversedList = getNewCardList(cardList);
-  //   setNewCard(reversedList);
-  // }, [cardList]);
-
-  useEffect(() => {
-    const reversedList =
-      orderList?.data?.results?.carts?.slice().reverse() ?? [];
-    setOrderListData(reversedList);
-  }, [orderList]);
-
+  const handleDeleteWish = (wishId) => {
+    Swal.fire({
+      title: "Confirm Deletion",
+      text: "Are you sure you want to delete this address?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "No, cancel",
+      customClass: {
+        confirmButton: "btn btn-danger me-2",
+        cancelButton: "btn btn-primary ms-2",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteWishList({ ecommercetoken, wishId })
+          .then(() => {
+            const updatedList = wishList.filter((card) => card._id !== wishId);
+            setWishList(updatedList);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    });
+  };
   const handleDeleteCard = (cardId) => {
     Swal.fire({
       title: "Confirm Deletion",
@@ -204,7 +217,7 @@ function UserDashboard() {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        deleteCard(cardId)
+        deleteCard({ ecommercetoken, cardId })
           .then(() => {
             const updatedList = newCard.filter((card) => card._id !== cardId);
             setNewCard(updatedList);
@@ -216,7 +229,7 @@ function UserDashboard() {
     });
   };
   const userId = localStorage.getItem("loginId");
-  const handleDeleteAccount = (cardId) => {
+  const handleDeleteAccount = () => {
     Swal.fire({
       title: "Confirm Deletion",
       text: "Are you sure you want to delete your Account ?",
@@ -230,7 +243,7 @@ function UserDashboard() {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        deleteAccount(cardId)
+        deleteAccount({ ecomUserId, ecommercetoken })
           .then(() => {
             // const updatedList = newCard.filter((card) => card._id !== cardId);
             // setNewCard(updatedList);
@@ -880,7 +893,9 @@ function UserDashboard() {
                                     <div className="product-header-top">
                                       <button
                                         className="btn wishlist-button close_button"
-                                        onClick={() => deleteWishList(item._id)}
+                                        onClick={() =>
+                                          handleDeleteWish(item._id)
+                                        }
                                       >
                                         <FontAwesomeIcon icon={faXmark} />
                                       </button>
@@ -2415,12 +2430,13 @@ function UserDashboard() {
                 className="btn theme-bg-color btn-md fw-bold text-light"
                 onClick={() => {
                   handleSaveCards();
-                  const dismissButton = document.getElementById("addCarddissmissbutton");
+                  const dismissButton = document.getElementById(
+                    "addCarddissmissbutton"
+                  );
                   if (dismissButton) {
                     dismissButton.click();
                   }
                 }}
-                
                 disabled={isSaveCardDisabled}
                 // style={{ cursor: isSaveCardDisabled ? 'not-allowed' : 'pointer' }}
               >

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -10,8 +10,11 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Spinner from "./Spinner";
 import { useCreateContactMutation } from "../services/Post";
+import { useSelector } from "react-redux";
 
 function ContactUs(props) {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [firstName, setFirstName] = useState("");
   const [CreateContact, res] = useCreateContactMutation();
   const [lastName, setLastName] = useState("");
@@ -92,24 +95,22 @@ function ContactUs(props) {
       Email: email,
       mobileNumber: phoneNumber,
       message: message,
+      ecommercetoken: ecommercetoken,
     };
-  
+
     try {
       const createdContact = await CreateContact(newContactData);
-      console.log('Contact created successfully:', createdContact);
+      console.log("Contact created successfully:", createdContact);
       Swal.fire({
-        title: 'Contact Created!',
-        text: 'Your contact has been successfully created.',
-        icon: 'success',
-        confirmButtonText: 'OK'
+        title: "Contact Created!",
+        text: "Your contact has been successfully created.",
+        icon: "success",
+        confirmButtonText: "OK",
       });
     } catch (error) {
-      console.error('Error creating contact:', error);
+      console.error("Error creating contact:", error);
     }
   };
-  
-  
-  
 
   useEffect(() => {
     feather.replace();
