@@ -74,10 +74,11 @@ function Blog(props) {
         title: searchQuery,
         ecommercetoken: ecommercetoken,
       });
-      if (response) {
+
+      console.log("blog response", response);
+      if (response?.data?.message === "Success") {
         setBlogList(response?.data?.results?.blogData);
-        navigate(response?.data?.results?.blogData?.length === 0 ? "*" : "");
-      } else {
+      } else if (response?.error?.data?.message === "Data are Not Found") {
         navigate("*");
       }
     } catch (error) {
