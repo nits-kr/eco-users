@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -20,6 +20,7 @@ import Footer from "./Footer";
 import Spinner from "./Spinner";
 
 function Badrequest() {
+  const navigate = useNavigate();
   useEffect(() => {
     feather.replace();
   }, []);
@@ -83,7 +84,7 @@ function Badrequest() {
                       </Link>
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
-                      Not
+                      Not Found
                     </li>
                   </ol>
                 </nav>
@@ -114,7 +115,7 @@ function Badrequest() {
                 <button
                   // onclick="location.href = 'index.html';"
                   onClick={() => {
-                    window.location.href = "/";
+                    navigate("/shop");
                   }}
                   className="btn btn-md text-white theme-bg-color mt-4 mx-auto"
                 >

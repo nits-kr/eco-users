@@ -14,14 +14,11 @@ import { Button } from "rsuite";
 
 function SignUp() {
   const [signup, res] = useUserSignUpMutation();
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
+
   const [password, setPassword] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [fullNameError, setFullNameError] = useState("");
+
   const [passwordError, setPasswordError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [mobileError, setMobileError] = useState("");
+
   const [longitude, setLongitude] = useState(null);
   const [latitude, setLatitude] = useState(null);
   const [loader, setLoader] = useState(false);
@@ -47,6 +44,7 @@ function SignUp() {
     if (res.isSuccess) {
       Swal.fire({
         title: "SignUp Successful!",
+        confirmButtonColor: "#0da487",
         icon: "success",
         text: "You have successfully Sign Up.",
       }).then((result) => {
@@ -219,15 +217,8 @@ function SignUp() {
                           {...register("fullname", {
                             required: "Enter Your Full Name*",
                             pattern: {
-                              value: /^[A-Za-z]+$/,
+                              value: /^[A-Za-z\s]+$/,
                               message: "Full Name must contain only letters",
-                              // value: /^[^*|\":<>[\]{}`\\()';@$]+$/,
-                              // value: /^[^*|\":<>[\]{}`\\()';@$#!%^&*+=]+$/,
-                              // message: "Special Character not allowed",
-                              // value:
-                              //   /^(?=.*[a-zA-Z])[^*|\":<>[\]{}`\\()';@$#!%^&*+=]+$/,
-                              // message:
-                              //   "Full Name must contain at least one letter and special characters are not allowed",
                             },
                             minLength: {
                               value: 3,

@@ -22,44 +22,6 @@ function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   if (res.isSuccess) {
-  //     localStorage.setItem("loginId", res.data?.results?.verifyUser?._id);
-  //     localStorage.setItem("userName", res.data?.results?.verifyUser?.userName);
-  //     localStorage.setItem(
-  //       "userEmail",
-  //       res.data?.results?.verifyUser?.userEmail
-  //     );
-  //     localStorage.setItem("token", res.data?.results?.token);
-  //     localStorage.setItem("ecommercetoken", res.data?.results?.token);
-  //     localStorage.setItem(
-  //       "mobileNumber",
-  //       res.data?.results?.verifyUser?.mobileNumber
-  //     );
-  //     console.log(res.data?.results?.token);
-
-  //     // Show the success message without the confirm button
-  //     Swal.fire({
-  //       title: "Login Successful!",
-  //       icon: "success",
-  //       text: "You have successfully logged in.",
-  //       showConfirmButton: false,
-  //       timer: 500,
-  //     }).then((result) => {
-  //       navigate("/");
-  //       setTimeout(() => {
-  //         window?.location?.reload();
-  //       }, 500);
-  //     });
-  //   } else if (res.isError && res.error?.data?.error) {
-  //     Swal.fire({
-  //       title: "Incorrect Password!",
-  //       icon: "error",
-  //       text: res.error?.data?.message || "Unknown error occurred.",
-  //     });
-  //   }
-  // }, [res, navigate]);
-
   const handleSaveChanges = async (e) => {
     e.preventDefault();
     setUserNameError("");
