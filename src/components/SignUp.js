@@ -210,10 +210,9 @@ function SignUp() {
                           placeholder="Full Name"
                           // value={fullName}
                           // onChange={(e) => setFullName(e.target.value)}
-                          className={classNames(
-                            "form-control  border border-secondary signup_fields",
-                            { "is-invalid": errors.fullname }
-                          )}
+                          className={classNames("form-control signup_fields", {
+                            "is-invalid": errors.fullname,
+                          })}
                           {...register("fullname", {
                             required: "Enter Your Full Name*",
                             pattern: {
@@ -238,7 +237,10 @@ function SignUp() {
                       <div className="form-floating theme-form-floating">
                         <input
                           type="email"
-                          className="form-control"
+                          // className="form-control"
+                          className={classNames("form-control signup_fields ", {
+                            "is-invalid": errors.email,
+                          })}
                           id="email"
                           placeholder="Email Address"
                           // value={email}
@@ -265,10 +267,9 @@ function SignUp() {
                         <input
                           type="number"
                           // className="form-control"
-                          className={classNames(
-                            "form-control  border border-secondary signup_fields ",
-                            { "is-invalid": errors.phoneNumber }
-                          )}
+                          className={classNames("form-control signup_fields ", {
+                            "is-invalid": errors.phoneNumber,
+                          })}
                           id="mobileNumber"
                           placeholder="**********"
                           // value={email}

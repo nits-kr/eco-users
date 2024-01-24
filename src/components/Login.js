@@ -28,7 +28,7 @@ function Login() {
     setPasswordError("");
 
     if (userName.trim() === "") {
-      setUserNameError("Username is required.");
+      setUserNameError("Email is required.");
       return;
     }
 
@@ -182,7 +182,7 @@ function Login() {
                           onChange={(e) => setUserName(e.target.value)}
                         />
                         {userNameError && (
-                          <span className="error-message text-danger">
+                          <span className="error-message text-danger mt-2">
                             {userNameError}
                           </span>
                         )}
@@ -200,7 +200,7 @@ function Login() {
                           onChange={(e) => setPassword(e.target.value)}
                         />
                         {passwordError && (
-                          <span className="error-message text-danger">
+                          <span className="error-message text-danger mt-2">
                             {passwordError}
                           </span>
                         )}
