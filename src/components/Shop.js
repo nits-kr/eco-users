@@ -25,9 +25,11 @@ import {
   AddCompare,
 } from "./HttpServices";
 import {
+  useAddCompareMutation,
   useAddToCartMutation,
   useGetCartListheaderMutation,
   useGetSubCategoryListQuery,
+  useSearchProductHeaderMutation,
 } from "../services/Post";
 import Star from "./Star";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -54,6 +56,8 @@ function Shop(props) {
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [cartListQuery] = useGetCartListheaderMutation();
   const [addtocart] = useAddToCartMutation();
+  const [compare] = useAddCompareMutation();
+  const [searchProduct] = useSearchProductHeaderMutation();
   const [productListItems, setProductListItems] = useState([]);
   const [subCategoryProduct] = useSubCategoryProductListMutation();
   const subCategoryListItems = useGetSubCategoryListQuery();
@@ -72,6 +76,8 @@ function Shop(props) {
   const [selectedProductId, setSelectedProductId] = useState("");
   const location = useLocation();
   let id = location.state?.id;
+
+  console.log("state id", id);
 
   const navigate = useNavigate();
 
@@ -148,6 +154,8 @@ function Shop(props) {
     0
   );
   const averageRating = totalRatings / selectedProduct?.ratings?.length;
+  const searchdata = useSelector((data) => data?.search?.query);
+
   useEffect(() => {
     if (id) {
       handleSubSubProduct(id);
@@ -159,6 +167,7 @@ function Shop(props) {
       fetchData();
     }
   }, [id, selector, searchQuery]);
+
   const handleSubSubProduct = async (id) => {
     try {
       const { data, error } = await subSubProduct(id);
@@ -226,15 +235,14 @@ function Shop(props) {
       console.log(error);
     }
   };
-  const handleCompareClick = async (item) => {
+  const handleCompareClick = async (id) => {
+    const data = {
+      product_Id: id,
+      ecommercetoken: ecommercetoken,
+    };
     try {
-      const { data, error } = await AddCompare(item._id);
-      if (error) {
-        console.log(error);
-        return;
-      }
-      const newCreateCompareItems = [...addCompareItems, data];
-      setAddCompareItems(newCreateCompareItems);
+      const response = await compare(data);
+      navigate("/compare");
     } catch (error) {
       console.log(error);
     }
@@ -372,50 +380,20 @@ function Shop(props) {
     if (searchQuery) {
       handleSearch();
     }
-  }, [searchQuery]);
+  }, [searchQuery, selector]);
 
   const handleSearch = async () => {
-    try {
-      const url1 =
-        searchQuery !== ""
-          ? `${process.env.REACT_APP_APIENDPOINT}user/product/product/search-product`
-          : `${process.env.REACT_APP_APIENDPOINT}user/product/product/list`;
-      const response = await axios.post(url1, {
-        productName_en: searchQuery,
-      });
-      const { error, results } = response.data;
-      if (error) {
-        throw new Error("Error searching for products. Data is not found.");
-      } else {
-        setProductListItems(
-          searchQuery !== "" ? results?.productData : results?.list?.reverse()
-        );
-      }
-    } catch (error) {
-      if (error.response) {
-        Swal.fire({
-          title: "Error!",
-          text: error.response.data,
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      } else if (error.request) {
-        Swal.fire({
-          title: "Error!",
-          text: "Network error. Please try again later.",
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      } else {
-        Swal.fire({
-          title: "Error!",
-          text: error.message,
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      }
-    }
+    const data = {
+      productName_en: searchQuery ? searchQuery : selector,
+      ecommercetoken: ecommercetoken,
+    };
+    const response = await searchProduct(data);
+    console.log("search response", response?.data?.results?.productData);
+    setProductListItems(
+      response?.data?.results?.productData?.slice()?.reverse()
+    );
   };
+
   useEffect(() => {
     const reversedList =
       subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
@@ -934,9 +912,11 @@ function Shop(props) {
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="top"
                                     title="Compare"
-                                    onClick={() => handleCompareClick(item)}
+                                    onClick={() =>
+                                      handleCompareClick(item?._id)
+                                    }
                                   >
-                                    <Link to="/compare">
+                                    <Link to="#">
                                       <FontAwesomeIcon icon={faArrowsRotate} />
                                     </Link>
                                   </li>

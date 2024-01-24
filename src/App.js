@@ -77,7 +77,7 @@ function App() {
           <Route
             exact
             className="active"
-            path="/blog-details/:item"
+            path="/blog-details"
             element={<BlogDetails />}
           />
           <Route

@@ -74,13 +74,14 @@ export const PostApi = createApi({
     }),
     AddToWislistList: builder.mutation({
       query: (body) => {
-        console.log("update address", body);
-        const { id } = body;
-        console.log("update address body data", id);
+        const { ecommercetoken, ...data } = body;
         return {
           url: "/user/wish/wish/add-wish",
           method: "post",
-          body,
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
         };
       },
     }),
@@ -120,6 +121,17 @@ export const PostApi = createApi({
     //     method: "post",
     //   }),
     // }),
+    getWishListDetails: builder.mutation({
+      query: ({ ecomUserId, ecommercetoken }) => {
+        return {
+          url: `user/wish/wish/wish-List/${ecomUserId}`,
+          method: "post",
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
     getProductListDetails: builder.mutation({
       query: ({ id, ecommercetoken }) => {
         return {
@@ -261,6 +273,48 @@ export const PostApi = createApi({
 
         return {
           url: "user/carts/carts/create-carts",
+          method: "post",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
+    addCompare: builder.mutation({
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: "user/compare/compare/add-compare",
+          method: "post",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
+    searchProductHeader: builder.mutation({
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: "user/product/product/search-product",
+          method: "post",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
+    searchBlog: builder.mutation({
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: "user/blog/blog/blog-search",
           method: "post",
           body: data,
           headers: {
@@ -667,4 +721,8 @@ export const {
   useGetCartListSummeryMutation,
   useGetWishListMutation,
   useDeleteWishListMutation,
+  useGetWishListDetailsMutation,
+  useAddCompareMutation,
+  useSearchProductHeaderMutation,
+  useSearchBlogMutation,
 } = PostApi;

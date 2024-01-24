@@ -1,22 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  Link,
-  Navigate,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Header from "../Header";
-import {
-  AddCompare,
-  AddReview,
-  AddToCart,
-  CartList,
-  ProductDetails,
-  RelatedProduct,
-} from "../HttpServices";
 import RelatedProductSlider from "./RelatedProductSlider";
 import {
+  useAddCompareMutation,
   useAddToCartMutation,
   useAddToWislistListMutation,
   useCreateReportMutation,
@@ -50,6 +37,8 @@ function Products(props) {
   const [productDetails] = useGetProductListDetailsMutation();
   const [cartListQuery] = useGetCartListheaderMutation();
   const [reportData] = useCreateReportMutation();
+  const [compare] = useAddCompareMutation();
+
   const [addtocart] = useAddToCartMutation();
   const [loading, setLoading] = useState(false);
   const [wishAdd] = useAddToWislistListMutation();
@@ -206,41 +195,58 @@ function Products(props) {
   };
 
   const handleWishClick = async (id) => {
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to wish list.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
     try {
-      const editAddress = {
+      const data = {
         product_Id: id,
         userId: storedId,
         like: true,
+        ecommercetoken: ecommercetoken,
       };
-      const { data, error } = await wishAdd(editAddress);
-      if (error) {
-        console.log(error);
-        return;
-      }
+      const response = await wishAdd(data);
+      navigate("/wishlist");
+
       const newCreateWishItems = [...CreateWishItems, data];
       setCreateWishItems(newCreateWishItems);
+      // setTimeout(() => {
+      //   window?.location?.reload();
+      // }, 500);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleCompareClick = async (id) => {
+    const data = {
+      product_Id: id,
+      ecommercetoken: ecommercetoken,
+    };
+    try {
+      const response = await compare(data);
+      navigate("/compare");
       setTimeout(() => {
         window?.location?.reload();
       }, 500);
     } catch (error) {
       console.log(error);
     }
-  };
-  const handleCompareClick = async (id) => {
-    try {
-      const { data, error } = await AddCompare(id);
-      if (error) {
-        console.log(error);
-        return;
-      }
-      const newCreateCompareItems = [...addCompareItems, data];
-      setAddCompareItems(newCreateCompareItems);
-    } catch (error) {
-      console.log(error);
-    }
-    setTimeout(() => {
-      window?.location?.reload();
-    }, 500);
   };
 
   useEffect(() => {
@@ -597,7 +603,7 @@ function Products(props) {
                     <div className="buy-box">
                       {productDetail?.like === "false" ? (
                         <Link
-                          to="/wishlist"
+                          to="#"
                           title="Add To Wishlist"
                           onClick={() => handleWishClick(id)}
                         >
@@ -648,10 +654,7 @@ function Products(props) {
                           <span>Add To Compare</span>
                         </Link>
                       ) : (
-                        <Link
-                          to="/compare"
-                          onClick={() => handleCompareClick(id)}
-                        >
+                        <Link to="#" onClick={() => handleCompareClick(id)}>
                           <i data-feather="shuffle" />
                           <span>Add To Compare</span>
                         </Link>

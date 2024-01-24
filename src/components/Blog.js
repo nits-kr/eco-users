@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 import feather from "feather-icons";
@@ -11,18 +11,28 @@ import {
   useGetAllPostQuery,
   useGetCategoryListQuery,
   useGetTrendingProductQuery,
+  useSearchBlogMutation,
 } from "../services/Post";
 import Spinner from "./Spinner";
+import { useSelector } from "react-redux";
 
 function Blog(props) {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [loading, setLoading] = useState(false);
+  const [blogSearch] = useSearchBlogMutation();
   const categoryListItems = useGetCategoryListQuery();
   const trendingProduct = useGetTrendingProductQuery();
   const [trendingList, setTrendingList] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const blog = useGetAllPostQuery();
+
+  const navigate = useNavigate();
   const [blogList, setBlogList] = useState();
+
+  console.log("blogList", blogList);
+
   useEffect(() => {
     props.setProgress(10);
     setLoading(true);
@@ -52,56 +62,29 @@ function Blog(props) {
     }
   }, [blog, props]);
 
-  const handleSearch1 = async () => {
+  useEffect(() => {
+    if (searchQuery) {
+      searchBlog();
+    }
+  }, [searchQuery]);
+
+  const searchBlog = async () => {
     try {
-      const url1 =
-        searchQuery !== ""
-          ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/blog/blog/blog-search"
-          : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/blog/blog/blog-list";
-      const response = await axios.post(url1, {
+      const response = await blogSearch({
         title: searchQuery,
+        ecommercetoken: ecommercetoken,
       });
-      const { error, results } = response?.data;
-      if (error) {
-        // throw new Error("Error searching for products. Data is not found.");
-        setBlogList([]);
+      if (response) {
+        setBlogList(response?.data?.results?.blogData);
+        navigate(response?.data?.results?.blogData?.length === 0 ? "*" : "");
       } else {
-        setBlogList(
-          searchQuery !== "" ? results?.blogData : results?.list?.reverse()
-        );
+        navigate("*");
       }
     } catch (error) {
-      if (error.response) {
-        Swal.fire({
-          title: "Error!",
-          text: "Data Not Found",
-          // text: error.message,
-          icon: "error",
-          confirmButtonText: "OK",
-        }).then(() => {
-          // Reload the page when the "OK" button is clicked
-          window.location.reload();
-        });
-      } else if (error.request) {
-        Swal.fire({
-          title: "Error!",
-          text: "Network error. Please try again later.",
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      } else {
-        Swal.fire({
-          title: "Error!",
-          text: error.message,
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      }
+      console.log(error);
     }
   };
-  useEffect(() => {
-    handleSearch1();
-  }, [searchQuery]);
+
   return (
     <>
       {loading}
@@ -208,10 +191,8 @@ function Blog(props) {
                                 <h3>{item.title}</h3>
                               </Link>
                               <Link
-                                // to = {`/blog-details/${item?._id}`}
-                                to={`/blog-details/${encodeURIComponent(
-                                  JSON.stringify(item)
-                                )}`}
+                                to="/blog-details"
+                                state={{ id: item?._id }}
                                 className="blog-button"
                               >
                                 Read More
@@ -500,7 +481,7 @@ function Blog(props) {
                                         className="offer-image"
                                       >
                                         <img
-                                          src={item?.addVarient[0]?.product_Pic[0]}
+                                          src={item?.blog_Pic}
                                           className=" lazyload"
                                           alt=""
                                         />
@@ -514,7 +495,7 @@ function Blog(props) {
                                           </Link>
                                           <span> {item?.weight} </span>
                                           <h6 className="price theme-color">
-                                            ${item?.addVarient[0]?.Price}{" "}
+                                            {/* ${item?.addVarient[0]?.Price}{" "} */}
                                           </h6>
                                         </div>
                                       </div>

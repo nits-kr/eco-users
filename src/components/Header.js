@@ -6,11 +6,11 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faPhoneVolume } from "@fortawesome/free-solid-svg-icons";
 import { ProductSearch } from "./HttpServices";
-import { DeleteCartProduct } from "./HttpServices";
 import {
   useDeleteCartItemsMutation,
   useGetCartListheaderMutation,
   useGetCategoryListQuery,
+  useSearchProductHeaderMutation,
   useTopBannerListMutation,
 } from "../services/Post";
 import { useSubCategoryListMutation } from "../services/Post";
@@ -26,6 +26,7 @@ function Header({ Dash }) {
   const [subCategoryList] = useSubCategoryListMutation();
   const [bannerList] = useTopBannerListMutation();
   const [deletecart] = useDeleteCartItemsMutation();
+  const [searchProduct] = useSearchProductHeaderMutation();
   const trendingProduct = useGetTrendingProductQuery();
   const [trendingList, setTrendingList] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
@@ -131,15 +132,28 @@ function Header({ Dash }) {
   //   };
   // }, []);
 
+  const selector = useSelector((data) => data?.search?.query);
+
+  console.log("selector", selector);
+
+  useEffect(() => {
+    if (searchQuery) {
+      searchData();
+    }
+  }, [searchQuery]);
+
   const searchData = async () => {
+    console.log("data", selector);
     try {
-      const { data, error } = await ProductSearch(searchQuery);
-      if (error) {
-        console.log(error);
+      const response = await searchProduct({
+        productName_en: selector,
+        ecommercetoken: ecommercetoken,
+      });
+      if (response) {
+        setSuggestions(response?.data?.results?.productData);
+        navigate(response?.data?.results?.productData?.length === 0 ? "*" : "");
       } else {
-        console.log("product search", data);
-        console.log("product list", data?.results?.productData);
-        setSuggestions(data?.results?.productData);
+        navigate("*");
       }
     } catch (error) {
       console.log(error);
@@ -149,6 +163,9 @@ function Header({ Dash }) {
   const hideSuggestions = () => {
     setSuggestions([]);
   };
+  const handleProduct = (product) => {
+    dispatch(searchQuerydata(product));
+  };
 
   const dispatch = useDispatch();
 
@@ -156,7 +173,8 @@ function Header({ Dash }) {
     const inputValue = e.target.value;
     setSearchQuery(inputValue);
     dispatch(searchQuerydata(inputValue));
-    searchData();
+
+    console.log("inputValue", inputValue);
   };
 
   const deleteCartItem = async (id) => {
@@ -221,6 +239,17 @@ function Header({ Dash }) {
     itemsToRemove.forEach((item) => {
       localStorage.removeItem(item);
     });
+  };
+
+  const handleKeyPress = (e) => {
+    e.preventDefault();
+    if (e.key === "Enter") {
+      searchData();
+    }
+  };
+
+  const handleShop = () => {
+    dispatch(searchQuerydata(""));
   };
 
   return (
@@ -420,6 +449,7 @@ function Header({ Dash }) {
                             aria-describedby="button-addon2"
                             value={searchQuery}
                             onChange={handleInputChange}
+                            // onKeyUp={(e) => handleKeyPress(e)}
                           />
                           <button
                             className="btn"
@@ -437,6 +467,7 @@ function Header({ Dash }) {
                               position: "absolute",
                               zIndex: "1",
                               width: "44.2%",
+                              borderRadius: "5px",
                             }}
                           >
                             <ul
@@ -445,38 +476,46 @@ function Header({ Dash }) {
                                 display: "flex",
                                 flexDirection: "column",
                                 backgroundColor: "white",
+                                borderRadius: "5px",
                               }}
                             >
-                              {suggestions.map((product) => (
-                                <li
-                                  key={product._id}
-                                  className="suggestion-li ms-2"
-                                >
-                                  <Link
-                                    // to={`/shop2/${encodeURIComponent(
-                                    //   searchQuery
-                                    // )}`}
-                                    to="/shop"
-                                    state={{ id: searchQuery }}
-                                    className="suggestion-item"
-                                    onClick={hideSuggestions}
+                              {suggestions
+                                ?.slice()
+                                ?.reverse()
+                                ?.map((product) => (
+                                  <li
+                                    key={product._id}
+                                    className="suggestion-li ms-2"
                                   >
-                                    <div className="product-image">
-                                      <img
-                                        src={
-                                          product?.addVarient[0]?.product_Pic[0]
-                                        }
-                                        alt={product.productName_en}
-                                        width={20}
-                                        height={20}
-                                      />
-                                    </div>
-                                    <div className="product-name">
-                                      {product.productName_en}
-                                    </div>
-                                  </Link>
-                                </li>
-                              ))}
+                                    <Link
+                                      // to={`/shop2/${encodeURIComponent(
+                                      //   searchQuery
+                                      // )}`}
+                                      to="/shop"
+                                      // state={{ id: searchQuery }}
+                                      className="suggestion-item"
+                                      onClick={() => {
+                                        hideSuggestions();
+                                        handleProduct(product.productName_en);
+                                      }}
+                                    >
+                                      <div className="product-image">
+                                        <img
+                                          src={
+                                            product?.addVarient[0]
+                                              ?.product_Pic[0]
+                                          }
+                                          alt={product.productName_en}
+                                          width={20}
+                                          height={20}
+                                        />
+                                      </div>
+                                      <div className="product-name">
+                                        {product.productName_en}
+                                      </div>
+                                    </Link>
+                                  </li>
+                                ))}
                             </ul>
                           </div>
                         )}
@@ -797,7 +836,8 @@ function Header({ Dash }) {
                                 Dash === "home" ? "nav-link active" : "nav-link"
                               }
                               aria-current="page"
-                              to="*"
+                              to="/"
+                              onClick={(e) => handleShop(e)}
                             >
                               Home
                             </Link>
@@ -808,6 +848,7 @@ function Header({ Dash }) {
                                 Dash === "shop" ? "nav-link active" : "nav-link"
                               }
                               to="/shop"
+                              onClick={(e) => handleShop(e)}
                             >
                               Shop
                             </Link>
@@ -826,6 +867,7 @@ function Header({ Dash }) {
                                   : "nav-link"
                               }
                               to="/about-us"
+                              onClick={(e) => handleShop(e)}
                             >
                               About Us
                             </Link>
@@ -839,6 +881,7 @@ function Header({ Dash }) {
                               }
                               // className="nav-link dropdown-toggle"
                               to="/contact-us"
+                              onClick={(e) => handleShop(e)}
                             >
                               Contact Us
                             </Link>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -10,14 +10,30 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import BreadCrumb from "./BreadCrumb";
 import Star from "./Star";
-import { AddToCart } from "./HttpServices";
+import { useSelector } from "react-redux";
+import {
+  useAddToCartMutation,
+  useGetWishListDetailsMutation,
+} from "../services/Post";
+import Swal from "sweetalert2";
 
 function WishList() {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const [wishListDetails] = useGetWishListDetailsMutation();
+  const [addtocart] = useAddToCartMutation();
   const [wishList, setWishList] = useState([]);
   localStorage?.setItem("totalWish", wishList?.length);
   const [cartListItems, setCartListItems] = useState([]);
   const [quantity, setQuantity] = useState([]);
   const [count, setCount] = useState([]);
+
+  useEffect(() => {
+    const initialCounts = wishList?.map(() => 1);
+    setCount(initialCounts);
+  }, [wishList]);
+
+  const navigate = useNavigate();
 
   const handleCountChange = (index, newCount) => {
     const newCounts = [...count];
@@ -25,39 +41,67 @@ function WishList() {
     setCount(newCounts);
   };
 
-  const handleAddToCart = async (item, index) => {
+  const handleAddToCart = async (e, item, price, index, variantId) => {
+    e.preventDefault();
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to cart.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
+    console.log("item added id", item?._id);
+    e.preventDefault();
+    const data = {
+      product_Id: item._id,
+      quantity: count[index],
+      Price: price * count[index],
+      varient_Id: variantId,
+      user_Id: ecomUserId,
+      ecommercetoken: ecommercetoken,
+    };
     try {
-      const { data, error } = await AddToCart(
-        item?.product_Id?._id,
-        count[index]
-      );
-      if (error) {
-        console.log(error);
-        return;
-      }
-      // const newCartItems = [...wishList, data];
-      // setWishList(newCartItems);
+      const response = await addtocart(data);
+
+      navigate("/cart");
     } catch (error) {
       console.log(error);
     }
-    setTimeout(() => {
-      window?.location?.reload();
-    }, 500);
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
-  const fetchData = async () => {
+    if (ecomUserId) {
+      handleWishList(ecomUserId);
+    }
+  }, [ecomUserId]);
+
+  const handleWishList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
     try {
-      const { data, error } = await WishListItems();
-      error ? console.log(error) : console.log(data);
-      setWishList(data?.results?.list);
-      console.log(data?.results?.list);
+      const respone = await wishListDetails(datas);
+
+      setWishList(respone?.data?.results?.list);
     } catch (error) {
       console.log(error);
     }
   };
+
   console.log("wishlist", wishList);
   const deleteWishList = (_id) => {
     deleteData(_id);
@@ -254,7 +298,7 @@ function WishList() {
                                 </button>
                                 <div className="m-2">
                                   {" "}
-                                  {count[index] ? count[index] : "0"}
+                                  {count[index] ? count[index] : "1"}
                                 </div>
 
                                 <button
@@ -264,6 +308,11 @@ function WishList() {
                                   data-field=""
                                   onClick={() =>
                                     handleCountChange(index, count[index] + 1)
+                                  }
+                                  disabled={
+                                    count[index] ===
+                                    item?.product_Id?.addVarient?.[0]
+                                      ?.stockQuantity
                                   }
                                 >
                                   <i
@@ -284,16 +333,23 @@ function WishList() {
                           </del>
                         </h5>
                         <div className="add-to-cart-box bg-white mt-2">
-                          <Link
+                          <button
                             className="btn btn-add-cart addcart-button"
-                            to="/cart"
-                            onClick={() => handleAddToCart(item, index)}
+                            onClick={(e) =>
+                              handleAddToCart(
+                                e,
+                                item,
+                                item?.product_Id?.addVarient[0]?.Price,
+                                index,
+                                item?.product_Id?.addVarient[0]?._id
+                              )
+                            }
                           >
                             Add To Cart
                             {/* <span className="add-icon bg-light-gray">
                               <i className="fa-solid fa-plus" />
                             </span> */}
-                          </Link>
+                          </button>
                           <div className="cart_qty qty-box">
                             <div className="input-group bg-white">
                               <button

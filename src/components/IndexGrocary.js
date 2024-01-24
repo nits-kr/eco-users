@@ -9,6 +9,7 @@ import { HandleOkButtonClick, UseCountdownTimer } from "./JavaScriptFunction";
 import Header from "./Header";
 import Footer from "./Footer";
 import {
+  useAddCompareMutation,
   useAddToCartMutation,
   useGetBannerListQuery,
   useGetCartListheaderMutation,
@@ -16,14 +17,7 @@ import {
   useTopBannerListMutation,
 } from "../services/Post";
 import Spinner from "./Spinner";
-import {
-  AddToCart,
-  CreateWish,
-  ProductDetails,
-  // CartList,
-  DiscountProduct,
-  AddCompare,
-} from "./HttpServices";
+import { ProductDetails, DiscountProduct } from "./HttpServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye,
@@ -50,6 +44,7 @@ function IndexGrocary(props) {
   const trendingProduct = useGetTrendingProductQuery();
   const [cartListQuery] = useGetCartListheaderMutation();
   const [addtocart] = useAddToCartMutation();
+  const [compare] = useAddCompareMutation();
   const { data: categoryBanner } = useGetBannerListQuery();
   const [trendingList, setTrendingList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -57,13 +52,11 @@ function IndexGrocary(props) {
   const [productListDetails, setProductListDetails] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [CreateWishItems, setCreateWishItems] = useState([]);
-  const [addCompareItems, setAddCompareItems] = useState([]);
+
   const [cartListItems, setCartListItems] = useState([]);
 
-  console.log("cartListItems", cartListItems);
   const [categoryListData, setCategoryListData] = useState([]);
-  const [quantity, setQuantity] = useState([]);
-  const [wishAdd, res] = useAddToWislistListMutation();
+  const [wishAdd] = useAddToWislistListMutation();
   const [count, setCount] = useState([]);
   const [items, setItems] = useState([]);
 
@@ -137,10 +130,6 @@ function IndexGrocary(props) {
       categoryListItems?.data?.results?.list?.slice().reverse() ?? [];
     setCategoryListData(reversedList);
   }, [categoryListItems]);
-
-  // useEffect(() => {
-  //   cartData();
-  // }, []);
 
   useEffect(() => {
     if (ecomUserId) {
@@ -221,15 +210,15 @@ function IndexGrocary(props) {
       console.log(error);
     }
   };
-  const handleCompareClick = async (item) => {
+
+  const handleCompareClick = async (id) => {
+    const data = {
+      product_Id: id,
+      ecommercetoken: ecommercetoken,
+    };
     try {
-      const { data, error } = await AddCompare(item._id);
-      if (error) {
-        console.log(error);
-        return;
-      }
-      const newCreateCompareItems = [...addCompareItems, data];
-      setAddCompareItems(newCreateCompareItems);
+      const response = await compare(data);
+      navigate("/compare");
     } catch (error) {
       console.log(error);
     }
@@ -397,9 +386,9 @@ function IndexGrocary(props) {
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
                     title="Compare"
-                    onClick={() => handleCompareClick(item)}
+                    onClick={() => handleCompareClick(item?._id)}
                   >
-                    <Link to="/compare">
+                    <Link to="#">
                       <FontAwesomeIcon icon={faArrowsRotate} />
                     </Link>
                   </li>

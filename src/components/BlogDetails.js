@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
@@ -24,6 +24,12 @@ function BlogDetails() {
   const [comments1, setComments] = useState([]);
   const [items, setItems] = useState([]);
   const { item } = useParams();
+
+  const location = useLocation();
+  let id = location.state?.id;
+
+  console.log("state id", id);
+
   useEffect(() => {
     if (trendingProduct?.data?.results?.productlist) {
       setTrendingList(trendingProduct?.data?.results?.productlist);
@@ -426,7 +432,7 @@ function BlogDetails() {
                                 <div className="offer-product">
                                   <Link to="/shop/:id" className="offer-image">
                                     <img
-                                      src={item?.addVarient[0]?.product_Pic[0]}
+                                      // src={item?.addVarient[0]?.product_Pic[0]}
                                       className=" lazyload"
                                       alt=""
                                     />
@@ -439,17 +445,17 @@ function BlogDetails() {
                                         </h6>
                                       </Link>
                                       <span>
-                                        {
+                                        {/* {
                                           item?.addVarient[0]?.values_Id
                                             ?.valuesName_en
-                                        }
+                                        } */}
                                       </span>
-                                      <h6 className="price theme-color">
+                                      {/* <h6 className="price theme-color">
                                         $
                                         {item?.addVarient[0]?.dollarPrice?.toFixed(
                                           2
                                         )}
-                                      </h6>
+                                      </h6> */}
                                     </div>
                                   </div>
                                 </div>
