@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Star from "./Star";
-import axios from "axios";
 import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
@@ -16,6 +15,7 @@ import {
   useGetAddressListMutation,
   useGetCardListMutation,
   useGetOrderListMutation,
+  useGetProfileDetailsMutation,
   useGetWishListMutation,
   useUpdateProfileMutation,
 } from "../services/Post";
@@ -28,6 +28,8 @@ import { AddToCart } from "./HttpServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
 
 function UserDashboard() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
@@ -36,11 +38,13 @@ function UserDashboard() {
   const [wishLists] = useGetWishListMutation();
   const [orderLists] = useGetOrderListMutation();
   const [deleteWishList] = useDeleteWishListMutation();
+  const [profileDetails] = useGetProfileDetailsMutation();
   const [wishList, setWishList] = useState([]);
   const [title, setTitle] = useState("");
   const [fullName, setFullName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [address, setAddress] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
   const [locality, setLocality] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
@@ -76,6 +80,7 @@ function UserDashboard() {
   const [newCard, setNewCard] = useState([]);
   const [isSaveCardDisabled, setIsSaveCardDisabled] = useState(false);
   const [formData, setFormData] = useState([]);
+  const [profileDetail, setProfileDetail] = useState("");
 
   const [selectedImage1, setSelectedImage1] = useState(null);
   const storedId = localStorage.getItem("loginId");
@@ -87,6 +92,34 @@ function UserDashboard() {
   const navigate = useNavigate();
 
   const [count, setCount] = useState([]);
+  useEffect(() => {
+    if (ecomUserId) {
+      handleProfileDetails(ecomUserId);
+    }
+  }, [ecomUserId]);
+
+  const handleProfileDetails = async (ecomUserId) => {
+    const response = await profileDetails({ ecomUserId, ecommercetoken });
+    console.log("response profile", response);
+    setProfileDetail(response?.data?.results?.details);
+  };
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+    trigger,
+  } = useForm();
+
+  // const handleCountry = async (state) => {
+  //   const { data } = await axios.post(cityApi, {
+  //     state: state,
+  //   });
+  //   if (!data.error) {
+  //     setCities(data?.results?.states);
+  //   }
+  // };
 
   const handleCountChange = (index, newCount) => {
     const newCounts = [...count];
@@ -374,26 +407,23 @@ function UserDashboard() {
     // setImageUrl1(URL.createObjectURL(file));
   };
 
-  // useEffect(() => {
-  //   handleOnSave();
-  // }, [formData.uploadImage]);
+  useEffect(() => {
+    if (formData.uploadImage !== undefined) {
+      handleOnSave2();
+    }
+  }, [formData.uploadImage]);
 
-  const handleOnSave = async () => {
-    const data = new FormData();
-    // if (addressId !== undefined || addressId !== null) {
-    //   data.append("address_Id", addressId);
-    // }
+  console.log("formData.uploadImage", formData.uploadImage);
 
-    // data.append("password", "userEmail");
-    // data.append("mobileNumber", "userName");
-    // data.append("gender", "userEmail");
-    // data.append("birthDay", "userEmail");
+  const handleOnSave2 = async (data) => {
+    const formdata = new FormData();
+
     if (formData.uploadImage) {
-      data.append("profile_Pic", formData.uploadImage);
+      formdata.append("profile_Pic", formData.uploadImage);
     }
 
     const response = await updateProfile({
-      formData: data,
+      formData: formdata,
       ecommercetoken,
       ecomUserId,
     });
@@ -401,18 +431,57 @@ function UserDashboard() {
       "profilePic",
       response?.data?.results?.profile?.profile_Pic
     );
+    toast.success("Profile Pic Updated!");
+  };
+  const handleOnSave = async (data) => {
+    const formdata = new FormData();
+    // if (addressId !== undefined || addressId !== null) {
+    //   data.append("address_Id", addressId);
+    // }
 
-    Swal.fire({
-      title: "Profile Updated!",
-      text: "Your Profile has been updated successfully.",
-      icon: "success",
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "OK",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate("/dashboard");
-      }
+    // data.append("password", "userEmail");
+    if (data.pincode) {
+      formdata.append("pincode", data.pincode);
+    }
+    if (selectedGender) {
+      formdata.append("gender", selectedGender);
+    }
+    if (data.dob) {
+      formdata.append("birthDay", data.dob);
+    }
+
+    if (formData.uploadImage) {
+      formdata.append("profile_Pic", formData.uploadImage);
+    }
+
+    const response = await updateProfile({
+      formData: formdata,
+      ecommercetoken,
+      ecomUserId,
     });
+
+    console.log("response update", response);
+    localStorage.setItem(
+      "profilePic",
+      response?.data?.results?.profile?.profile_Pic
+    );
+    if (response?.error?.data?.message === "Failed") {
+      toast.error("Profile Update Failed");
+    } else {
+      toast.success("Profile Updated!");
+    }
+
+    // Swal.fire({
+    //   title: "Profile Updated!",
+    //   text: "Your Profile has been updated successfully.",
+    //   icon: "success",
+    //   confirmButtonColor: "#3085d6",
+    //   confirmButtonText: "OK",
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     // navigate("/dashboard");
+    //   }
+    // });
   };
   return (
     <>
@@ -512,13 +581,17 @@ function UserDashboard() {
                           <img
                             src={selectedImage1}
                             alt=""
-                            style={{ height: "150px" }}
+                            style={{ height: "150px", width: "150px" }}
                           />
                         ) : storedPic ? (
                           <img src={storedPic} alt="" />
                         ) : (
                           <img
-                            src="../assets/images/inner-page/user/1.jpg"
+                            src={
+                              profileDetail
+                                ? profileDetail?.profile_Pic
+                                : "../assets/images/inner-page/user/1.jpg"
+                            }
                             alt=""
                           />
                         )}
@@ -540,8 +613,11 @@ function UserDashboard() {
                       </div>
                     </div>
                     <div className="profile-name">
-                      <h3> {storeUser} </h3>
-                      <h6 className="text-content"> {storeUserEmail} </h6>
+                      <h3> {profileDetail?.userName} </h3>
+                      <h6 className="text-content">
+                        {" "}
+                        {profileDetail?.userEmail}{" "}
+                      </h6>
                     </div>
                   </div>
                 </div>
@@ -864,112 +940,179 @@ function UserDashboard() {
                           </svg>
                         </span>
                       </div>
-                      <div className="row g-sm-4 g-3">
-                        {wishList.map((item, index) => {
-                          const totalRatings =
-                            item?.product_Id?.ratings?.reduce(
-                              (sum, rating) => sum + rating?.star,
-                              0
-                            );
-                          const averageRating =
-                            totalRatings / item?.product_Id?.ratings?.length;
-                          return (
-                            <div
-                              className="col-xxl-3 col-lg-6 col-md-4 col-sm-6"
-                              key={index}
-                            >
-                              <div className="product-box-3 theme-bg-white h-100">
-                                <div className="product-header">
-                                  <div className="product-image">
-                                    <Link to="/product">
-                                      <img
-                                        src={
-                                          item?.product_Id?.addVarient[0]
-                                            ?.product_Pic[0]
-                                        }
-                                        className="img-fluid  lazyload"
-                                        alt=""
-                                      />
-                                    </Link>
-                                    <div className="product-header-top">
-                                      <button
-                                        className="btn wishlist-button close_button"
-                                        onClick={() =>
-                                          handleDeleteWish(item._id)
-                                        }
-                                      >
-                                        <FontAwesomeIcon icon={faXmark} />
-                                      </button>
+                      {wishList?.length > 0 ? (
+                        <div className="row g-sm-4 g-3">
+                          {wishList.map((item, index) => {
+                            const totalRatings =
+                              item?.product_Id?.ratings?.reduce(
+                                (sum, rating) => sum + rating?.star,
+                                0
+                              );
+                            const averageRating =
+                              totalRatings / item?.product_Id?.ratings?.length;
+                            return (
+                              <div
+                                className="col-xxl-3 col-lg-6 col-md-4 col-sm-6"
+                                key={index}
+                              >
+                                <div className="product-box-3 theme-bg-white h-100">
+                                  <div className="product-header">
+                                    <div className="product-image">
+                                      <Link to="/product">
+                                        <img
+                                          src={
+                                            item?.product_Id?.addVarient[0]
+                                              ?.product_Pic[0]
+                                          }
+                                          className="img-fluid  lazyload"
+                                          alt=""
+                                        />
+                                      </Link>
+                                      <div className="product-header-top">
+                                        <button
+                                          className="btn wishlist-button close_button"
+                                          onClick={() =>
+                                            handleDeleteWish(item._id)
+                                          }
+                                        >
+                                          <FontAwesomeIcon icon={faXmark} />
+                                        </button>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                                <div className="product-footer">
-                                  <div className="product-detail">
-                                    <span className="span-name">Vegetable</span>
-                                    <Link to="/product">
-                                      <h5 className="name">
-                                        {item?.product_Id?.productName_en}
-                                      </h5>
-                                    </Link>
-                                    <p className="text-content mt-1 mb-2 product-content">
-                                      Cheesy feet cheesy grin brie. Mascarpone
-                                      cheese and wine hard cheese the big cheese
-                                      everyone loves smelly cheese macaroni
-                                      cheese croque monsieur.
-                                    </p>
-                                    <h6 className="unit mt-1">
-                                      {item?.product_Id?.weight}
-                                    </h6>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                      }}
-                                    >
-                                      <div>
-                                        <h6 className="unit">
-                                          {item?.product_Id?.stockQuantity}{" "}
-                                          units{" "}
-                                        </h6>
+                                  <div className="product-footer">
+                                    <div className="product-detail">
+                                      <span className="span-name">
+                                        Vegetable
+                                      </span>
+                                      <Link to="/product">
+                                        <h5 className="name">
+                                          {item?.product_Id?.productName_en}
+                                        </h5>
+                                      </Link>
+                                      <p className="text-content mt-1 mb-2 product-content">
+                                        Cheesy feet cheesy grin brie. Mascarpone
+                                        cheese and wine hard cheese the big
+                                        cheese everyone loves smelly cheese
+                                        macaroni cheese croque monsieur.
+                                      </p>
+                                      <h6 className="unit mt-1">
+                                        {item?.product_Id?.weight}
+                                      </h6>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                        }}
+                                      >
+                                        <div>
+                                          <h6 className="unit">
+                                            {item?.product_Id?.stockQuantity}{" "}
+                                            units{" "}
+                                          </h6>
+                                        </div>
+                                        <div className="">
+                                          <div className="cart_qty qty-box product-qty">
+                                            <div className="input-group">
+                                              <button
+                                                type="button"
+                                                className="qty-left-minus"
+                                                data-type="minus"
+                                                data-field=""
+                                                onClick={() =>
+                                                  handleCountChange(
+                                                    index,
+                                                    count[index] - 1
+                                                  )
+                                                }
+                                              >
+                                                <i
+                                                  className="fa fa-minus"
+                                                  aria-hidden="true"
+                                                />
+                                              </button>
+                                              <div className="m-2">
+                                                {" "}
+                                                {count[index]
+                                                  ? count[index]
+                                                  : "1"}
+                                              </div>
+
+                                              <button
+                                                type="button"
+                                                className="qty-right-plus"
+                                                data-type="plus"
+                                                data-field=""
+                                                onClick={() =>
+                                                  handleCountChange(
+                                                    index,
+                                                    count[index] + 1
+                                                  )
+                                                }
+                                              >
+                                                <i
+                                                  className="fa fa-plus"
+                                                  aria-hidden="true"
+                                                />
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
                                       </div>
-                                      <div className="">
-                                        <div className="cart_qty qty-box product-qty">
+                                      <h5 className="price">
+                                        <span className="theme-color">
+                                          $
+                                          {
+                                            item?.product_Id?.addVarient?.[0]
+                                              ?.Price
+                                          }
+                                        </span>
+                                        <del>
+                                          $
+                                          {
+                                            item?.product_Id?.addVarient?.[0]
+                                              ?.oldPrice
+                                          }
+                                        </del>
+                                      </h5>
+                                      <div className="add-to-cart-box mt-2">
+                                        <Link
+                                          to="/cart"
+                                          className="btn btn-add-cart addcart-button"
+                                          tabIndex={0}
+                                          onClick={() =>
+                                            handleAddToCart(item, index)
+                                          }
+                                        >
+                                          Add To Cart
+                                          {/* <span className="add-icon">
+                                          <i className="fa-solid fa-plus" />
+                                        </span> */}
+                                        </Link>
+                                        <div className="cart_qty qty-box">
                                           <div className="input-group">
                                             <button
                                               type="button"
                                               className="qty-left-minus"
                                               data-type="minus"
                                               data-field=""
-                                              onClick={() =>
-                                                handleCountChange(
-                                                  index,
-                                                  count[index] - 1
-                                                )
-                                              }
                                             >
                                               <i
                                                 className="fa fa-minus"
                                                 aria-hidden="true"
                                               />
                                             </button>
-                                            <div className="m-2">
-                                              {" "}
-                                              {count[index]
-                                                ? count[index]
-                                                : "1"}
-                                            </div>
-
+                                            <input
+                                              className="form-control input-number qty-input"
+                                              type="text"
+                                              name="quantity"
+                                              defaultValue={0}
+                                            />
                                             <button
                                               type="button"
                                               className="qty-right-plus"
                                               data-type="plus"
                                               data-field=""
-                                              onClick={() =>
-                                                handleCountChange(
-                                                  index,
-                                                  count[index] + 1
-                                                )
-                                              }
                                             >
                                               <i
                                                 className="fa fa-plus"
@@ -980,76 +1123,19 @@ function UserDashboard() {
                                         </div>
                                       </div>
                                     </div>
-                                    <h5 className="price">
-                                      <span className="theme-color">
-                                        $
-                                        {
-                                          item?.product_Id?.addVarient?.[0]
-                                            ?.Price
-                                        }
-                                      </span>
-                                      <del>
-                                        $
-                                        {
-                                          item?.product_Id?.addVarient?.[0]
-                                            ?.oldPrice
-                                        }
-                                      </del>
-                                    </h5>
-                                    <div className="add-to-cart-box mt-2">
-                                      <Link
-                                        to="/cart"
-                                        className="btn btn-add-cart addcart-button"
-                                        tabIndex={0}
-                                        onClick={() =>
-                                          handleAddToCart(item, index)
-                                        }
-                                      >
-                                        Add To Cart
-                                        {/* <span className="add-icon">
-                                          <i className="fa-solid fa-plus" />
-                                        </span> */}
-                                      </Link>
-                                      <div className="cart_qty qty-box">
-                                        <div className="input-group">
-                                          <button
-                                            type="button"
-                                            className="qty-left-minus"
-                                            data-type="minus"
-                                            data-field=""
-                                          >
-                                            <i
-                                              className="fa fa-minus"
-                                              aria-hidden="true"
-                                            />
-                                          </button>
-                                          <input
-                                            className="form-control input-number qty-input"
-                                            type="text"
-                                            name="quantity"
-                                            defaultValue={0}
-                                          />
-                                          <button
-                                            type="button"
-                                            className="qty-right-plus"
-                                            data-type="plus"
-                                            data-field=""
-                                          >
-                                            <i
-                                              className="fa fa-plus"
-                                              aria-hidden="true"
-                                            />
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="text-danger">
+                          <h3>
+                            <strong>Your Wish List Is Empty</strong>{" "}
+                          </h3>{" "}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div
@@ -1067,108 +1153,116 @@ function UserDashboard() {
                           </svg>
                         </span>
                       </div>
-                      <div className="order-contain">
-                        {orderListData
-                          ?.slice()
-                          ?.reverse()
-                          ?.map((item, index) => {
-                            const totalRatings =
-                              item?.products[0]?.product_Id?.ratings?.reduce(
-                                (sum, rating) => sum + rating?.star,
-                                0
-                              );
-                            const averageRating =
-                              totalRatings /
-                              item?.products[0]?.product_Id?.ratings?.length;
-                            return (
-                              <div
-                                className="order-box dashboard-bg-box"
-                                key={index}
-                              >
-                                <div className="order-container">
-                                  <div className="order-icon">
-                                    <i data-feather="box" />
+                      {orderListData?.length > 0 ? (
+                        <div className="order-contain">
+                          {orderListData
+                            ?.slice()
+                            ?.reverse()
+                            ?.map((item, index) => {
+                              const totalRatings =
+                                item?.products[0]?.product_Id?.ratings?.reduce(
+                                  (sum, rating) => sum + rating?.star,
+                                  0
+                                );
+                              const averageRating =
+                                totalRatings /
+                                item?.products[0]?.product_Id?.ratings?.length;
+                              return (
+                                <div
+                                  className="order-box dashboard-bg-box"
+                                  key={index}
+                                >
+                                  <div className="order-container">
+                                    <div className="order-icon">
+                                      <i data-feather="box" />
+                                    </div>
+                                    <div className="order-detail">
+                                      <h4>
+                                        {
+                                          item?.products[0]?.product_Id
+                                            ?.productName_en
+                                        }{" "}
+                                        <span> {item?.orderStatus} </span>
+                                      </h4>
+                                      <h6 className="text-content">
+                                        {item?.products?.careInstuctions}
+                                      </h6>
+                                    </div>
                                   </div>
-                                  <div className="order-detail">
-                                    <h4>
-                                      {
-                                        item?.products[0]?.product_Id
-                                          ?.productName_en
-                                      }{" "}
-                                      <span> {item?.orderStatus} </span>
-                                    </h4>
-                                    <h6 className="text-content">
-                                      {item?.products?.careInstuctions}
-                                    </h6>
-                                  </div>
-                                </div>
-                                <div className="product-order-detail">
-                                  <Link to="/product" className="order-image">
-                                    <img
-                                      src={item?.varient?.product_Pic[0]}
-                                      className=" lazyload"
-                                      alt=""
-                                      height="200px"
-                                      width="200px"
-                                    />
-                                  </Link>
-                                  <div className="order-wrap">
-                                    <Link to="/product">
-                                      <h3>{item?.products?.productName_en}</h3>
+                                  <div className="product-order-detail">
+                                    <Link to="/product" className="order-image">
+                                      <img
+                                        src={item?.varient?.product_Pic[0]}
+                                        className=" lazyload"
+                                        alt=""
+                                        height="200px"
+                                        width="200px"
+                                      />
                                     </Link>
-                                    <p className="text-content">
-                                      {item?.products?.Description}
-                                    </p>
-                                    <ul className="product-size">
-                                      <li>
-                                        <div className="size-box">
-                                          <h6 className="text-content">
-                                            Price :{" "}
-                                          </h6>
-                                          <h5> ${item?.cartsTotal}</h5>
-                                        </div>
-                                      </li>
-                                      <li>
-                                        <div className="size-box">
-                                          <h6 className="text-content">
-                                            Rate :{" "}
-                                          </h6>
-                                          <div className="product-rating ms-2">
-                                            <ul className="rating">
-                                              <Star rating={averageRating} />
-                                            </ul>
+                                    <div className="order-wrap">
+                                      <Link to="/product">
+                                        <h3>
+                                          {item?.products?.productName_en}
+                                        </h3>
+                                      </Link>
+                                      <p className="text-content">
+                                        {item?.products?.Description}
+                                      </p>
+                                      <ul className="product-size">
+                                        <li>
+                                          <div className="size-box">
+                                            <h6 className="text-content">
+                                              Price :{" "}
+                                            </h6>
+                                            <h5> ${item?.cartsTotal}</h5>
                                           </div>
-                                        </div>
-                                      </li>
-                                      <li>
-                                        <div className="size-box">
-                                          <h6 className="text-content">
-                                            Sold By :{" "}
-                                          </h6>
-                                          <h5>Fresho</h5>
-                                        </div>
-                                      </li>
-                                      <li>
-                                        <div className="size-box">
-                                          <h6 className="text-content">
-                                            Quantity :{" "}
-                                          </h6>
-                                          <h5>
-                                            {" "}
-                                            {
-                                              item?.products[0]?.product_Id
-                                                ?.stockQuantity
-                                            }
-                                          </h5>
-                                        </div>
-                                      </li>
-                                    </ul>
+                                        </li>
+                                        <li>
+                                          <div className="size-box">
+                                            <h6 className="text-content">
+                                              Rate :{" "}
+                                            </h6>
+                                            <div className="product-rating ms-2">
+                                              <ul className="rating">
+                                                <Star rating={averageRating} />
+                                              </ul>
+                                            </div>
+                                          </div>
+                                        </li>
+                                        <li>
+                                          <div className="size-box">
+                                            <h6 className="text-content">
+                                              Sold By :{" "}
+                                            </h6>
+                                            <h5>Fresho</h5>
+                                          </div>
+                                        </li>
+                                        <li>
+                                          <div className="size-box">
+                                            <h6 className="text-content">
+                                              Quantity :{" "}
+                                            </h6>
+                                            <h5>
+                                              {" "}
+                                              {
+                                                item?.products[0]?.product_Id
+                                                  ?.stockQuantity
+                                              }
+                                            </h5>
+                                          </div>
+                                        </li>
+                                      </ul>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            );
-                          })}
-                      </div>
+                              );
+                            })}
+                        </div>
+                      ) : (
+                        <div className="text-danger">
+                          <h3>No Order Yet</h3>{" "}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div
@@ -1405,24 +1499,10 @@ function UserDashboard() {
                         </div>
                         <div className="profile-name-detail">
                           <div className="d-sm-flex align-items-center d-block">
-                            <h3> {storeUser} </h3>
+                            <h3> {profileDetail?.userName} </h3>
                             <div className="product-rating profile-rating">
                               <ul className="rating">
-                                <li>
-                                  <i data-feather="star" className="fill" />
-                                </li>
-                                <li>
-                                  <i data-feather="star" className="fill" />
-                                </li>
-                                <li>
-                                  <i data-feather="star" className="fill" />
-                                </li>
-                                <li>
-                                  <i data-feather="star" />
-                                </li>
-                                <li>
-                                  <i data-feather="star" />
-                                </li>
+                                <Star />
                               </ul>
                             </div>
                           </div>
@@ -1485,7 +1565,10 @@ function UserDashboard() {
                                   <tr>
                                     <td>Phone Number :</td>
                                     <td>
-                                      <Link to="#"> +91 846 - 547 - 210</Link>
+                                      <Link to="#">
+                                        {" "}
+                                        +91 {profileDetail?.mobileNumber}{" "}
+                                      </Link>
                                     </td>
                                   </tr>
                                   <tr>
@@ -1507,7 +1590,7 @@ function UserDashboard() {
                                     <td>Email :</td>
                                     <td>
                                       <Link to="#">
-                                        vicki.pope@gmail.com
+                                        {profileDetail?.userEmail}
                                         <span
                                           data-bs-toggle="modal"
                                           data-bs-target="#editProfile"
@@ -2146,168 +2229,181 @@ function UserDashboard() {
                 <i className="fa-solid fa-xmark" />
               </button>
             </div>
-            <div className="modal-body">
-              <div className="row g-4">
-                <div className="col-xxl-12">
-                  <form>
-                    <div className="form-floating theme-form-floating">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="pname"
-                        defaultValue="Jack Jennas"
-                      />
-                      <label htmlFor="pname">Full Name</label>
+            <form className="" onSubmit={handleSubmit(handleOnSave)}>
+              <div className="modal-body">
+                <div className="row g-4">
+                  <div className="col-xxl-6">
+                    <div>
+                      <div className="form-floating theme-form-floating">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="pname"
+                          placeholder="fullname"
+                          defaultValue={profileDetail?.userName}
+                          {...register("fullname", {
+                            // required: "Enter Your Full Name*",
+                            pattern: {
+                              value: /^[A-Za-z\s]+$/,
+                              message: "Full Name must contain only letters",
+                            },
+                            minLength: {
+                              value: 3,
+                              message: "minimium 3 Charcarters",
+                            },
+                          })}
+                        />
+                        <label htmlFor="fullname">Full Name</label>
+                      </div>
                     </div>
-                  </form>
-                </div>
-                <div className="col-xxl-6">
-                  <form>
-                    <div className="form-floating theme-form-floating">
-                      <input
-                        type="email"
-                        className="form-control"
-                        id="email1"
-                        defaultValue="vicki.pope@gmail.com"
-                      />
-                      <label htmlFor="email1">Email address</label>
+                  </div>
+
+                  <div className="col-xxl-6">
+                    <div>
+                      <div className="form-floating theme-form-floating">
+                        <select
+                          className="form-select"
+                          id="floatingSelect1"
+                          aria-label="Floating label select example"
+                          defaultValue=" "
+                          // {...register("country", {
+
+                          //   onChange: (e) => {
+                          //     handleCountry(e.target.value);
+                          //   },
+                          // })}
+                        >
+                          <option value="India">Choose Your Country</option>
+                          <option value="United kindom">United Kingdom</option>
+                          <option value="Unitedstates">United States</option>
+                          <option value="France">France</option>
+                          <option value="china">China</option>
+                          <option value="Spain">Spain</option>
+                          <option value="Italy">Italy</option>
+                          <option value="Turkey">Turkey</option>
+                          <option value="Germany">Germany</option>
+                          <option value="Russian Federation">
+                            Russian Federation
+                          </option>
+                          <option value="Malaysia">Malaysia</option>
+                          <option value="Mexico">Mexico</option>
+                          <option value="Austria">Austria</option>
+                          <option value="Hong Kong SAR, China">
+                            Hong Kong SAR, China
+                          </option>
+                          <option value="Ukraine">Ukraine</option>
+                          <option value="Thailand">Thailand</option>
+                          <option value="Saudi Arabia">Saudi Arabia</option>
+                          <option value="Canada">Canada</option>
+                          <option value="Singapore">Singapore</option>
+                        </select>
+                        <label htmlFor="country">Country</label>
+                      </div>
                     </div>
-                  </form>
-                </div>
-                <div className="col-xxl-6">
-                  <form>
-                    <div className="form-floating theme-form-floating">
-                      <input
-                        className="form-control"
-                        type="tel"
-                        defaultValue={4567891234}
-                        name="mobile"
-                        id="mobile"
-                        maxLength={10}
-                        // onInput="javascript: if (this.value.length > this.maxLength) this.value =
-                        //               this.value.slice(0, this.maxLength);"
-                      />
-                      <label htmlFor="mobile">Email address</label>
+                  </div>
+                  <div className="col-xxl-6">
+                    <div>
+                      <div className="form-floating theme-form-floating">
+                        <select
+                          className="form-select"
+                          id="floatingSelect"
+                          defaultValue=""
+                          // {...register("city", {
+                          //   required: "City is Required*",
+                          //   onChange: (e) => {
+                          //     handleCities(e.target.value);
+                          //   },
+                          // })}
+                        >
+                          <option value="">Choose Your City</option>
+                          <option value="kindom">kindom</option>
+                          <option value="Canada">Canada</option>
+                          <option value="Dubai">Dubai</option>
+                          <option value="Los Angeles">Los Angeles</option>
+                          <option value="Thailand">Thailand</option>
+                        </select>
+                        <label htmlFor="floatingSelect">City</label>
+                      </div>
                     </div>
-                  </form>
-                </div>
-                <div className="col-12">
-                  <form>
-                    <div className="form-floating theme-form-floating">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="address1"
-                        defaultValue="8424 James Lane South San Francisco"
-                        onChange={(e) => setEditedAddress(e.target.value)}
-                      />
-                      <label htmlFor="address1">Add Address</label>
+                  </div>
+                  <div className="col-xxl-6">
+                    <div>
+                      <div className="form-floating theme-form-floating">
+                        <select
+                          className="form-select"
+                          id="floatingSelect"
+                          defaultValue=""
+                          onChange={(e) => setSelectedGender(e.target.value)}
+                        >
+                          <option value="" disabled>
+                            Choose Your Gender
+                          </option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Transgender">Transgender</option>
+                        </select>
+                        <label htmlFor="floatingSelect">Gender</label>
+                      </div>
                     </div>
-                  </form>
-                </div>
-                <div className="col-12">
-                  <form>
-                    <div className="form-floating theme-form-floating">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="address2"
-                        defaultValue="CA 94080"
-                      />
-                      <label htmlFor="address2">Add Address 2</label>
+                  </div>
+                  <div className="col-xxl-6">
+                    <div>
+                      <div className="form-floating theme-form-floating">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="address3"
+                          defaultValue={94080}
+                          {...register("dob", {
+                            // required: "Enter Your Full Name*",
+                            // pattern: {
+                            //   // value: /^[A-Za-z\s]+$/,
+                            // message: "DOB must contain only digit",
+                            // },
+                            // minLength: {
+                            //   value: 3,
+                            //   message: "minimium 3 Charcarters",
+                            // },
+                          })}
+                        />
+                        <label htmlFor="dob">Date Of Birth</label>
+                      </div>
                     </div>
-                  </form>
-                </div>
-                <div className="col-xxl-4">
-                  <form>
-                    <div className="form-floating theme-form-floating">
-                      <select
-                        className="form-select"
-                        id="floatingSelect1"
-                        aria-label="Floating label select example"
-                        defaultValue=" "
-                        onChange={(e) => setSelectedCountry(e.target.value)}
-                      >
-                        <option value="India">Choose Your Country</option>
-                        <option value="United kindom">United Kingdom</option>
-                        <option value="Unitedstates">United States</option>
-                        <option value="France">France</option>
-                        <option value="china">China</option>
-                        <option value="Spain">Spain</option>
-                        <option value="Italy">Italy</option>
-                        <option value="Turkey">Turkey</option>
-                        <option value="Germany">Germany</option>
-                        <option value="Russian Federation">
-                          Russian Federation
-                        </option>
-                        <option value="Malaysia">Malaysia</option>
-                        <option value="Mexico">Mexico</option>
-                        <option value="Austria">Austria</option>
-                        <option value="Hong Kong SAR, China">
-                          Hong Kong SAR, China
-                        </option>
-                        <option value="Ukraine">Ukraine</option>
-                        <option value="Thailand">Thailand</option>
-                        <option value="Saudi Arabia">Saudi Arabia</option>
-                        <option value="Canada">Canada</option>
-                        <option value="Singapore">Singapore</option>
-                      </select>
-                      <label htmlFor="floatingSelect">Country</label>
+                  </div>
+                  <div className="col-xxl-6">
+                    <div>
+                      <div className="form-floating theme-form-floating">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="pincode"
+                          defaultValue={94080}
+                          {...register("pincode")}
+                        />
+                        <label htmlFor="pincode">Pin Code</label>
+                      </div>
                     </div>
-                  </form>
-                </div>
-                <div className="col-xxl-4">
-                  <form>
-                    <div className="form-floating theme-form-floating">
-                      <select
-                        className="form-select"
-                        id="floatingSelect"
-                        defaultValue=""
-                        onChange={(e) => setSelectedCity(e.target.value)}
-                      >
-                        <option value="">Choose Your City</option>
-                        <option value="kindom">kindom</option>
-                        <option value="Canada">Canada</option>
-                        <option value="Dubai">Dubai</option>
-                        <option value="Los Angeles">Los Angeles</option>
-                        <option value="Thailand">Thailand</option>
-                      </select>
-                      <label htmlFor="floatingSelect">City</label>
-                    </div>
-                  </form>
-                </div>
-                <div className="col-xxl-4">
-                  <form>
-                    <div className="form-floating theme-form-floating">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="address3"
-                        defaultValue={94080}
-                      />
-                      <label htmlFor="address3">Pin Code</label>
-                    </div>
-                  </form>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-animation btn-md fw-bold"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                data-bs-dismiss="modal"
-                className="btn theme-bg-color btn-md fw-bold text-light"
-                onClick={handleOnSave}
-              >
-                Save changes
-              </button>
-            </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-animation btn-md fw-bold"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  data-bs-dismiss="modal"
+                  className="btn theme-bg-color btn-md fw-bold text-light"
+                  // onClick={handleOnSave}
+                >
+                  Save changes
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

@@ -231,6 +231,17 @@ export const PostApi = createApi({
         };
       },
     }),
+    getProfileDetails: builder.mutation({
+      query: ({ ecomUserId, ecommercetoken }) => {
+        return {
+          url: `user/user/user/about-profile/${ecomUserId}`,
+          method: "post",
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
 
     // getAddressList: builder.query({
     //   query: (name) => ({
@@ -725,4 +736,5 @@ export const {
   useAddCompareMutation,
   useSearchProductHeaderMutation,
   useSearchBlogMutation,
+  useGetProfileDetailsMutation,
 } = PostApi;

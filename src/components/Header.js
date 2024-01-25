@@ -33,12 +33,10 @@ function Header({ Dash }) {
   const [cartListItems, setCartListItems] = useState([]);
 
   const [subCategoryItems, setSubCategoryItems] = useState([]);
-  const [bannerItems, setBannerItems] = useState([]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [showWelcome, setShowWelcome] = useState(true);
-  const [showSale, setShowSale] = useState(false);
-  const cartTotal = localStorage?.getItem("cartTotal");
+
   const [cartListQuery] = useGetCartListheaderMutation();
 
   const navigate = useNavigate();
@@ -115,23 +113,6 @@ function Header({ Dash }) {
     }
   };
 
-  // useEffect(() => {
-  //   const welcomeInterval = setInterval(() => {
-  //     setShowWelcome(true);
-  //     setShowSale(false);
-  //   }, 1000);
-
-  //   const saleInterval = setInterval(() => {
-  //     setShowWelcome(false);
-  //     setShowSale(true);
-  //   }, 2000);
-
-  //   return () => {
-  //     clearInterval(welcomeInterval);
-  //     clearInterval(saleInterval);
-  //   };
-  // }, []);
-
   const selector = useSelector((data) => data?.search?.query);
 
   console.log("selector", selector);
@@ -189,19 +170,6 @@ function Header({ Dash }) {
       console.log(error);
     }
   };
-
-  // const deleteCartItem = async (_id) => {
-  //   try {
-  //     const { data, error } = await DeleteCartProduct(_id);
-  //     error ? console.log(error) : console.log(data);
-  //     setCartListItems((prevCartList) =>
-  //       prevCartList.filter((item) => item._id !== _id)
-  //     );
-  //     console.log(data.results.deleteDta);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   const handleCartButtonClick = () => {
     if (ecommercetoken) {
@@ -888,7 +856,9 @@ function Header({ Dash }) {
                               className={
                                 Dash === "blog" ? "nav-link active" : "nav-link"
                               }
-                              to="/blog"
+                              // to="/blog"
+                              to="https://www.techgropse.com/"
+                              target="_blank"
                             >
                               Blog
                             </Link>
