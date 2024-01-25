@@ -479,43 +479,39 @@ function Header({ Dash }) {
                                 borderRadius: "5px",
                               }}
                             >
-                              {suggestions
-                                ?.slice()
-                                ?.reverse()
-                                ?.map((product) => (
-                                  <li
-                                    key={product._id}
-                                    className="suggestion-li ms-2"
+                              {suggestions?.map((product) => (
+                                <li
+                                  key={product._id}
+                                  className="suggestion-li ms-2"
+                                >
+                                  <Link
+                                    // to={`/shop2/${encodeURIComponent(
+                                    //   searchQuery
+                                    // )}`}
+                                    to="/shop"
+                                    // state={{ id: searchQuery }}
+                                    className="suggestion-item"
+                                    onClick={() => {
+                                      hideSuggestions();
+                                      handleProduct(product.productName_en);
+                                    }}
                                   >
-                                    <Link
-                                      // to={`/shop2/${encodeURIComponent(
-                                      //   searchQuery
-                                      // )}`}
-                                      to="/shop"
-                                      // state={{ id: searchQuery }}
-                                      className="suggestion-item"
-                                      onClick={() => {
-                                        hideSuggestions();
-                                        handleProduct(product.productName_en);
-                                      }}
-                                    >
-                                      <div className="product-image">
-                                        <img
-                                          src={
-                                            product?.addVarient[0]
-                                              ?.product_Pic[0]
-                                          }
-                                          alt={product.productName_en}
-                                          width={20}
-                                          height={20}
-                                        />
-                                      </div>
-                                      <div className="product-name">
-                                        {product.productName_en}
-                                      </div>
-                                    </Link>
-                                  </li>
-                                ))}
+                                    <div className="product-image">
+                                      <img
+                                        src={
+                                          product?.addVarient[0]?.product_Pic[0]
+                                        }
+                                        alt={product.productName_en}
+                                        width={20}
+                                        height={20}
+                                      />
+                                    </div>
+                                    <div className="product-name">
+                                      {product.productName_en}
+                                    </div>
+                                  </Link>
+                                </li>
+                              ))}
                             </ul>
                           </div>
                         )}

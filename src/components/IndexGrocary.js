@@ -841,7 +841,12 @@ function IndexGrocary(props) {
                     <Spinners2 />
                   ) : (
                     <>
-                      <div className="category-menu">
+                      <div
+                        className="category-menu"
+                        style={{
+                          display: trendingList?.length > 0 ? "" : "none",
+                        }}
+                      >
                         <h3>Trending Products</h3>
                         <ul className="product-list border-0 p-0 d-block">
                           {trendingList.map((item, index) => {

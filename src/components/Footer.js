@@ -4,8 +4,11 @@ import {
   useGetCategoryListQuery,
   useSubCategoryListMutation,
 } from "../services/Post";
+import { useSelector } from "react-redux";
 
 function Footer() {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const categoryListItems = useGetCategoryListQuery();
   const [subCategoryList] = useSubCategoryListMutation();
   const [subCategoryItems, setSubCategoryItems] = useState([]);
@@ -136,7 +139,7 @@ function Footer() {
                       </Link>
                     </li>
                     <li>
-                      <Link to="/shop/:id" className="text-content">
+                      <Link to="/shop" className="text-content">
                         Shop
                       </Link>
                     </li>
@@ -164,22 +167,22 @@ function Footer() {
                 </div>
                 <div className="footer-contain">
                   <ul>
-                    <li>
+                    <li style={{ display: ecommercetoken ? "" : "none" }}>
                       <Link to="/order-success" className="text-content">
                         Your Order
                       </Link>
                     </li>
-                    <li>
+                    <li style={{ display: ecommercetoken ? "" : "none" }}>
                       <Link to="/user-dashboard" className="text-content">
                         Your Account
                       </Link>
                     </li>
-                    <li>
+                    <li style={{ display: ecommercetoken ? "" : "none" }}>
                       <Link to="/order-success" className="text-content">
                         Track Order
                       </Link>
                     </li>
-                    <li>
+                    <li style={{ display: ecommercetoken ? "" : "none" }}>
                       <Link to="/wishlist" className="text-content">
                         Your Wishlist
                       </Link>
