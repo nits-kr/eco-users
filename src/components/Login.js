@@ -42,38 +42,60 @@ function Login() {
         userEmail: userName,
         password: password,
       });
-      Swal.fire({
-        title: "Login Successful!",
-        icon: "success",
-        text: "You have successfully logged in.",
-        showConfirmButton: false,
-        timer: 500,
-      }).then((result) => {
-        navigate("/");
-        // setTimeout(() => {
-        //   window?.location?.reload();
-        // }, 500);
-      });
-      console.log("response login", response);
-      localStorage.setItem("loginId", response.data?.results?.verifyUser?._id);
-      dispatch(setEcomUserId(response.data?.results?.verifyUser?._id));
-      localStorage.setItem(
-        "userName",
-        response.data?.results?.verifyUser?.userName
-      );
-      localStorage.setItem(
-        "userEmail",
-        response.data?.results?.verifyUser?.userEmail
-      );
 
-      dispatch(setEcomWebToken(response.data?.results?.token));
-      localStorage.setItem(
-        "mobileNumber",
-        response.data?.results?.verifyUser?.mobileNumber
-      );
+      console.log("login response", response);
+
+      if (
+        response?.data?.error === false &&
+        response?.data?.message === "login SuccessFully"
+      ) {
+        Swal.fire({
+          title: "Login Successful!",
+          icon: "success",
+          text: "You have successfully logged in.",
+          showConfirmButton: false,
+          timer: 500,
+        }).then((result) => {
+          navigate("/");
+        });
+        console.log("response login", response);
+        localStorage.setItem(
+          "loginId",
+          response.data?.results?.verifyUser?._id
+        );
+        dispatch(setEcomUserId(response.data?.results?.verifyUser?._id));
+        localStorage.setItem(
+          "userName",
+          response.data?.results?.verifyUser?.userName
+        );
+        localStorage.setItem(
+          "userEmail",
+          response.data?.results?.verifyUser?.userEmail
+        );
+
+        dispatch(setEcomWebToken(response.data?.results?.token));
+        localStorage.setItem(
+          "mobileNumber",
+          response.data?.results?.verifyUser?.mobileNumber
+        );
+      } else if (
+        response?.error?.data?.message === "User Password Are Incorrect"
+      ) {
+        Swal.fire({
+          title: "Login Failed!",
+          icon: "error",
+          text: "Incorrect password. Please try again.",
+        });
+      } else {
+        Swal.fire({
+          title: "Login Failed!",
+          icon: "error",
+          text: "An error occurred during login.",
+        });
+      }
     } catch (error) {
       console.error("Login error:", error);
-      // Show a generic error message if something goes wrong
+
       Swal.fire({
         title: "Login Failed!",
         icon: "error",
