@@ -1,16 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Star from "../Star";
 import GetStar from "../GetStar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import Swal from "sweetalert2";
-import { useAddReviewMutation } from "../../services/Post";
+import {
+  useAddReviewMutation,
+  useUpdateProductRatingMutation,
+} from "../../services/Post";
 import { useSelector } from "react-redux";
 
 function Addreview({ averageRating, productDetail, id }) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
-  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const updatedRating = useSelector((data) => data?.local?.updateRating);
+
+  console.log("updatedRating", updatedRating);
+
   const [addReview] = useAddReviewMutation();
+  const [updateRating] = useUpdateProductRatingMutation();
   const [name, setName] = useState([]);
   const [email, setEmail] = useState([]);
   const [website, setWebsite] = useState([]);
@@ -26,6 +33,8 @@ function Addreview({ averageRating, productDetail, id }) {
   const navigate = useNavigate();
 
   const ratings = productDetail?.ratings;
+
+  console.log("averageRating update", averageRating);
 
   const totalRating = ratings?.length;
   let starCounts = [0, 0, 0, 0, 0];
@@ -45,6 +54,23 @@ function Addreview({ averageRating, productDetail, id }) {
   // let id = location.state?.id;
 
   console.log("userRating", userRating);
+
+  useEffect(() => {
+    if (updatedRating && averageRating) {
+      handleUpdateRating();
+    }
+  }, [updatedRating, averageRating]);
+
+  const handleUpdateRating = async () => {
+    const data = {
+      _id: userId,
+      star: updatedRating,
+      product_Id: id,
+      ecommercetoken: ecommercetoken,
+    };
+    const response = await updateRating(data);
+    console.log("respons update rateing", response);
+  };
 
   const handleCreateReview = async (e) => {
     e.preventDefault();

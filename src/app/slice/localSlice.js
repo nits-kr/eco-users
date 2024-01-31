@@ -8,6 +8,7 @@ export const localSlice = createSlice({
     ecomUserid: localStorage.getItem("ecomUserId") || null,
     fcmtoken: localStorage.getItem("patentaAdminFcmtoken") || null,
     optionAddIdea: localStorage.getItem("selectoptionforbusinessidea") || null,
+    updateRating: localStorage.getItem("userRating") || null,
   },
   reducers: {
     setEcomWebToken: (state, action) => {
@@ -17,6 +18,11 @@ export const localSlice = createSlice({
     setEcomUserId: (state, action) => {
       state.ecomUserid = action.payload;
       localStorage.setItem("ecomUserId", action.payload);
+    },
+    setUpdateRating: (state, action) => {
+      state.updateRating = action.payload;
+      localStorage.setItem("userRating", action.payload);
+      console.log("userRating", action.payload);
     },
     setFcmToken: (state, action) => {
       state.fcmtoken = action.payload;
@@ -34,5 +40,6 @@ export const {
   setFcmToken,
   setEcomUserId,
   setOptionchangeAtAddIdea,
+  setUpdateRating,
 } = localSlice.actions;
 export default localSlice.reducer;

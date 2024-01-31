@@ -18,6 +18,7 @@ import { useGetTrendingProductQuery } from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
 import { searchQuerydata } from "../app/slice/SearchSlice";
 import Swal from "sweetalert2";
+import HeaderSwiper from "./HeaderSwiper";
 
 function Header({ Dash }) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
@@ -31,6 +32,9 @@ function Header({ Dash }) {
   const [trendingList, setTrendingList] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
+
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [showSale, setShowSale] = useState(true);
 
   const [subCategoryItems, setSubCategoryItems] = useState([]);
 
@@ -234,48 +238,13 @@ function Header({ Dash }) {
                   </span>
                 </div>
               </div>
-              {/* <div className="col-xxl-6 col-lg-9 d-lg-block d-none">
+              <div className="col-xxl-6 col-lg-9 d-lg-block d-none">
                 <div className="header-offer">
                   <div className="notification-slider">
-                    {showWelcome && (
-                      <div>
-                        <div
-                          className={`timer-notification ${
-                            showWelcome ? "fade-in" : "fade-out"
-                          }`}
-                        >
-                          <h6>
-                            <strong className="me-1">
-                              Welcome to Techgropse eCommerce!
-                            </strong>
-                            Wrap new offers/gift every single day on Weekends.
-                            <strong className="ms-1">
-                              New Coupon Code: Fast024
-                            </strong>
-                          </h6>
-                        </div>
-                      </div>
-                    )}
-
-                    {showSale && (
-                      <div>
-                        <div
-                          className={`timer-notification ${
-                            showSale ? "fade-in" : "fade-out"
-                          }`}
-                        >
-                          <h6>
-                            Something you love is now on sale!
-                            <Link to="/shop" className="text-white">
-                              Buy Now !
-                            </Link>
-                          </h6>
-                        </div>
-                      </div>
-                    )}
+                    <HeaderSwiper />
                   </div>
                 </div>
-              </div> */}
+              </div>
 
               <div className="col-lg-3">
                 <ul className="about-list right-nav-about">

@@ -89,6 +89,7 @@ function UserDashboard() {
   const storedWish = localStorage?.getItem("totalWish");
   const storeUser = localStorage?.getItem("userName");
   const storeUserEmail = localStorage?.getItem("userEmail");
+  const [isEditMode, setIsEditMode] = useState(false);
   const navigate = useNavigate();
 
   const [count, setCount] = useState([]);
@@ -305,14 +306,18 @@ function UserDashboard() {
       pinCode: pinCode,
       state: state,
       mobileNumber: mobileNumber,
+      id: itemId ? itemId : null,
       user_Id: storedId,
       ecommercetoken: ecommercetoken,
     };
 
     try {
-      const createdAddress = await createAddress(newAddressData);
+      const createdAddress = isEditMode
+        ? await updateAddress(newAddressData)
+        : await createAddress(newAddressData);
 
       handleAddressList();
+      toast.success(isEditMode ? "Address Updated" : "New Address Added!");
     } catch (error) {
       console.error("Error creating address:", error);
     }
@@ -354,6 +359,7 @@ function UserDashboard() {
       ecommercetoken: ecommercetoken,
     };
     createCard(newAddress).then(() => {
+      handleCardList();
       Swal.fire({
         title: "Card Created!",
         text: "Your card has been successfully created.",
@@ -368,7 +374,7 @@ function UserDashboard() {
     });
   };
 
-  const handleSaveChanges1 = () => {
+  const handleUpdateAddress = () => {
     console.log("handleSaveChanges1", itemId);
     const editAddress = {
       id: itemId,
@@ -389,13 +395,20 @@ function UserDashboard() {
     console.log("handleSaveChanges1", itemId);
     const editCard = {
       id: itemId,
-      cardNumber: cardNumbers,
-      cardHolderName: cardHolder,
-      validTime: cardValid,
-      cvv: cvv,
+      cardNumber: cardNumbers ? cardNumbers : cardNumbers1,
+      cardHolderName: cardHolder ? cardHolder : cardHolder1,
+      validTime: cardValid ? cardValid : cardValid1,
+      cvv: cvv ? cvv : cvv1,
       cardType: "master",
+      ecommercetoken: ecommercetoken,
     };
-    updateCard(editCard);
+    // updateCard(editCard);
+    // handleCardList();
+    updateCard(editCard).then(() => {
+      handleCardList();
+      document?.getElementById("cancelupdatecard").click();
+      toast.success("Card Updated!");
+    });
   };
   useEffect(() => {
     feather.replace();
@@ -1285,6 +1298,7 @@ function UserDashboard() {
                           className="btn theme-bg-color text-white btn-sm fw-bold mt-lg-0 mt-3"
                           data-bs-toggle="modal"
                           data-bs-target="#add-address"
+                          onClick={() => setIsEditMode(false)}
                         >
                           <i data-feather="plus" className="me-2" /> Add New
                           Address
@@ -1351,8 +1365,11 @@ function UserDashboard() {
                                   <button
                                     className="btn btn-sm add-button w-100"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#editProfile"
-                                    onClick={() => setItemId(item?._id)}
+                                    data-bs-target="#add-address"
+                                    onClick={() => {
+                                      setItemId(item?._id);
+                                      setIsEditMode(true);
+                                    }}
                                   >
                                     <i data-feather="edit" />
                                     Edit
@@ -1938,7 +1955,7 @@ function UserDashboard() {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalLabel">
-                Add a new address
+                {isEditMode ? "Update Address" : "Add a new address"}
               </h5>
               <button
                 type="button"
@@ -2092,7 +2109,7 @@ function UserDashboard() {
                 data-bs-dismiss="modal"
                 onClick={handleSaveChanges}
               >
-                Save changes
+                {isEditMode ? "Update" : "Add Address"}
               </button>
             </div>
           </div>
@@ -2562,6 +2579,7 @@ function UserDashboard() {
                 type="button"
                 className="btn-close"
                 data-bs-dismiss="modal"
+                id="cancelupdatecard"
               >
                 <i className="fa-solid fa-xmark" />
               </button>

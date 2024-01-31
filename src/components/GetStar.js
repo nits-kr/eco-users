@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { FaStar } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { setUpdateRating } from "../app/slice/localSlice";
 
 const GetStar = ({ totalStars = 5 }) => {
   const [rating, setRating] = useState(0);
-  localStorage?.setItem("userRating", rating);
+
+  const diaspatch = useDispatch();
+
+  // localStorage?.setItem("userRating", rating);
   const [hover, setHover] = useState(0);
 
   const starTitles = ["Terrible", "Poor", "Average", "Good", "Excellent"];
@@ -28,7 +33,10 @@ const GetStar = ({ totalStars = 5 }) => {
                 type="radio"
                 name="rating"
                 value={ratingValue}
-                onClick={() => setRating(ratingValue)}
+                onClick={() => {
+                  setRating(ratingValue);
+                  diaspatch(setUpdateRating(ratingValue));
+                }}
               />
               <div style={{ marginTop: "-25px", marginLeft: "-7px" }}>
                 <FaStar

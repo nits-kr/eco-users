@@ -370,11 +370,27 @@ export const PostApi = createApi({
 
     showProductRating: builder.mutation({
       query: (body) => ({
-        url: "/user/product/product/product-rating",
+        url: "user/product/product/product-rating",
         method: "post",
         body,
       }),
     }),
+
+    updateProductRating: builder.mutation({
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: "user/product/product/rating-product",
+          method: "post",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
+
     // addToCart: builder.mutation({
     //   query: (body) => ({
     //     url: "user/carts/carts/add-cart",
@@ -498,13 +514,14 @@ export const PostApi = createApi({
     }),
     updateAddress: builder.mutation({
       query: (body) => {
-        console.log("update address", body);
-        const { id, ...data } = body;
-        console.log("update address body data", data);
+        const { ecommercetoken, id, ...data } = body;
         return {
-          url: `/user/address/address/update-address/${id}`,
+          url: `user/address/address/update-address/${id}`,
           method: "post",
           body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
         };
       },
     }),
@@ -551,12 +568,15 @@ export const PostApi = createApi({
     updateCard: builder.mutation({
       query: (body) => {
         console.log("update address", body);
-        const { id, ...data } = body;
+        const { ecommercetoken, id, ...data } = body;
         console.log("update address body data", data);
         return {
           url: `user/carts/carts/saveCarts-update/${id}`,
           method: "post",
           body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
         };
       },
     }),
@@ -737,4 +757,5 @@ export const {
   useSearchProductHeaderMutation,
   useSearchBlogMutation,
   useGetProfileDetailsMutation,
+  useUpdateProductRatingMutation,
 } = PostApi;
