@@ -381,7 +381,7 @@ export const PostApi = createApi({
         const { ecommercetoken, ...data } = body;
 
         return {
-          url: "user/product/product/rating-product",
+          url: "user/product/product/updateRating",
           method: "post",
           body: data,
           headers: {
@@ -619,26 +619,32 @@ export const PostApi = createApi({
         };
       },
     }),
-    // createContact: builder.mutation({
+
+    addReview: builder.mutation({
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: "user/product/product/create-rating",
+          method: "post",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
+
+    // addReview: builder.mutation({
     //   query: (body) => {
     //     console.log("update login data", body);
     //     return {
-    //       url: "/user/contact/contact/create-contact",
+    //       url: "/user/product/product/product-rating",
     //       method: "post",
     //       body,
     //     };
     //   },
     // }),
-    addReview: builder.mutation({
-      query: (body) => {
-        console.log("update login data", body);
-        return {
-          url: "/user/product/product/product-rating",
-          method: "post",
-          body,
-        };
-      },
-    }),
     userSignUp: builder.mutation({
       query: (body) => {
         console.log("update login data", body);

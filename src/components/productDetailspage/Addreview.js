@@ -9,20 +9,23 @@ import {
   useUpdateProductRatingMutation,
 } from "../../services/Post";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 function Addreview({ averageRating, productDetail, id }) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const updatedRating = useSelector((data) => data?.local?.updateRating);
 
   console.log("updatedRating", updatedRating);
+  console.log("productDetail review", productDetail);
 
   const [addReview] = useAddReviewMutation();
   const [updateRating] = useUpdateProductRatingMutation();
-  const [name, setName] = useState([]);
-  const [email, setEmail] = useState([]);
-  const [website, setWebsite] = useState([]);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState("");
   const [title, setTitle] = useState([]);
-  const [comment, setComment] = useState([]);
+  const [comment, setComment] = useState("");
   const [formData, setFormData] = useState({
     r1: "",
     description: "",
@@ -55,11 +58,17 @@ function Addreview({ averageRating, productDetail, id }) {
 
   console.log("userRating", userRating);
 
-  useEffect(() => {
-    if (updatedRating && averageRating) {
-      handleUpdateRating();
-    }
-  }, [updatedRating, averageRating]);
+  const userExists = productDetail?.ratings
+    ?.map((item) => item?.postedby)
+    ?.includes(ecomUserId);
+
+  console.log("User exists:", userExists);
+
+  // useEffect(() => {
+  //   if (updatedRating && userExists) {
+  //     handleUpdateRating();
+  //   }
+  // }, [updatedRating, userExists]);
 
   const handleUpdateRating = async () => {
     const data = {
@@ -70,6 +79,7 @@ function Addreview({ averageRating, productDetail, id }) {
     };
     const response = await updateRating(data);
     console.log("respons update rateing", response);
+    toast?.success(`Rating update to ${updatedRating}`);
   };
 
   const handleCreateReview = async (e) => {
@@ -106,32 +116,34 @@ function Addreview({ averageRating, productDetail, id }) {
     }
 
     const newContactData = {
-      yourName: name,
-      Email: email,
-      website: website,
-      reviewTitle: title,
+      Name: name,
+      email: email,
+      user_Id: ecomUserId,
       comment: comment,
-      rating: userRating,
+      ratings: userRating,
+      website: website,
       star: userRating,
       product_Id: id,
-      user_Id: userId,
-      postedby: userId,
+      ecommercetoken: ecommercetoken,
     };
 
     try {
-      const createdReview = await addReview(newContactData);
-      console.log("Review created successfully:", createdReview);
-
-      Swal.fire({
-        title: "Review Created!",
-        text: "Your review has been successfully created.",
-        icon: "success",
-        confirmButtonText: "OK",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.reload();
-        }
-      });
+      const res = await addReview(newContactData);
+      console.log("Review created successfully:", res);
+      if (res) {
+        Swal.fire({
+          title: "Review Created!",
+          text: "Your review has been successfully created.",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload();
+          }
+        });
+      } else {
+        toast?.error("Error Occurs During Add Review");
+      }
     } catch (error) {
       console.error("Error creating review:", error);
     }
@@ -269,7 +281,10 @@ function Addreview({ averageRating, productDetail, id }) {
                   </ul>
                 </div>
               </div>
-              <form className="col-xl-6" onSubmit={handleCreateReview}>
+              <form
+                className="col-xl-6"
+                onSubmit={userExists ? handleUpdateRating : handleCreateReview}
+              >
                 <div className="review-title">
                   <h4 className="fw-500">Add a review</h4>
                 </div>

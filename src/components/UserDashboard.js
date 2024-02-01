@@ -62,6 +62,7 @@ function UserDashboard() {
   const [selectedCity, setSelectedCity] = useState("");
   const [editedAddress, setEditedAddress] = useState("");
   const [itemId, setItemId] = useState("");
+  const [item, setItem] = useState("");
   const [createAddress, responseInfo] = useCreateAddressMutation();
   const [updateAddress, res] = useUpdateAddressMutation();
   const [updateCard, re] = useUpdateCardMutation();
@@ -91,6 +92,8 @@ function UserDashboard() {
   const storeUserEmail = localStorage?.getItem("userEmail");
   const [isEditMode, setIsEditMode] = useState(false);
   const navigate = useNavigate();
+
+  console.log("item address", item);
 
   const [count, setCount] = useState([]);
   useEffect(() => {
@@ -297,15 +300,15 @@ function UserDashboard() {
 
   const handleSaveChanges = async () => {
     const newAddressData = {
-      title: title,
-      fullName: fullName,
-      address: address,
-      locality: locality,
-      city: city,
-      country: country,
-      pinCode: pinCode,
-      state: state,
-      mobileNumber: mobileNumber,
+      title: title ? title : item?.title,
+      fullName: fullName ? fullName : item?.fullName,
+      address: address ? address : item?.address,
+      locality: locality ? locality : item?.locality,
+      city: city ? city : item?.city,
+      country: country ? country : item?.country,
+      pinCode: pinCode ? pinCode : item?.pinCode,
+      state: state ? state : item?.state,
+      mobileNumber: mobileNumber ? mobileNumber : item?.mobileNumber,
       id: itemId ? itemId : null,
       user_Id: storedId,
       ecommercetoken: ecommercetoken,
@@ -1368,6 +1371,7 @@ function UserDashboard() {
                                     data-bs-target="#add-address"
                                     onClick={() => {
                                       setItemId(item?._id);
+                                      setItem(item);
                                       setIsEditMode(true);
                                     }}
                                   >
@@ -1975,7 +1979,7 @@ function UserDashboard() {
                     id="title"
                     name="title"
                     placeholder="Enter Title Name"
-                    value={title}
+                    defaultValue={item?.title}
                     onChange={(e) => setTitle(e.target.value)}
                   />
                   <label htmlFor="fname">Title (Home/Work)</label>
@@ -1989,7 +1993,7 @@ function UserDashboard() {
                     id="fullName"
                     name="fullName"
                     placeholder="Enter Full Name"
-                    value={fullName}
+                    defaultValue={item?.fullName}
                     onChange={(e) => setFullName(e.target.value)}
                   />
                   <label htmlFor="fname">Full Name</label>
@@ -1998,15 +2002,15 @@ function UserDashboard() {
               <form>
                 <div className="form-floating mb-4 theme-form-floating">
                   <input
-                    type="text"
+                    type="number"
                     className="form-control"
                     id="mobileNumber"
                     name="mobileNumber"
                     placeholder="Enter mobile number"
-                    value={mobileNumber}
+                    defaultValue={item?.mobileNumber}
                     onChange={(e) => setMobileNumber(e.target.value)}
                   />
-                  <label htmlFor="fname">Mobile Number</label>
+                  <label htmlFor="mobileNumber">Mobile Number</label>
                 </div>
               </form>
               <form>
@@ -2017,7 +2021,7 @@ function UserDashboard() {
                     id="address"
                     name="address"
                     placeholder="Enter Last Name"
-                    value={address}
+                    defaultValue={item?.address}
                     onChange={(e) => setAddress(e.target.value)}
                   />
                   <label htmlFor="lname">address</label>
@@ -2031,7 +2035,7 @@ function UserDashboard() {
                     id="locality"
                     name="locality"
                     placeholder="Enter Email Address"
-                    value={locality}
+                    defaultValue={item?.locality}
                     onChange={(e) => setLocality(e.target.value)}
                   />
                   <label htmlFor="email">Locality</label>
@@ -2046,7 +2050,7 @@ function UserDashboard() {
                     id="city"
                     name="city"
                     placeholder="Enter Email Address"
-                    value={city}
+                    defaultValue={item?.city}
                     onChange={(e) => setCity(e.target.value)}
                   />
                   <label htmlFor="email">city</label>
@@ -2060,7 +2064,7 @@ function UserDashboard() {
                     id="state"
                     name="state"
                     placeholder="Enter Email Address"
-                    value={state}
+                    defaultValue={item?.state}
                     onChange={(e) => setState(e.target.value)}
                   />
                   <label htmlFor="email">State</label>
@@ -2074,7 +2078,7 @@ function UserDashboard() {
                     id="countary"
                     name="countary"
                     placeholder="Enter Email Address"
-                    value={country}
+                    defaultValue={item?.country}
                     onChange={(e) => setCountry(e.target.value)}
                   />
                   <label htmlFor="email">country</label>
@@ -2088,7 +2092,7 @@ function UserDashboard() {
                     className="form-control"
                     id="pin"
                     placeholder="Enter Pin Code"
-                    value={pinCode}
+                    defaultValue={item?.pinCode}
                     onChange={(e) => setPinCode(e.target.value)}
                   />
                   <label htmlFor="pin">Pin Code</label>
