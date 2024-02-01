@@ -65,7 +65,7 @@ function WishList() {
     console.log("item added id", item?._id);
     e.preventDefault();
     const data = {
-      product_Id: item._id,
+      product_Id: item?.product_Id?._id,
       quantity: count[index],
       Price: price * count[index],
       varient_Id: variantId,
