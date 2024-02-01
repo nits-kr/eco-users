@@ -334,7 +334,7 @@ function Cart() {
                                 <td className="product-detail">
                                   <div className="product border-0">
                                     <Link
-                                      to="/product"
+                                      to={`/product-details-page/${item?.product_Id?._id}`}
                                       className="product-image"
                                     >
                                       <img

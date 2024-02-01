@@ -563,7 +563,11 @@ function IndexGrocary(props) {
                             onClick={() =>
                               handleCountChange(index, count[index] + 1)
                             }
-                            disabled={count[index] === item?.stockQuantity}
+                            disabled={
+                              count[index] ===
+                              item?.productDetails?.[0]?.addVarient?.[0]
+                                ?.stockQuantity
+                            }
                           >
                             <i className="fa fa-plus" aria-hidden="true" />
                           </button>

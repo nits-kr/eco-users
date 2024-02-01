@@ -1073,7 +1073,8 @@ function Shop(props) {
                                             )
                                           }
                                           disabled={
-                                            count[index] === item?.stockQuantity
+                                            count[index] ===
+                                            item?.addVarient?.[0]?.stockQuantity
                                           }
                                         >
                                           <i
