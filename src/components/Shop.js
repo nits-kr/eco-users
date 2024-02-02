@@ -884,7 +884,7 @@ function Shop(props) {
                           <div className="product-box-3 h-100 wow fadeInUp">
                             <div className="product-header">
                               <div className="product-image">
-                                <Link to="/product">
+                                <Link to={`/product-details-page/${item?._id}`}>
                                   <img
                                     src={item?.addVarient[0]?.product_Pic[0]}
                                     className="img-fluid  lazyload"

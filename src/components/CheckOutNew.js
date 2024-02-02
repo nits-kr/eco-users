@@ -258,6 +258,7 @@ function CheckOutNew() {
         console.log(createNewOrder);
         await Swal.fire({
           title: "Order Placed!",
+          confirmButtonColor: "#0da487",
           text: "Your order has been placed successfully.",
           icon: "success",
         }).then((result) => {

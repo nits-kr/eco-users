@@ -2024,7 +2024,7 @@ function UserDashboard() {
                     defaultValue={item?.address}
                     onChange={(e) => setAddress(e.target.value)}
                   />
-                  <label htmlFor="lname">address</label>
+                  <label htmlFor="lname">Address</label>
                 </div>
               </form>
               <form>
@@ -2053,7 +2053,7 @@ function UserDashboard() {
                     defaultValue={item?.city}
                     onChange={(e) => setCity(e.target.value)}
                   />
-                  <label htmlFor="email">city</label>
+                  <label htmlFor="email">City</label>
                 </div>
               </form>
               <form>
@@ -2081,7 +2081,7 @@ function UserDashboard() {
                     defaultValue={item?.country}
                     onChange={(e) => setCountry(e.target.value)}
                   />
-                  <label htmlFor="email">country</label>
+                  <label htmlFor="email">Country</label>
                 </div>
               </form>
 

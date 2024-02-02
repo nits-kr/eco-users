@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { searchQuerydata } from "../app/slice/SearchSlice";
 import Swal from "sweetalert2";
 import HeaderSwiper from "./HeaderSwiper";
+import { setEcomWebToken } from "../app/slice/localSlice";
 
 function Header({ Dash }) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
@@ -234,6 +235,7 @@ function Header({ Dash }) {
   };
 
   const handleLogout = () => {
+    dispatch(setEcomWebToken(null));
     const itemsToRemove = [
       "ecomWebtoken",
       "userEmail",
@@ -704,9 +706,17 @@ function Header({ Dash }) {
                               </li>
                             )}
 
-                            <li className="product-box-contain">
-                              <Link to="/sign-up">Register</Link>
-                            </li>
+                            {ecommercetoken ? null : (
+                              <li className="product-box-contain">
+                                <Link to="/sign-up">Register</Link>
+                              </li>
+                            )}
+
+                            {ecommercetoken ? (
+                              <li className="product-box-contain">
+                                <Link to="/order-success">My Order</Link>
+                              </li>
+                            ) : null}
 
                             {ecommercetoken ? (
                               <li className="product-box-contain">
