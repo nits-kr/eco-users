@@ -707,9 +707,7 @@ function Header({ Dash }) {
                             <li className="product-box-contain">
                               <Link to="/sign-up">Register</Link>
                             </li>
-                            {/* <li className="product-box-contain">
-                              <Link to="/forgot">Forgot Password</Link>
-                            </li> */}
+
                             {ecommercetoken ? (
                               <li className="product-box-contain">
                                 <Link to="/" onClick={handleLogout}>
