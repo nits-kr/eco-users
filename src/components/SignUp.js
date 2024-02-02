@@ -75,6 +75,7 @@ function SignUp() {
   }, [res, navigate]);
 
   const handleSaveChanges = async (data) => {
+    const agree = data.agree;
     try {
       const requestBody = {
         userName: data?.fullname,
@@ -205,11 +206,8 @@ function SignUp() {
                       <div className="form-floating theme-form-floating">
                         <input
                           type="text"
-                          // className="form-control"
                           id="fullname"
                           placeholder="Full Name"
-                          // value={fullName}
-                          // onChange={(e) => setFullName(e.target.value)}
                           className={classNames("form-control signup_fields", {
                             "is-invalid": errors.fullname,
                           })}
@@ -230,21 +228,20 @@ function SignUp() {
                             {errors.fullname?.message}
                           </small>
                         )}
-                        <label htmlFor="fullname">Full Name</label>
+                        <label htmlFor="fullname">
+                          Full Name<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <div className="col-12">
                       <div className="form-floating theme-form-floating">
                         <input
                           type="email"
-                          // className="form-control"
                           className={classNames("form-control signup_fields ", {
                             "is-invalid": errors.email,
                           })}
                           id="email"
                           placeholder="Email Address"
-                          // value={email}
-                          // onChange={(e) => setEmail(e.target.value)}
                           {...register("email", {
                             required: "Email is Required*",
                             pattern: {
@@ -259,21 +256,20 @@ function SignUp() {
                             {errors.email?.message}
                           </small>
                         )}
-                        <label htmlFor="email">Email Address</label>
+                        <label htmlFor="email">
+                          Email Address<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <div className="col-12">
                       <div className="form-floating theme-form-floating">
                         <input
                           type="number"
-                          // className="form-control"
                           className={classNames("form-control signup_fields ", {
                             "is-invalid": errors.phoneNumber,
                           })}
                           id="mobileNumber"
                           placeholder="**********"
-                          // value={email}
-                          // onChange={(e) => setMobileNumber(e.target.value)}
                           {...register("phoneNumber", {
                             required: "Phone Number is Required*",
                             maxLength: {
@@ -281,8 +277,8 @@ function SignUp() {
                               message: "maximium 10 Charcarters",
                             },
                             minLength: {
-                              value: 8,
-                              message: "minimium 8 Charcarters",
+                              value: 10,
+                              message: "minimium 10 Charcarters",
                             },
                           })}
                         />
@@ -291,7 +287,9 @@ function SignUp() {
                             {errors.phoneNumber?.message}
                           </small>
                         )}
-                        <label htmlFor="email">Mobile Number</label>
+                        <label htmlFor="email">
+                          Mobile Number<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <div className="col-12">
@@ -301,7 +299,6 @@ function SignUp() {
                           className="form-control"
                           id="password"
                           placeholder="Password"
-                          // value={password}
                           onChange={(e) => setPassword(e.target.value)}
                         />
                         {passwordError && (
@@ -309,10 +306,45 @@ function SignUp() {
                             {passwordError}
                           </span>
                         )}
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="password">
+                          Password<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <div className="col-12">
+                      <div className="forgot-box">
+                        <div className="form-check ps-0 m-0 remember-box">
+                          <input
+                            className={classNames(
+                              "checkbox_animated check-box",
+                              {
+                                "is-invalid": errors.agree,
+                              }
+                            )}
+                            type="checkbox"
+                            id="agreeCheckbox"
+                            {...register("agree", {
+                              required: "Please agree to the Terms and Privacy",
+                            })}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="agreeCheckbox"
+                          >
+                            I agree with <span>Terms</span> and{" "}
+                            <span>Privacy</span>
+                            <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                      </div>
+                      {errors.agree && (
+                        <small className="errorText mx-1 fw-bold text-danger">
+                          {errors.agree?.message}
+                        </small>
+                      )}
+                    </div>
+
+                    {/* <div className="col-12">
                       <div className="forgot-box">
                         <div className="form-check ps-0 m-0 remember-box">
                           <input
@@ -329,12 +361,11 @@ function SignUp() {
                           </label>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                     <div className="col-12">
                       <button
                         className="btn btn-animation w-100"
                         type="submit"
-                        // onClick={handleSaveChanges}
                         loading={loader}
                         appearance="primary"
                         style={{ backgroundColor: "#3e4093", color: "#fff" }}
