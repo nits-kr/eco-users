@@ -363,7 +363,7 @@ function IndexGrocary(props) {
           <div className="product-box-3 h-100 wow fadeInUp">
             <div className="product-header">
               <div className="product-image">
-                <Link to="/product">
+                <Link to={`/product-details-page/${item?._id}`}>
                   <img src={imageUrl} className="img-fluid  lazyload" alt="" />
                 </Link>
                 <ul className="product-option">
