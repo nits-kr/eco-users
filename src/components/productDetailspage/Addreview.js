@@ -565,7 +565,7 @@ function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
                 {productDetail?.Description}
               </p>
             </div>
-            <div className="nav-desh">
+            {/* <div className="nav-desh">
               <div className="desh-title">
                 <h5>Organic:</h5>
               </div>
@@ -626,7 +626,7 @@ function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
                 chocolate marzipan gingerbread topping chocolate bar. Soufflé
                 tiramisu pastry sweet dessert.
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
         <div

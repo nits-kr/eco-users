@@ -30943,7 +30943,7 @@ button:not(:disabled) {
 
 /* Read more */
 .product-description {
-  max-height: 3em;
+  max-height: auto;
   overflow: hidden;
   position: relative;
 }

@@ -134,6 +134,7 @@ function Products(props) {
   };
 
   const selectedVariantData = variants[selectedVariant];
+  console.log("selectedVariantData", selectedVariantData);
 
   const price = count
     ? selectedVariantData?.Price * count
@@ -413,7 +414,49 @@ function Products(props) {
           <div className="row">
             <div className="col-12 wow fadeInUp">
               <div className="row g-4">
-                <SelectedProduct selectedVariantData={selectedVariantData} />
+                {/* <SelectedProduct selectedVariantData={selectedVariantData} /> */}
+                <div className="col-xl-5 col-lg-5 wow fadeInUp">
+                  <div className="product-left-box">
+                    <div
+                      id="carouselExampleIndicators"
+                      className="carousel slide"
+                      data-bs-ride="carousel"
+                    >
+                      <div className="carousel-indicators">
+                        {selectedVariantData?.product_Pic
+                          ?.slice(0, 8)
+                          ?.map((image, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              data-bs-target="#carouselExampleIndicators"
+                              data-bs-slide-to={index}
+                              className={index === 0 ? "active" : ""}
+                              aria-label={`Slide ${index + 1}`}
+                            >
+                              <img src={image} alt={`Product ${index + 1}`} />
+                            </button>
+                          ))}
+                      </div>
+                      <div className="carousel-inner">
+                        {selectedVariantData?.product_Pic
+                          ?.slice(0, 8)
+                          ?.map((image, index) => (
+                            <div
+                              key={index}
+                              className={`carousel-item ${
+                                index === 0 ? "active" : ""
+                              }`}
+                            >
+                              <div className="d-flex h-100 align-items-center justify-content-center">
+                                <img src={image} alt={`Product ${index + 1}`} />
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 <div
                   className="col-xl-7 col-lg-7 wow fadeInUp"
@@ -897,7 +940,7 @@ function Products(props) {
                               <ul className="rating">
                                 <Star />
                               </ul>
-                              <span>(36 Reviews)</span>
+                              <span>(0 Reviews)</span>
                             </div>
                           </div>
                         </div>
