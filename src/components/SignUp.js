@@ -7,17 +7,16 @@ import { UserSignUp } from "./HttpServices";
 import Header from "./Header";
 import Footer from "./Footer";
 import { useUserSignUpMutation } from "../services/Post";
+import { RotatingLines } from "react-loader-spinner";
+
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
 import classNames from "classnames";
 import { Button } from "rsuite";
+import "rsuite/dist/rsuite.min.css";
 
 function SignUp() {
-  const [signup, res] = useUserSignUpMutation();
-
-  const [password, setPassword] = useState("");
-
-  const [passwordError, setPasswordError] = useState("");
+  const [signup] = useUserSignUpMutation();
 
   const [longitude, setLongitude] = useState(null);
   const [latitude, setLatitude] = useState(null);
@@ -25,14 +24,10 @@ function SignUp() {
   const navigate = useNavigate();
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(function (position) {
-      console.log("Latitude is :", position.coords.latitude);
-      console.log("Longitude is :", position.coords.longitude);
       setLatitude(position.coords.latitude);
       setLongitude(position.coords.longitude);
     });
   }, []);
-  console.log(longitude);
-  console.log(latitude);
 
   const {
     register,
@@ -40,47 +35,13 @@ function SignUp() {
     formState: { errors },
     trigger,
   } = useForm();
-  useEffect(() => {
-    if (res.isSuccess) {
-      Swal.fire({
-        title: "SignUp Successful!",
-        confirmButtonColor: "#0da487",
-        icon: "success",
-        text: "You have successfully Sign Up.",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate("/");
-          setTimeout(() => {
-            window?.location?.reload();
-          }, 500);
-        }
-      });
-    } else if (res.isError) {
-      const errorData = res.error?.data?.errors;
-      if (errorData && errorData.length > 0) {
-        const errorMessage = errorData[0].msg;
-        Swal.fire({
-          title: "SignUp Error",
-          icon: "error",
-          text: errorMessage,
-        });
-      } else {
-        Swal.fire({
-          title: "SignUp Failed!",
-          icon: "error",
-          text: res.error?.data?.message || "An unknown error occurred.",
-        });
-      }
-    }
-  }, [res, navigate]);
 
   const handleSaveChanges = async (data) => {
-    const agree = data.agree;
     try {
       const requestBody = {
         userName: data?.fullname,
         userEmail: data?.email,
-        password: password,
+        password: data.password,
         mobileNumber: data?.phoneNumber,
       };
 
@@ -88,9 +49,29 @@ function SignUp() {
         requestBody.longitude = longitude;
         requestBody.latitude = latitude;
       }
+      setLoader(true);
 
-      const response = await signup(requestBody);
-      console.log("response login", response);
+      const res = await signup(requestBody);
+      console.log("res sign", res);
+      setLoader(false);
+      if (res?.data?.message === "userSignup Successfully") {
+        Swal.fire({
+          title: "SignUp Successful!",
+          confirmButtonColor: "#0da487",
+          icon: "success",
+          text: "You have successfully Sign Up.",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/login");
+          }
+        });
+      } else if (res?.error?.data?.message === "userEmail Already Exited") {
+        Swal.fire({
+          title: "SignUp Failed!",
+          icon: "error",
+          text: "User Email Already Existed.",
+        });
+      }
     } catch (error) {
       console.error("Sign up error:", error);
       Swal.fire({
@@ -194,8 +175,8 @@ function SignUp() {
             <div className="col-xxl-4 col-xl-5 col-lg-6 col-sm-8 mx-auto">
               <div className="log-in-box">
                 <div className="log-in-title">
-                  <h3>Welcome to Techgropse eCommerce</h3>
-                  <h4>Create New Account</h4>
+                  <h5>Welcome to Techgropse eCommerce</h5>
+                  <h3>Create New Account</h3>
                 </div>
                 <div className="input-box">
                   <form
@@ -292,19 +273,48 @@ function SignUp() {
                         </label>
                       </div>
                     </div>
-                    <div className="col-12">
+                    {/* <div className="col-12">
                       <div className="form-floating theme-form-floating">
                         <input
                           type="password"
                           className="form-control"
                           id="password"
                           placeholder="Password"
-                          onChange={(e) => setPassword(e.target.value)}
                         />
-                        {passwordError && (
-                          <span className="error-message text-danger">
-                            {passwordError}
-                          </span>
+
+                        <label htmlFor="password">
+                          Password<span className="text-danger">*</span>
+                        </label>
+                      </div>
+                    </div> */}
+                    <div className="col-12">
+                      <div className="form-floating theme-form-floating">
+                        <input
+                          type="password"
+                          className={classNames("form-control", {
+                            "is-invalid": errors.password,
+                          })}
+                          id="password"
+                          placeholder="Password"
+                          {...register("password", {
+                            required: "Password is required",
+                            minLength: {
+                              value: 8,
+                              message:
+                                "Password must be at least 8 characters long",
+                            },
+                            pattern: {
+                              value:
+                                /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])(?=.*[A-Z])[A-Za-z\d@$!%*#?&]+$/,
+                              message:
+                                "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character",
+                            },
+                          })}
+                        />
+                        {errors.password && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.password.message}
+                          </small>
                         )}
                         <label htmlFor="password">
                           Password<span className="text-danger">*</span>
@@ -344,34 +354,20 @@ function SignUp() {
                       )}
                     </div>
 
-                    {/* <div className="col-12">
-                      <div className="forgot-box">
-                        <div className="form-check ps-0 m-0 remember-box">
-                          <input
-                            className="checkbox_animated check-box"
-                            type="checkbox"
-                            id="flexCheckDefault"
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="flexCheckDefault"
-                          >
-                            I agree with
-                            <span>Terms</span> and <span>Privacy</span>
-                          </label>
-                        </div>
-                      </div>
-                    </div> */}
                     <div className="col-12">
-                      <button
+                      <Button
                         className="btn btn-animation w-100"
                         type="submit"
                         loading={loader}
                         appearance="primary"
-                        style={{ backgroundColor: "#3e4093", color: "#fff" }}
+                        style={{
+                          backgroundColor: "#3e4093",
+                          color: "#fff",
+                          height: "50px",
+                        }}
                       >
                         Sign Up
-                      </button>
+                      </Button>
                     </div>
                   </form>
                 </div>

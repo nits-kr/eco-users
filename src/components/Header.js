@@ -422,8 +422,8 @@ function Header({ Dash }) {
                           <div>
                             <strong>
                               Deliver to:{" "}
-                              {newAddress[0]?.fullName
-                                ? newAddress[0]?.fullName?.split(" ")[0]
+                              {newAddress?.length > 0
+                                ? newAddress?.[0]?.fullName?.split(" ")[0]
                                 : ""}
                             </strong>
                           </div>

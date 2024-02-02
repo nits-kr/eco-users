@@ -8,41 +8,35 @@ import Swal from "sweetalert2";
 import Header from "./Header";
 import Footer from "./Footer";
 import { useUserLoginMutation } from "../services/Post";
-import { useSendEmailMutation } from "../services/Post";
 import { useDispatch } from "react-redux";
 import { setEcomUserId, setEcomWebToken } from "../app/slice/localSlice";
+import { useForm } from "react-hook-form";
+import classNames from "classnames";
+import { Button } from "rsuite";
+
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [userName, setUserName] = useState("");
-  const [loginData, res] = useUserLoginMutation();
-  const [sendMailData, re] = useSendEmailMutation();
-  const [userNameError, setUserNameError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [loader, setLoader] = useState(false);
+
+  const [loginData] = useUserLoginMutation();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleSaveChanges = async (e) => {
-    e.preventDefault();
-    setUserNameError("");
-    setPasswordError("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    trigger,
+  } = useForm();
 
-    if (userName.trim() === "") {
-      setUserNameError("Email is required.");
-      return;
-    }
-
-    if (password.trim() === "") {
-      setPasswordError("Password is required.");
-      return;
-    }
-
+  const handleSaveChanges = async (data) => {
+    setLoader(true);
     try {
       const response = await loginData({
-        userEmail: userName,
-        password: password,
+        userEmail: data.email,
+        password: data.password,
       });
-
+      setLoader(false);
       console.log("login response", response);
 
       if (
@@ -188,45 +182,74 @@ function Login() {
             <div className="col-xxl-4 col-xl-5 col-lg-6 col-sm-8 mx-auto">
               <div className="log-in-box">
                 <div className="log-in-title">
-                  <h3>Welcome to Techgropse eCommerce</h3>
-                  <h4>Log In Your Account</h4>
+                  <h5>Welcome to Techgropse eCommerce</h5>
+                  <h3>Log In Your Account</h3>
                 </div>
                 <div className="input-box">
-                  <form className="row g-4">
+                  <form
+                    className="row g-4"
+                    onSubmit={handleSubmit(handleSaveChanges)}
+                  >
                     <div className="col-12">
                       <div className="form-floating theme-form-floating log-in-form">
                         <input
                           type="email"
-                          className="form-control"
+                          className={classNames("form-control signup_fields ", {
+                            "is-invalid": errors.email,
+                          })}
                           id="email"
                           placeholder="Email Address"
-                          value={userName}
-                          onChange={(e) => setUserName(e.target.value)}
+                          {...register("email", {
+                            required: "Email is Required*",
+                            pattern: {
+                              value:
+                                /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                              message: "Invalid email address",
+                            },
+                          })}
                         />
-                        {userNameError && (
-                          <span className="error-message text-danger mt-2">
-                            {userNameError}
-                          </span>
+                        {errors.email && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.email?.message}
+                          </small>
                         )}
-                        <label htmlFor="email">Email Address</label>
+                        <label htmlFor="email">
+                          Email Address<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <div className="col-12">
                       <div className="form-floating theme-form-floating log-in-form">
                         <input
                           type="password"
-                          className="form-control"
+                          className={classNames("form-control", {
+                            "is-invalid": errors.password,
+                          })}
                           id="password"
                           placeholder="Password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
+                          {...register("password", {
+                            required: "Password is required",
+                            minLength: {
+                              value: 8,
+                              message:
+                                "Password must be at least 8 characters long",
+                            },
+                            pattern: {
+                              value:
+                                /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])(?=.*[A-Z])[A-Za-z\d@$!%*#?&]+$/,
+                              message:
+                                "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character",
+                            },
+                          })}
                         />
-                        {passwordError && (
-                          <span className="error-message text-danger mt-2">
-                            {passwordError}
-                          </span>
+                        {errors.password && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.password.message}
+                          </small>
                         )}
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="password">
+                          Password<span className="text-danger">*</span>
+                        </label>
                       </div>
                     </div>
                     <div className="col-12">
@@ -250,13 +273,19 @@ function Login() {
                       </div>
                     </div>
                     <div className="col-12">
-                      <button
-                        className="btn btn-animation w-100 justify-content-center"
+                      <Button
+                        className="btn btn-animation w-100"
                         type="submit"
-                        onClick={handleSaveChanges}
+                        loading={loader}
+                        appearance="primary"
+                        style={{
+                          backgroundColor: "#3e4093",
+                          color: "#fff",
+                          height: "50px",
+                        }}
                       >
                         Log In
-                      </button>
+                      </Button>
                     </div>
                   </form>
                 </div>

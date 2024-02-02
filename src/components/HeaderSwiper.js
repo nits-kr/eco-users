@@ -35,20 +35,20 @@ function HeaderSwiper() {
         onSlideChange={(swiper) => setActiveSlide(swiper.activeIndex)}
       >
         <SwiperSlide style={{ display: activeSlide === 0 ? "block" : "none" }}>
-          <h6 className="text-light">
+          <Link to="#" className="text-light">
             <strong className="me-1 ">Welcome to Techgropse eCommerce!</strong>
             Wrap new offers/gift every single day on Weekends.
             {/* <strong className="ms-1">New Coupon Code: Fast024</strong> */}
-          </h6>
+          </Link>
         </SwiperSlide>
         <SwiperSlide style={{ display: activeSlide === 1 ? "block" : "none" }}>
-          <h6 className="text-light">
+          <Link to="#" className="text-light">
             Something you love is now on sale!
             <Link to="/shop" className="text-white">
               {" "}
               Buy Now !
             </Link>
-          </h6>
+          </Link>
         </SwiperSlide>
       </Swiper>
     </>

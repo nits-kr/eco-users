@@ -7,48 +7,57 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import Header from "./Header";
 import Footer from "./Footer";
 import { useSendEmailMutation } from "../services/Post";
+import { useForm } from "react-hook-form";
+import classNames from "classnames";
+import { Button } from "rsuite";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { setVarificationEmail } from "../app/slice/localSlice";
 
 function Forgot() {
-  const [sendMailData, { isLoading, isSuccess, isError }] =
-    useSendEmailMutation();
-  const [email, setEmail] = useState("");
-  const navigate = useNavigate()
+  const [loader, setLoader] = useState(false);
 
-  const handleSaveChanges = async (e) => {
-    e.preventDefault();
+  const [sendMailData] = useSendEmailMutation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    trigger,
+  } = useForm();
+
+  const handleSaveChanges = async (data) => {
+    dispatch(setVarificationEmail(data.email));
+    // e.preventDefault();
     const newAddress = {
-      userEmail: email,
+      userEmail: data.email,
     };
+    setLoader(true);
 
     try {
-      await sendMailData(newAddress);
+      const res = await sendMailData(newAddress);
+      console.log("otp res", res);
+      setLoader(false);
+      if (res?.data?.message === "Mail Send Successfully") {
+        Swal.fire({
+          title: "OTP Sent Successfully!",
+          icon: "success",
+          text: "The OTP has been sent in your Email successfully.",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/varification");
+          }
+        });
+      } else if (res?.data?.message === " userEmail are incorrect") {
+        toast.error("Email are incorrect");
+      }
     } catch (error) {
       console.error("Error sending email:", error);
     }
   };
 
-  if (isSuccess) {
-    Swal.fire({
-      title: "OTP Sent!",
-      icon: "success",
-      text: "The OTP has been sent in your Email successfully.",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate("/varification");
-        setTimeout(() => {
-          window?.location?.reload();
-        }, 500);
-      }
-    });
-  } else if (isError) {
-    Swal.fire({
-      title: "Email Sending Failed!",
-      icon: "error",
-      text: "An error occurred while sending the email.",
-    });
-  }
-
-  console.log("sendMail", email);
   useEffect(() => {
     feather.replace();
   }, []);
@@ -133,34 +142,60 @@ function Forgot() {
               <div className="d-flex align-items-center justify-content-center h-100">
                 <div className="log-in-box">
                   <div className="log-in-title">
-                    <h3>Welcome to Techgropse eCommerce</h3>
-                    <h4>Forgot your password</h4>
+                    <h5>Welcome to Techgropse eCommerce</h5>
+                    <h3>Forgot your password</h3>
                   </div>
                   <div className="input-box">
-                    <form className="row g-4">
+                    <form
+                      className="row g-4"
+                      onSubmit={handleSubmit(handleSaveChanges)}
+                    >
                       <div className="col-12">
                         <div className="form-floating theme-form-floating log-in-form">
                           <input
                             type="email"
-                            className="form-control"
+                            className={classNames(
+                              "form-control signup_fields ",
+                              {
+                                "is-invalid": errors.email,
+                              }
+                            )}
                             id="email"
                             placeholder="Email Address"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            {...register("email", {
+                              required: "Email is Required*",
+                              pattern: {
+                                value:
+                                  /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                message: "Invalid email address",
+                              },
+                            })}
                           />
+                          {errors.email && (
+                            <small className="errorText mx-1 fw-bold text-danger">
+                              {errors.email?.message}
+                            </small>
+                          )}
                           <label htmlFor="email">Email Address</label>
                         </div>
                       </div>
                       <div className="col-12">
-                        <Link to="/varification">
-                          <button
-                            className="btn btn-animation w-100"
-                            type="submit"
-                            onClick={handleSaveChanges}
-                          >
-                            Send OTP
-                          </button>
-                        </Link>
+                        {/* <Link to="/varification">
+                          
+                        </Link> */}
+                        <Button
+                          className="btn btn-animation w-100"
+                          type="submit"
+                          loading={loader}
+                          appearance="primary"
+                          style={{
+                            backgroundColor: "#3e4093",
+                            color: "#fff",
+                            height: "50px",
+                          }}
+                        >
+                          Send OTP
+                        </Button>
                       </div>
                     </form>
                   </div>

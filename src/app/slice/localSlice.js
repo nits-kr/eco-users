@@ -9,6 +9,7 @@ export const localSlice = createSlice({
     fcmtoken: localStorage.getItem("patentaAdminFcmtoken") || null,
     optionAddIdea: localStorage.getItem("selectoptionforbusinessidea") || null,
     updateRating: localStorage.getItem("userRating") || null,
+    varificationEmail: localStorage.getItem("varificationEmail") || null,
   },
   reducers: {
     setEcomWebToken: (state, action) => {
@@ -32,6 +33,10 @@ export const localSlice = createSlice({
       state.optionAddIdea = action.payload;
       localStorage.setItem("selectoptionforbusinessidea", action.payload);
     },
+    setVarificationEmail: (state, action) => {
+      state.varificationEmail = action.payload;
+      localStorage.setItem("varificationEmail", action.payload);
+    },
   },
 });
 
@@ -41,5 +46,6 @@ export const {
   setEcomUserId,
   setOptionchangeAtAddIdea,
   setUpdateRating,
+  setVarificationEmail,
 } = localSlice.actions;
 export default localSlice.reducer;

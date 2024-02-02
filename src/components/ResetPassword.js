@@ -9,49 +9,52 @@ import BreadCrumb from "./BreadCrumb";
 import MobileFixMenu from "./MobileFixMenu";
 import Footer from "./Footer";
 import { useResetPasswordMutation } from "../services/Post";
+import { useForm } from "react-hook-form";
+import classNames from "classnames";
+import { Button } from "rsuite";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 function ResetPassword() {
-  const [reset, { isLoading, isSuccess, isError }] = useResetPasswordMutation();
-  const [password, setPassword] = useState([]);
-  const [resetPassword, setResetPassword] = useState([]);
-  const [userEmail, setUserEmail] = useState([]);
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
-  const navigate = useNavigate();
-  const handleSaveChanges = async (e) => {
-    e.preventDefault();
-    const newAddress = {
-      password: password,
-      confirm_Password: resetPassword,
-      userEmail: userEmail,
-    };
+  const varificationEmail = useSelector(
+    (data) => data?.local?.varificationEmail
+  );
+  const [loader, setLoader] = useState(false);
 
+  const [reset] = useResetPasswordMutation();
+
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting, isValid },
+    trigger,
+    watch,
+  } = useForm();
+
+  const handleSaveChanges = async (data) => {
+    const newAddress = {
+      password: data.password,
+      confirm_Password: data.confirmPassword,
+      userEmail: varificationEmail,
+    };
+    setLoader(true);
     try {
-      await reset(newAddress);
+      const res = await reset(newAddress);
+      console.log("reset res", res);
+      setLoader(false);
+      if (res?.data?.message === "Password Updated Successfully") {
+        toast.success("Password Resetted Successfully!");
+        navigate("/login");
+      } else if (res?.error?.data?.message) {
+        toast.error(res.error.data.message);
+      }
     } catch (error) {
       console.error("Error sending email:", error);
     }
   };
 
-  if (isSuccess) {
-    Swal.fire({
-      title: "Changed!",
-      icon: "success",
-      text: "Your Password Changed Successfully",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate("/");
-        setTimeout(() => {
-          window?.location?.reload();
-        }, 500);
-      }
-    });
-  } else if (isError) {
-    Swal.fire({
-      title: "Failed!",
-      icon: "error",
-      text: "Password Not Match.",
-    });
-  }
   useEffect(() => {
     feather.replace();
   }, []);
@@ -80,56 +83,88 @@ function ResetPassword() {
                     <h4>Enter New Password</h4>
                   </div>
                   <div className="input-box">
-                    <form className="row g-4">
+                    <form
+                      className="row g-4"
+                      onSubmit={handleSubmit(handleSaveChanges)}
+                    >
                       <div className="col-12">
                         <div className="form-floating theme-form-floating log-in-form d-flex">
                           <input
                             type="password"
-                            className="form-control text-center"
+                            className={classNames("form-control", {
+                              "is-invalid": errors.password,
+                            })}
                             id="password"
                             placeholder="New Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            {...register("password", {
+                              required: "Password is required",
+                              minLength: {
+                                value: 8,
+                                message:
+                                  "Password must be at least 8 characters long",
+                              },
+                              pattern: {
+                                value:
+                                  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])(?=.*[A-Z])[A-Za-z\d@$!%*#?&]+$/,
+                                message:
+                                  "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character",
+                              },
+                            })}
                           />
-                          <label htmlFor="email">New Password</label>
+
+                          <label htmlFor="email">
+                            New Password<span className="text-danger">*</span>
+                          </label>
                         </div>
+                        {errors.password && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.password.message}
+                          </small>
+                        )}
                       </div>
                       <div className="col-12">
                         <div className="form-floating theme-form-floating log-in-form d-flex">
                           <input
                             type="password"
-                            className="form-control text-center"
-                            id="passwordNew"
+                            className={classNames("form-control", {
+                              "is-invalid": errors.confirmPassword,
+                            })}
+                            id="confirmPassword"
                             placeholder="Confirm New Password"
-                            value={resetPassword}
-                            onChange={(e) => setResetPassword(e.target.value)}
+                            {...register("confirmPassword", {
+                              required: "Please confirm your password",
+                              validate: (value) =>
+                                value === watch("password", "") ||
+                                "Passwords do not match",
+                            })}
                           />
+
                           <label htmlFor="passwordNew">
                             Confirm New Password
+                            <span className="text-danger">*</span>
                           </label>
                         </div>
+                        {errors.confirmPassword && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.confirmPassword.message}
+                          </small>
+                        )}
                       </div>
+
                       <div className="col-12">
-                        <div className="form-floating theme-form-floating log-in-form d-flex">
-                          <input
-                            type="email"
-                            className="form-control text-center"
-                            id="email"
-                            placeholder="Enter Email"
-                            value={userEmail}
-                            onChange={(e) => setUserEmail(e.target.value)}
-                          />
-                          <label htmlFor="passwordNew">Enter Email</label>
-                        </div>
-                      </div>
-                      <div className="col-12">
-                        <Link
-                          to="#"
+                        <Button
                           className="btn btn-animation w-100"
-                          onClick={handleSaveChanges}
+                          type="submit"
+                          loading={loader}
+                          appearance="primary"
+                          style={{
+                            backgroundColor: "#3e4093",
+                            color: "#fff",
+                            height: "50px",
+                          }}
                         >
                           Save
-                        </Link>
+                        </Button>
                       </div>
                     </form>
                   </div>
