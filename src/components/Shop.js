@@ -50,6 +50,7 @@ import { useSubCategoryProductListMutation } from "../services/Post";
 import { default as ReactSelect } from "react-select";
 import Pagination from "./shopping/Pagination";
 import CategoryTop from "./shopping/CategoryTop";
+import { toast } from "react-toastify";
 
 function Shop(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
@@ -1074,7 +1075,10 @@ function Shop(props) {
                                           }
                                           disabled={
                                             count[index] ===
-                                            item?.addVarient?.[0]?.stockQuantity
+                                              item?.addVarient?.[0]
+                                                ?.stockQuantity ||
+                                            item?.addVarient?.[0]
+                                              ?.stockQuantity <= 0
                                           }
                                         >
                                           <i
@@ -1103,13 +1107,16 @@ function Shop(props) {
                                     <button
                                       className="btn btn-add-cart addcart-button"
                                       onClick={(e) =>
-                                        handleAddToCart(
-                                          e,
-                                          item,
-                                          item?.addVarient[0]?.Price,
-                                          index,
-                                          item?.addVarient[0]?._id
-                                        )
+                                        item?.addVarient?.[0]?.stockQuantity <=
+                                        0
+                                          ? toast.error("Out Of Stock")
+                                          : handleAddToCart(
+                                              e,
+                                              item,
+                                              item?.addVarient[0]?.Price,
+                                              index,
+                                              item?.addVarient[0]?._id
+                                            )
                                       }
                                     >
                                       Add To Cart

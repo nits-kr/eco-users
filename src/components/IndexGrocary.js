@@ -565,8 +565,10 @@ function IndexGrocary(props) {
                             }
                             disabled={
                               count[index] ===
+                                item?.productDetails?.[0]?.addVarient?.[0]
+                                  ?.stockQuantity ||
                               item?.productDetails?.[0]?.addVarient?.[0]
-                                ?.stockQuantity
+                                ?.stockQuantity <= 0
                             }
                           >
                             <i className="fa fa-plus" aria-hidden="true" />

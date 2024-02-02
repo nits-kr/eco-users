@@ -30,6 +30,7 @@ import {
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 function Products(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
@@ -592,7 +593,11 @@ function Products(props) {
                             <Link
                               // to="/cart"
                               className="btn btn-md bg-dark cart-button text-white w-100"
-                              onClick={() => handleAddToCart()}
+                              onClick={() =>
+                                selectedVariantData?.stockQuantity <= 0
+                                  ? toast.error("Out Of Stock")
+                                  : handleAddToCart()
+                              }
                             >
                               Add to Cart
                             </Link>

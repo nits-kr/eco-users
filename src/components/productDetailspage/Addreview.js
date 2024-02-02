@@ -70,9 +70,10 @@ function Addreview({ averageRating, productDetail, id }) {
   //   }
   // }, [updatedRating, userExists]);
 
-  const handleUpdateRating = async () => {
+  const handleUpdateRating = async (e) => {
+    e.preventDefault();
     const data = {
-      _id: userId,
+      user_Id: userId,
       star: updatedRating,
       product_Id: id,
       ecommercetoken: ecommercetoken,
