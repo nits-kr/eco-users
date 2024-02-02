@@ -8,7 +8,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faHeart } from "@fortawesome/free-solid-svg-icons";
 import Header from "./Header";
 import Footer from "./Footer";
-import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import TapToTop from "./TapToTop";
 import {
@@ -687,8 +686,6 @@ function Cart() {
       </section>
 
       <Footer />
-
-      <LocationModel />
 
       <DealBoxModel />
 

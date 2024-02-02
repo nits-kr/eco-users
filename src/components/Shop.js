@@ -38,7 +38,6 @@ import {
   faArrowsRotate,
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
-import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import Spinner from "./Spinner";
 import { useAddToWislistListMutation } from "../services/Post";
@@ -1267,9 +1266,7 @@ function Shop(props) {
       </div>
 
       {/* Quick View Modal Box End */}
-      {/* Location Modal Start */}
-      <LocationModel />
-      {/* Location Modal End */}
+
       {/* Deal Box Modal Start */}
       <DealBoxModel />
 

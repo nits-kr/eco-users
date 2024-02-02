@@ -31,7 +31,6 @@ import {
   faArrowsRotate,
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
-import LocationModel from "./LocationModel";
 import DealBoxModel from "./DealBoxModel";
 import Spinner from "./Spinner";
 import {
@@ -65,7 +64,7 @@ function BannerShop(props) {
   const [quantity, setQuantity] = useState([]);
   const [bannersList, setBannersList] = useState([]);
   const [count, setCount] = useState([]);
-  
+
   useEffect(() => {
     const initialCounts = productListItems?.map(() => 1);
     setCount(initialCounts);
@@ -124,7 +123,7 @@ function BannerShop(props) {
   // const searchQuery = localStorage?.getItem("productSearch");
   const { id } = useParams();
   const { query } = useParams();
-//   console.log("query", query);
+  //   console.log("query", query);
   const totalRatings = selectedProduct?.ratings?.reduce(
     (sum, rating) => sum + rating.star,
     0
@@ -321,54 +320,54 @@ function BannerShop(props) {
       window.location.reload();
     }, 1000);
   };
-//   useEffect(() => {
-//     if (query) {
-//       handleSearch1();
-//     }
-//   }, [query]);
+  //   useEffect(() => {
+  //     if (query) {
+  //       handleSearch1();
+  //     }
+  //   }, [query]);
 
-//   const handleSearch1 = async () => {
-//     try {
-//       const url1 =
-//         query !== ""
-//           ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/search-product"
-//           : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/list";
-//       const response = await axios.post(url1, {
-//         productName_en: query,
-//       });
-//       const { error, results } = response.data;
-//       if (error) {
-//         throw new Error("Error searching for products. Data is not found.");
-//       } else {
-//         setProductListItems(
-//           query !== "" ? results?.productData : results?.list?.reverse()
-//         );
-//       }
-//     } catch (error) {
-//       if (error.response) {
-//         Swal.fire({
-//           title: "Error!",
-//           text: error.response.data,
-//           icon: "error",
-//           confirmButtonText: "OK",
-//         });
-//       } else if (error.request) {
-//         Swal.fire({
-//           title: "Error!",
-//           text: "Network error. Please try again later.",
-//           icon: "error",
-//           confirmButtonText: "OK",
-//         });
-//       } else {
-//         Swal.fire({
-//           title: "Error!",
-//           text: error.message,
-//           icon: "error",
-//           confirmButtonText: "OK",
-//         });
-//       }
-//     }
-//   };
+  //   const handleSearch1 = async () => {
+  //     try {
+  //       const url1 =
+  //         query !== ""
+  //           ? "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/search-product"
+  //           : "http://ec2-65-2-108-172.ap-south-1.compute.amazonaws.com:5000/user/product/product/list";
+  //       const response = await axios.post(url1, {
+  //         productName_en: query,
+  //       });
+  //       const { error, results } = response.data;
+  //       if (error) {
+  //         throw new Error("Error searching for products. Data is not found.");
+  //       } else {
+  //         setProductListItems(
+  //           query !== "" ? results?.productData : results?.list?.reverse()
+  //         );
+  //       }
+  //     } catch (error) {
+  //       if (error.response) {
+  //         Swal.fire({
+  //           title: "Error!",
+  //           text: error.response.data,
+  //           icon: "error",
+  //           confirmButtonText: "OK",
+  //         });
+  //       } else if (error.request) {
+  //         Swal.fire({
+  //           title: "Error!",
+  //           text: "Network error. Please try again later.",
+  //           icon: "error",
+  //           confirmButtonText: "OK",
+  //         });
+  //       } else {
+  //         Swal.fire({
+  //           title: "Error!",
+  //           text: error.message,
+  //           icon: "error",
+  //           confirmButtonText: "OK",
+  //         });
+  //       }
+  //     }
+  //   };
   useEffect(() => {
     const reversedList =
       subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
@@ -2229,9 +2228,7 @@ function BannerShop(props) {
       </div>
 
       {/* Quick View Modal Box End */}
-      {/* Location Modal Start */}
-      <LocationModel />
-      {/* Location Modal End */}
+
       {/* Deal Box Modal Start */}
       <DealBoxModel />
 

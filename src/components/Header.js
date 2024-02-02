@@ -8,6 +8,7 @@ import { faHeart, faPhoneVolume } from "@fortawesome/free-solid-svg-icons";
 import { ProductSearch } from "./HttpServices";
 import {
   useDeleteCartItemsMutation,
+  useGetAddressListMutation,
   useGetCartListheaderMutation,
   useGetCategoryListQuery,
   useSearchProductHeaderMutation,
@@ -36,12 +37,30 @@ function Header({ Dash }) {
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSale, setShowSale] = useState(true);
 
+  const [longitude, setLongitude] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(function (position) {
+      console.log("Latitude is :", position.coords.latitude);
+      console.log("Longitude is :", position.coords.longitude);
+      setLatitude(position.coords.latitude);
+      setLongitude(position.coords.longitude);
+    });
+  }, []);
+  console.log(longitude);
+  console.log(latitude);
+
   const [subCategoryItems, setSubCategoryItems] = useState([]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
 
   const [cartListQuery] = useGetCartListheaderMutation();
+
+  const [addressList] = useGetAddressListMutation();
+
+  const [newAddress, setNewAddress] = useState([]);
 
   const navigate = useNavigate();
 
@@ -51,6 +70,7 @@ function Header({ Dash }) {
   useEffect(() => {
     if (ecomUserId) {
       handleCartList(ecomUserId);
+      handleAddressList(ecomUserId);
     }
   }, [ecomUserId]);
 
@@ -64,6 +84,21 @@ function Header({ Dash }) {
       const respone = await cartListQuery(datas);
 
       setCartListItems(respone?.data?.carts);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleAddressList = async () => {
+    const datas = {
+      ecomUserId,
+      ecommercetoken,
+    };
+
+    try {
+      const respone = await addressList(datas);
+
+      setNewAddress(respone?.data?.results?.addressData?.slice().reverse());
     } catch (error) {
       console.log(error);
     }
@@ -224,6 +259,10 @@ function Header({ Dash }) {
     dispatch(searchQuerydata(""));
   };
 
+  const handleClick = () => {
+    document.getElementById("addressmodalclose").click();
+  };
+
   return (
     <>
       <header className="pb-md-4 pb-0">
@@ -371,7 +410,29 @@ function Header({ Dash }) {
                         <span className="location-arrow">
                           <i data-feather="map-pin" />
                         </span>
-                        <span className="locat-name">Your Location</span>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            fontSize: "x-small",
+                          }}
+                        >
+                          <div>
+                            <strong>
+                              Deliver to:{" "}
+                              {newAddress[0]?.fullName
+                                ? newAddress[0]?.fullName.split(" ")[0]
+                                : ""}
+                            </strong>
+                          </div>
+
+                          <div className="locat-name">
+                            {newAddress?.length > 0
+                              ? `${newAddress[0]?.city}, ${newAddress[0]?.pinCode}`
+                              : "Your Location"}
+                          </div>
+                        </div>
+
                         <i className="fas fa-angle-down" />
                       </button>
                     </div>
@@ -930,6 +991,76 @@ function Header({ Dash }) {
                 No list available
               </div>
             )}
+          </div>
+        </div>
+      </div>
+      <div
+        className="modal location-modal fade theme-modal"
+        id="locationModal"
+        tabIndex={-1}
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel1">
+                Choose your Delivery Location
+              </h5>
+              <p className="mt-1 text-content">
+                Enter your address and we will specify the offer for your area.
+              </p>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                id="addressmodalclose"
+              >
+                <i className="fa-solid fa-xmark" />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="location-list">
+                <div className="search-input">
+                  <input
+                    type="search"
+                    className="form-control"
+                    placeholder="Search Your Area"
+                  />
+                  <i className="fa-solid fa-magnifying-glass" />
+                </div>
+                <div className="disabled-box">
+                  <h6>
+                    Select a Location
+                    <Link to={"/user-dashboard"} onClick={() => handleClick()}>
+                      {" "}
+                      Edit Your Address
+                    </Link>
+                  </h6>
+                </div>
+                <ul className="location-select custom-height">
+                  {newAddress?.map((loc, ind) => (
+                    <li key={ind}>
+                      <Link to="#">
+                        <div className="">
+                          <h6>
+                            <strong style={{ fontSize: "large" }}>
+                              {loc?.fullName}
+                            </strong>{" "}
+                          </h6>
+                          <p>
+                            {loc?.address}, {loc?.locality}, {loc?.city},{" "}
+                            {loc?.state}, {loc?.country}
+                          </p>
+                          <span>Pin Code: {loc?.pinCode}</span>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
