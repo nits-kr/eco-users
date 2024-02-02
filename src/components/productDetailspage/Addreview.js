@@ -11,7 +11,7 @@ import {
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-function Addreview({ averageRating, productDetail, id }) {
+function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const updatedRating = useSelector((data) => data?.local?.updateRating);
@@ -81,6 +81,7 @@ function Addreview({ averageRating, productDetail, id }) {
     const response = await updateRating(data);
     console.log("respons update rateing", response);
     toast?.success(`Rating update to ${updatedRating}`);
+    handleProductDetails(id);
   };
 
   const handleCreateReview = async (e) => {
@@ -152,7 +153,11 @@ function Addreview({ averageRating, productDetail, id }) {
 
   return (
     <>
-      <div className="tab-content custom-tab" id="myTabContent">
+      <div
+        className="tab-content custom-tab"
+        id="myTabContent"
+        style={{ paddingTop: "15px", paddingBottom: "15px" }}
+      >
         <div
           className="tab-pane fade show active"
           id="review"
@@ -556,7 +561,9 @@ function Addreview({ averageRating, productDetail, id }) {
         >
           <div className="product-description mb-4">
             <div className="nav-desh">
-              <p>{productDetail?.Description}</p>
+              <p style={{ lineHeight: "inherit" }}>
+                {productDetail?.Description}
+              </p>
             </div>
             <div className="nav-desh">
               <div className="desh-title">
@@ -628,43 +635,21 @@ function Addreview({ averageRating, productDetail, id }) {
           role="tabpanel"
           aria-labelledby="info-tab"
         >
-          <div className="table-responsive">
-            <table className="table info-table">
-              <tbody>
-                <tr>
-                  <td>Specialty</td>
-                  <td>Vegetarian</td>
-                </tr>
-                <tr>
-                  <td>Ingredient Type</td>
-                  <td>Vegetarian</td>
-                </tr>
-                <tr>
-                  <td>Brand</td>
-                  <td>Lavian Exotique</td>
-                </tr>
-                <tr>
-                  <td>Form</td>
-                  <td>Bar Brownie</td>
-                </tr>
-                <tr>
-                  <td>Package Information</td>
-                  <td>Box</td>
-                </tr>
-                <tr>
-                  <td>Manufacturer</td>
-                  <td>Prayagh Nutri Product Pvt Ltd</td>
-                </tr>
-                <tr>
-                  <td>Item part number</td>
-                  <td>LE 014 - 20pcs Crème Bakes (Pack of 2)</td>
-                </tr>
-                <tr>
-                  <td>Net Quantity</td>
-                  <td>40.00 count</td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="information-box">
+            {productDetail?.Description !== "undefined" ? (
+              <ul>
+                {productDetail?.Description &&
+                  productDetail.Description.split(".").map(
+                    (instruction, index) => (
+                      <li key={index}>{instruction.trim()}</li>
+                    )
+                  )}
+              </ul>
+            ) : (
+              <div className="d-flex align-items-center justify-content-center text-danger">
+                <strong>Not Available</strong>
+              </div>
+            )}
           </div>
         </div>
         <div
@@ -674,14 +659,20 @@ function Addreview({ averageRating, productDetail, id }) {
           aria-labelledby="care-tab"
         >
           <div className="information-box">
-            <ul>
-              {productDetail?.careInstuctions &&
-                productDetail.careInstuctions
-                  .split(".")
-                  .map((instruction, index) => (
-                    <li key={index}>{instruction.trim()}</li>
-                  ))}
-            </ul>
+            {productDetail?.careInstuctions !== "undefined" ? (
+              <ul>
+                {productDetail?.careInstuctions &&
+                  productDetail.careInstuctions
+                    .split(".")
+                    .map((instruction, index) => (
+                      <li key={index}>{instruction.trim()}</li>
+                    ))}
+              </ul>
+            ) : (
+              <div className="d-flex align-items-center justify-content-center text-danger">
+                <strong>Not Available</strong>
+              </div>
+            )}
           </div>
         </div>
       </div>

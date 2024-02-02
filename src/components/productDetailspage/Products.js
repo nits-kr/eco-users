@@ -422,7 +422,17 @@ function Products(props) {
                   <div className="right-box-contain">
                     <div className="row align-items-center mb-4">
                       <div className="col-6">
-                        <h6 className="offer-top mb-0">30% Off</h6>
+                        <h6 className="offer-top mb-0">
+                          {oldPrice > price
+                            ? `${(
+                                ((oldPrice - price) / oldPrice) *
+                                100
+                              ).toFixed(2)}% Off`
+                            : `${(
+                                ((price - oldPrice) / oldPrice) *
+                                100
+                              ).toFixed(2)}% Off`}
+                        </h6>
                       </div>
                       <div className="col-6 text-end">
                         <a
@@ -445,7 +455,17 @@ function Products(props) {
                       <h3 className="theme-color price">
                         ${price || ""}{" "}
                         <del className="text-content">${oldPrice || ""}</del>{" "}
-                        <span className="offer theme-color">(8% off)</span>
+                        <span className="offer theme-color">
+                          {oldPrice > price
+                            ? `${(
+                                ((oldPrice - price) / oldPrice) *
+                                100
+                              ).toFixed(2)}% Off`
+                            : `${(
+                                ((price - oldPrice) / oldPrice) *
+                                100
+                              ).toFixed(2)}% Off`}
+                        </span>
                       </h3>
                       <div>
                         <Star rating={averageRating} />
@@ -457,10 +477,13 @@ function Products(props) {
                     </div>
                     <div className="procuct-contain">
                       <p>
-                        Lollipop cake chocolate chocolate cake dessert jujubes.
-                        Shortbread sugar plum dessert powder cookie sweet
-                        brownie. Cake cookie apple pie dessert sugar plum muffin
-                        cheesecake.
+                        {`${productDetail?.Description?.split(".")
+                          .slice(0, 3)
+                          .join(".")}${
+                          productDetail?.Description?.split(".").length > 2
+                            ? ""
+                            : ""
+                        }`}
                       </p>
                     </div>
                     <div className="product-packege">
@@ -846,6 +869,7 @@ function Products(props) {
                         productDetail={productDetail}
                         averageRating={averageRating}
                         id={id}
+                        handleProductDetails={handleProductDetails}
                       />
                     </div>
                     <div className="right-sidebar-box">
@@ -853,40 +877,35 @@ function Products(props) {
                         <div className="verndor-contain">
                           <div className="vendor-image">
                             <img
-                              src="../assets/images/product/vendor.png"
+                              src={
+                                productDetail
+                                  ? productDetail?.brand_Id?.brandPic
+                                  : "../assets/images/product/vendor.png"
+                              }
                               className="lazyload"
                               alt=""
                             />
                           </div>
                           <div className="vendor-name">
-                            <h5 className="fw-500">Noodles Co.</h5>
+                            <h5 className="fw-500">
+                              {" "}
+                              {productDetail
+                                ? productDetail?.brand_Id?.brandName_en
+                                : "Brand Not Available"}{" "}
+                            </h5>
                             <div className="product-rating mt-1">
                               <ul className="rating">
-                                <li>
-                                  <i data-feather="star" className="fill" />
-                                </li>
-                                <li>
-                                  <i data-feather="star" className="fill" />
-                                </li>
-                                <li>
-                                  <i data-feather="star" className="fill" />
-                                </li>
-                                <li>
-                                  <i data-feather="star" className="fill" />
-                                </li>
-                                <li>
-                                  <i data-feather="star" />
-                                </li>
+                                <Star />
                               </ul>
                               <span>(36 Reviews)</span>
                             </div>
                           </div>
                         </div>
-                        <p className="vendor-detail">
+                        {/* <p className="vendor-detail">
                           Noodles &amp; Company is an American fast-casual
                           restaurant that offers international and American
                           noodle dishes and pasta.
-                        </p>
+                        </p> */}
                         <div className="vendor-list">
                           <ul>
                             <li>
