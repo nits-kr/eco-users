@@ -682,7 +682,7 @@ function IndexGrocary(props) {
               {bannerList?.scrollBanner?.map((item, index) => {
                 return (
                   <div className="banner-contain hover-effect " key={index}>
-                    <Link to={`/Banner-list/${item.subCategory_Id._id}`}>
+                    <Link to={`/Banner-list/${item?.subCategory_Id?._id}`}>
                       <img
                         src={item?.scrollBanner[0]}
                         className="bg-img  lazyload"
