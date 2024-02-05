@@ -444,7 +444,10 @@ function Shop(props) {
   }, []);
 
   const slidersTop = () => {
-    return subCategoryListData?.map((item, index) => {
+    const filteredList = subCategoryListData?.filter(
+      (item) => !selectedSubcategories.includes(item?._id)
+    );
+    return filteredList?.map((item, index) => {
       return (
         <div key={index}>
           <div
