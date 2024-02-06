@@ -636,10 +636,10 @@ function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
           aria-labelledby="info-tab"
         >
           <div className="information-box">
-            {productDetail?.Description !== "undefined" ? (
+            {productDetail?.AdditionalInfo !== "undefined" ? (
               <ul>
-                {productDetail?.Description &&
-                  productDetail.Description.split(".").map(
+                {productDetail?.AdditionalInfo &&
+                  productDetail.AdditionalInfo.split(".").map(
                     (instruction, index) => (
                       <li key={index}>{instruction.trim()}</li>
                     )
