@@ -37,6 +37,8 @@ import Bottombanner from "./indexgrocary/Bottombanner";
 import Spinners2 from "./Spinners2";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import TopDiscountProduct from "./indexgrocary/TopDiscountProduct";
+import RecommendedProduct from "./indexgrocary/RecommendedProduct";
 function IndexGrocary(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
@@ -291,7 +293,7 @@ function IndexGrocary(props) {
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
-    // autoplay: true,
+    autoplay: true,
   };
   const settings2 = {
     dots: true,
@@ -883,12 +885,50 @@ function IndexGrocary(props) {
                                         </h6>
                                       </Link>
                                       <span>
-                                        {" "}
-                                        {
+                                        {item?.productDetails?.[0]
+                                          ?.addVarient?.[0]?.stockQuantity >
+                                        0 ? (
+                                          item?.productDetails?.[0]
+                                            ?.addVarient?.[0]?.stockQuantity <=
+                                          5 ? (
+                                            <span
+                                              style={{
+                                                color: "rgb(199, 0, 85)",
+                                              }}
+                                            >
+                                              Only few left
+                                            </span>
+                                          ) : item?.productDetails?.[0]
+                                              ?.addVarient?.[0]
+                                              ?.stockQuantity <= 10 ? (
+                                            <span
+                                              style={{
+                                                color: "rgb(199, 0, 85)",
+                                              }}
+                                            >
+                                              Only{" "}
+                                              {
+                                                item?.productDetails?.[0]
+                                                  ?.addVarient?.[0]
+                                                  ?.stockQuantity
+                                              }{" "}
+                                              left
+                                            </span>
+                                          ) : (
+                                            <span style={{ color: "green" }}>
+                                              In Stock
+                                            </span>
+                                          )
+                                        ) : (
+                                          <span style={{ color: "red" }}>
+                                            Out Of Stock
+                                          </span>
+                                        )}
+                                        {/* {
                                           item?.productDetails?.[0]
                                             ?.addVarient?.[0]?.stockQuantity
-                                        }{" "}
-                                        left{" "}
+                                        }{" "} */}
+                                        {/* left{" "} */}
                                       </span>
                                       <h6 className="price theme-color">
                                         $
@@ -1081,7 +1121,8 @@ function IndexGrocary(props) {
                 </div>
               </div>
 
-              <Foodcupboard />
+              {/* <Foodcupboard /> */}
+              <RecommendedProduct />
               <div className="section-t-space">
                 <div
                   className="banner-contain"
@@ -1106,7 +1147,8 @@ function IndexGrocary(props) {
 
               <Middlebanner bannerList={bannerList} />
 
-              <BestSeller />
+              {/* <BestSeller /> */}
+              <TopDiscountProduct />
 
               <Bottombanner bannerList={bannerList} />
 

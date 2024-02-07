@@ -36,6 +36,24 @@ export const PostApi = createApi({
         method: "post",
       }),
     }),
+    getTopDiscountProduct: builder.query({
+      query: (name) => ({
+        url: "user/product/product/high-Discount-list",
+        method: "post",
+        // headers: {
+        //   "x-auth-token-user": selector,
+        // },
+      }),
+    }),
+    getRecommendedProduct: builder.query({
+      query: (name) => ({
+        url: "user/product/product/recommendedProductList",
+        method: "post",
+        // headers: {
+        //   "x-auth-token-user": selector,
+        // },
+      }),
+    }),
     subCategoryList: builder.mutation({
       query: (body) => {
         console.log("update address", body);
@@ -764,4 +782,6 @@ export const {
   useSearchBlogMutation,
   useGetProfileDetailsMutation,
   useUpdateProductRatingMutation,
+  useGetTopDiscountProductQuery,
+  useGetRecommendedProductQuery,
 } = PostApi;
