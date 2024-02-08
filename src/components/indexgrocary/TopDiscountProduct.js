@@ -161,6 +161,7 @@ function TopDiscountProduct() {
     slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
+    arrows: false,
   };
 
   const sliders2 = () => {

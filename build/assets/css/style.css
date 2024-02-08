@@ -6960,10 +6960,11 @@ footer .main-footer {
     border: none;
     padding-top: 0;
   }
+
   .row-cols-xxl-4>* {
     flex: 0 0 auto;
     width: 50% !important;
-}
+  }
 }
 
 footer .main-footer .footer-theme .footer-theme-contain {
@@ -31026,8 +31027,4 @@ button:not(:disabled) {
   line-height: 1;
   opacity: .75;
   color: #0da487;
-}
-
-.slick-slider .slick-list {
-  margin: 0 0 0 15px;
 }

@@ -286,6 +286,7 @@ function IndexGrocary(props) {
     slidesToShow: w > 500 ? 3 : 1,
     autoplay: true,
     slidesToScroll: 1,
+    arrows: false,
   };
   const settings1 = {
     dots: true,
@@ -294,6 +295,7 @@ function IndexGrocary(props) {
     slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
+    arrows: false,
   };
   const settings2 = {
     dots: true,
