@@ -14,6 +14,7 @@ import classNames from "classnames";
 import { Button } from "rsuite";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { Spinner } from "react-bootstrap";
 
 function ResetPassword() {
   const varificationEmail = useSelector(
@@ -155,15 +156,11 @@ function ResetPassword() {
                         <button
                           className="btn btn-animation w-100"
                           type="submit"
-                          loading={loader}
-                          appearance="primary"
-                          style={{
-                            backgroundColor: "#3e4093",
-                            color: "#fff",
-                            height: "50px",
-                          }}
+                          disabled={loader}
+                          style={{ cursor: loader ? "not-allowed" : "" }}
+                          title={`${loader ? "Please wait..." : "Reset"}`}
                         >
-                          Save
+                          {loader ? <Spinner /> : "Save"}
                         </button>
                       </div>
                     </form>

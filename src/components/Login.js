@@ -13,6 +13,7 @@ import { setEcomUserId, setEcomWebToken } from "../app/slice/localSlice";
 import { useForm } from "react-hook-form";
 import classNames from "classnames";
 import { Button } from "rsuite";
+import { Spinner } from "react-bootstrap";
 
 function Login() {
   const [loader, setLoader] = useState(false);
@@ -273,19 +274,15 @@ function Login() {
                       </div>
                     </div>
                     <div className="col-12">
-                      <Button
+                      <button
                         className="btn btn-animation w-100"
                         type="submit"
-                        loading={loader}
-                        appearance="primary"
-                        style={{
-                          backgroundColor: "#3e4093",
-                          color: "#fff",
-                          height: "50px",
-                        }}
+                        disabled={loader}
+                        style={{ cursor: loader ? "not-allowed" : "" }}
+                        title={`${loader ? "Please wait..." : "Login"}`}
                       >
-                        Log In
-                      </Button>
+                        {loader ? <Spinner /> : "Log In"}
+                      </button>
                     </div>
                   </form>
                 </div>

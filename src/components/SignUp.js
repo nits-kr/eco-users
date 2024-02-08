@@ -358,16 +358,10 @@ function SignUp() {
                       <button
                         className="btn btn-animation w-100"
                         type="submit"
-                        loading={loader}
-                        appearance="primary"
-                        style={{
-                          backgroundColor: "#3e4093",
-                          color: "#fff",
-                          height: "50px",
-                          width: "50px",
-                        }}
+                        disabled={loader}
+                        style={{ cursor: loader ? "not-allowed" : "" }}
                       >
-                        Sign Up
+                        {loader ? "Signing Up..." : "Sign Up"}
                       </button>
                     </div>
                   </form>

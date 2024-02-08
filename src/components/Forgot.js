@@ -13,6 +13,7 @@ import { Button } from "rsuite";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setVarificationEmail } from "../app/slice/localSlice";
+import { Spinner } from "react-bootstrap";
 
 function Forgot() {
   const [loader, setLoader] = useState(false);
@@ -186,15 +187,11 @@ function Forgot() {
                         <button
                           className="btn btn-animation w-100"
                           type="submit"
-                          loading={loader}
-                          appearance="primary"
-                          style={{
-                            backgroundColor: "#3e4093",
-                            color: "#fff",
-                            height: "50px",
-                          }}
+                          disabled={loader}
+                          style={{ cursor: loader ? "not-allowed" : "" }}
+                          title={`${loader ? "Please wait..." : "Send Otp"}`}
                         >
-                          Send OTP
+                          {loader ? <Spinner /> : "Send OTP"}
                         </button>
                       </div>
                     </form>
