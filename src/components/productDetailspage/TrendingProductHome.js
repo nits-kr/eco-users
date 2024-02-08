@@ -175,7 +175,7 @@ function TrendingProductHome(props) {
     autoplay: true,
     centerMode: true,
     focusOnSelect: true,
-    arrows: true,
+    arrows: false,
     lazyLoad: "ondemand",
   };
 

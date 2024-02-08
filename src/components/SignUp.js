@@ -13,7 +13,7 @@ import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
 import classNames from "classnames";
 import { Button } from "rsuite";
-import "rsuite/dist/rsuite.min.css";
+// import "rsuite/dist/rsuite.min.css";
 
 function SignUp() {
   const [signup] = useUserSignUpMutation();
@@ -355,7 +355,7 @@ function SignUp() {
                     </div>
 
                     <div className="col-12">
-                      <Button
+                      <button
                         className="btn btn-animation w-100"
                         type="submit"
                         loading={loader}
@@ -364,10 +364,11 @@ function SignUp() {
                           backgroundColor: "#3e4093",
                           color: "#fff",
                           height: "50px",
+                          width: "50px",
                         }}
                       >
                         Sign Up
-                      </Button>
+                      </button>
                     </div>
                   </form>
                 </div>

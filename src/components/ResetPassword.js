@@ -152,7 +152,7 @@ function ResetPassword() {
                       </div>
 
                       <div className="col-12">
-                        <Button
+                        <button
                           className="btn btn-animation w-100"
                           type="submit"
                           loading={loader}
@@ -164,7 +164,7 @@ function ResetPassword() {
                           }}
                         >
                           Save
-                        </Button>
+                        </button>
                       </div>
                     </form>
                   </div>

@@ -183,7 +183,7 @@ function Forgot() {
                         {/* <Link to="/varification">
                           
                         </Link> */}
-                        <Button
+                        <button
                           className="btn btn-animation w-100"
                           type="submit"
                           loading={loader}
@@ -195,7 +195,7 @@ function Forgot() {
                           }}
                         >
                           Send OTP
-                        </Button>
+                        </button>
                       </div>
                     </form>
                   </div>
