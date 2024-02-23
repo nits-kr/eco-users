@@ -865,27 +865,27 @@ function IndexGrocary(props) {
                                 ?.product_Pic[0];
                             return (
                               <li key={index}>
-                                <div className="offer-product">
-                                  <Link to="/product" className="offer-image">
+                                <Link
+                                  to={`/product-details-page/${item?._id}`}
+                                  className="offer-product"
+                                >
+                                  <div className="offer-image">
                                     <img
                                       src={imageUrl}
                                       className=""
                                       alt="Test Alt Text"
                                     />
-                                  </Link>
+                                  </div>
                                   <div className="offer-detail">
                                     <div>
-                                      <Link
-                                        to="/product"
-                                        className="text-title"
-                                      >
+                                      <div className="text-title">
                                         <h6 className="name">
                                           {
                                             item?.productDetails?.[0]
                                               ?.productName_en
                                           }
                                         </h6>
-                                      </Link>
+                                      </div>
                                       <span>
                                         {item?.productDetails?.[0]
                                           ?.addVarient?.[0]?.stockQuantity >
@@ -940,7 +940,7 @@ function IndexGrocary(props) {
                                       </h6>
                                     </div>
                                   </div>
-                                </div>
+                                </Link>
                               </li>
                             );
                           })}

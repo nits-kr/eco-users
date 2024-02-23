@@ -367,8 +367,9 @@ function Shop(props) {
     infinite: true,
     speed: 500,
     slidesToShow: w > 500 ? 6 : 1,
-    // autoplay: true,
+    autoplay: true,
     slidesToScroll: 1,
+    arrows: false,
   };
   const handleViewDetails = () => {
     document?.getElementById("closeModal").click();

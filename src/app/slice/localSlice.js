@@ -10,6 +10,8 @@ export const localSlice = createSlice({
     optionAddIdea: localStorage.getItem("selectoptionforbusinessidea") || null,
     updateRating: localStorage.getItem("userRating") || null,
     varificationEmail: localStorage.getItem("varificationEmail") || null,
+    varificationOtp: localStorage.getItem("varificationOtp") || null,
+    varificationMobile: localStorage.getItem("varificationMobile") || null,
   },
   reducers: {
     setEcomWebToken: (state, action) => {
@@ -37,6 +39,14 @@ export const localSlice = createSlice({
       state.varificationEmail = action.payload;
       localStorage.setItem("varificationEmail", action.payload);
     },
+    setVarificationOtp: (state, action) => {
+      state.varificationOtp = action.payload;
+      localStorage.setItem("varificationOtp", action.payload);
+    },
+    setVarificationMobile: (state, action) => {
+      state.varificationMobile = action.payload;
+      localStorage.setItem("varificationMobile", action.payload);
+    },
   },
 });
 
@@ -47,5 +57,7 @@ export const {
   setOptionchangeAtAddIdea,
   setUpdateRating,
   setVarificationEmail,
+  setVarificationOtp,
+  setVarificationMobile,
 } = localSlice.actions;
 export default localSlice.reducer;

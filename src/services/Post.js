@@ -673,6 +673,16 @@ export const PostApi = createApi({
         };
       },
     }),
+    userSignUpWithPhone: builder.mutation({
+      query: (body) => {
+        console.log("update login data", body);
+        return {
+          url: "user/user/user/signup",
+          method: "post",
+          body,
+        };
+      },
+    }),
     filterPrice: builder.mutation({
       query: (body) => {
         console.log("update login data", body);
@@ -703,11 +713,20 @@ export const PostApi = createApi({
         };
       },
     }),
-    varifyOtp: builder.mutation({
+    // varifyOtp: builder.mutation({
+    //   query: (body) => {
+    //     console.log("update login data", body);
+    //     return {
+    //       url: `user/user/user/verify-otp`,
+    //       method: "post",
+    //       body,
+    //     };
+    //   },
+    // }),
+    varifyOtpLogin: builder.mutation({
       query: (body) => {
-        console.log("update login data", body);
         return {
-          url: `user/user/user/verify-otp`,
+          url: "user/user/user/verify-otp",
           method: "post",
           body,
         };
@@ -784,4 +803,6 @@ export const {
   useUpdateProductRatingMutation,
   useGetTopDiscountProductQuery,
   useGetRecommendedProductQuery,
+  useUserSignUpWithPhoneMutation,
+  useVarifyOtpLoginMutation,
 } = PostApi;

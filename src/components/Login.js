@@ -7,18 +7,28 @@ import Swal from "sweetalert2";
 
 import Header from "./Header";
 import Footer from "./Footer";
-import { useUserLoginMutation } from "../services/Post";
+import {
+  useUserLoginMutation,
+  useUserSignUpWithPhoneMutation,
+} from "../services/Post";
 import { useDispatch } from "react-redux";
-import { setEcomUserId, setEcomWebToken } from "../app/slice/localSlice";
+import {
+  setEcomUserId,
+  setEcomWebToken,
+  setVarificationMobile,
+  setVarificationOtp,
+} from "../app/slice/localSlice";
 import { useForm } from "react-hook-form";
 import classNames from "classnames";
 import { Button } from "rsuite";
 import { Spinner } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 function Login() {
   const [loader, setLoader] = useState(false);
 
-  const [loginData] = useUserLoginMutation();
+  const [loginData] = useUserSignUpWithPhoneMutation();
+  // const [loginData] = useUserLoginMutation();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -34,30 +44,33 @@ function Login() {
     setLoader(true);
     try {
       const response = await loginData({
-        userEmail: data.email,
-        password: data.password,
+        mobileNumber: data.phoneNumber,
+        countryCode: "+91",
       });
       setLoader(false);
       console.log("login response", response);
 
       if (
-        response?.data?.error === false &&
-        response?.data?.message === "login SuccessFully"
+        response?.data?.message === "Signup Successful" ||
+        response?.data?.message === "Login successful"
       ) {
         Swal.fire({
-          title: "Login Successful!",
+          title: "Signup Successful!",
           icon: "success",
-          text: "You have successfully logged in.",
+          text: "You have successfully Sign in.",
           showConfirmButton: false,
           timer: 500,
         }).then((result) => {
-          navigate("/");
+          navigate("/varification");
         });
         console.log("response login", response);
         localStorage.setItem(
           "loginId",
           response.data?.results?.verifyUser?._id
         );
+        toast.success(`Your OTP is: ${response.data?.results?.otp}`);
+        dispatch(setVarificationOtp(response.data?.results?.otp));
+        dispatch(setVarificationMobile(response.data?.results?.mobileNumber));
         dispatch(setEcomUserId(response.data?.results?.verifyUser?._id));
         localStorage.setItem(
           "userName",
@@ -191,7 +204,7 @@ function Login() {
                     className="row g-4"
                     onSubmit={handleSubmit(handleSaveChanges)}
                   >
-                    <div className="col-12">
+                    {/* <div className="col-12">
                       <div className="form-floating theme-form-floating log-in-form">
                         <input
                           type="email"
@@ -200,6 +213,7 @@ function Login() {
                           })}
                           id="email"
                           placeholder="Email Address"
+                          defaultValue="+91"
                           {...register("email", {
                             required: "Email is Required*",
                             pattern: {
@@ -218,8 +232,39 @@ function Login() {
                           Email Address<span className="text-danger">*</span>
                         </label>
                       </div>
-                    </div>
+                    </div> */}
                     <div className="col-12">
+                      <div className="form-floating theme-form-floating">
+                        <input
+                          type="number"
+                          className={classNames("form-control signup_fields ", {
+                            "is-invalid": errors.phoneNumber,
+                          })}
+                          id="mobileNumber"
+                          placeholder="**********"
+                          {...register("phoneNumber", {
+                            required: "Mobile Number is Required*",
+                            maxLength: {
+                              value: 10,
+                              message: "maximium 10 Charcarters",
+                            },
+                            minLength: {
+                              value: 10,
+                              message: "minimium 10 Charcarters",
+                            },
+                          })}
+                        />
+                        {errors.phoneNumber && (
+                          <small className="errorText mx-1 fw-bold text-danger">
+                            {errors.phoneNumber?.message}
+                          </small>
+                        )}
+                        <label htmlFor="email">
+                          Mobile Number<span className="text-danger">*</span>
+                        </label>
+                      </div>
+                    </div>
+                    {/* <div className="col-12">
                       <div className="form-floating theme-form-floating log-in-form">
                         <input
                           type="password"
@@ -252,7 +297,7 @@ function Login() {
                           Password<span className="text-danger">*</span>
                         </label>
                       </div>
-                    </div>
+                    </div> */}
                     <div className="col-12">
                       <div className="forgot-box">
                         <div className="form-check ps-0 m-0 remember-box">

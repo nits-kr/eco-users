@@ -9,22 +9,37 @@ import Footer from "./Footer";
 import TapToTop from "./TapToTop";
 import MobileFixMenu from "./MobileFixMenu";
 import BreadCrumb from "./BreadCrumb";
-import { useSendEmailMutation, useVarifyOtpMutation } from "../services/Post";
-import { useSelector } from "react-redux";
+import {
+  useSendEmailMutation,
+  useUserSignUpWithPhoneMutation,
+  useVarifyOtpLoginMutation,
+  // useVarifyOtpMutation,
+} from "../services/Post";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { setEcomWebToken, setVarificationOtp } from "../app/slice/localSlice";
 
 function Varification() {
   const varificationEmail = useSelector(
     (data) => data?.local?.varificationEmail
   );
+  const varificationOtp = useSelector((data) => data?.local?.varificationOtp);
+  const varificationMobile = useSelector(
+    (data) => data?.local?.varificationMobile
+  );
+
+  const [loginData] = useUserSignUpWithPhoneMutation();
+
   const [sendMailData] = useSendEmailMutation();
-  const [otp, setOtp] = useState(["", "", "", ""]);
-  const refs = [useRef(), useRef(), useRef(), useRef()];
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const refs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
   const [email, setEmail] = useState("");
-  const [otpVarify, { isLoading, isSuccess, isError }] = useVarifyOtpMutation();
+  const [otpVarify] = useVarifyOtpLoginMutation();
+  // const [otpVarify] = useVarifyOtpMutation();
   const [counter, setCounter] = useState(60);
   const [intervalId, setIntervalId] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
@@ -38,7 +53,7 @@ function Varification() {
       return newOtp;
     });
 
-    if (value.length === 1 && index < 3) {
+    if (value.length === 1 && index < 5) {
       refs[index + 1].current.focus();
     }
     // if (value.length === 1 && index === 3) {
@@ -52,16 +67,27 @@ function Varification() {
     e.preventDefault();
     const otpString = otp.join("");
     const newAddress = {
+      countryCode: "+91",
       otp: otpString,
-      userEmail: varificationEmail,
+      mobileNumber: varificationMobile,
     };
+
+    // if (varificationOtp !== otpString) {
+    //   Swal.fire({
+    //     title: "Invalid OTP",
+    //     icon: "error",
+    //     text: "The OTP entered is invalid.",
+    //   });
+    //   return;
+    // }
 
     try {
       const res = await otpVarify(newAddress);
       console.log("varification res", res);
-      if (res?.data?.message === "Verify Otp Successfully") {
+      if (res?.data?.message === "OTP Verified") {
+        dispatch(setEcomWebToken(res?.data?.results?.token));
         toast.success("OTP Varified Successfully");
-        navigate("/reset-password");
+        navigate("/");
       } else if (res?.error?.data?.message === "InValid Otp") {
         toast.error("Invalid OTP Entered");
       }
@@ -71,26 +97,23 @@ function Varification() {
   };
 
   const resendOtp = async (e) => {
-    setOtp(["", "", "", ""]);
+    setOtp(["", "", "", "", "", ""]);
     setCounter(60);
     e.preventDefault();
     const data = {
-      userEmail: varificationEmail,
+      mobileNumber: varificationMobile,
+      countryCode: "+91",
     };
     try {
-      const res = await sendMailData(data);
-      if (res?.data?.message === "Mail Send Successfully") {
-        Swal.fire({
-          title: "OTP Sent Successfully!",
-          icon: "success",
-          text: "The OTP has been sent in your Email successfully.",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            // navigate("/varification");
-          }
-        });
-      } else if (res?.data?.message === " userEmail are incorrect") {
-        toast.error("Email are incorrect");
+      const response = await loginData(data);
+      if (
+        response?.data?.message === "Signup Successful" ||
+        response?.data?.message === "Login successful"
+      ) {
+        toast.success(`Your OTP is: ${response.data?.results?.otp}`);
+        dispatch(setVarificationOtp(response.data?.results?.otp));
+      } else {
+        toast.error("Something went wrong");
       }
     } catch (error) {
       console.log(error);
