@@ -11,7 +11,7 @@ function Topbanner({ bannerList }) {
               <div className="home-contain h-100">
                 <div className="h-100 blur-up lazyloaded">
                   {bannerList?.topBanner?.slice(0, 1)?.map((item, index) => (
-                    <Link to={`/Banner-list/${item.subCategory_Id._id}`}>
+                    <Link to={`/Banner-list/${item?.subCategory_Id?._id}`}>
                       <div
                         key={index}
                         style={{
@@ -54,7 +54,7 @@ function Topbanner({ bannerList }) {
                 {bannerList?.topBanner?.slice(1, 3)?.map((item, index) => {
                   return (
                     <div className="col-xl-12 col-md-6" key={index}>
-                      <Link to={`/Banner-list/${item.subCategory_Id._id}`}>
+                      <Link to={`/Banner-list/${item?.subCategory_Id?._id}`}>
                         <div
                           className="home-contain bg-size blur-up lazyloaded hover-effect"
                           style={{

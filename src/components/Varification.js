@@ -17,12 +17,15 @@ import {
 } from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { setEcomWebToken, setVarificationOtp } from "../app/slice/localSlice";
+import {
+  setEcomWebToken,
+  setProfileCompleted,
+  setVarificationOtp,
+} from "../app/slice/localSlice";
 
 function Varification() {
-  const varificationEmail = useSelector(
-    (data) => data?.local?.varificationEmail
-  );
+  const profileCompleted = useSelector((data) => data?.local?.profileCompleted);
+  const varificationToken = useSelector((data) => data?.local?.ecomWebtoken);
   const varificationOtp = useSelector((data) => data?.local?.varificationOtp);
   const varificationMobile = useSelector(
     (data) => data?.local?.varificationMobile
@@ -40,6 +43,14 @@ function Varification() {
   const [intervalId, setIntervalId] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  console.log("profileCompleted", profileCompleted);
+
+  useEffect(() => {
+    if (profileCompleted === false) {
+      navigate("/update-profile");
+    }
+  }, [profileCompleted]);
 
   useEffect(() => {
     counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
@@ -72,22 +83,27 @@ function Varification() {
       mobileNumber: varificationMobile,
     };
 
-    // if (varificationOtp !== otpString) {
-    //   Swal.fire({
-    //     title: "Invalid OTP",
-    //     icon: "error",
-    //     text: "The OTP entered is invalid.",
-    //   });
-    //   return;
-    // }
-
     try {
       const res = await otpVarify(newAddress);
       console.log("varification res", res);
       if (res?.data?.message === "OTP Verified") {
         dispatch(setEcomWebToken(res?.data?.results?.token));
-        toast.success("OTP Varified Successfully");
-        navigate("/");
+        dispatch(setProfileCompleted(res?.data?.results?.profileComleted));
+        // toast.success("OTP Varified Successfully");
+        Swal.fire({
+          title: "OTP Varified!",
+          icon: "success",
+          text: "OTP Varified Successfully.",
+          showConfirmButton: false,
+          timer: 500,
+          timerProgressBar: true,
+        }).then((result) => {
+          if (res?.data?.results?.profileComleted === true) {
+            navigate("/");
+          } else {
+            navigate("/update-profile");
+          }
+        });
       } else if (res?.error?.data?.message === "InValid Otp") {
         toast.error("Invalid OTP Entered");
       }

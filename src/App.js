@@ -48,6 +48,7 @@ import CheckOutNew from "./components/CheckOutNew";
 import BannerShop from "./components/BannerShop";
 import Products from "./components/productDetailspage/Products";
 import TrendingProductHome from "./components/productDetailspage/TrendingProductHome";
+import UpdateProfilessection from "./components/profiles/UpdateProfilessection";
 
 function App() {
   const [progress, setProgress] = useState(0);
@@ -292,6 +293,13 @@ function App() {
             path="/mobile-fix"
             element={<MobileFixMenu />}
           />
+          <Route
+            exact
+            className="active"
+            path="/update-profile"
+            element={<UpdateProfilessection />}
+          />
+
           <Route
             exact
             className="active"

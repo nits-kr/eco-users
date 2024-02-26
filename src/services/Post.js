@@ -105,8 +105,8 @@ export const PostApi = createApi({
     }),
     getTrendingProduct: builder.query({
       query: (name) => ({
-        url: `user/product/product/tranding-product`,
-        method: "post",
+        url: `user/product/product/trending-product`,
+        method: "PATCH",
       }),
     }),
     getRelatedProduct: builder.query({
@@ -358,6 +358,16 @@ export const PostApi = createApi({
         url: `user/user/user/edit-profile/${ecomUserId}`,
         method: "POST",
         body: formData,
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
+      }),
+    }),
+    updateProfilelogin: builder.mutation({
+      query: ({ formdataall, ecommercetoken }) => ({
+        url: "user/user/user/edit-profile",
+        method: "put",
+        body: formdataall,
         headers: {
           "x-auth-token-user": ecommercetoken,
         },
@@ -727,7 +737,7 @@ export const PostApi = createApi({
       query: (body) => {
         return {
           url: "user/user/user/verify-otp",
-          method: "post",
+          method: "PATCH",
           body,
         };
       },
@@ -805,4 +815,5 @@ export const {
   useGetRecommendedProductQuery,
   useUserSignUpWithPhoneMutation,
   useVarifyOtpLoginMutation,
+  useUpdateProfileloginMutation,
 } = PostApi;
