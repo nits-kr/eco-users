@@ -167,7 +167,7 @@ function TrendingProductHome(props) {
   var w = window.innerWidth;
 
   const settings1 = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 4,
@@ -191,11 +191,7 @@ function TrendingProductHome(props) {
         (cartItem) => cartItem?.product_Id?._id === item?._id
       );
 
-      const totalPrice =
-        (item?.productDetails?.[0]?.addVarient?.[0]?.Price || 0) *
-        (count[index] || 1);
-      const imageUrl =
-        item?.productDetails?.[0]?.addVarient?.[0]?.product_Pic[0];
+      const imageUrl = item?.varient?.product_Pic[0];
 
       return (
         <div key={index}>
@@ -206,7 +202,11 @@ function TrendingProductHome(props) {
             <div className="product-header">
               <div className="product-image">
                 <Link to={`/product-details-page/${item?._id}`}>
-                  <img src={imageUrl} className="img-fluid  lazyload" alt="" />
+                  <img
+                    src={imageUrl}
+                    className="img-fluid  lazyload mb-2"
+                    alt=""
+                  />
                 </Link>
                 <ul className="product-option">
                   <li
@@ -221,7 +221,6 @@ function TrendingProductHome(props) {
                       to={`/product-details-page/${item?._id}`}
                       onClick={() => {
                         handleViewClick(item);
-                        window.scrollTo(0, 0);
                       }}
                     >
                       <FontAwesomeIcon icon={faEye} />
@@ -288,23 +287,21 @@ function TrendingProductHome(props) {
               <div className="product-detail">
                 <Link to="/product">
                   <h5 className="name">
-                    {item?.productDetails?.[0]?.productName_en}
+                    {item?.productName_en?.slice(0, 20) +
+                      (item?.productName_en.length > 20 ? "..." : "")}
                   </h5>
                 </Link>
-                <p className="text-content mt-1 mb-2 product-content">
+                {/* <p className="text-content mt-1 mb-2 product-content">
                   Cheesy feet cheesy grin brie. Mascarpone cheese and wine hard
                   cheese the big cheese everyone loves smelly cheese macaroni
                   cheese croque monsieur.
-                </p>
+                </p> */}
                 <div className="product-rating mt-2">
                   <Star
                     rating={averageRating || 0}
                     totalRating={item.totalRating}
                   />
-                  <span>
-                    {" "}
-                    {item?.productDetails?.[0]?.ratings?.length} reviews{" "}
-                  </span>
+                  <span> {item?.ratings?.length} reviews </span>
                 </div>
                 <div
                   style={{
@@ -318,22 +315,14 @@ function TrendingProductHome(props) {
                       className="unit"
                       style={{ margin: "0px", fontSize: "15px" }}
                     >
-                      {item?.productDetails?.[0]?.addVarient?.[0]
-                        ?.stockQuantity > 0 ? (
-                        item?.productDetails?.[0]?.addVarient?.[0]
-                          ?.stockQuantity <= 5 ? (
+                      {item?.varient?.stockQuantity > 0 ? (
+                        item?.varient?.stockQuantity <= 5 ? (
                           <span style={{ color: "rgb(199, 0, 85)" }}>
                             Only few left
                           </span>
-                        ) : item?.productDetails?.[0]?.addVarient?.[0]
-                            ?.stockQuantity <= 10 ? (
+                        ) : item?.varient?.stockQuantity <= 10 ? (
                           <span style={{ color: "rgb(199, 0, 85)" }}>
-                            Only{" "}
-                            {
-                              item?.productDetails?.[0]?.addVarient?.[0]
-                                ?.stockQuantity
-                            }{" "}
-                            left
+                            Only {item?.varient?.stockQuantity} left
                           </span>
                         ) : (
                           <span style={{ color: "green" }}>In Stock</span>
@@ -343,8 +332,7 @@ function TrendingProductHome(props) {
                       )}
                     </h6>
                   </div>
-                  {item?.productDetails?.[0]?.addVarient?.[0]?.stockQuantity <=
-                  0 ? (
+                  {item?.varient?.stockQuantity <= 0 ? (
                     <div className=" mt-3">
                       <div className="cart_qty qty-box product-qty">
                         <div
@@ -418,10 +406,8 @@ function TrendingProductHome(props) {
                   )}
                 </div>
                 <h5 className="price">
-                  <span className="theme-color">${totalPrice}</span>{" "}
-                  <del>
-                    ${item?.productDetails?.[0]?.addVarient?.[0]?.oldPrice}{" "}
-                  </del>
+                  <span className="theme-color">${item?.varient?.Price}</span>{" "}
+                  <del>${item?.varient?.oldPrice} </del>
                 </h5>
 
                 {isItemInCart ? (
@@ -446,10 +432,9 @@ function TrendingProductHome(props) {
                           handleAddToCart(
                             e,
                             item,
-                            item?.productDetails?.[0]?.addVarient?.[0]?.Price,
+                            item?.varient?.Price,
                             index,
-                            item?.productDetails?.[0]?.addVarient?.[0]
-                              ?.varient_Id[0]
+                            item?.varient?._id
                           )
                         }
                       >

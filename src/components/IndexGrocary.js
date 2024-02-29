@@ -39,6 +39,8 @@ import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import TopDiscountProduct from "./indexgrocary/TopDiscountProduct";
 import RecommendedProduct from "./indexgrocary/RecommendedProduct";
+import Sidebanner from "./indexgrocary/Sidebanner";
+import ScrollBanner from "./indexgrocary/ScrollBanner";
 function IndexGrocary(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
@@ -198,16 +200,16 @@ function IndexGrocary(props) {
         like: true,
       };
 
-      const { data, error } = await wishAdd(editAddress);
-      if (error) {
-        console.log(error);
-        return;
+      const res = await wishAdd({ ecommercetoken, ecomUserId: item?._id });
+      if (res) {
+        navigate("/wishlist");
       }
-      const newCreateWishItems = [...CreateWishItems, data];
-      setCreateWishItems(newCreateWishItems);
-      setTimeout(() => {
-        window?.location?.reload();
-      }, 500);
+
+      // const newCreateWishItems = [...CreateWishItems, data];
+      // setCreateWishItems(newCreateWishItems);
+      // setTimeout(() => {
+      //   window?.location?.reload();
+      // }, 500);
     } catch (error) {
       console.log(error);
     }
@@ -289,10 +291,10 @@ function IndexGrocary(props) {
     arrows: false,
   };
   const settings1 = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: 4,
     slidesToScroll: 1,
     autoplay: true,
     arrows: false,
@@ -359,8 +361,7 @@ function IndexGrocary(props) {
       const totalPrice =
         (item?.productDetails?.[0]?.addVarient?.[0]?.Price || 0) *
         (count[index] || 1);
-      const imageUrl =
-        item?.productDetails?.[0]?.addVarient?.[0]?.product_Pic[0];
+      const imageUrl = item?.varient?.product_Pic?.[0];
 
       return (
         <div key={index}>
@@ -368,7 +369,11 @@ function IndexGrocary(props) {
             <div className="product-header">
               <div className="product-image">
                 <Link to={`/product-details-page/${item?._id}`}>
-                  <img src={imageUrl} className="img-fluid  lazyload" alt="" />
+                  <img
+                    src={imageUrl}
+                    className="img-fluid  lazyload mb-2"
+                    alt=""
+                  />
                 </Link>
                 <ul className="product-option">
                   <li
@@ -397,10 +402,10 @@ function IndexGrocary(props) {
                     </Link>
                   </li>
                   <li data-bs-toggle="tooltip" data-bs-placement="top">
-                    {item?.productDetails?.[0]?.like === "false" ? (
-                      <Link
+                    {item?.like !== "false" ? (
+                      <button
                         className="btn p-0 position-relative header-wishlist me-2"
-                        to="/wishlist"
+                        // to="/wishlist"
                         title3="Wishlist"
                         onClick={() => handleWishClick(item)}
                       >
@@ -419,7 +424,7 @@ function IndexGrocary(props) {
                             e.currentTarget.style.color = "black";
                           }}
                         />
-                      </Link>
+                      </button>
                     ) : (
                       <Link
                         className="btn p-0 position-relative header-wishlist me-2"
@@ -447,14 +452,15 @@ function IndexGrocary(props) {
               <div className="product-detail">
                 <Link to="/product">
                   <h5 className="name">
-                    {item?.productDetails?.[0]?.productName_en}
+                    {item?.productName_en?.slice(0, 20) +
+                      (item?.productName_en.length > 20 ? "..." : "")}
                   </h5>
                 </Link>
-                <p className="text-content mt-1 mb-2 product-content">
+                {/* <p className="text-content mt-1 mb-2 product-content">
                   Cheesy feet cheesy grin brie. Mascarpone cheese and wine hard
                   cheese the big cheese everyone loves smelly cheese macaroni
                   cheese croque monsieur.
-                </p>
+                </p> */}
                 <div className="product-rating mt-2">
                   <Star
                     rating={averageRating || 0}
@@ -477,22 +483,14 @@ function IndexGrocary(props) {
                       className="unit"
                       style={{ margin: "0px", fontSize: "15px" }}
                     >
-                      {item?.productDetails?.[0]?.addVarient?.[0]
-                        ?.stockQuantity > 0 ? (
-                        item?.productDetails?.[0]?.addVarient?.[0]
-                          ?.stockQuantity <= 5 ? (
+                      {item?.varient?.stockQuantity > 0 ? (
+                        item?.varient?.stockQuantity <= 5 ? (
                           <span style={{ color: "rgb(199, 0, 85)" }}>
                             Only few left
                           </span>
-                        ) : item?.productDetails?.[0]?.addVarient?.[0]
-                            ?.stockQuantity <= 10 ? (
+                        ) : item?.varient?.stockQuantity <= 10 ? (
                           <span style={{ color: "rgb(199, 0, 85)" }}>
-                            Only{" "}
-                            {
-                              item?.productDetails?.[0]?.addVarient?.[0]
-                                ?.stockQuantity
-                            }{" "}
-                            left
+                            Only {item?.varient?.stockQuantity} left
                           </span>
                         ) : (
                           <span style={{ color: "green" }}>In Stock</span>
@@ -502,8 +500,7 @@ function IndexGrocary(props) {
                       )}
                     </h6>
                   </div>
-                  {item?.productDetails?.[0]?.addVarient?.[0]?.stockQuantity <=
-                  0 ? (
+                  {item?.varient?.stockQuantity <= 0 ? (
                     <div className=" mt-3">
                       <div className="cart_qty qty-box product-qty">
                         <div
@@ -568,11 +565,8 @@ function IndexGrocary(props) {
                               handleCountChange(index, count[index] + 1)
                             }
                             disabled={
-                              count[index] ===
-                                item?.productDetails?.[0]?.addVarient?.[0]
-                                  ?.stockQuantity ||
-                              item?.productDetails?.[0]?.addVarient?.[0]
-                                ?.stockQuantity <= 0
+                              count[index] === item?.varient?.stockQuantity ||
+                              item?.varient?.stockQuantity <= 0
                             }
                           >
                             <i className="fa fa-plus" aria-hidden="true" />
@@ -583,10 +577,8 @@ function IndexGrocary(props) {
                   )}
                 </div>
                 <h5 className="price">
-                  <span className="theme-color">${totalPrice}</span>{" "}
-                  <del>
-                    ${item?.productDetails?.[0]?.addVarient?.[0]?.oldPrice}{" "}
-                  </del>
+                  <span className="theme-color">${item?.varient?.Price}</span>{" "}
+                  <del>${item?.varient?.oldPrice} </del>
                 </h5>
 
                 {isItemInCart ? (
@@ -611,10 +603,9 @@ function IndexGrocary(props) {
                           handleAddToCart(
                             e,
                             item,
-                            item?.productDetails?.[0]?.addVarient?.[0]?.Price,
+                            item?.varient?.Price,
                             index,
-                            item?.productDetails?.[0]?.addVarient?.[0]
-                              ?.varient_Id[0]
+                            item?.varient?._id
                           )
                         }
                       >
@@ -679,40 +670,7 @@ function IndexGrocary(props) {
 
       {/* Home Section End */}
       {/* Banner Section Start */}
-      <section className="banner-section ratio_60 wow fadeInUp">
-        <div className="container-fluid-lg">
-          <div className="banner-slider ">
-            <Slider {...settings}>
-              {bannerList?.scrollBanner?.map((item, index) => {
-                return (
-                  <div className="banner-contain hover-effect " key={index}>
-                    <Link to={`/Banner-list/${item?.subCategory_Id?._id}`}>
-                      <img
-                        src={item?.scrollBanner[0]}
-                        className="bg-img  lazyload"
-                        alt=""
-                        style={{ width: "455px", height: "250px" }}
-                      />
-                      <div className="banner-details">
-                        <div className="banner-box">
-                          <h6 className="text-danger">5% OFF</h6>
-                          <h5>Hot Deals on New Items</h5>
-                          <h6 className="text-content">
-                            Daily Essentials Eggs &amp; Dairy
-                          </h6>
-                        </div>
-                        <Link to="/shop" className="banner-button text-white">
-                          Shop Now <i className="fa-solid fa-right-long ms-2" />
-                        </Link>
-                      </div>
-                    </Link>
-                  </div>
-                );
-              })}
-            </Slider>
-          </div>
-        </div>
-      </section>
+      <ScrollBanner />
       {/* Banner Section End */}
       {/* Product Section Start */}
       <section className="product-section">
@@ -803,49 +761,7 @@ function IndexGrocary(props) {
                     </Link>
                   </div>
                 </div>
-                <div className="ratio_medium section-t-space">
-                  <Link to="/shop">
-                    <div className="home-contain hover-effect">
-                      {/* <img
-                      src="../../assets/images/vegetable/banner/11.jpg"
-                      className="img-fluid  lazyload"
-                      alt=""
-                    /> */}
-                      {bannerList?.sideBanner?.[1]?.sideBanner?.[0] && (
-                        <img
-                          src={bannerList.sideBanner[1].sideBanner[0]}
-                          className="bg-img lazyload w-100"
-                          alt=""
-                          style={{ height: "455px" }}
-                        />
-                      )}
-
-                      <div className="home-detail p-top-left home-p-medium">
-                        <div>
-                          <h4 className="text-yellow text-exo home-banner">
-                            Organic
-                          </h4>
-                          <h2 className="text-uppercase fw-normal mb-0 text-russo theme-color">
-                            fresh
-                          </h2>
-                          <h2 className="text-uppercase fw-normal text-title">
-                            Vegetables
-                          </h2>
-                          <p className="mb-3">Super Offer to 50% Off</p>
-                          <button
-                            onClick={() => {
-                              window.location.href = "/shop";
-                            }}
-                            className="btn btn-animation btn-md mend-auto"
-                          >
-                            Shop Now{" "}
-                            <i className="fa-solid fa-arrow-right icon" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
+                <Sidebanner />
                 <div className="section-t-space">
                   {loading ? (
                     <Spinners2 />
@@ -859,10 +775,8 @@ function IndexGrocary(props) {
                       >
                         <h3>Trending Products</h3>
                         <ul className="product-list border-0 p-0 d-block">
-                          {trendingList.map((item, index) => {
-                            const imageUrl =
-                              item?.productDetails?.[0]?.addVarient?.[0]
-                                ?.product_Pic[0];
+                          {trendingList?.slice(0, 10)?.map((item, index) => {
+                            const imageUrl = item?.varient?.product_Pic[0];
                             return (
                               <li key={index}>
                                 <Link
@@ -880,19 +794,12 @@ function IndexGrocary(props) {
                                     <div>
                                       <div className="text-title">
                                         <h6 className="name">
-                                          {
-                                            item?.productDetails?.[0]
-                                              ?.productName_en
-                                          }
+                                          {item?.varient?.productName_en}
                                         </h6>
                                       </div>
                                       <span>
-                                        {item?.productDetails?.[0]
-                                          ?.addVarient?.[0]?.stockQuantity >
-                                        0 ? (
-                                          item?.productDetails?.[0]
-                                            ?.addVarient?.[0]?.stockQuantity <=
-                                          5 ? (
+                                        {item?.varient?.stockQuantity > 0 ? (
+                                          item?.varient?.stockQuantity <= 5 ? (
                                             <span
                                               style={{
                                                 color: "rgb(199, 0, 85)",
@@ -900,20 +807,15 @@ function IndexGrocary(props) {
                                             >
                                               Only few left
                                             </span>
-                                          ) : item?.productDetails?.[0]
-                                              ?.addVarient?.[0]
-                                              ?.stockQuantity <= 10 ? (
+                                          ) : item?.varient?.stockQuantity <=
+                                            10 ? (
                                             <span
                                               style={{
                                                 color: "rgb(199, 0, 85)",
                                               }}
                                             >
                                               Only{" "}
-                                              {
-                                                item?.productDetails?.[0]
-                                                  ?.addVarient?.[0]
-                                                  ?.stockQuantity
-                                              }{" "}
+                                              {item?.varient?.stockQuantity}{" "}
                                               left
                                             </span>
                                           ) : (
@@ -933,10 +835,7 @@ function IndexGrocary(props) {
                                         {/* left{" "} */}
                                       </span>
                                       <h6 className="price theme-color">
-                                        $
-                                        {item?.productDetails?.[0]?.addVarient?.[0]?.Price?.toFixed(
-                                          2
-                                        )}{" "}
+                                        ${item?.varient?.Price?.toFixed(2)}{" "}
                                       </h6>
                                     </div>
                                   </div>

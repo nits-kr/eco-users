@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useGetBannerListQuery } from "../../services/Post";
 
-function Topbanner({ bannerList }) {
+function Topbanner() {
+  const [bannerList, setBannerList] = useState([]);
+
+  const { data: categoryBanner } = useGetBannerListQuery({
+    area: "Top Banner",
+  });
+  useEffect(() => {
+    if (categoryBanner) {
+      setBannerList(categoryBanner?.results?.banners);
+    }
+  }, [categoryBanner]);
+
+  const filteredBanners = bannerList?.banners?.filter(
+    (banner) => banner.area === "Top Banner"
+  );
+
   return (
     <>
       <section className="home-section pt-2">
@@ -10,12 +26,12 @@ function Topbanner({ bannerList }) {
             <div className="col-xl-8 ratio_65">
               <div className="home-contain h-100">
                 <div className="h-100 blur-up lazyloaded">
-                  {bannerList?.topBanner?.slice(0, 1)?.map((item, index) => (
+                  {bannerList?.slice(0, 1)?.map((item, index) => (
                     <Link to={`/Banner-list/${item?.subCategory_Id?._id}`}>
                       <div
                         key={index}
                         style={{
-                          backgroundImage: `url(${item?.categoryBanner[0]})`,
+                          backgroundImage: `url(${item?.image})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center center",
                           backgroundRepeat: "no-repeat",
@@ -25,7 +41,7 @@ function Topbanner({ bannerList }) {
                         className="hover-effect"
                       >
                         <img
-                          src={item.categoryBanner[0]}
+                          src={item.image}
                           className="bg-img lazyloaded"
                           alt=""
                           style={{ height: "555px" }}
@@ -51,14 +67,14 @@ function Topbanner({ bannerList }) {
             </div>
             <div className="col-xl-4 ratio_65">
               <div className="row g-4">
-                {bannerList?.topBanner?.slice(1, 3)?.map((item, index) => {
+                {bannerList?.slice(1, 3)?.map((item, index) => {
                   return (
                     <div className="col-xl-12 col-md-6" key={index}>
                       <Link to={`/Banner-list/${item?.subCategory_Id?._id}`}>
                         <div
                           className="home-contain bg-size blur-up lazyloaded hover-effect"
                           style={{
-                            backgroundImage: `url(${item?.categoryBanner[0]})`,
+                            backgroundImage: `url(${item?.image})`,
                             backgroundSize: "cover",
                             backgroundPosition: "center center",
                             backgroundRepeat: "no-repeat",
@@ -66,7 +82,7 @@ function Topbanner({ bannerList }) {
                           }}
                         >
                           <img
-                            src={item?.categoryBanner[0]}
+                            src={item?.image}
                             className="bg-img hover-effect lazyloaded"
                             alt=""
                             style={{ display: "none" }}

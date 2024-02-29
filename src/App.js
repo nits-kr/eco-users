@@ -31,7 +31,7 @@ import Forgot from "./components/Forgot";
 import IndexGrocary from "./components/IndexGrocary";
 import Compare from "./components/Compare";
 import ComingSoon from "./components/ComingSoon";
-import CheckOut from "./components/CheckOut";
+// import CheckOut from "./components/CheckOut";
 import Blog from "./components/Blog";
 import Cart from "./components/Cart";
 import BlogDetails from "./components/BlogDetails";
@@ -88,12 +88,7 @@ function App() {
             element={<Blog setProgress={setProgress} />}
           />
           <Route exact className="active" path="/cart" element={<Cart />} />
-          <Route
-            exact
-            className="active"
-            path="/check-out/:coupan2"
-            element={<CheckOut />}
-          />
+
           <Route
             exact
             className="active"

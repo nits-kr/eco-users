@@ -18,6 +18,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
+  setEcomUserId,
   setEcomWebToken,
   setProfileCompleted,
   setVarificationOtp,
@@ -89,6 +90,7 @@ function Varification() {
       if (res?.data?.message === "OTP Verified") {
         dispatch(setEcomWebToken(res?.data?.results?.token));
         dispatch(setProfileCompleted(res?.data?.results?.profileComleted));
+        dispatch(setEcomUserId(res.data?.results?.user?._id));
         // toast.success("OTP Varified Successfully");
         Swal.fire({
           title: "OTP Varified!",

@@ -13,6 +13,7 @@ export const localSlice = createSlice({
     varificationOtp: localStorage.getItem("varificationOtp") || null,
     varificationMobile: localStorage.getItem("varificationMobile") || null,
     profileCompleted: localStorage.getItem("profileComleted") || null,
+    payType: localStorage.getItem("payType") || null,
   },
   reducers: {
     setEcomWebToken: (state, action) => {
@@ -52,6 +53,10 @@ export const localSlice = createSlice({
       state.profileCompleted = action.payload;
       localStorage.setItem("profileComleted", action.payload);
     },
+    setPayType: (state, action) => {
+      state.payType = action.payload;
+      localStorage.setItem("payType", action.payload);
+    },
   },
 });
 
@@ -65,5 +70,6 @@ export const {
   setVarificationOtp,
   setVarificationMobile,
   setProfileCompleted,
+  setPayType,
 } = localSlice.actions;
 export default localSlice.reducer;

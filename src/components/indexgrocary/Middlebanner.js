@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useGetBannerListQuery } from "../../services/Post";
 
-function Middlebanner({ bannerList }) {
+function Middlebanner() {
+  const [bannerList, setBannerList] = useState([]);
+
+  const { data: categoryBanner } = useGetBannerListQuery({
+    area: "Middle Banner",
+  });
+  useEffect(() => {
+    if (categoryBanner) {
+      setBannerList(categoryBanner?.results?.banners);
+    }
+  }, [categoryBanner]);
+
+  console.log("middle banner", bannerList);
   return (
     <>
       <div className="section-t-space section-b-space">
@@ -12,7 +25,7 @@ function Middlebanner({ bannerList }) {
               to={`/Banner-list/${bannerList?.middleBanner?.[2]?.subCategory_Id?._id}`}
               className="banner-contain hover-effect"
               style={{
-                backgroundImage: `url(${bannerList?.middleBanner?.[2]?.middleBanner?.[0]})`,
+                backgroundImage: `url(${bannerList[0]?.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center center",
                 backgroundRepeat: "no-repeat",
@@ -48,7 +61,7 @@ function Middlebanner({ bannerList }) {
               to={`/Banner-list/${bannerList?.middleBanner?.[3]?.subCategory_Id?._id}`}
               className="banner-contain hover-effect h-100"
               style={{
-                backgroundImage: `url(${bannerList?.middleBanner?.[3]?.middleBanner?.[0]})`,
+                backgroundImage: `url(${bannerList[1]?.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center center",
                 backgroundRepeat: "no-repeat",

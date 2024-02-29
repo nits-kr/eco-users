@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 function CheckOutNew() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const payType = useSelector((data) => data?.local?.payType);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [addressList] = useGetAddressListMutation();
   const [OrderSummarys] = useGetCartListSummeryMutation();
@@ -114,7 +115,6 @@ function CheckOutNew() {
 
   const placeOrder = async () => {
     if (newAddress?.length > 0 && !selectedAddressId) {
-      // Show Swal for selecting the address
       Swal.fire({
         title: "Select Address",
         text: "Please select an address before placing the order.",
@@ -124,7 +124,6 @@ function CheckOutNew() {
         confirmButtonText: "Ok",
       }).then((result) => {
         if (result.isConfirmed) {
-          // Add logic to handle address selection
         }
       });
       return;
@@ -163,78 +162,17 @@ function CheckOutNew() {
       return;
     }
 
-    // let orderList = [];
-
-    // if (items) {
-    //   orderList.push({
-    //     product_Id: items.product_Id?._id,
-    //     quantity: items?.quantity,
-    //     varient_Id: items?.varient?._id,
-    //     Price: items?.Price,
-    //   });
-    // } else if (items2.length !== 0) {
-    //   orderList = items2.map((product) => ({
-    //     product_Id: product?.product_Id?._id,
-    //     quantity: product?.quantity,
-    //     varient_Id: product?.varient?._id,
-    //     Price: product?.Price,
-    //   }));
-    // } else {
-    //   orderItemSummary?.map((order) => ({
-    //     product_Id: order.product_Id._id,
-    //     quantity: order.quantity,
-    //     cartsTotal: orderItemSummaryPrice?.cartsTotalSum,
-    //     varient_Id: order?.addVarient[0]?._id,
-    //     Price: order?.Price,
-    //   })) || [];
-    // }
-
-    let orderList = [];
-
-    if (items) {
-      orderList.push({
-        product_Id: items.product_Id?._id,
-        quantity: items?.quantity,
-        varient_Id: items?.varient?._id,
-        Price: items?.Price,
-      });
-    } else if (items2.length !== 0) {
-      orderList = items2.map((product) => ({
-        product_Id: product?.product_Id?._id,
-        quantity: product?.quantity,
-        varient_Id: product?.varient?._id,
-        Price: product?.Price,
-      }));
-    } else {
-      orderList =
-        orderItemSummary?.map((order) => ({
-          product_Id: order.product?._id,
-          quantity: order.quantity,
-          cartsTotal: orderItemSummaryPrice?.cartsTotalSum,
-          varient_Id: order?.varient?._id,
-          Price: order?.Price,
-        })) || [];
-    }
-
-    const cartsTotal = coupanresponse
-      ? items
-        ? (
-            items?.varient?.Price *
-            items?.quantity *
-            (1 - coupanresponse / 100)
-          )?.toFixed(2)
-        : totalSubtotal * (1 - coupanresponse / 100)?.toFixed(2)
-      : items
-      ? items?.varient?.Price * items?.quantity
-      : totalSubtotal;
-
+    // const newOrderData = {
+    //   couponId: "65d738fecfe99d44a6e8c751",
+    //   paymentIntent: "COD",
+    //   address_Id: selectedAddressId,
+    //   type: payType ? "Single" : "All",
+    // };
     const newOrderData = {
-      carts: orderList,
-      user_Id: userId,
-      address_Id: selectedAddressId,
-      cartsTotal: cartsTotal,
-      shippingPrice: "30",
-      taxPrice: "20",
+      // ...(coupanId && { couponId: "65d738fecfe99d44a6e8c751" }),
+      paymentIntent: "COD",
+      ...(selectedAddressId && { address_Id: selectedAddressId }),
+      type: payType === "Single" ? "Single" : "All",
       ecommercetoken: ecommercetoken,
     };
 
@@ -276,6 +214,144 @@ function CheckOutNew() {
       }
     }
   };
+  // const placeOrder = async () => {
+  //   if (newAddress?.length > 0 && !selectedAddressId) {
+  //     // Show Swal for selecting the address
+  //     Swal.fire({
+  //       title: "Select Address",
+  //       text: "Please select an address before placing the order.",
+  //       icon: "warning",
+  //       showCancelButton: false,
+  //       confirmButtonColor: "#0da487",
+  //       confirmButtonText: "Ok",
+  //     }).then((result) => {
+  //       if (result.isConfirmed) {
+  //         // Add logic to handle address selection
+  //       }
+  //     });
+  //     return;
+  //   }
+
+  //   // if (!selectedAddressId) {
+  //   //   // Show Swal for updating the address
+  //   //   Swal.fire({
+  //   //     title: "Update Address",
+  //   //     text: "Please update your address before placing the order.",
+  //   //     icon: "warning",
+  //   //     showCancelButton: false,
+  //   //     confirmButtonColor: "#0da487",
+  //   //     confirmButtonText: "Update Address →",
+  //   //   }).then((result) => {
+  //   //     if (result.isConfirmed) {
+  //   //       navigate("/user-dashboard");
+  //   //     }
+  //   //   });
+  //   //   return;
+  //   // }
+  //   if (!selectedAddressId) {
+  //     Swal.fire({
+  //       title: "Update Address",
+  //       text: "Please update your address before placing the order.",
+  //       icon: "warning",
+  //       showCancelButton: false,
+  //       confirmButtonColor: "#0da487",
+  //       // confirmButtonText: "Update Address ➡️",
+  //       confirmButtonText: "Update Address →",
+  //     }).then((result) => {
+  //       if (result.isConfirmed) {
+  //         navigate("/user-dashboard");
+  //       }
+  //     });
+  //     return;
+  //   }
+
+  //   let orderList = [];
+
+  //   if (items) {
+  //     orderList.push({
+  //       product_Id: items.product_Id?._id,
+  //       quantity: items?.quantity,
+  //       varient_Id: items?.varient?._id,
+  //       Price: items?.Price,
+  //     });
+  //   } else if (items2.length !== 0) {
+  //     orderList = items2.map((product) => ({
+  //       product_Id: product?.product_Id?._id,
+  //       quantity: product?.quantity,
+  //       varient_Id: product?.varient?._id,
+  //       Price: product?.Price,
+  //     }));
+  //   } else {
+  //     orderList =
+  //       orderItemSummary?.map((order) => ({
+  //         product_Id: order.product?._id,
+  //         quantity: order.quantity,
+  //         cartsTotal: orderItemSummaryPrice?.cartsTotalSum,
+  //         varient_Id: order?.varient?._id,
+  //         Price: order?.Price,
+  //       })) || [];
+  //   }
+
+  //   const cartsTotal = coupanresponse
+  //     ? items
+  //       ? (
+  //           items?.varient?.Price *
+  //           items?.quantity *
+  //           (1 - coupanresponse / 100)
+  //         )?.toFixed(2)
+  //       : totalSubtotal * (1 - coupanresponse / 100)?.toFixed(2)
+  //     : items
+  //     ? items?.varient?.Price * items?.quantity
+  //     : totalSubtotal;
+
+  //   const newOrderData = {
+  //     carts: orderList,
+  //     user_Id: userId,
+  //     address_Id: selectedAddressId,
+  //     cartsTotal: cartsTotal,
+  //     shippingPrice: "30",
+  //     taxPrice: "20",
+  //     ecommercetoken: ecommercetoken,
+  //   };
+
+  //   const confirmationResult = await Swal.fire({
+  //     title: "Place Order Confirmation",
+  //     text: "Are you sure you want to place the order?",
+  //     icon: "question",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#0da487",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, Place Order",
+  //     cancelButtonText: "Cancel",
+  //     customClass: {
+  //       confirmButton: "custom-confirm-button-class m-3",
+  //     },
+  //   });
+
+  //   if (confirmationResult.isConfirmed) {
+  //     try {
+  //       const createNewOrder = await createOrder(newOrderData);
+  //       console.log(createNewOrder);
+  //       await Swal.fire({
+  //         title: "Order Placed!",
+  //         confirmButtonColor: "#0da487",
+  //         text: "Your order has been placed successfully.",
+  //         icon: "success",
+  //       }).then((result) => {
+  //         if (result.isConfirmed) {
+  //           navigate("/shop");
+  //           window?.location?.reload();
+  //         }
+  //       });
+  //     } catch (error) {
+  //       await Swal.fire({
+  //         title: "Error",
+  //         text: "An error occurred while placing the order.",
+  //         icon: "error",
+  //       });
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     if (coupan2) {

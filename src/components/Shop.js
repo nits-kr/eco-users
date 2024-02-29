@@ -28,6 +28,8 @@ import {
   useAddCompareMutation,
   useAddToCartMutation,
   useGetCartListheaderMutation,
+  useGetProductListMutation,
+  useGetProductListQuery,
   useGetSubCategoryListQuery,
   useSearchProductHeaderMutation,
 } from "../services/Post";
@@ -59,6 +61,7 @@ function Shop(props) {
   const [compare] = useAddCompareMutation();
   const [searchProduct] = useSearchProductHeaderMutation();
   const [productListItems, setProductListItems] = useState([]);
+  console.log("productListItems", productListItems);
   const [subCategoryProduct] = useSubCategoryProductListMutation();
   const subCategoryListItems = useGetSubCategoryListQuery();
   const [subCategoryListData, setSubCategoryListData] = useState([]);
@@ -198,12 +201,22 @@ function Shop(props) {
     }
   };
 
+  // const { data: ProductListItems } = useGetProductListQuery();
+  const [ProductListItems] = useGetProductListMutation();
+
+  // useEffect(() => {
+  // fetchData();
+  // }, []);
+
   const fetchData = async () => {
+    console.log("lllllyyyyyyyllll");
+
     try {
       props.setProgress(10);
       setLoading(true);
-      const { data, error } = await ProductList();
-      setProductListItems(data?.results?.list);
+      const data = await ProductListItems();
+      setProductListItems(data?.data?.results?.list);
+      console.log("lllllllll", data);
       props.setProgress(100);
       setLoading(false);
     } catch (error) {
@@ -414,7 +427,7 @@ function Shop(props) {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [itemsPerPage, setItemsPerPage] = useState(4);
+  const [itemsPerPage, setItemsPerPage] = useState(72);
 
   const onPageChange = (page) => {
     setCurrentPage(page);
@@ -422,10 +435,11 @@ function Shop(props) {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
 
-  const currentItems = productListItems?.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const currentItems = productListItems
+    ?.slice(startIndex, startIndex + itemsPerPage)
+    ?.reverse();
+
+  console.log("currentItems", currentItems);
 
   const [inputWidth, setInputWidth] = useState("9");
   const handleResize = () => {
@@ -492,7 +506,7 @@ function Shop(props) {
 
   return (
     <>
-      {loading}
+      {/* {loading} */}
       <Header setProductListItems={setProductListItems} Dash={"shop"} />
 
       <div className="mobile-menu d-md-none d-block mobile-cart">
@@ -882,7 +896,8 @@ function Shop(props) {
                       );
 
                       const totalPrice =
-                        (item?.addVarient[0]?.Price || 0) * (count[index] || 1);
+                        (item?.addVarient?.[0]?.Price || 0) *
+                        (count[index] || 1);
                       return (
                         <div key={index}>
                           <div className="product-box-3 h-100 wow fadeInUp">
@@ -890,9 +905,10 @@ function Shop(props) {
                               <div className="product-image">
                                 <Link to={`/product-details-page/${item?._id}`}>
                                   <img
-                                    src={item?.addVarient[0]?.product_Pic[0]}
-                                    className="img-fluid  lazyload"
+                                    src={item?.product_Pic[0]}
+                                    className="img-fluid  lazyload mb-2"
                                     alt=""
+                                    // style={{height:"30vh"}}
                                   />
                                 </Link>
                                 <ul className="product-option">
@@ -904,10 +920,10 @@ function Shop(props) {
                                     <Link
                                       // to="/product-details-page"
                                       // state={{ id: item?._id }}
-                                      to={`/product-details-page/${item?._id}`}
+                                      to={`/product-details-page/${item?.productId?._id}`}
                                       // data-bs-toggle="modal"
                                       // data-bs-target="#view"
-                                      onClick={() => handleViewClick(item)}
+                                      // onClick={() => handleViewClick(item)}
                                     >
                                       <FontAwesomeIcon icon={faEye} />
                                     </Link>
@@ -979,15 +995,15 @@ function Shop(props) {
                               <div className="product-detail">
                                 <Link to="/product">
                                   <h5 className="name">
-                                    {item.productName_en}
+                                    {item?.productId?.productName_en}
                                   </h5>
                                 </Link>
-                                <p className="text-content mt-1 mb-2 product-content">
+                                {/* <p className="text-content mt-1 mb-2 product-content">
                                   Cheesy feet cheesy grin brie. Mascarpone
                                   cheese and wine hard cheese the big cheese
                                   everyone loves smelly cheese macaroni cheese
                                   croque monsieur.
-                                </p>
+                                </p> */}
                                 <div className="product-rating mt-2">
                                   <Star
                                     rating={averageRating || 0}
@@ -1011,22 +1027,18 @@ function Shop(props) {
                                         fontSize: "15px",
                                       }}
                                     >
-                                      {item?.addVarient[0]?.stockQuantity >
-                                      0 ? (
+                                      {item?.stockQuantity > 0 ? (
                                         item?.stockQuantity <= 5 ? (
                                           <span
                                             style={{ color: "rgb(199, 0, 85)" }}
                                           >
                                             Only few left
                                           </span>
-                                        ) : item?.addVarient[0]
-                                            ?.stockQuantity <= 10 ? (
+                                        ) : item?.stockQuantity <= 10 ? (
                                           <span
                                             style={{ color: "rgb(199, 0, 85)" }}
                                           >
-                                            Only{" "}
-                                            {item?.addVarient[0]?.stockQuantity}{" "}
-                                            left
+                                            Only {item?.stockQuantity} left
                                           </span>
                                         ) : (
                                           <span style={{ color: "green" }}>
@@ -1078,10 +1090,8 @@ function Shop(props) {
                                           }
                                           disabled={
                                             count[index] ===
-                                              item?.addVarient?.[0]
-                                                ?.stockQuantity ||
-                                            item?.addVarient?.[0]
-                                              ?.stockQuantity <= 0
+                                              item?.varient?.stockQuantity ||
+                                            item?.varient?.stockQuantity <= 0
                                           }
                                         >
                                           <i
@@ -1095,9 +1105,9 @@ function Shop(props) {
                                 </div>
                                 <h5 className="price">
                                   <span className="theme-color">
-                                    ${totalPrice}
+                                    ${item?.Price}
                                   </span>{" "}
-                                  <del>${item?.addVarient[0]?.oldPrice} </del>
+                                  <del>${item?.oldPrice} </del>
                                 </h5>
                                 {isItemInCart ? (
                                   <div className="add-to-cart-box bg-white mt-2">
@@ -1110,15 +1120,14 @@ function Shop(props) {
                                     <button
                                       className="btn btn-add-cart addcart-button"
                                       onClick={(e) =>
-                                        item?.addVarient?.[0]?.stockQuantity <=
-                                        0
+                                        item?.varient?.stockQuantity <= 0
                                           ? toast.error("Out Of Stock")
                                           : handleAddToCart(
                                               e,
                                               item,
-                                              item?.addVarient[0]?.Price,
+                                              item?.Price,
                                               index,
-                                              item?.addVarient[0]?._id
+                                              item?._id
                                             )
                                       }
                                     >
@@ -1180,7 +1189,7 @@ function Shop(props) {
                 <div className="col-lg-6">
                   <div className="slider-image">
                     <img
-                      src={selectedProduct?.addVarient[0]?.product_Pic[0]}
+                      src={selectedProduct?.addVarient?.[0]?.product_Pic[0]}
                       className="img-fluid lazyload"
                       alt=""
                     />
@@ -1193,7 +1202,7 @@ function Shop(props) {
                         {selectedProduct?.productName_en}
                       </h4>
                       <h4 className="price">
-                        ${selectedProduct?.addVarient[0]?.Price}{" "}
+                        ${selectedProduct?.addVarient?.[0]?.Price}{" "}
                       </h4>
                       <div className="product-rating">
                         <Star rating={averageRating} />

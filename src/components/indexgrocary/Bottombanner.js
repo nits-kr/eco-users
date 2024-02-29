@@ -1,16 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useGetBannerListQuery } from "../../services/Post";
 
-function Bottombanner({ bannerList }) {
+function Bottombanner() {
+  const [bannerList, setBannerList] = useState([]);
+
+  const { data: categoryBanner } = useGetBannerListQuery({
+    area: "Bottom Banner",
+  });
+  useEffect(() => {
+    if (categoryBanner) {
+      setBannerList(categoryBanner?.results?.banners);
+    }
+  }, [categoryBanner]);
+
+  console.log("bottom banner", bannerList);
   return (
     <>
       <div className="section-t-space">
-        {bannerList?.bottomBanner?.slice(0, 1)?.map((item, index) => (
+        {bannerList?.slice(0, 1)?.map((item, index) => (
           <Link to={`/Banner-list/${item?.category_Id?._id}`} key={index}>
             <div
               className="banner-contain hover-effect"
               style={{
-                backgroundImage: `url(${item?.bottomBanner[0]})`,
+                backgroundImage: `url(${item?.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center center",
                 backgroundRepeat: "no-repeat",

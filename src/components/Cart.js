@@ -15,20 +15,25 @@ import {
   useDeleteCartItemsMutation,
   useGetCartListQuery,
   useGetCartListheaderMutation,
+  useProceedToPayMutation,
 } from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
 import { useUpdateQuantityMutation } from "../services/Post";
 import { useAddToWislistListMutation } from "../services/Post";
 import { useApplyCoupanMutation } from "../services/Post";
 import { addToCart, getAllCart } from "../app/slice/CartSlice";
+import { Spinner } from "react-bootstrap";
+import { setPayType } from "../app/slice/localSlice";
 
 function Cart() {
+  const [loader, setLoader] = useState(false);
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [cartListQuery] = useGetCartListheaderMutation();
   const [applyCoupan, response] = useApplyCoupanMutation();
   const [applyCoupan2, response2] = useApplyCoupan2Mutation();
   const [deletecart] = useDeleteCartItemsMutation();
+  const [proceedToPay] = useProceedToPayMutation();
 
   const [cartListItems, setCartListItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
@@ -119,26 +124,32 @@ function Cart() {
   const HandleIncrease = async (id) => {
     console.log("HandleIncrease", id);
     const formData = {
-      id: id,
-      quantity: 1,
+      varient_Id: id,
+      // quantity: 1,
+      type: "Add",
       ecommercetoken: ecommercetoken,
     };
     try {
       const respone = await updateQuantity(formData);
+      if (respone) {
+        handleCartList();
+      }
     } catch (error) {
       console.error("Error updating quantity:", error);
     }
   };
   const HandleDecrease = async (id) => {
-    console.log("HandleIncrease", id);
     const formData = {
-      id: id,
-      quantity: -1,
+      varient_Id: id,
+      // quantity: -1,
+      type: "Sub",
       ecommercetoken: ecommercetoken,
     };
     try {
-      const { data } = await updateQuantity(formData);
-      console.log(data);
+      const res = await updateQuantity(formData);
+      if (res) {
+        handleCartList();
+      }
     } catch (error) {
       console.error("Error updating quantity:", error);
     }
@@ -149,6 +160,8 @@ function Cart() {
       handleCartList(ecomUserId);
     }
   }, [ecomUserId]);
+
+  const [total, setTotal] = useState("");
 
   const handleCartList = async () => {
     const datas = {
@@ -161,7 +174,8 @@ function Cart() {
 
       console.log("respone cart", respone);
 
-      setCartListItems(respone?.data?.carts);
+      setCartListItems(respone?.data?.results?.cart?.products?.[0]?.products);
+      setTotal(respone?.data?.results?.cart?.calculateTotal?.[0]);
     } catch (error) {
       console.log(error);
     }
@@ -226,10 +240,10 @@ function Cart() {
     try {
       const response = await deletecart({ ecommercetoken, id });
 
-      setCartListItems((prevCartList) =>
-        prevCartList.filter((item) => item._id !== id)
-      );
-      // console.log(data.results.deleteDta);
+      if (response) {
+        handleCartList();
+        toast?.success("Product has been removed from the Cart!");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -244,6 +258,33 @@ function Cart() {
 
   const handleShopping = () => {
     navigate("/shop");
+  };
+
+  const handlePay = async (e, item) => {
+    if (item) {
+      dispatch(setPayType("Single"));
+    } else {
+      dispatch(setPayType("All"));
+    }
+    e.preventDefault();
+    // const data = {
+    //   couponId: coupan,
+    //   varient_Id: id,
+    //   type: "All",
+    //   ecommercetoken: ecommercetoken,
+    // };
+    const data = {
+      // ...(coupan && { couponId: coupan }),
+      ...(item?.varient_Id && { varient_Id: item?.varient_Id }),
+      type: item ? "Single" : "All",
+      ...(ecommercetoken && { ecommercetoken: ecommercetoken }),
+    };
+    setLoader(true);
+    const res = await proceedToPay(data);
+    if (res) {
+      navigate("/check-outall");
+    }
+    setLoader(false);
   };
 
   return (
@@ -337,7 +378,7 @@ function Cart() {
                                       className="product-image"
                                     >
                                       <img
-                                        src={item?.varient?.product_Pic[0]}
+                                        src={item?.product_Pic[0]}
                                         className="img-fluid  lazyload"
                                         alt=""
                                       />
@@ -427,7 +468,9 @@ function Cart() {
                                                   data-type="minus"
                                                   data-field=""
                                                   onClick={() =>
-                                                    handleDecrement(item?._id)
+                                                    HandleDecrease(
+                                                      item?.varient_Id
+                                                    )
                                                   }
                                                 >
                                                   <i
@@ -445,7 +488,13 @@ function Cart() {
                                                 data-type="plus"
                                                 data-field=""
                                                 onClick={() =>
-                                                  handleIncrement(item?._id)
+                                                  HandleIncrease(
+                                                    item?.varient_Id
+                                                  )
+                                                }
+                                                disabled={
+                                                  item?.quantity ===
+                                                  item?.stockQuantity
                                                 }
                                               >
                                                 <i
@@ -465,7 +514,7 @@ function Cart() {
                                     Total
                                   </h4>
 
-                                  <h5>${subtotal}</h5>
+                                  <h5>${item?.Price}</h5>
                                 </td>
                                 <td className="save-remove">
                                   <h3
@@ -490,8 +539,8 @@ function Cart() {
                                       to="#"
                                       className="btn btn-animation proceed-btn fw-bold me-2"
                                       style={{ height: "35px", width: "35px" }}
-                                      onClick={() => {
-                                        handlePrice(item);
+                                      onClick={(e) => {
+                                        handlePay(e, item);
                                       }}
                                     >
                                       Buy
@@ -501,7 +550,9 @@ function Cart() {
                                       className="btn btn-animation proceed-btn fw-bold"
                                       style={{ height: "35px", width: "35px" }}
                                       title4="Wishlist"
-                                      onClick={() => deleteCartItem(item._id)}
+                                      onClick={() =>
+                                        deleteCartItem(item?.varient_Id)
+                                      }
                                     >
                                       <FontAwesomeIcon icon={faTrash} />
                                     </Link>
@@ -621,7 +672,7 @@ function Cart() {
                   <ul className="summery-total">
                     <li className="list-total border-top-0">
                       <h4>Total (USD)</h4>
-                      {singleItemPrice?.length !== 0 ? (
+                      {/* {singleItemPrice?.length !== 0 ? (
                         <h4 className="price theme-color">
                           $
                           {coupanresponse
@@ -643,7 +694,10 @@ function Cart() {
                               )?.toFixed(2)
                             : totalSubtotal}
                         </h4>
-                      )}
+                      )} */}
+                      <h4 className="price theme-color">
+                        ${total?.totalAmount}
+                      </h4>
                     </li>
                   </ul>
                   <div className="button-group cart-button">
@@ -658,17 +712,19 @@ function Cart() {
                       >
                         Process To Checkout
                       </Link> */}
-                        <Link
-                          to={checkoutUrl}
+                        <button
+                          // to={checkoutUrl}
                           className="btn btn-animation proceed-btn fw-bold"
+                          onClick={(e) => handlePay(e)}
                         >
-                          Process To Checkout
-                        </Link>
+                          {loader ? <Spinner /> : "Process To Checkout"}
+                        </button>
                       </li>
                       <li>
                         <button
                           onClick={(e) => {
                             handleShopping(e);
+                            // handlePay(e);
                           }}
                           className="btn btn-light shopping-button text-dark"
                         >

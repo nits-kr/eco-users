@@ -5090,7 +5090,7 @@ section,
 .product-rating span {
   color: #4a5568;
   font-size: 12px;
-  margin-left: 5px;
+  /* margin-left: 5px; */
 }
 
 [dir="rtl"] .product-rating span {
@@ -18251,7 +18251,7 @@ header .offcanvas-backdrop {
 
 .product-box-3 .product-header .product-image {
   text-align: center;
-  padding: 20px;
+  /* padding: 20px; */
   display: block;
 }
 
@@ -18268,6 +18268,7 @@ header .offcanvas-backdrop {
   object-fit: contain;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
+  border-radius: 5px;
 }
 
 .product-box-3 .product-header .product-image .product-option {

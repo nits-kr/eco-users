@@ -6,7 +6,7 @@ const userId = localStorage?.getItem("ecomUserId");
 export const PostApi = createApi({
   reducerPath: "PostApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://euser.techgropsedev.com:2087",
+    baseUrl: "https://euser.techgropsedev.com:2087/",
     // headers: {
     //   "x-auth-token-user": localStorage.getItem("ecomWebtoken"),
     // },
@@ -39,7 +39,7 @@ export const PostApi = createApi({
     getTopDiscountProduct: builder.query({
       query: (name) => ({
         url: "user/product/product/high-Discount-list",
-        method: "post",
+        method: "PATCH",
         // headers: {
         //   "x-auth-token-user": selector,
         // },
@@ -47,8 +47,8 @@ export const PostApi = createApi({
     }),
     getRecommendedProduct: builder.query({
       query: (name) => ({
-        url: "user/product/product/recommendedProductList",
-        method: "post",
+        url: "user/product/product/recommendedProducts",
+        method: "PATCH",
         // headers: {
         //   "x-auth-token-user": selector,
         // },
@@ -92,11 +92,11 @@ export const PostApi = createApi({
     }),
     AddToWislistList: builder.mutation({
       query: (body) => {
-        const { ecommercetoken, ...data } = body;
+        const { ecommercetoken, ecomUserId } = body;
         return {
-          url: "/user/wish/wish/add-wish",
-          method: "post",
-          body: data,
+          url: `user/wish/wish/add-wish/${ecomUserId}`,
+          method: "get",
+          // body: data,
           headers: {
             "x-auth-token-user": ecommercetoken,
           },
@@ -115,17 +115,47 @@ export const PostApi = createApi({
         method: "post",
       }),
     }),
-    getProductList: builder.query({
-      query: (name) => ({
-        url: `user/product/product/list`,
-        method: "post",
-      }),
+    // getProductList: builder.query({
+    //   query: (name) => ({
+    //     url: `user/product/product/list`,
+    //     method: "PATCH",
+    //   }),
+    // }),
+    getProductList: builder.mutation({
+      query: () => {
+        return {
+          url: "user/product/product/list",
+          method: "PATCH",
+        };
+      },
     }),
     getBannerList: builder.query({
-      query: (name) => ({
-        url: `user/category/category/banner-list`,
-        method: "post",
+      query: (area) => ({
+        url: `user/banner`,
+        method: "PATCH",
+        body: area,
       }),
+    }),
+    // proceedToPay: builder.query({
+    //   query: (area) => ({
+    //     url: "user/carts/carts/proceedToBuy ",
+    //     method: "PATCH",
+    //     body: area,
+    //   }),
+    // }),
+    proceedToPay: builder.mutation({
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: "user/carts/carts/proceedToBuy",
+          method: "PATCH",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
     }),
     blogCommentList: builder.query({
       query: (name) => ({
@@ -143,7 +173,7 @@ export const PostApi = createApi({
       query: ({ ecomUserId, ecommercetoken }) => {
         return {
           url: `user/wish/wish/wish-List/${ecomUserId}`,
-          method: "post",
+          method: "PUT",
           headers: {
             "x-auth-token-user": ecommercetoken,
           },
@@ -208,25 +238,25 @@ export const PostApi = createApi({
     getCartListheader: builder.mutation({
       query: ({ ecomUserId, ecommercetoken }) => {
         return {
-          url: `user/carts/carts/carts-list/${ecomUserId}`,
-          method: "post",
+          url: `user/carts/carts/carts-list`,
+          method: "get",
           headers: {
             "x-auth-token-user": ecommercetoken,
           },
         };
       },
     }),
-    getWishList: builder.mutation({
-      query: ({ ecomUserId, ecommercetoken }) => {
-        return {
-          url: `user/wish/wish/wish-List/${ecomUserId}`,
-          method: "post",
-          headers: {
-            "x-auth-token-user": ecommercetoken,
-          },
-        };
-      },
-    }),
+    // getWishList: builder.mutation({
+    //   query: ({ ecomUserId, ecommercetoken }) => {
+    //     return {
+    //       url: `user/wish/wish/wish-List/${ecomUserId}`,
+    //       method: "post",
+    //       headers: {
+    //         "x-auth-token-user": ecommercetoken,
+    //       },
+    //     };
+    //   },
+    // }),
     getCartListSummery: builder.mutation({
       query: ({ ecomUserId, ecommercetoken }) => {
         return {
@@ -241,8 +271,8 @@ export const PostApi = createApi({
     getAddressList: builder.mutation({
       query: ({ ecomUserId, ecommercetoken }) => {
         return {
-          url: `user/address/address/address-list/${ecomUserId}`,
-          method: "post",
+          url: `user/address/address/address-list`,
+          method: "get",
           headers: {
             "x-auth-token-user": ecommercetoken,
           },
@@ -386,7 +416,7 @@ export const PostApi = createApi({
         const { ecommercetoken, ...data } = body;
 
         return {
-          url: "/user/order/order/create-order",
+          url: "user/order/order/create-order",
           method: "post",
           body: data,
           headers: {
@@ -513,7 +543,7 @@ export const PostApi = createApi({
 
     subSubProduct: builder.mutation({
       query: (id) => ({
-        url: `/user/category/category/subCategory-product/${id}`,
+        url: `user/category/category/subCategory-product/${id}`,
         method: "post",
       }),
     }),
@@ -581,11 +611,11 @@ export const PostApi = createApi({
     }),
     updateQuantity: builder.mutation({
       query: (body) => {
-        const { ecommercetoken, id, ...data } = body;
+        const { ecommercetoken, ...data } = body;
 
         return {
-          url: `/user/carts/carts/edit-card/${id}`,
-          method: "post",
+          url: `user/carts/carts/updateQuantity`,
+          method: "PUT",
           body: data,
           headers: {
             "x-auth-token-user": ecommercetoken,
@@ -816,4 +846,6 @@ export const {
   useUserSignUpWithPhoneMutation,
   useVarifyOtpLoginMutation,
   useUpdateProfileloginMutation,
+  useGetProductListMutation,
+  useProceedToPayMutation,
 } = PostApi;

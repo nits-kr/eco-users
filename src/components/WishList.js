@@ -201,7 +201,7 @@ function WishList() {
       <section className="wishlist-section section-b-space">
         <div className="container-fluid-lg">
           <div className="row g-sm-3 g-2">
-            {wishList.map((item, index) => {
+            {wishList?.map((item, index) => {
               const totalRatings = item?.product_Id?.ratings?.reduce(
                 (sum, rating) => sum + rating?.star,
                 0

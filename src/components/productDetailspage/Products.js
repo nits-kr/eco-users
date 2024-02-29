@@ -84,6 +84,7 @@ function Products(props) {
   }, [id]);
 
   const handleProductDetails = async () => {
+    window.scrollTo(0, 0);
     const datas = {
       id,
       ecommercetoken,
@@ -92,7 +93,7 @@ function Products(props) {
     try {
       const respone = await productDetails(datas);
 
-      setProductDetail(respone?.data?.results?.details);
+      setProductDetail(respone?.data?.results?.product);
     } catch (error) {
       console.log(error);
     }
@@ -127,7 +128,7 @@ function Products(props) {
   );
   const averageRating = totalRatings / productDetail?.ratings?.length;
 
-  const variants = productDetail?.addVarient || [];
+  const variants = productDetail?.varients || [];
 
   const handleVariantChange = (index) => {
     setSelectedVariant(index);
