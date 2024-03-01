@@ -214,7 +214,7 @@ function Shop(props) {
     try {
       props.setProgress(10);
       setLoading(true);
-      const data = await ProductListItems();
+      const data = await ProductListItems({ ecommercetoken });
       setProductListItems(data?.data?.results?.list);
       console.log("lllllllll", data);
       props.setProgress(100);
@@ -228,27 +228,65 @@ function Shop(props) {
     setSelectedProduct(item);
   };
   const handleWishClick = async (item) => {
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to wishlist.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
     try {
       const editAddress = {
         product_Id: item?._id,
         userId: storedId,
         like: true,
       };
-      const { data, error } = await wishAdd(editAddress);
-      if (error) {
-        console.log(error);
-        return;
+      const res = await wishAdd({ ecommercetoken, ecomUserId: item?._id });
+
+      if (res) {
+        navigate("/wishlist");
       }
-      const newCreateWishItems = [...CreateWishItems, data];
-      setCreateWishItems(newCreateWishItems);
-      setTimeout(() => {
-        window?.location?.reload();
-      }, 500);
+      // const newCreateWishItems = [...CreateWishItems, data];
+      // setCreateWishItems(newCreateWishItems);
+      // setTimeout(() => {
+      //   window?.location?.reload();
+      // }, 500);
     } catch (error) {
       console.log(error);
     }
   };
   const handleCompareClick = async (id) => {
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to compare list.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
     const data = {
       product_Id: id,
       ecommercetoken: ecommercetoken,
@@ -942,10 +980,10 @@ function Shop(props) {
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="top"
                                   >
-                                    {item?.like === "false" ? (
+                                    {item?.like === false ? (
                                       <Link
                                         className="btn p-0 position-relative header-wishlist me-2"
-                                        to="/wishlist"
+                                        to="#"
                                         title3="Wishlist"
                                         onClick={() => handleWishClick(item)}
                                       >
@@ -993,7 +1031,7 @@ function Shop(props) {
                               <div className="product-detail">
                                 <Link to="/product">
                                   <h5 className="name">
-                                    {item?.productId?.productName_en}
+                                    {item?.productName_en}
                                   </h5>
                                 </Link>
                                 {/* <p className="text-content mt-1 mb-2 product-content">

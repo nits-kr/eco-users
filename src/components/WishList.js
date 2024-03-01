@@ -13,6 +13,7 @@ import Star from "./Star";
 import { useSelector } from "react-redux";
 import {
   useAddToCartMutation,
+  useDeleteWishMutation,
   useGetWishListDetailsMutation,
 } from "../services/Post";
 import Swal from "sweetalert2";
@@ -22,6 +23,7 @@ function WishList() {
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [wishListDetails] = useGetWishListDetailsMutation();
   const [addtocart] = useAddToCartMutation();
+  const [deleteWish] = useDeleteWishMutation();
   const [wishList, setWishList] = useState([]);
   localStorage?.setItem("totalWish", wishList?.length);
   const [cartListItems, setCartListItems] = useState([]);
@@ -103,17 +105,13 @@ function WishList() {
   };
 
   console.log("wishlist", wishList);
-  const deleteWishList = (_id) => {
-    deleteData(_id);
-  };
-  const deleteData = async (_id) => {
+
+  const deleteWishList = async (id) => {
     try {
-      const { data, error } = await DeleteWishList(_id);
-      error ? console.log(error) : console.log(data);
-      setWishList((prevWishList) =>
-        prevWishList.filter((item) => item._id !== _id)
-      );
-      console.log(data.results.deleteDta);
+      const res = await deleteWish({ id, ecommercetoken });
+      if (res) {
+        handleWishList();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -219,9 +217,7 @@ function WishList() {
                       <div className="product-image">
                         <Link to="/product">
                           <img
-                            src={
-                              item?.product_Id?.addVarient[0]?.product_Pic[0]
-                            }
+                            src={item?.product_Id?.varient?.product_Pic[0]}
                             className="img-fluid  lazyload"
                             alt=""
                           />
@@ -229,7 +225,9 @@ function WishList() {
                         <div className="product-header-top">
                           <button
                             className="btn wishlist-button close_button"
-                            onClick={() => deleteWishList(item._id)}
+                            onClick={() =>
+                              deleteWishList(item?.product_Id?._id)
+                            }
                           >
                             <FontAwesomeIcon icon={faXmark} />
                           </button>
@@ -275,8 +273,7 @@ function WishList() {
                         >
                           <div>
                             <h6 className="unit">
-                              {item?.product_Id?.addVarient?.[0]?.stockQuantity}{" "}
-                              units{" "}
+                              {item?.product_Id?.varient?.stockQuantity} units{" "}
                             </h6>
                           </div>
                           <div className="">
@@ -311,8 +308,7 @@ function WishList() {
                                   }
                                   disabled={
                                     count[index] ===
-                                    item?.product_Id?.addVarient?.[0]
-                                      ?.stockQuantity
+                                    item?.product_Id?.varient?.stockQuantity
                                   }
                                 >
                                   <i
@@ -326,11 +322,9 @@ function WishList() {
                         </div>
                         <h5 className="price">
                           <span className="theme-color">
-                            ${item?.product_Id?.addVarient?.[0]?.Price}{" "}
+                            ${item?.product_Id?.varient?.Price}{" "}
                           </span>
-                          <del>
-                            ${item?.product_Id?.addVarient?.[0]?.oldPrice}
-                          </del>
+                          <del>${item?.product_Id?.varient?.oldPrice}</del>
                         </h5>
                         <div className="add-to-cart-box bg-white mt-2">
                           <button
@@ -339,9 +333,9 @@ function WishList() {
                               handleAddToCart(
                                 e,
                                 item,
-                                item?.product_Id?.addVarient[0]?.Price,
+                                item?.product_Id?.varient?.Price,
                                 index,
-                                item?.product_Id?.addVarient[0]?._id
+                                item?.product_Id?.varient?._id
                               )
                             }
                           >

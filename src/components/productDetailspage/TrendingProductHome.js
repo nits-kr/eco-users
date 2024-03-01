@@ -24,7 +24,7 @@ function TrendingProductHome(props) {
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [cartListQuery] = useGetCartListheaderMutation();
   const [loading, setLoading] = useState(false);
-  const trendingProduct = useGetTrendingProductQuery();
+  const trendingProduct = useGetTrendingProductQuery({ ecommercetoken });
   const [wishAdd, res] = useAddToWislistListMutation();
   const [addtocart] = useAddToCartMutation();
   const [cartListItems, setCartListItems] = useState([]);
@@ -85,6 +85,25 @@ function TrendingProductHome(props) {
 
   const userId = localStorage?.getItem("loginId");
   const handleWishClick = async (item) => {
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to wish list.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
     try {
       const editAddress = {
         product_Id: item?._id,
@@ -92,21 +111,46 @@ function TrendingProductHome(props) {
         like: true,
       };
 
-      const { data, error } = await wishAdd(editAddress);
-      if (error) {
-        console.log(error);
-        return;
+      const res = await wishAdd({
+        ecommercetoken,
+        ecomUserId: item?._id,
+      });
+      if (res) {
+        navigate("/wishlist");
       }
-      const newCreateWishItems = [...CreateWishItems, data];
-      setCreateWishItems(newCreateWishItems);
-      setTimeout(() => {
-        window?.location?.reload();
-      }, 500);
+      // if (error) {
+      //   console.log(error);
+      //   return;
+      // }
+      // const newCreateWishItems = [...CreateWishItems, data];
+      // setCreateWishItems(newCreateWishItems);
+      // setTimeout(() => {
+      //   window?.location?.reload();
+      // }, 500);
     } catch (error) {
       console.log(error);
     }
   };
   const handleCompareClick = async (item) => {
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to compare list.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
     try {
       const { data, error } = await AddCompare(item._id);
       if (error) {
@@ -237,10 +281,10 @@ function TrendingProductHome(props) {
                     </Link>
                   </li>
                   <li data-bs-toggle="tooltip" data-bs-placement="top">
-                    {item?.productDetails?.[0]?.like === "false" ? (
+                    {item?.like === false ? (
                       <Link
                         className="btn p-0 position-relative header-wishlist me-2"
-                        to="/wishlist"
+                        to="#"
                         title3="Wishlist"
                         onClick={() => handleWishClick(item)}
                       >

@@ -37,21 +37,21 @@ export const PostApi = createApi({
       }),
     }),
     getTopDiscountProduct: builder.query({
-      query: (name) => ({
+      query: ({ ecommercetoken }) => ({
         url: "user/product/product/high-Discount-list",
         method: "PATCH",
-        // headers: {
-        //   "x-auth-token-user": selector,
-        // },
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
       }),
     }),
     getRecommendedProduct: builder.query({
-      query: (name) => ({
+      query: ({ ecommercetoken }) => ({
         url: "user/product/product/recommendedProducts",
         method: "PATCH",
-        // headers: {
-        //   "x-auth-token-user": selector,
-        // },
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
       }),
     }),
     subCategoryList: builder.mutation({
@@ -104,9 +104,12 @@ export const PostApi = createApi({
       },
     }),
     getTrendingProduct: builder.query({
-      query: (name) => ({
+      query: ({ ecommercetoken }) => ({
         url: `user/product/product/trending-product`,
         method: "PATCH",
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
       }),
     }),
     getRelatedProduct: builder.query({
@@ -122,10 +125,13 @@ export const PostApi = createApi({
     //   }),
     // }),
     getProductList: builder.mutation({
-      query: () => {
+      query: ({ ecommercetoken }) => {
         return {
           url: "user/product/product/list",
           method: "PATCH",
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
         };
       },
     }),
@@ -172,7 +178,7 @@ export const PostApi = createApi({
     getWishListDetails: builder.mutation({
       query: ({ ecomUserId, ecommercetoken }) => {
         return {
-          url: `user/wish/wish/wish-List/${ecomUserId}`,
+          url: "user/wish/wish/wish-List",
           method: "PUT",
           headers: {
             "x-auth-token-user": ecommercetoken,
@@ -503,6 +509,15 @@ export const PostApi = createApi({
     deleteWishList: builder.mutation({
       query: ({ ecommercetoken, wishId }) => ({
         url: `user/wish/wish/wish-delete/${wishId}`,
+        method: "DELETE",
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
+      }),
+    }),
+    deleteWish: builder.mutation({
+      query: ({ ecommercetoken, id }) => ({
+        url: `user/wish/wish/remove-product/${id}`,
         method: "DELETE",
         headers: {
           "x-auth-token-user": ecommercetoken,
@@ -865,4 +880,5 @@ export const {
   useUpdateProfileloginMutation,
   useGetProductListMutation,
   useProceedToPayMutation,
+  useDeleteWishMutation,
 } = PostApi;

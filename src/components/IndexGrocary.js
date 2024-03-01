@@ -48,7 +48,7 @@ function IndexGrocary(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const categoryListItems = useGetCategoryListQuery();
-  const trendingProduct = useGetTrendingProductQuery();
+  const trendingProduct = useGetTrendingProductQuery({ ecommercetoken });
   const [cartListQuery] = useGetCartListheaderMutation();
   const [addtocart] = useAddToCartMutation();
   const [compare] = useAddCompareMutation();
@@ -196,13 +196,26 @@ function IndexGrocary(props) {
 
   const userId = localStorage?.getItem("loginId");
   const handleWishClick = async (item) => {
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to wishlist.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
     try {
-      const editAddress = {
-        product_Id: item?._id,
-        userId: userId,
-        like: true,
-      };
-
       const res = await wishAdd({ ecommercetoken, ecomUserId: item?._id });
       if (res) {
         navigate("/wishlist");
@@ -219,6 +232,25 @@ function IndexGrocary(props) {
   };
 
   const handleCompareClick = async (id) => {
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to compare.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
     const data = {
       product_Id: id,
       ecommercetoken: ecommercetoken,
@@ -414,7 +446,7 @@ function IndexGrocary(props) {
                     </Link>
                   </li>
                   <li data-bs-toggle="tooltip" data-bs-placement="top">
-                    {item?.like !== "false" ? (
+                    {item?.like === false ? (
                       <Link
                         className="btn p-0 position-relative header-wishlist me-2"
                         to=""
