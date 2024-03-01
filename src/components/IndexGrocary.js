@@ -415,9 +415,9 @@ function IndexGrocary(props) {
                   </li>
                   <li data-bs-toggle="tooltip" data-bs-placement="top">
                     {item?.like !== "false" ? (
-                      <button
+                      <Link
                         className="btn p-0 position-relative header-wishlist me-2"
-                        // to="/wishlist"
+                        to=""
                         title3="Wishlist"
                         onClick={() => handleWishClick(item)}
                       >
@@ -436,7 +436,7 @@ function IndexGrocary(props) {
                             e.currentTarget.style.color = "black";
                           }}
                         />
-                      </button>
+                      </Link>
                     ) : (
                       <Link
                         className="btn p-0 position-relative header-wishlist me-2"

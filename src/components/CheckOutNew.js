@@ -18,7 +18,11 @@ import { useDispatch, useSelector } from "react-redux";
 function CheckOutNew() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const payType = useSelector((data) => data?.local?.payType);
+  const coupanId = useSelector((data) => data?.local?.coupanId);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const paymentData = JSON.parse(
+    useSelector((data) => data?.local?.paymentData)
+  );
   const [addressList] = useGetAddressListMutation();
   const [OrderSummarys] = useGetCartListSummeryMutation();
   const [orderItemSummary, setOrderItemSummary] = useState([]);
@@ -129,22 +133,6 @@ function CheckOutNew() {
       return;
     }
 
-    // if (!selectedAddressId) {
-    //   // Show Swal for updating the address
-    //   Swal.fire({
-    //     title: "Update Address",
-    //     text: "Please update your address before placing the order.",
-    //     icon: "warning",
-    //     showCancelButton: false,
-    //     confirmButtonColor: "#0da487",
-    //     confirmButtonText: "Update Address →",
-    //   }).then((result) => {
-    //     if (result.isConfirmed) {
-    //       navigate("/user-dashboard");
-    //     }
-    //   });
-    //   return;
-    // }
     if (!selectedAddressId) {
       Swal.fire({
         title: "Update Address",
@@ -162,14 +150,8 @@ function CheckOutNew() {
       return;
     }
 
-    // const newOrderData = {
-    //   couponId: "65d738fecfe99d44a6e8c751",
-    //   paymentIntent: "COD",
-    //   address_Id: selectedAddressId,
-    //   type: payType ? "Single" : "All",
-    // };
     const newOrderData = {
-      // ...(coupanId && { couponId: "65d738fecfe99d44a6e8c751" }),
+      ...(coupanId && { couponId: coupanId }),
       paymentIntent: "COD",
       ...(selectedAddressId && { address_Id: selectedAddressId }),
       type: payType === "Single" ? "Single" : "All",
@@ -214,144 +196,6 @@ function CheckOutNew() {
       }
     }
   };
-  // const placeOrder = async () => {
-  //   if (newAddress?.length > 0 && !selectedAddressId) {
-  //     // Show Swal for selecting the address
-  //     Swal.fire({
-  //       title: "Select Address",
-  //       text: "Please select an address before placing the order.",
-  //       icon: "warning",
-  //       showCancelButton: false,
-  //       confirmButtonColor: "#0da487",
-  //       confirmButtonText: "Ok",
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         // Add logic to handle address selection
-  //       }
-  //     });
-  //     return;
-  //   }
-
-  //   // if (!selectedAddressId) {
-  //   //   // Show Swal for updating the address
-  //   //   Swal.fire({
-  //   //     title: "Update Address",
-  //   //     text: "Please update your address before placing the order.",
-  //   //     icon: "warning",
-  //   //     showCancelButton: false,
-  //   //     confirmButtonColor: "#0da487",
-  //   //     confirmButtonText: "Update Address →",
-  //   //   }).then((result) => {
-  //   //     if (result.isConfirmed) {
-  //   //       navigate("/user-dashboard");
-  //   //     }
-  //   //   });
-  //   //   return;
-  //   // }
-  //   if (!selectedAddressId) {
-  //     Swal.fire({
-  //       title: "Update Address",
-  //       text: "Please update your address before placing the order.",
-  //       icon: "warning",
-  //       showCancelButton: false,
-  //       confirmButtonColor: "#0da487",
-  //       // confirmButtonText: "Update Address ➡️",
-  //       confirmButtonText: "Update Address →",
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         navigate("/user-dashboard");
-  //       }
-  //     });
-  //     return;
-  //   }
-
-  //   let orderList = [];
-
-  //   if (items) {
-  //     orderList.push({
-  //       product_Id: items.product_Id?._id,
-  //       quantity: items?.quantity,
-  //       varient_Id: items?.varient?._id,
-  //       Price: items?.Price,
-  //     });
-  //   } else if (items2.length !== 0) {
-  //     orderList = items2.map((product) => ({
-  //       product_Id: product?.product_Id?._id,
-  //       quantity: product?.quantity,
-  //       varient_Id: product?.varient?._id,
-  //       Price: product?.Price,
-  //     }));
-  //   } else {
-  //     orderList =
-  //       orderItemSummary?.map((order) => ({
-  //         product_Id: order.product?._id,
-  //         quantity: order.quantity,
-  //         cartsTotal: orderItemSummaryPrice?.cartsTotalSum,
-  //         varient_Id: order?.varient?._id,
-  //         Price: order?.Price,
-  //       })) || [];
-  //   }
-
-  //   const cartsTotal = coupanresponse
-  //     ? items
-  //       ? (
-  //           items?.varient?.Price *
-  //           items?.quantity *
-  //           (1 - coupanresponse / 100)
-  //         )?.toFixed(2)
-  //       : totalSubtotal * (1 - coupanresponse / 100)?.toFixed(2)
-  //     : items
-  //     ? items?.varient?.Price * items?.quantity
-  //     : totalSubtotal;
-
-  //   const newOrderData = {
-  //     carts: orderList,
-  //     user_Id: userId,
-  //     address_Id: selectedAddressId,
-  //     cartsTotal: cartsTotal,
-  //     shippingPrice: "30",
-  //     taxPrice: "20",
-  //     ecommercetoken: ecommercetoken,
-  //   };
-
-  //   const confirmationResult = await Swal.fire({
-  //     title: "Place Order Confirmation",
-  //     text: "Are you sure you want to place the order?",
-  //     icon: "question",
-  //     showCancelButton: true,
-  //     confirmButtonColor: "#0da487",
-  //     cancelButtonColor: "#d33",
-  //     confirmButtonText: "Yes, Place Order",
-  //     cancelButtonText: "Cancel",
-  //     customClass: {
-  //       confirmButton: "custom-confirm-button-class m-3",
-  //     },
-  //   });
-
-  //   if (confirmationResult.isConfirmed) {
-  //     try {
-  //       const createNewOrder = await createOrder(newOrderData);
-  //       console.log(createNewOrder);
-  //       await Swal.fire({
-  //         title: "Order Placed!",
-  //         confirmButtonColor: "#0da487",
-  //         text: "Your order has been placed successfully.",
-  //         icon: "success",
-  //       }).then((result) => {
-  //         if (result.isConfirmed) {
-  //           navigate("/shop");
-  //           window?.location?.reload();
-  //         }
-  //       });
-  //     } catch (error) {
-  //       await Swal.fire({
-  //         title: "Error",
-  //         text: "An error occurred while placing the order.",
-  //         icon: "error",
-  //       });
-  //     }
-  //   }
-  // };
 
   useEffect(() => {
     if (coupan2) {
@@ -360,41 +204,9 @@ function CheckOutNew() {
     }
   }, [coupan2]);
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
-
   const handleAddressSelection = (addressId) => {
     setSelectedAddressId(addressId);
   };
-
-  // const fetchData = async () => {
-  //   try {
-  //     const { data, error } = await OrderSummary();
-  //     if (error) {
-  //       console.log(error);
-  //     } else {
-  //       console.log(data);
-  //       const items = data?.results?.cartsTotal || [];
-
-  //       let total = 0;
-
-  //       items.forEach((item) => {
-  //         item.forEach((product) => {
-  //           if (product.Price) {
-  //             total += product.Price;
-  //           }
-  //         });
-  //       });
-
-  //       setOrderItemSummary(data?.results?.carts);
-  //       setOrderItemSummaryPrice(data.results);
-  //       setTotalPrice(total);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   let totalSubtotal = 0;
 
@@ -402,10 +214,6 @@ function CheckOutNew() {
     const subtotal = (cart?.varient?.Price || 0) * (cart?.quantity || 1);
     totalSubtotal += subtotal;
   });
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
 
   useEffect(() => {
     feather.replace();
@@ -1225,38 +1033,8 @@ function CheckOutNew() {
                   <ul className="summery-contain"></ul>
                   <ul className="summery-total">
                     <li>
-                      <h4>
-                        Subtotal
-                        {coupanresponse
-                          ? `(Coupan Applied ${coupanresponse}%)`
-                          : null}{" "}
-                      </h4>
-                      {coupanresponse ? (
-                        items ? (
-                          <h4 className="price">
-                            $
-                            {(
-                              items?.varient?.Price *
-                              items?.quantity *
-                              (1 - coupanresponse / 100)
-                            )?.toFixed(2)}
-                          </h4>
-                        ) : (
-                          <h4 className="price">
-                            $
-                            {(
-                              totalSubtotal *
-                              (1 - coupanresponse / 100)
-                            )?.toFixed(2)}
-                          </h4>
-                        )
-                      ) : items ? (
-                        <h4 className="price">
-                          ${items?.varient?.Price * items?.quantity}
-                        </h4>
-                      ) : (
-                        <h4 className="price">${totalSubtotal}</h4>
-                      )}
+                      <h4>Subtotal</h4>
+                      <h4 className="price">${paymentData?.totalAmount}</h4>
                     </li>
 
                     <li>
@@ -1268,6 +1046,11 @@ function CheckOutNew() {
                           ? orderItemSummaryPrice?.shipping
                           : 0}
                       </h4>
+                    </li>
+                    <li>
+                      <h4>Discount</h4>
+
+                      <h4 className="price">${paymentData?.discountAmount}</h4>
                     </li>
                     <li>
                       <h4>Tax</h4>
@@ -1284,33 +1067,7 @@ function CheckOutNew() {
                     </li> */}
                     <li className="list-total">
                       <h4>Total (USD)</h4>
-                      <h4 className="price">
-                        {coupanresponse
-                          ? items
-                            ? (
-                                (parseFloat(
-                                  items?.varient?.Price * items?.quantity
-                                ) || 0) *
-                                  (1 - coupanresponse / 100) +
-                                (parseFloat(orderItemSummaryPrice?.shipping) ||
-                                  0) +
-                                (parseFloat(orderItemSummaryPrice?.Tax) || 0)
-                              ).toFixed(2)
-                            : (
-                                (parseFloat(totalSubtotal) || 0) *
-                                (1 - coupanresponse / 100)
-                              ).toFixed(2)
-                          : items
-                          ? (
-                              (parseFloat(
-                                items?.varient?.Price * items?.quantity
-                              ) || 0) +
-                              (parseFloat(orderItemSummaryPrice?.shipping) ||
-                                0) +
-                              (parseFloat(orderItemSummaryPrice?.Tax) || 0)
-                            ).toFixed(2)
-                          : (parseFloat(totalSubtotal) || 0).toFixed(2)}
-                      </h4>
+                      <h4 className="price">${paymentData?.grandTotal}</h4>
                     </li>
                   </ul>
                 </div>

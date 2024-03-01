@@ -23,12 +23,17 @@ import { useAddToWislistListMutation } from "../services/Post";
 import { useApplyCoupanMutation } from "../services/Post";
 import { addToCart, getAllCart } from "../app/slice/CartSlice";
 import { Spinner } from "react-bootstrap";
-import { setPayType } from "../app/slice/localSlice";
+import {
+  setCoupanIdlocal,
+  setPayType,
+  setPaymentData,
+} from "../app/slice/localSlice";
 
 function Cart() {
   const [loader, setLoader] = useState(false);
   const [loadings, setLoadings] = useState(false);
   const [loadingItems, setLoadingItems] = useState({});
+  const [total, setTotal] = useState("");
   const [isQuantityChanging, setIsQuantityChanging] = useState(false);
   const [loadingItemsd, setLoadingItemsd] = useState({});
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
@@ -38,9 +43,12 @@ function Cart() {
   const [applyCoupan2, response2] = useApplyCoupan2Mutation();
   const [deletecart] = useDeleteCartItemsMutation();
   const [proceedToPay] = useProceedToPayMutation();
+  const [coupanId, setCoupanId] = useState("");
+  const [coupanDetails, setCoupanIdDetails] = useState("");
 
   const [cartListItems, setCartListItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
+  console.log("cartTotal", cartTotal);
 
   const [cartCount, setCartCount] = useState([]);
   const [wishAdd] = useAddToWislistListMutation();
@@ -200,8 +208,6 @@ function Cart() {
     }
   }, [ecomUserId]);
 
-  const [total, setTotal] = useState("");
-
   const handleCartList = async () => {
     if (isQuantityChanging) {
       window?.scrollTo(0, 0);
@@ -246,12 +252,14 @@ function Cart() {
         ecommercetoken,
       });
 
-      if (createNewOrder?.error?.data?.message === "Coupan Code is Expired") {
-        toast.error(`${createNewOrder?.error?.data?.message}`);
-      } else if (createNewOrder?.data?.message === "Success") {
-        toast.success(
-          `Wow🤩🤩! coupan applied of ${createNewOrder?.data?.results?.DiscountType}%`
-        );
+      console.log("createNewOrder", createNewOrder);
+      if (createNewOrder?.data?.results?.validCoupan === true) {
+        setCoupanId(createNewOrder?.data?.results?._id);
+        setCoupanIdDetails(createNewOrder?.data?.results);
+        dispatch(setCoupanIdlocal(createNewOrder?.data?.results?._id));
+        toast.success(`Wow🤩🤩! coupan applied `);
+      } else {
+        toast.error(`😒Invalid Coupan`);
       }
 
       setCoupanresponse(createNewOrder?.data?.results?.DiscountType);
@@ -311,26 +319,22 @@ function Cart() {
   const handlePay = async (e, item) => {
     if (item) {
       dispatch(setPayType("Single"));
-    } else {
-      dispatch(setPayType("All"));
     }
     e.preventDefault();
-    // const data = {
-    //   couponId: coupan,
-    //   varient_Id: id,
-    //   type: "All",
-    //   ecommercetoken: ecommercetoken,
-    // };
+
     const data = {
-      // ...(coupan && { couponId: coupan }),
+      ...(coupanId && { couponId: coupanId }),
       ...(item?.varient_Id && { varient_Id: item?.varient_Id }),
       type: item ? "Single" : "All",
       ...(ecommercetoken && { ecommercetoken: ecommercetoken }),
     };
     setLoader(true);
     const res = await proceedToPay(data);
+    console.log("res payment", res);
     if (res) {
-      navigate("/check-outall");
+      navigate(item ? "" : "/check-outall");
+      dispatch(setPaymentData(res?.data?.results?.cart?.calculateTotal[0]));
+      setCartTotal(res?.data?.results?.cart?.calculateTotal[0]);
     }
     setLoader(false);
   };
@@ -707,79 +711,55 @@ function Cart() {
                       </div>
                     )}
 
-                    {singleItemPrice.length !== 0 ? (
-                      <ul>
-                        <li>
-                          <h4>Subtotal</h4>
-                          <h4 className="price">
-                            $
-                            {singleItemPrice?.varient?.Price *
-                              singleItemPrice?.quantity}
-                          </h4>
-                        </li>
-                        <li>
-                          <h4>Coupon Discount</h4>
-                          <h4 className="price"> {coupanresponse} %</h4>
-                        </li>
-                      </ul>
-                    ) : (
-                      <ul>
-                        <li>
-                          <h4>Subtotal</h4>
-                          <h4 className="price">
-                            ${coupan?.subtotal || totalSubtotal}
-                          </h4>
-                        </li>
-                        <li>
-                          <h4>Coupon Discount</h4>
-                          <h4 className="price"> {coupanresponse} %</h4>
-                        </li>
-                      </ul>
-                    )}
+                    <ul style={{ display: coupanId ? "" : "none" }}>
+                      <li>
+                        <h4>Subtotal</h4>
+                        <h4 className="price">
+                          $
+                          {cartTotal
+                            ? cartTotal?.totalAmount
+                            : total?.totalAmount}
+                        </h4>
+                      </li>
+                      <li>
+                        <h4>Coupon Discount</h4>
+                        <h4 className="price">
+                          {" "}
+                          {coupanDetails?.discount}
+                          {coupanDetails?.DiscountType === "Fixed"
+                            ? ""
+                            : "%"}{" "}
+                        </h4>
+                      </li>
+                    </ul>
                   </div>
                   <ul className="summery-total">
                     <li className="list-total border-top-0">
                       <h4>Total (USD)</h4>
-                      {/* {singleItemPrice?.length !== 0 ? (
-                        <h4 className="price theme-color">
-                          $
-                          {coupanresponse
-                            ? (
-                                singleItemPrice?.varient?.Price *
-                                singleItemPrice?.quantity *
-                                (1 - coupanresponse / 100)
-                              )?.toFixed(2)
-                            : singleItemPrice?.varient?.Price *
-                              singleItemPrice?.quantity}
-                        </h4>
-                      ) : (
-                        <h4 className="price theme-color">
-                          $
-                          {coupanresponse
-                            ? (
-                                totalSubtotal *
-                                (1 - coupanresponse / 100)
-                              )?.toFixed(2)
-                            : totalSubtotal}
-                        </h4>
-                      )} */}
+
                       <h4 className="price theme-color">
-                        ${total?.totalAmount}
+                        $
+                        {cartTotal
+                          ? !coupanId
+                            ? cartTotal.grandTotal
+                            : cartTotal.grandTotal -
+                              (coupanDetails.DiscountType === "Fixed"
+                                ? coupanDetails.discount
+                                : cartTotal.grandTotal *
+                                  (coupanDetails.discount / 100))
+                          : !coupanId
+                          ? total.totalAmount
+                          : total.totalAmount -
+                            (coupanDetails.DiscountType === "Fixed"
+                              ? coupanDetails.discount
+                              : total.totalAmount *
+                                (coupanDetails.discount / 100))}
                       </h4>
                     </li>
                   </ul>
                   <div className="button-group cart-button">
                     <ul>
                       <li>
-                        {/* <Link
-                        // to="/check-out"
-                        to={`/check-out/${encodeURIComponent(
-                          JSON.stringify(coupan2)
-                        )}`}
-                        className="btn btn-animation proceed-btn fw-bold"
-                      >
-                        Process To Checkout
-                      </Link> */}
                         <button
                           // to={checkoutUrl}
                           className="btn btn-animation proceed-btn fw-bold"

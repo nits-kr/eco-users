@@ -14,6 +14,8 @@ export const localSlice = createSlice({
     varificationMobile: localStorage.getItem("varificationMobile") || null,
     profileCompleted: localStorage.getItem("profileComleted") || null,
     payType: localStorage.getItem("payType") || null,
+    paymentData: localStorage.getItem("paymentData") || null,
+    coupanId: localStorage.getItem("coupanId") || null,
   },
   reducers: {
     setEcomWebToken: (state, action) => {
@@ -57,6 +59,19 @@ export const localSlice = createSlice({
       state.payType = action.payload;
       localStorage.setItem("payType", action.payload);
     },
+    setCoupanIdlocal: (state, action) => {
+      state.coupanId = action.payload;
+      localStorage.setItem("coupanId", action.payload);
+    },
+    // setPaymentData: (state, action) => {
+    //   state.paymentData = action.payload;
+    //   localStorage.setItem("paymentData", JSON.stringify(action.payload));
+    // },
+    setPaymentData: (state, action) => {
+      const paymentDataString = JSON.stringify(action.payload);
+      state.paymentData = paymentDataString;
+      localStorage.setItem("paymentData", paymentDataString);
+    },
   },
 });
 
@@ -71,5 +86,7 @@ export const {
   setVarificationMobile,
   setProfileCompleted,
   setPayType,
+  setPaymentData,
+  setCoupanIdlocal,
 } = localSlice.actions;
 export default localSlice.reducer;

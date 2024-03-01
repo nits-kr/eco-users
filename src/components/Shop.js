@@ -903,10 +903,7 @@ function Shop(props) {
                               <div className="product-image">
                                 <Link to={`/product-details-page/${item?._id}`}>
                                   <img
-                                    src={
-                                      item?.product_Pic[0] ||
-                                      item?.varient?.product_Pic[0]
-                                    }
+                                    src={item?.varient?.product_Pic[0]}
                                     className="img-fluid  lazyload mb-2"
                                     alt=""
                                     // style={{height:"30vh"}}
@@ -1028,18 +1025,20 @@ function Shop(props) {
                                         fontSize: "15px",
                                       }}
                                     >
-                                      {item?.stockQuantity > 0 ? (
-                                        item?.stockQuantity <= 5 ? (
+                                      {item?.varient?.stockQuantity > 0 ? (
+                                        item?.varient?.stockQuantity <= 5 ? (
                                           <span
                                             style={{ color: "rgb(199, 0, 85)" }}
                                           >
                                             Only few left
                                           </span>
-                                        ) : item?.stockQuantity <= 10 ? (
+                                        ) : item?.varient?.stockQuantity <=
+                                          10 ? (
                                           <span
                                             style={{ color: "rgb(199, 0, 85)" }}
                                           >
-                                            Only {item?.stockQuantity} left
+                                            Only {item?.varient?.stockQuantity}{" "}
+                                            left
                                           </span>
                                         ) : (
                                           <span style={{ color: "green" }}>
@@ -1106,9 +1105,9 @@ function Shop(props) {
                                 </div>
                                 <h5 className="price">
                                   <span className="theme-color">
-                                    ${item?.Price}
+                                    ${item?.varient?.Price}
                                   </span>{" "}
-                                  <del>${item?.oldPrice} </del>
+                                  <del>${item?.varient?.oldPrice} </del>
                                 </h5>
                                 {isItemInCart ? (
                                   <div className="add-to-cart-box bg-white mt-2">
@@ -1126,9 +1125,9 @@ function Shop(props) {
                                           : handleAddToCart(
                                               e,
                                               item,
-                                              item?.Price,
+                                              item?.varient?.Price,
                                               index,
-                                              item?._id
+                                              item?.varient?._id
                                             )
                                       }
                                     >
