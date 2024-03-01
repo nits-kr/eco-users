@@ -34,7 +34,7 @@ function Cart() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [cartListQuery] = useGetCartListheaderMutation();
-  const [applyCoupan, response] = useApplyCoupanMutation();
+  const [applyCoupan] = useApplyCoupanMutation();
   const [applyCoupan2, response2] = useApplyCoupan2Mutation();
   const [deletecart] = useDeleteCartItemsMutation();
   const [proceedToPay] = useProceedToPayMutation();
@@ -243,6 +243,7 @@ function Cart() {
     try {
       const createNewOrder = await applyCoupan({
         coupanCode: coupanCode2,
+        ecommercetoken,
       });
 
       if (createNewOrder?.error?.data?.message === "Coupan Code is Expired") {
@@ -618,7 +619,7 @@ function Cart() {
                                       style={{ height: "35px", width: "35px" }}
                                       title4="Wishlist"
                                       onClick={() =>
-                                        deleteCartItem(item?.varient_Id)
+                                        deleteCartItem(item?.cart_Id)
                                       }
                                     >
                                       <FontAwesomeIcon icon={faTrash} />

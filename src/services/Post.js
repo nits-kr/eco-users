@@ -360,7 +360,7 @@ export const PostApi = createApi({
 
         return {
           url: "user/product/product/search-product",
-          method: "post",
+          method: "PATCH",
           body: data,
           headers: {
             "x-auth-token-user": ecommercetoken,
@@ -595,12 +595,29 @@ export const PostApi = createApi({
     //     };
     //   },
     // }),
+    // applyCoupan: builder.mutation({
+    //   query: (body) => ({
+    //     url: "user/carts/carts/checkValidCoupon",
+    //     method: "PATCH",
+    //     body,
+    //     headers: {
+    //       "x-auth-token-user": ecommercetoken,
+    //     },
+    //   }),
+    // }),
     applyCoupan: builder.mutation({
-      query: (body) => ({
-        url: "/user/carts/carts/apply-coupan",
-        method: "post",
-        body,
-      }),
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: `user/carts/carts/checkValidCoupon`,
+          method: "PATCH",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
     }),
     applyCoupan2: builder.mutation({
       query: (body) => ({

@@ -398,14 +398,12 @@ function Shop(props) {
 
   const handleSearch = async () => {
     const data = {
-      productName_en: searchQuery ? searchQuery : selector,
+      search: searchQuery ? searchQuery : selector,
       ecommercetoken: ecommercetoken,
     };
     const response = await searchProduct(data);
-    console.log("search response", response?.data?.results?.productData);
-    setProductListItems(
-      response?.data?.results?.productData?.slice()?.reverse()
-    );
+    console.log("search response", response?.data?.results?.products);
+    setProductListItems(response?.data?.results?.products?.slice()?.reverse());
   };
 
   useEffect(() => {
@@ -905,7 +903,10 @@ function Shop(props) {
                               <div className="product-image">
                                 <Link to={`/product-details-page/${item?._id}`}>
                                   <img
-                                    src={item?.product_Pic[0]}
+                                    src={
+                                      item?.product_Pic[0] ||
+                                      item?.varient?.product_Pic[0]
+                                    }
                                     className="img-fluid  lazyload mb-2"
                                     alt=""
                                     // style={{height:"30vh"}}

@@ -81,7 +81,7 @@ function Login() {
           response.data?.results?.verifyUser?.userEmail
         );
 
-        dispatch(setEcomWebToken(response.data?.results?.token));
+        // dispatch(setEcomWebToken(response.data?.results?.token));
         localStorage.setItem(
           "mobileNumber",
           response.data?.results?.verifyUser?.mobileNumber

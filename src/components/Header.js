@@ -167,12 +167,12 @@ function Header({ Dash }) {
     console.log("data", selector);
     try {
       const response = await searchProduct({
-        productName_en: selector,
+        search: selector,
         ecommercetoken: ecommercetoken,
       });
       if (response) {
-        setSuggestions(response?.data?.results?.productData);
-        navigate(response?.data?.results?.productData?.length === 0 ? "*" : "");
+        setSuggestions(response?.data?.results?.products);
+        navigate(response?.data?.results?.products?.length === 0 ? "*" : "");
       } else {
         navigate("*");
       }
@@ -493,14 +493,12 @@ function Header({ Dash }) {
                                     className="suggestion-item"
                                     onClick={() => {
                                       hideSuggestions();
-                                      handleProduct(product.productName_en);
+                                      handleProduct(product?.productName_en);
                                     }}
                                   >
                                     <div className="product-image">
                                       <img
-                                        src={
-                                          product?.addVarient[0]?.product_Pic[0]
-                                        }
+                                        src={product?.varient?.product_Pic[0]}
                                         alt={product.productName_en}
                                         width={20}
                                         height={20}
