@@ -12,6 +12,7 @@ import {
   useAddCompareMutation,
   useAddToCartMutation,
   useGetBannerListQuery,
+  useGetBannerMutation,
   useGetCartListheaderMutation,
   useGetTrendingProductQuery,
   useTopBannerListMutation,
@@ -50,6 +51,7 @@ function IndexGrocary(props) {
   const categoryListItems = useGetCategoryListQuery();
   const trendingProduct = useGetTrendingProductQuery({ ecommercetoken });
   const [cartListQuery] = useGetCartListheaderMutation();
+  const [banners] = useGetBannerMutation();
   const [addtocart] = useAddToCartMutation();
   const [compare] = useAddCompareMutation();
   const { data: categoryBanner } = useGetBannerListQuery();
@@ -147,6 +149,22 @@ function IndexGrocary(props) {
   const cartData = async () => {
     try {
       const res = await cartListQuery({ ecomUserId, ecommercetoken });
+
+      setCartListItems(res?.data?.carts);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleGetBanners = async () => {
+    const data = {
+      subCategory: "64f1be58475d18dd5edff13a",
+      category: "64f1bb51475d18dd5edff0e3",
+      // "subSubCategory": "",
+      // "brand": "65278d0a2d1d5fafea17183c"}
+    };
+    try {
+      const res = await banners({ ecomUserId, ecommercetoken });
 
       setCartListItems(res?.data?.carts);
     } catch (error) {

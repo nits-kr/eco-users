@@ -634,6 +634,20 @@ export const PostApi = createApi({
         };
       },
     }),
+    getBanner: builder.mutation({
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: `user/product/product/getProductByIds`,
+          method: "PATCH",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
     applyCoupan2: builder.mutation({
       query: (body) => ({
         url: "/user/carts/carts/apply-coupan",
@@ -881,4 +895,5 @@ export const {
   useGetProductListMutation,
   useProceedToPayMutation,
   useDeleteWishMutation,
+  useGetBannerMutation,
 } = PostApi;
