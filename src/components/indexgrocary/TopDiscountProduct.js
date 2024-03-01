@@ -175,9 +175,8 @@ function TopDiscountProduct() {
         (cartItem) => cartItem?.product_Id?._id === item?._id
       );
 
-      const totalPrice =
-        (item?.addVarient?.[0]?.Price || 0) * (count[index] || 1);
-      const imageUrl = item?.addVarient?.[0]?.product_Pic[0];
+      const totalPrice = (item?.varient?.Price || 0) * (count[index] || 1);
+      const imageUrl = item?.varient?.product_Pic[0];
 
       return (
         <div key={index}>
@@ -286,14 +285,14 @@ function TopDiscountProduct() {
                       className="unit"
                       style={{ margin: "0px", fontSize: "15px" }}
                     >
-                      {item?.addVarient?.[0]?.stockQuantity > 0 ? (
-                        item?.addVarient?.[0]?.stockQuantity <= 5 ? (
+                      {item?.varient?.stockQuantity > 0 ? (
+                        item?.varient?.stockQuantity <= 5 ? (
                           <span style={{ color: "rgb(199, 0, 85)" }}>
                             Only few left
                           </span>
-                        ) : item?.addVarient?.[0]?.stockQuantity <= 10 ? (
+                        ) : item?.varient?.stockQuantity <= 10 ? (
                           <span style={{ color: "rgb(199, 0, 85)" }}>
-                            Only {item?.addVarient?.[0]?.stockQuantity} left
+                            Only {item?.varient?.stockQuantity} left
                           </span>
                         ) : (
                           <span style={{ color: "green" }}>In Stock</span>
@@ -303,7 +302,7 @@ function TopDiscountProduct() {
                       )}
                     </h6>
                   </div>
-                  {item?.addVarient?.[0]?.stockQuantity <= 0 ? (
+                  {item?.varient?.stockQuantity <= 0 ? (
                     <div className=" mt-3">
                       <div className="cart_qty qty-box product-qty">
                         <div
@@ -368,9 +367,8 @@ function TopDiscountProduct() {
                               handleCountChange(index, count[index] + 1)
                             }
                             disabled={
-                              count[index] ===
-                                item?.addVarient?.[0]?.stockQuantity ||
-                              item?.addVarient?.[0]?.stockQuantity <= 0
+                              count[index] === item?.varient?.stockQuantity ||
+                              item?.varient?.stockQuantity <= 0
                             }
                           >
                             <i className="fa fa-plus" aria-hidden="true" />
@@ -381,8 +379,8 @@ function TopDiscountProduct() {
                   )}
                 </div>
                 <h5 className="price">
-                  <span className="theme-color">${totalPrice}</span>{" "}
-                  <del>${item?.addVarient?.[0]?.oldPrice} </del>
+                  <span className="theme-color">${item?.varient?.Price}</span>{" "}
+                  <del>${item?.varient?.oldPrice} </del>
                 </h5>
 
                 {isItemInCart ? (
@@ -399,9 +397,9 @@ function TopDiscountProduct() {
                         handleAddToCart(
                           e,
                           item,
-                          item?.addVarient?.[0]?.Price,
+                          item?.varient?.Price,
                           index,
-                          item?.addVarient?.[0]?._id
+                          item?.varient?._id
                         )
                       }
                     >

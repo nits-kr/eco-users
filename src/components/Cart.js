@@ -27,6 +27,10 @@ import { setPayType } from "../app/slice/localSlice";
 
 function Cart() {
   const [loader, setLoader] = useState(false);
+  const [loadings, setLoadings] = useState(false);
+  const [loadingItems, setLoadingItems] = useState({});
+  const [isQuantityChanging, setIsQuantityChanging] = useState(false);
+  const [loadingItemsd, setLoadingItemsd] = useState({});
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [cartListQuery] = useGetCartListheaderMutation();
@@ -125,33 +129,68 @@ function Cart() {
     console.log("HandleIncrease", id);
     const formData = {
       varient_Id: id,
-      // quantity: 1,
       type: "Add",
       ecommercetoken: ecommercetoken,
     };
+
+    setIsQuantityChanging(true);
+
+    setLoadingItems((prevState) => ({
+      ...prevState,
+      [id]: true,
+    }));
+
     try {
-      const respone = await updateQuantity(formData);
-      if (respone) {
+      const response = await updateQuantity(formData);
+      if (response) {
         handleCartList();
+        setLoadingItems((prevState) => ({
+          ...prevState,
+          [id]: false,
+        }));
       }
     } catch (error) {
       console.error("Error updating quantity:", error);
+      setLoadingItems((prevState) => ({
+        ...prevState,
+        [id]: false,
+      }));
+    } finally {
+      setIsQuantityChanging(false);
     }
   };
+
   const HandleDecrease = async (id) => {
     const formData = {
       varient_Id: id,
-      // quantity: -1,
       type: "Sub",
       ecommercetoken: ecommercetoken,
     };
+
+    setLoadingItemsd((prevState) => ({
+      ...prevState,
+      [id]: true,
+    }));
+
+    setIsQuantityChanging(true);
+
     try {
-      const res = await updateQuantity(formData);
-      if (res) {
+      const response = await updateQuantity(formData);
+      if (response) {
         handleCartList();
+        setLoadingItemsd((prevState) => ({
+          ...prevState,
+          [id]: false,
+        }));
       }
     } catch (error) {
       console.error("Error updating quantity:", error);
+      setLoadingItemsd((prevState) => ({
+        ...prevState,
+        [id]: false,
+      }));
+    } finally {
+      setIsQuantityChanging(false);
     }
   };
 
@@ -164,6 +203,9 @@ function Cart() {
   const [total, setTotal] = useState("");
 
   const handleCartList = async () => {
+    if (isQuantityChanging) {
+      window?.scrollTo(0, 0);
+    }
     const datas = {
       ecomUserId,
       ecommercetoken,
@@ -193,6 +235,11 @@ function Cart() {
   localStorage?.setItem("totalSubtotal", totalSubtotal);
 
   const applyCoupanCode = async () => {
+    if (!coupanCode2) {
+      toast.error("😒 Please enter a coupon code.");
+      return;
+    }
+
     try {
       const createNewOrder = await applyCoupan({
         coupanCode: coupanCode2,
@@ -374,7 +421,7 @@ function Cart() {
                                 <td className="product-detail">
                                   <div className="product border-0">
                                     <Link
-                                      to={`/product-details-page/${item?.product_Id?._id}`}
+                                      to={`/product-details-page/${item?.productId?._id}`}
                                       className="product-image"
                                     >
                                       <img
@@ -388,7 +435,7 @@ function Cart() {
                                         <li className="name">
                                           <Link to={`/product`}>
                                             <strong>
-                                              {item?.product_Id?.productName_en
+                                              {item?.productId?.productName_en
                                                 ?.split(" ")
                                                 ?.slice(0, 3)
                                                 ?.join(" ")}
@@ -405,7 +452,7 @@ function Cart() {
                                           <span className="text-title">
                                             SKU :
                                           </span>{" "}
-                                          {item?.varient?.SKU}
+                                          {item?.SKU}
                                         </li>
                                       </ul>
                                     </div>
@@ -472,11 +519,22 @@ function Cart() {
                                                       item?.varient_Id
                                                     )
                                                   }
+                                                  disabled={
+                                                    loadingItemsd[
+                                                      item?.varient_Id
+                                                    ] || item?.quantity === 1
+                                                  }
                                                 >
-                                                  <i
-                                                    className="fa fa-minus ms-0"
-                                                    aria-hidden="true"
-                                                  />
+                                                  {loadingItemsd[
+                                                    item?.varient_Id
+                                                  ] ? (
+                                                    <Spinner />
+                                                  ) : (
+                                                    <i
+                                                      className="fa fa-minus ms-0"
+                                                      aria-hidden="true"
+                                                    />
+                                                  )}
                                                 </button>
                                               </div>
                                             )}
@@ -493,14 +551,23 @@ function Cart() {
                                                   )
                                                 }
                                                 disabled={
+                                                  loadingItems[
+                                                    item?.varient_Id
+                                                  ] ||
                                                   item?.quantity ===
-                                                  item?.stockQuantity
+                                                    item?.stockQuantity
                                                 }
                                               >
-                                                <i
-                                                  className="fa fa-plus ms-0"
-                                                  aria-hidden="true"
-                                                />
+                                                {loadingItems[
+                                                  item?.varient_Id
+                                                ] ? (
+                                                  <Spinner />
+                                                ) : (
+                                                  <i
+                                                    className="fa fa-plus ms-0"
+                                                    aria-hidden="true"
+                                                  />
+                                                )}
                                               </button>
                                             </div>
                                           </div>

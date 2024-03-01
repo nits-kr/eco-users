@@ -16,7 +16,7 @@ import {
   useGetTrendingProductQuery,
   useTopBannerListMutation,
 } from "../services/Post";
-import Spinner from "./Spinner";
+// import Spinner from "./Spinner";
 import { ProductDetails, DiscountProduct } from "./HttpServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -41,7 +41,10 @@ import TopDiscountProduct from "./indexgrocary/TopDiscountProduct";
 import RecommendedProduct from "./indexgrocary/RecommendedProduct";
 import Sidebanner from "./indexgrocary/Sidebanner";
 import ScrollBanner from "./indexgrocary/ScrollBanner";
+import { Spinner } from "react-bootstrap";
 function IndexGrocary(props) {
+  const [loadingItems, setLoadingItems] = useState({});
+
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const categoryListItems = useGetCategoryListQuery();
@@ -257,10 +260,19 @@ function IndexGrocary(props) {
       user_Id: ecomUserId,
       ecommercetoken: ecommercetoken,
     };
+    setLoadingItems((prevState) => ({
+      ...prevState,
+      [variantId]: true,
+    }));
     try {
       const response = await addtocart(data);
-
-      navigate("/cart");
+      if (response) {
+        setLoadingItems((prevState) => ({
+          ...prevState,
+          [variantId]: false,
+        }));
+        navigate("/cart");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -608,8 +620,16 @@ function IndexGrocary(props) {
                             item?.varient?._id
                           )
                         }
+                        disabled={
+                          loadingItems[item?.varient?._id] ||
+                          item?.varient?.stockQuantity < 0
+                        }
                       >
-                        Add To Cart
+                        {loadingItems[item?.varient?._id] ? (
+                          <Spinner />
+                        ) : (
+                          "Add To Cart"
+                        )}
                       </Link>
                     </button>
                   </div>
@@ -952,7 +972,12 @@ function IndexGrocary(props) {
                 </>
               ) : null}
 
-              <div className="title">
+              <div
+                className="title"
+                style={{
+                  display: categoryListData?.length > 2 ? "" : "none",
+                }}
+              >
                 <h2>Browse by Categories</h2>
                 <span className="title-leaf">
                   <svg className="icon-width">
@@ -961,9 +986,14 @@ function IndexGrocary(props) {
                 </span>
                 <p>Top Categories Of The Week</p>
               </div>
-              <div className="category-slider-2 product-wrapper no-arrow">
+              <div
+                className="category-slider-2 product-wrapper no-arrow"
+                style={{
+                  display: categoryListData?.length > 2 ? "" : "none",
+                }}
+              >
                 <Slider {...settings}>
-                  {categoryListData.map((item, index) => {
+                  {categoryListData?.map((item, index) => {
                     return (
                       <div>
                         <Link to="/shop" className="category-box category-dark">
