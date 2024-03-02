@@ -191,6 +191,7 @@ function Shop(props) {
   }, [id, selector, searchQuery]);
 
   const handleGetBanners = async (id) => {
+    window.scrollTo(0, 0);
     const data = {
       ...(URLType === "subCategory" && { subCategory: id }),
       ...(URLType === "Category" && { category: id }),
