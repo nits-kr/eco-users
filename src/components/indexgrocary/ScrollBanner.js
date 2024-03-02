@@ -34,7 +34,24 @@ function ScrollBanner() {
               {bannerList?.map((item, index) => {
                 return (
                   <div className="banner-contain hover-effect " key={index}>
-                    <Link to={`/Banner-list/${item?.subCategory_Id?._id}`}>
+                    <Link
+                      to="/shop"
+                      state={{
+                        URLType: item.URLType,
+                        ...(item.URLType === "Category" && {
+                          category_Id: item.category_Id,
+                        }),
+                        ...(item.URLType === "Subcategory" && {
+                          subCategory_Id: item.subCategory_Id,
+                        }),
+                        ...(item.URLType === "subSubcategory" && {
+                          subSubCategory_Id: item.subSubCategory_Id,
+                        }),
+                        ...(item.URLType === "product" && {
+                          product_Id: item.product_Id,
+                        }),
+                      }}
+                    >
                       <img
                         src={item?.image}
                         className="bg-img  lazyload"

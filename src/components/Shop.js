@@ -27,6 +27,7 @@ import {
 import {
   useAddCompareMutation,
   useAddToCartMutation,
+  useGetBannerMutation,
   useGetCartListheaderMutation,
   useGetProductListMutation,
   useGetProductListQuery,
@@ -63,6 +64,8 @@ function Shop(props) {
   const [productListItems, setProductListItems] = useState([]);
   console.log("productListItems", productListItems);
   const [subCategoryProduct] = useSubCategoryProductListMutation();
+  const [banners] = useGetBannerMutation();
+
   const subCategoryListItems = useGetSubCategoryListQuery();
   const [subCategoryListData, setSubCategoryListData] = useState([]);
   const [wishAdd, res] = useAddToWislistListMutation();
@@ -78,9 +81,21 @@ function Shop(props) {
   const [quantity, setQuantity] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState("");
   const location = useLocation();
-  let id = location.state?.id;
+  const { state } = location;
+  // const { id, URLType, category_Id } = state;
+  const id = state && state.id ? state.id : null;
+  const URLType = state && state.URLType ? state.URLType : null;
+  const category_Id = state && state.category_Id ? state.category_Id : null;
+  const subCategory_Id =
+    state && state.subCategory_Id ? state.subCategory_Id : null;
+  const subSubCategory_Id =
+    state && state.subSubCategory_Id ? state.subSubCategory_Id : null;
+  // let id = location.state?.id;
+  // let banner = location.state?.banner;
 
   console.log("state id", id);
+  console.log("URLType", URLType);
+  console.log("category_Id", category_Id);
 
   const navigate = useNavigate();
 
@@ -94,9 +109,6 @@ function Shop(props) {
   const [subCategoryProductItems, setSubCategoryProductItems] = useState([]);
 
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
-
-  axios.defaults.headers.common["x-auth-token-user"] =
-    localStorage.getItem("token");
 
   useEffect(() => {
     if (ecomUserId) {
@@ -163,6 +175,13 @@ function Shop(props) {
     if (id) {
       handleSubSubProduct(id);
       localStorage?.removeItem("searchQuerymain");
+    } else if (URLType === "Category") {
+      handleGetBanners(category_Id);
+    } else if (URLType === "subCategory") {
+      handleGetBanners(subCategory_Id);
+    } else if (selector || searchQuery) {
+    } else if (URLType === "subSubCategory") {
+      handleGetBanners(subSubCategory_Id);
     } else if (selector || searchQuery) {
       handleSearch(selector || searchQuery);
     } else if (!id || !selector || !searchQuery) {
@@ -170,6 +189,26 @@ function Shop(props) {
       fetchData();
     }
   }, [id, selector, searchQuery]);
+
+  const handleGetBanners = async (id) => {
+    const data = {
+      ...(URLType === "subCategory" && { subCategory: id }),
+      ...(URLType === "Category" && { category: id }),
+      ...(URLType === "subSubCategory" && { subSubCategory: id }),
+      // ...(brand && { brand: "65278d0a2d1d5fafea17183c" }),
+      ecommercetoken: ecommercetoken,
+    };
+
+    console.log(data);
+
+    try {
+      const res = await banners(data);
+
+      setProductListItems(res?.data?.results?.products);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSubSubProduct = async (id) => {
     try {

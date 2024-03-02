@@ -22,7 +22,22 @@ function Middlebanner() {
           {/* Middle Banner 1 */}
           <div className="col-xxl-6 col-xl-12 col-md-7">
             <Link
-              to={`/Banner-list/${bannerList?.middleBanner?.[2]?.subCategory_Id?._id}`}
+              to="/shop"
+              state={{
+                URLType: bannerList[0]?.URLType,
+                ...(bannerList[0]?.URLType === "Category" && {
+                  category_Id: bannerList[0]?.category_Id,
+                }),
+                ...(bannerList[0]?.URLType === "Subcategory" && {
+                  subCategory_Id: bannerList[0]?.subCategory_Id,
+                }),
+                ...(bannerList[0]?.URLType === "subSubcategory" && {
+                  subSubCategory_Id: bannerList[0]?.subSubCategory_Id,
+                }),
+                ...(bannerList[0]?.URLType === "product" && {
+                  product_Id: bannerList[0]?.product_Id,
+                }),
+              }}
               className="banner-contain hover-effect"
               style={{
                 backgroundImage: `url(${bannerList[0]?.image})`,
@@ -58,7 +73,22 @@ function Middlebanner() {
           {/* Middle Banner 2 */}
           <div className="col-xxl-6 col-xl-12 col-md-5">
             <Link
-              to={`/Banner-list/${bannerList?.middleBanner?.[3]?.subCategory_Id?._id}`}
+              to="/shop"
+              state={{
+                URLType: bannerList[1]?.URLType,
+                ...(bannerList[1]?.URLType === "Category" && {
+                  category_Id: bannerList[1]?.category_Id,
+                }),
+                ...(bannerList[1]?.URLType === "Subcategory" && {
+                  subCategory_Id: bannerList[1]?.subCategory_Id,
+                }),
+                ...(bannerList[1]?.URLType === "subSubcategory" && {
+                  subSubCategory_Id: bannerList[1]?.subSubCategory_Id,
+                }),
+                ...(bannerList[1]?.URLType === "product" && {
+                  product_Id: bannerList[1]?.product_Id,
+                }),
+              }}
               className="banner-contain hover-effect h-100"
               style={{
                 backgroundImage: `url(${bannerList[1]?.image})`,

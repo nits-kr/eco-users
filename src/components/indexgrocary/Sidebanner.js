@@ -16,7 +16,24 @@ function Sidebanner() {
   return (
     <>
       <div className="ratio_medium section-t-space">
-        <Link to="/shop">
+        <Link
+          to="/shop"
+          state={{
+            URLType: bannerList[0]?.URLType,
+            ...(bannerList[0]?.URLType === "Category" && {
+              category_Id: bannerList[0]?.category_Id,
+            }),
+            ...(bannerList[0]?.URLType === "Subcategory" && {
+              subCategory_Id: bannerList[0]?.subCategory_Id,
+            }),
+            ...(bannerList[0]?.URLType === "subSubcategory" && {
+              subSubCategory_Id: bannerList[0]?.subSubCategory_Id,
+            }),
+            ...(bannerList[0]?.URLType === "product" && {
+              product_Id: bannerList[0]?.product_Id,
+            }),
+          }}
+        >
           <div className="home-contain hover-effect">
             {bannerList && (
               <img
