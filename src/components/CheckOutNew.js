@@ -14,10 +14,13 @@ import {
 } from "../services/Post";
 import { useGetAddressListQuery } from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
+import { setvarientId } from "../app/slice/localSlice";
 
 function CheckOutNew() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const payType = useSelector((data) => data?.local?.payType);
+  const varient_Id = useSelector((data) => data?.local?.varient_Id);
+  console.log("varient_Id", varient_Id);
   const coupanId = useSelector((data) => data?.local?.coupanId);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const paymentData = JSON.parse(
@@ -37,6 +40,8 @@ function CheckOutNew() {
   const [items2, setItems2] = useState([]);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const { coupan2 } = useParams();
   const storeUser = localStorage?.getItem("userName");
   const [totalPrice, setTotalPrice] = useState([]);
@@ -154,6 +159,7 @@ function CheckOutNew() {
       ...(coupanId && { couponId: coupanId }),
       paymentIntent: "COD",
       ...(selectedAddressId && { address_Id: selectedAddressId }),
+      ...(varient_Id && { varient_Id: varient_Id }),
       type: payType === "Single" ? "Single" : "All",
       ecommercetoken: ecommercetoken,
     };
@@ -184,7 +190,9 @@ function CheckOutNew() {
         }).then((result) => {
           if (result.isConfirmed) {
             navigate("/shop");
-            window?.location?.reload();
+            // window?.location?.reload();
+            // localStorage?.removeItem("varient_Id");
+            dispatch(setvarientId(""));
           }
         });
       } catch (error) {
@@ -1061,10 +1069,10 @@ function CheckOutNew() {
                           : 0}
                       </h4>
                     </li>
-                    {/* <li>
+                    <li>
                       <h4>Coupon/Code</h4>
                       <h4 className="price">Apply Coupan</h4>
-                    </li> */}
+                    </li>
                     <li className="list-total">
                       <h4>Total (USD)</h4>
                       <h4 className="price">${paymentData?.grandTotal}</h4>

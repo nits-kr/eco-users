@@ -35,6 +35,8 @@ function Header({ Dash }) {
   const [categoryListData, setCategoryListData] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
 
+  console.log("categoryListData", categoryListData);
+
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSale, setShowSale] = useState(true);
 
@@ -53,6 +55,8 @@ function Header({ Dash }) {
   console.log(latitude);
 
   const [subCategoryItems, setSubCategoryItems] = useState([]);
+
+  console.log("subCategoryItems", subCategoryItems);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -84,7 +88,7 @@ function Header({ Dash }) {
     try {
       const respone = await cartListQuery(datas);
 
-      setCartListItems(respone?.data?.carts);
+      setCartListItems(respone?.data?.results?.cart?.products?.[0]?.products);
     } catch (error) {
       console.log(error);
     }
@@ -621,11 +625,11 @@ function Header({ Dash }) {
                                         <div>
                                           <h5>
                                             <Link
-                                              to={`/product/${item?.product_Id?._id}`}
+                                              to={`/product/${item?.productId?._id}`}
                                               key={index}
                                             >
                                               <strong>
-                                                {item?.product_Id?.productName_en
+                                                {item?.productName_en
                                                   ?.split(" ")
                                                   ?.slice(0, 3)
                                                   ?.join(" ")}{" "}
@@ -773,7 +777,10 @@ function Header({ Dash }) {
                               </h6>
                               <i className="fa-solid fa-angle-right" />
                             </Link>
-                            <div className="onhover-category-box">
+                            <div
+                              className="onhover-category-box"
+                              style={{ height: "auto" }}
+                            >
                               <div className="list-1">
                                 <div className="category-title-box">
                                   {/* <h5>Organic Vegetables</h5> */}
@@ -788,7 +795,12 @@ function Header({ Dash }) {
                                         >
                                           <Link
                                             to="/shop"
-                                            state={{ id: items._id }}
+                                            state={{
+                                              URLType: "subcate",
+                                              ...{
+                                                subCategory_Id: items?._id,
+                                              },
+                                            }}
                                             className="category-name"
                                           >
                                             <img

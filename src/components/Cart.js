@@ -27,6 +27,7 @@ import {
   setCoupanIdlocal,
   setPayType,
   setPaymentData,
+  setvarientId,
 } from "../app/slice/localSlice";
 
 function Cart() {
@@ -319,6 +320,7 @@ function Cart() {
   const handlePay = async (e, item) => {
     if (item) {
       dispatch(setPayType("Single"));
+      dispatch(setvarientId(item?.varient_Id));
     }
     e.preventDefault();
 
@@ -659,6 +661,34 @@ function Cart() {
                   </Link>
                 </div>
               )}
+            </div>
+            <div
+              className="button-group cart-button"
+              style={{ display: cartListItems?.length > 0 ? "" : "none" }}
+            >
+              <ul>
+                <li className="d-flex align-items-end justify-content-end">
+                  <button
+                    // to={checkoutUrl}
+                    className="btn btn-animation proceed-btn fw-bold mt-5 w-25"
+                    onClick={(e) => handlePay(e)}
+                  >
+                    {loader ? <Spinner /> : "Process To Checkout"}
+                  </button>
+                </li>
+                <li className="d-flex align-items-end justify-content-end">
+                  <button
+                    onClick={(e) => {
+                      handleShopping(e);
+                      // handlePay(e);
+                    }}
+                    className="btn btn-light shopping-button text-dark w-25"
+                  >
+                    <i className="fa-solid fa-arrow-left-long" />
+                    Return To Shopping
+                  </button>
+                </li>
+              </ul>
             </div>
             {cartListItems?.length > 0 ? (
               <div className="col-xxl-3">

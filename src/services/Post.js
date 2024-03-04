@@ -32,8 +32,8 @@ export const PostApi = createApi({
     }),
     getSubCategoryList: builder.query({
       query: (name) => ({
-        url: "/admin/category/subCategory/SubCategoryList",
-        method: "post",
+        url: "admin/category/subCategory/SubCategoryList",
+        method: "PATCH",
       }),
     }),
     getTopDiscountProduct: builder.query({
@@ -60,8 +60,8 @@ export const PostApi = createApi({
         const { id } = body;
         console.log("update address body data", id);
         return {
-          url: `/user/category/category/category-subCategory/${id}`,
-          method: "post",
+          url: `user/subCategories/${id}`,
+          method: "get",
           // body: data,
         };
       },
@@ -648,6 +648,20 @@ export const PostApi = createApi({
         };
       },
     }),
+    singleProductOrder: builder.mutation({
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: `user/order/order/orderSingleItem`,
+          method: "post",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
     applyCoupan2: builder.mutation({
       query: (body) => ({
         url: "/user/carts/carts/apply-coupan",
@@ -896,4 +910,5 @@ export const {
   useProceedToPayMutation,
   useDeleteWishMutation,
   useGetBannerMutation,
+  useSingleProductOrderMutation,
 } = PostApi;

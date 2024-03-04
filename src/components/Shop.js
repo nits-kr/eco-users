@@ -57,6 +57,8 @@ import { toast } from "react-toastify";
 function Shop(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const urlType = useSelector((data) => data?.local?.urlType);
+  const subcateId = useSelector((data) => data?.local?.subcateId);
   const [cartListQuery] = useGetCartListheaderMutation();
   const [addtocart] = useAddToCartMutation();
   const [compare] = useAddCompareMutation();
@@ -96,6 +98,7 @@ function Shop(props) {
   console.log("state id", id);
   console.log("URLType", URLType);
   console.log("category_Id", category_Id);
+  console.log("sub category_Id", subCategory_Id);
 
   const navigate = useNavigate();
 
@@ -149,11 +152,12 @@ function Shop(props) {
     const selectedProducts = await Promise.all(
       selectedSubcategories.map(async (categoryId) => {
         const result = await subCategoryProduct({ id: categoryId });
-        return result.data?.results?.listData;
+        setProductListItems(result?.data?.results?.listData);
+        return result?.data?.results?.listData;
       })
     );
     const flattenedProducts = selectedProducts.flat();
-    setProductListItems(flattenedProducts);
+    // setProductListItems(flattenedProducts);
   };
 
   const handleCountChange = (index, newCount) => {
@@ -175,6 +179,8 @@ function Shop(props) {
     if (id) {
       handleSubSubProduct(id);
       localStorage?.removeItem("searchQuerymain");
+    } else if (URLType === "subcate") {
+      handleGetBanners(subCategory_Id);
     } else if (URLType === "Category") {
       handleGetBanners(category_Id);
     } else if (URLType === "subCategory") {
@@ -188,11 +194,12 @@ function Shop(props) {
       localStorage?.removeItem("searchQuerymain");
       fetchData();
     }
-  }, [id, selector, searchQuery]);
+  }, [id, selector, searchQuery, subCategory_Id]);
 
   const handleGetBanners = async (id) => {
     window.scrollTo(0, 0);
     const data = {
+      ...(URLType === "subcate" && { subCategory: id }),
       ...(URLType === "subCategory" && { subCategory: id }),
       ...(URLType === "Category" && { category: id }),
       ...(URLType === "subSubCategory" && { subSubCategory: id }),
@@ -485,8 +492,7 @@ function Shop(props) {
   };
 
   useEffect(() => {
-    const reversedList =
-      subCategoryListItems?.data?.results?.list?.slice().reverse() ?? [];
+    const reversedList = subCategoryListItems?.data?.results?.list;
     setSubCategoryListData(reversedList);
   }, [subCategoryListItems]);
 
@@ -549,7 +555,10 @@ function Shop(props) {
               borderRadius: "5px",
             }}
           >
-            <Link to="#" onClick={() => handleSaveChanges1(item?._id)}>
+            <Link
+              to="#"
+              onClick={() => handleSaveChanges1(item?.category_Id?._id)}
+            >
               <div className="shop-category-image d-flex align-items-center justify-content-center">
                 <img
                   src={

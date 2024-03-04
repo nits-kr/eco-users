@@ -16,6 +16,9 @@ export const localSlice = createSlice({
     payType: localStorage.getItem("payType") || null,
     paymentData: localStorage.getItem("paymentData") || null,
     coupanId: localStorage.getItem("coupanId") || null,
+    varient_Id: null,
+    urlType: null,
+    subcateId: null,
   },
   reducers: {
     setEcomWebToken: (state, action) => {
@@ -59,6 +62,18 @@ export const localSlice = createSlice({
       state.payType = action.payload;
       localStorage.setItem("payType", action.payload);
     },
+    setvarientId: (state, action) => {
+      state.varient_Id = action.payload;
+      // localStorage.setItem("varient_Id", action.payload);
+    },
+    setUrlType: (state, action) => {
+      state.urlType = action.payload;
+      // localStorage.setItem("payType", action.payload);
+    },
+    setSubCategoryIs: (state, action) => {
+      state.subcateId = action.payload;
+      // localStorage.setItem("payType", action.payload);
+    },
     setCoupanIdlocal: (state, action) => {
       state.coupanId = action.payload;
       localStorage.setItem("coupanId", action.payload);
@@ -88,5 +103,8 @@ export const {
   setPayType,
   setPaymentData,
   setCoupanIdlocal,
+  setUrlType,
+  setSubCategoryIs,
+  setvarientId,
 } = localSlice.actions;
 export default localSlice.reducer;
