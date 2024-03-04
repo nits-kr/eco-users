@@ -125,7 +125,7 @@ function Shop(props) {
     try {
       const respone = await cartListQuery(datas);
 
-      setCartListItems(respone?.data?.carts);
+      setCartListItems(respone?.data?.results?.cart?.products?.[0]?.products);
     } catch (error) {
       console.log(error);
     }
@@ -968,7 +968,7 @@ function Shop(props) {
                       const averageRating =
                         totalRatings / item?.ratings?.length;
                       const isItemInCart = cartListItems?.some(
-                        (cartItem) => cartItem?.product_Id?._id === item._id
+                        (cartItem) => cartItem?.productId?._id === item._id
                       );
 
                       const totalPrice =

@@ -48,7 +48,7 @@ function RecommendedProduct() {
     try {
       const res = await cartListQuery({ ecomUserId, ecommercetoken });
 
-      setCartListItems(res?.data?.carts);
+      setCartListItems(res?.data?.results?.cart?.products?.[0]?.products);
     } catch (error) {
       console.log(error);
     }
@@ -213,7 +213,7 @@ function RecommendedProduct() {
       );
       const averageRating = totalRatings / item?.ratings?.length;
       const isItemInCart = cartListItems?.some(
-        (cartItem) => cartItem?.product_Id?._id === item?._id
+        (cartItem) => cartItem?.productId?._id === item?._id
       );
 
       const totalPrice = (item?.varient?.Price || 0) * (count[index] || 1);

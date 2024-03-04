@@ -150,7 +150,7 @@ function IndexGrocary(props) {
     try {
       const res = await cartListQuery({ ecomUserId, ecommercetoken });
 
-      setCartListItems(res?.data?.carts);
+      setCartListItems(res?.data?.results?.cart?.products?.[0]?.products);
     } catch (error) {
       console.log(error);
     }
@@ -417,7 +417,7 @@ function IndexGrocary(props) {
       const averageRating =
         totalRatings / item?.productDetails?.[0]?.ratings?.length;
       const isItemInCart = cartListItems?.some(
-        (cartItem) => cartItem?.product_Id?._id === item?._id
+        (cartItem) => cartItem?.productId?._id === item?._id
       );
 
       const totalPrice =
