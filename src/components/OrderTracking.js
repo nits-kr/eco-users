@@ -103,10 +103,7 @@ function OrderTracking({ orderStatus }) {
             <div className="col-xxl-3 col-xl-4 col-lg-6">
               <div className="order-image">
                 <img
-                  src={
-                    order?.products[0]?.product_Id?.addVarient[0]
-                      ?.product_Pic[0]
-                  }
+                  src={order?.products?.[0]?.varient_Id?.product_Pic[0]}
                   className="img-fluid  lazyload"
                   alt=""
                 />
@@ -243,7 +240,7 @@ function OrderTracking({ orderStatus }) {
                   <div className="container">
                     <div className="card  StaticCard">
                       <div className="card-body"> */}
-                {order?.orderStatus === "Cancelled" ? (
+                {order?.status === "Cancelled" ? (
                   <strong className="fs-5">
                     <div
                       style={{
@@ -282,29 +279,29 @@ function OrderTracking({ orderStatus }) {
                       <div
                         data-id="step1"
                         className={
-                          order?.orderStatus === "Pending" ||
-                          order?.orderStatus === "Inprogress" ||
-                          order?.orderStatus === "Approved" ||
-                          order?.orderStatus === "Packed" ||
-                          order?.orderStatus === "Shipped" ||
-                          order?.orderStatus === "Delivered"
+                          order?.status === "Placed" ||
+                          order?.status === "Inprogress" ||
+                          order?.status === "Approved" ||
+                          order?.status === "Packed" ||
+                          order?.status === "Shipped" ||
+                          order?.status === "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
                         }
                       >
                         <div className="Title">
-                          <h5 className="text-dark">Pending</h5>
+                          <h5 className="text-dark">Placed</h5>
                           <h6 className="text-dark">05:43 AM</h6>
                         </div>
                       </div>
                       <div
                         data-id="step2"
                         className={
-                          order?.orderStatus === "Inprogress" ||
-                          order?.orderStatus === "Approved" ||
-                          order?.orderStatus === "Packed" ||
-                          order?.orderStatus === "Shipped" ||
-                          order?.orderStatus === "Delivered"
+                          order?.status === "Inprogress" ||
+                          order?.status === "Approved" ||
+                          order?.status === "Packed" ||
+                          order?.status === "Shipped" ||
+                          order?.status === "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
                         }
@@ -317,10 +314,10 @@ function OrderTracking({ orderStatus }) {
                       <div
                         data-id="step3"
                         className={
-                          order?.orderStatus === "Approved" ||
-                          order?.orderStatus === "Packed" ||
-                          order?.orderStatus === "Shipped" ||
-                          order?.orderStatus === "Delivered"
+                          order?.status === "Approved" ||
+                          order?.status === "Packed" ||
+                          order?.status === "Shipped" ||
+                          order?.status === "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
                         }
@@ -333,9 +330,9 @@ function OrderTracking({ orderStatus }) {
                       <div
                         data-id="step4"
                         className={
-                          order?.orderStatus === "Packed" ||
-                          order?.orderStatus === "Shipped" ||
-                          order?.orderStatus === "Delivered"
+                          order?.status === "Packed" ||
+                          order?.status === "Shipped" ||
+                          order?.status === "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
                         }
@@ -348,8 +345,8 @@ function OrderTracking({ orderStatus }) {
                       <div
                         data-id="step5"
                         className={
-                          order?.orderStatus === "Shipped" ||
-                          order?.orderStatus === "Delivered"
+                          order?.status === "Shipped" ||
+                          order?.status === "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
                         }
@@ -376,7 +373,7 @@ function OrderTracking({ orderStatus }) {
                       <div
                         data-id="step6"
                         className={
-                          order?.orderStatus === "Delivered"
+                          order?.status === "Delivered"
                             ? "step-slider-item active"
                             : "step-slider-item"
                         }
