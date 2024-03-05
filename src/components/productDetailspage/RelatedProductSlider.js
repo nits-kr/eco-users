@@ -168,8 +168,8 @@ function RelatedProductSlider({ id }) {
   return (
     <>
       <section
-        className="product-list-section section-b-space"
-        style={{ display: relatedProductItems?.length > 0 ? "" : "none" }}
+        className="product-list-section section-b-space d-none"
+        style={{ display: relatedProductItems?.length > 3 ? "" : "none" }}
       >
         <div className="container-fluid-lg">
           <div className="title">
