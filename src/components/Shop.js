@@ -643,7 +643,7 @@ function Shop(props) {
                       </Link>
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
-                      Shop
+                      {URLType ? URLType : "Shop"}
                     </li>
                   </ol>
                 </nav>
@@ -1235,15 +1235,21 @@ function Shop(props) {
                   </div>
                 </>
               )}
-              <nav className="custome-pagination">
-                <ul className="pagination justify-content-center">
-                  <Pagination
-                    totalItems={productListItems?.length}
-                    itemsPerPage={itemsPerPage}
-                    onPageChange={onPageChange}
-                  />
-                </ul>
-              </nav>
+              {productListItems?.length > 0 ? (
+                <nav className="custome-pagination">
+                  <ul className="pagination justify-content-center">
+                    <Pagination
+                      totalItems={productListItems?.length}
+                      itemsPerPage={itemsPerPage}
+                      onPageChange={onPageChange}
+                    />
+                  </ul>
+                </nav>
+              ) : (
+                <div className="d-flex align-items-center justify-content-center text-danger mt-5">
+                  <strong>No Matching Products Found</strong>
+                </div>
+              )}
             </div>
           </div>
         </div>

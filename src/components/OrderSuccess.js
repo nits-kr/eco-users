@@ -240,7 +240,7 @@ function OrderSuccess() {
                             <td className="product-detail">
                               <div className="product border-0">
                                 <Link
-                                  to="/product.left-sidebar"
+                                  to={`/product-details-page/${item?.products?.[0]?.varient_Id?.productId?._id}`}
                                   className="product-image"
                                 >
                                   <img
@@ -264,7 +264,9 @@ function OrderSuccess() {
                                       </Link>
                                     </li> */}
                                     <li className="name">
-                                      <Link to="/product">
+                                      <Link
+                                        to={`/product-details-page/${item?.products?.[0]?.varient_Id?.productId?._id}`}
+                                      >
                                         {" "}
                                         {trimProductName(
                                           item?.products?.[0]?.varient_Id
@@ -353,7 +355,7 @@ function OrderSuccess() {
                                 </Link>
                               ) : item?.status === "Delivered" ? (
                                 <Link
-                                  to={`/product-details-page/${item?.products?._id}`}
+                                  to={`/product-details-page/${item?.products?.[0]?.varient_Id?.productId?._id}`}
                                   className="text-primary"
                                 >
                                   <div className="text-danger">Delivered</div>

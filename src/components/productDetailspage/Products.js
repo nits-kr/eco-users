@@ -31,6 +31,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { Spinner } from "react-bootstrap";
 
 function Products(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
@@ -91,12 +92,17 @@ function Products(props) {
       ecommercetoken,
     };
 
+    setLoading(true);
+
     try {
       const respone = await productDetails(datas);
 
       setProductDetail(respone?.data?.results?.product);
+      setLoading(false);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -330,20 +336,7 @@ function Products(props) {
   expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + 3600);
   return (
     <>
-      {/* Loader Start */}
-      {/* <div className="fullpage-loader">
-        <span />
-        <span />
-        <span />
-        <span />
-        <span />
-        <span />
-      </div> */}
-      {/* Loader End */}
-      {/* Header Start */}
       <Header Dash={"details"} />
-      {/* Header End */}
-      {/* mobile fix menu start */}
       <div className="mobile-menu d-md-none d-block mobile-cart">
         <ul>
           <li className="active">
@@ -378,8 +371,6 @@ function Products(props) {
           </li>
         </ul>
       </div>
-      {/* mobile fix menu end */}
-      {/* Breadcrumb Section Start */}
       <section className="breadscrumb-section pt-0">
         <div className="container-fluid-lg">
           <div className="row">
@@ -409,591 +400,597 @@ function Products(props) {
           </div>
         </div>
       </section>
-      {/* Breadcrumb Section End */}
-      {/* Product Left Sidebar Start */}
-      <section className="product-section">
-        <div className="container-fluid px-4">
-          <div className="row">
-            <div className="col-12 wow fadeInUp">
-              <div className="row g-4">
-                {/* <SelectedProduct selectedVariantData={selectedVariantData} /> */}
-                <div className="col-xl-5 col-lg-5 wow fadeInUp">
-                  <div className="product-left-box">
-                    <div
-                      id="carouselExampleIndicators"
-                      className="carousel slide"
-                      data-bs-ride="carousel"
-                    >
-                      <div className="carousel-indicators">
-                        {selectedVariantData?.product_Pic
-                          ?.slice(0, 8)
-                          ?.map((image, index) => (
-                            <button
-                              key={index}
-                              type="button"
-                              data-bs-target="#carouselExampleIndicators"
-                              data-bs-slide-to={index}
-                              className={index === 0 ? "active" : ""}
-                              aria-label={`Slide ${index + 1}`}
-                            >
-                              <img src={image} alt={`Product ${index + 1}`} />
-                            </button>
-                          ))}
-                      </div>
-                      <div className="carousel-inner">
-                        {selectedVariantData?.product_Pic
-                          ?.slice(0, 8)
-                          ?.map((image, index) => (
-                            <div
-                              key={index}
-                              className={`carousel-item ${
-                                index === 0 ? "active" : ""
-                              }`}
-                            >
-                              <div className="d-flex h-100 align-items-center justify-content-center">
+      {loading ? (
+        <div className="d-flex align-items-center justify-content-center mt-5">
+          <Spinner /> <div className="ms-2">Loading...</div>
+        </div>
+      ) : (
+        <section className="product-section">
+          <div className="container-fluid px-4">
+            <div className="row">
+              <div className="col-12 wow fadeInUp">
+                <div className="row g-4">
+                  {/* <SelectedProduct selectedVariantData={selectedVariantData} /> */}
+                  <div className="col-xl-5 col-lg-5 wow fadeInUp">
+                    <div className="product-left-box">
+                      <div
+                        id="carouselExampleIndicators"
+                        className="carousel slide"
+                        data-bs-ride="carousel"
+                      >
+                        <div className="carousel-indicators">
+                          {selectedVariantData?.product_Pic
+                            ?.slice(0, 8)
+                            ?.map((image, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                data-bs-target="#carouselExampleIndicators"
+                                data-bs-slide-to={index}
+                                className={index === 0 ? "active" : ""}
+                                aria-label={`Slide ${index + 1}`}
+                              >
                                 <img src={image} alt={`Product ${index + 1}`} />
+                              </button>
+                            ))}
+                        </div>
+                        <div className="carousel-inner">
+                          {selectedVariantData?.product_Pic
+                            ?.slice(0, 8)
+                            ?.map((image, index) => (
+                              <div
+                                key={index}
+                                className={`carousel-item ${
+                                  index === 0 ? "active" : ""
+                                }`}
+                              >
+                                <div className="d-flex h-100 align-items-center justify-content-center">
+                                  <img
+                                    src={image}
+                                    alt={`Product ${index + 1}`}
+                                  />
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div
-                  className="col-xl-7 col-lg-7 wow fadeInUp"
-                  data-wow-delay="0.1s"
-                >
-                  <div className="right-box-contain">
-                    <div className="row align-items-center mb-4">
-                      <div className="col-6">
-                        <h6 className="offer-top mb-0">
-                          {oldPrice > price
-                            ? `${(
-                                ((oldPrice - price) / oldPrice) *
-                                100
-                              ).toFixed(2)}% Off`
-                            : `${(
-                                ((price - oldPrice) / oldPrice) *
-                                100
-                              ).toFixed(2)}% Off`}
-                        </h6>
+                  <div
+                    className="col-xl-7 col-lg-7 wow fadeInUp"
+                    data-wow-delay="0.1s"
+                  >
+                    <div className="right-box-contain">
+                      <div className="row align-items-center mb-4">
+                        <div className="col-6">
+                          <h6 className="offer-top mb-0">
+                            {oldPrice > price
+                              ? `${(
+                                  ((oldPrice - price) / oldPrice) *
+                                  100
+                                ).toFixed(2)}% Off`
+                              : `${(
+                                  ((price - oldPrice) / oldPrice) *
+                                  100
+                                ).toFixed(2)}% Off`}
+                          </h6>
+                        </div>
+                        <div className="col-6 text-end">
+                          <a
+                            className="report_btns"
+                            data-bs-toggle={`${
+                              ecommercetoken ? "modal" : "click"
+                            }`}
+                            onClick={() =>
+                              ecommercetoken ? null : handleReportAuth()
+                            }
+                            data-bs-target="#report_modal"
+                            href="javascript:;"
+                          >
+                            <img src="../assets/images/report.svg" alt="" />
+                          </a>
+                        </div>
                       </div>
-                      <div className="col-6 text-end">
-                        <a
-                          className="report_btns"
-                          data-bs-toggle={`${
-                            ecommercetoken ? "modal" : "click"
+                      <h2 className="name">{productDetail?.productName_en}</h2>
+                      <div className="price-rating">
+                        <h3 className="theme-color price">
+                          ${price || ""}{" "}
+                          <del className="text-content">${oldPrice || ""}</del>{" "}
+                          <span className="offer theme-color">
+                            {oldPrice > price
+                              ? `${(
+                                  ((oldPrice - price) / oldPrice) *
+                                  100
+                                ).toFixed(2)}% Off`
+                              : `${(
+                                  ((price - oldPrice) / oldPrice) *
+                                  100
+                                ).toFixed(2)}% Off`}
+                          </span>
+                        </h3>
+                        <div>
+                          <Star rating={averageRating} />
+                          <span className="ms-1">
+                            {" "}
+                            {productDetail?.ratings?.length} reviews{" "}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="procuct-contain">
+                        <p>
+                          {`${productDetail?.Description?.split(".")
+                            .slice(0, 3)
+                            .join(".")}${
+                            productDetail?.Description?.split(".").length > 2
+                              ? ""
+                              : ""
                           }`}
-                          onClick={() =>
-                            ecommercetoken ? null : handleReportAuth()
-                          }
-                          data-bs-target="#report_modal"
-                          href="javascript:;"
-                        >
-                          <img src="../assets/images/report.svg" alt="" />
-                        </a>
+                        </p>
                       </div>
-                    </div>
-                    <h2 className="name">{productDetail?.productName_en}</h2>
-                    <div className="price-rating">
-                      <h3 className="theme-color price">
-                        ${price || ""}{" "}
-                        <del className="text-content">${oldPrice || ""}</del>{" "}
-                        <span className="offer theme-color">
-                          {oldPrice > price
-                            ? `${(
-                                ((oldPrice - price) / oldPrice) *
-                                100
-                              ).toFixed(2)}% Off`
-                            : `${(
-                                ((price - oldPrice) / oldPrice) *
-                                100
-                              ).toFixed(2)}% Off`}
-                        </span>
-                      </h3>
-                      <div>
-                        <Star rating={averageRating} />
-                        <span className="ms-1">
-                          {" "}
-                          {productDetail?.ratings?.length} reviews{" "}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="procuct-contain">
-                      <p>
-                        {`${productDetail?.Description?.split(".")
-                          .slice(0, 3)
-                          .join(".")}${
-                          productDetail?.Description?.split(".").length > 2
-                            ? ""
-                            : ""
-                        }`}
-                      </p>
-                    </div>
-                    <div className="product-packege">
-                      <div className="product-title">
-                        <h4>
-                          Select:{" "}
-                          <strong style={{ color: "var(--theme-color)" }}>
-                            {variants?.[0]?.attribute_Id?.attributeName_en}
-                          </strong>{" "}
-                        </h4>
-                      </div>
-                      <ul className="select-packege">
-                        {variants.map((variant, index) => (
-                          <li key={index}>
-                            <Link
-                              className={`variant-button ${
-                                selectedVariant === index ? "active" : ""
-                              }`}
-                              onClick={() => handleVariantChange(index)}
-                            >
-                              {variant.values_Id?.valuesName_en}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <MyTimer
-                      dataDays={1}
-                      dataHours={1}
-                      dataMinutes={2}
-                      dataSeconds={3}
-                    />
-
-                    <div className="row">
-                      <div className="col-md-6">
-                        <div className="note-box product-packege">
-                          {selectedVariantData?.stockQuantity <= 0 ? (
-                            <div className="cart_qty qty-box product-qty">
-                              <div className="input-group">
-                                <button
-                                  type="button"
-                                  className="qty-left-minus"
-                                  data-type="minus"
-                                  data-field=""
-                                  style={{ cursor: "not-allowed" }}
-                                  disabled
-                                >
-                                  <i
-                                    className="fa fa-minus"
-                                    aria-hidden="true"
-                                  />
-                                </button>
-                                <input
-                                  className="form-control input-number qty-input"
-                                  type="text"
-                                  name="quantity"
-                                  value={count}
-                                />
-
-                                <button
-                                  type="button"
-                                  className="qty-right-plus"
-                                  data-type="plus"
-                                  data-field=""
-                                  disabled
-                                  style={{ cursor: "not-allowed" }}
-                                >
-                                  <i
-                                    className="fa fa-plus"
-                                    aria-hidden="true"
-                                  />
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="cart_qty qty-box product-qty">
-                              <div className="input-group">
-                                <button
-                                  type="button"
-                                  className="qty-left-minus"
-                                  data-type="minus"
-                                  data-field=""
-                                  onClick={() => setCount(count - 1)}
-                                  disabled={count <= 1}
-                                >
-                                  <i
-                                    className="fa fa-minus"
-                                    aria-hidden="true"
-                                  />
-                                </button>
-                                <input
-                                  className="form-control input-number qty-input"
-                                  type="text"
-                                  name="quantity"
-                                  value={count}
-                                />
-
-                                <button
-                                  type="button"
-                                  className="qty-right-plus"
-                                  data-type="plus"
-                                  data-field=""
-                                  onClick={() => setCount(count + 1)}
-                                  disabled={
-                                    count === selectedVariantData?.stockQuantity
-                                  }
-                                  title={`${
-                                    count === selectedVariantData?.stockQuantity
-                                      ? "Items Limited"
-                                      : ""
-                                  }`}
-                                >
-                                  <i
-                                    className="fa fa-plus"
-                                    aria-hidden="true"
-                                  />
-                                </button>
-                              </div>
-                            </div>
-                          )}
-
-                          {isItemInCart ? (
-                            <Link
-                              to="/cart"
-                              className="btn btn-md bg-dark cart-button text-white w-100"
-                            >
-                              Go to Cart
-                            </Link>
-                          ) : (
-                            <Link
-                              // to="/cart"
-                              className="btn btn-md bg-dark cart-button text-white w-100"
-                              onClick={() =>
-                                selectedVariantData?.stockQuantity <= 0
-                                  ? toast.error("Out Of Stock")
-                                  : handleAddToCart()
-                              }
-                            >
-                              Add to Cart
-                            </Link>
-                          )}
+                      <div className="product-packege">
+                        <div className="product-title">
+                          <h4>
+                            Select:{" "}
+                            <strong style={{ color: "var(--theme-color)" }}>
+                              {variants?.[0]?.attribute_Id?.attributeName_en}
+                            </strong>{" "}
+                          </h4>
                         </div>
-                      </div>
-                    </div>
-                    <div className="buy-box">
-                      {productDetail?.like === "false" ? (
-                        <Link
-                          to="#"
-                          title="Add To Wishlist"
-                          onClick={() => handleWishClick(id)}
-                        >
-                          {/* <i data-feather="heart" /> */}
-                          <FontAwesomeIcon
-                            icon={faHeart}
-                            style={{
-                              fontSize: "20px",
-                              color: "black",
-                            }}
-                            data-tip="Add to Wishlist"
-                            data-for="wishlist-tooltip"
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.color = "red";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.color = "black";
-                            }}
-                          />
-                          <span>Add To Wishlist</span>
-                        </Link>
-                      ) : (
-                        <Link
-                          to="/wishlist"
-                          title="Wishlist"
-                          // onClick={() => handleWishClick(id)}
-                        >
-                          {/* <i data-feather="heart" /> */}
-                          <FontAwesomeIcon
-                            icon={faHeart}
-                            style={{
-                              fontSize: "20px",
-                              color: "red",
-                            }}
-                            // data-tip="Add to Wishlist"
-                            // data-for="wishlist-tooltip"
-                          />
-                          <span>Added To Wishlist</span>
-                        </Link>
-                      )}
-
-                      {isCompareItems ? (
-                        <Link
-                          to="/compare"
-                          // onClick={() => handleCompareClick(id)}
-                        >
-                          <i data-feather="shuffle" />
-                          <span>Add To Compare</span>
-                        </Link>
-                      ) : (
-                        <Link to="#" onClick={() => handleCompareClick(id)}>
-                          <i data-feather="shuffle" />
-                          <span>Add To Compare</span>
-                        </Link>
-                      )}
-                    </div>
-                    <div className="pickup-box">
-                      {area ? (
-                        <div className="procuct-contain">
-                          <div className="product-title">
-                            <h4>Description</h4>
-                          </div>
-                          <p>
-                            {productDetail?.Description?.slice(0, 140)}
-                            <strong>...</strong>
-                          </p>
-                          <Link
-                            to=""
-                            className="blog-button"
-                            onClick={handleExpand}
-                          >
-                            Read More
-                            <i className="fa-solid fa-right-long ms-2" />
-                          </Link>
-                        </div>
-                      ) : (
-                        <div className="procuct-contain">
-                          <div className="product-title">
-                            <h4>Description</h4>
-                          </div>
-                          <p>{productDetail?.Description}</p>
-                          <Link
-                            to=""
-                            className="blog-button"
-                            onClick={handleCompress}
-                          >
-                            Hide More
-                            <i className="fa-solid fa-right-long ms-2" />
-                          </Link>
-                        </div>
-                      )}
-
-                      <div className="product-info">
-                        <ul className="product-info-list product-info-list-2">
-                          <li>
-                            Type :{" "}
-                            <Link to="#">{productDetail?.productType}</Link>
-                          </li>
-                          <li>
-                            SKU : <Link to="#">{selectedVariantData?.SKU}</Link>
-                          </li>
-                          <li>
-                            MFG :{" "}
-                            <Link to="#">
-                              {" "}
-                              {productDetail?.publishDate?.slice(0, 10)}{" "}
-                            </Link>
-                          </li>
-                          <li>
-                            Stock :{" "}
-                            <Link to="#">
-                              {" "}
-                              {selectedVariantData?.stockQuantity}{" "}
-                            </Link>
-                          </li>
+                        <ul className="select-packege">
+                          {variants.map((variant, index) => (
+                            <li key={index}>
+                              <Link
+                                className={`variant-button ${
+                                  selectedVariant === index ? "active" : ""
+                                }`}
+                                onClick={() => handleVariantChange(index)}
+                              >
+                                {variant.values_Id?.valuesName_en}
+                              </Link>
+                            </li>
+                          ))}
                         </ul>
                       </div>
-                    </div>
-                    <div className="paymnet-option">
-                      <div className="product-title">
-                        <h4>Guaranteed Safe Checkout</h4>
-                      </div>
-                      <ul>
-                        <li>
-                          <a href="javascript:void(0)">
-                            <img
-                              src="../assets/images/product/payment/1.svg"
-                              className=" lazyload"
-                              alt=""
-                            />
-                          </a>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">
-                            <img
-                              src="../assets/images/product/payment/2.svg"
-                              className="lazyload"
-                              alt=""
-                            />
-                          </a>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">
-                            <img
-                              src="../assets/images/product/payment/3.svg"
-                              className="lazyload"
-                              alt=""
-                            />
-                          </a>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">
-                            <img
-                              src="../assets/images/product/payment/4.svg"
-                              className="lazyload"
-                              alt=""
-                            />
-                          </a>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">
-                            <img
-                              src="../assets/images/product/payment/5.svg"
-                              className="lazyload"
-                              alt=""
-                            />
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="product-section-box ">
-                      <ul
-                        className="nav nav-tabs custom-nav"
-                        id="myTab"
-                        role="tablist"
-                      >
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className="nav-link active"
-                            id="review-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#review"
-                            type="button"
-                            role="tab"
-                            aria-controls="review"
-                            aria-selected="false"
-                          >
-                            Review
-                          </button>
-                        </li>
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className="nav-link"
-                            id="description-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#description"
-                            type="button"
-                            role="tab"
-                            aria-controls="description"
-                            aria-selected="true"
-                          >
-                            Description
-                          </button>
-                        </li>
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className="nav-link"
-                            id="info-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#info"
-                            type="button"
-                            role="tab"
-                            aria-controls="info"
-                            aria-selected="false"
-                          >
-                            Additional info
-                          </button>
-                        </li>
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className="nav-link"
-                            id="care-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#care"
-                            type="button"
-                            role="tab"
-                            aria-controls="care"
-                            aria-selected="false"
-                          >
-                            Care Instuctions
-                          </button>
-                        </li>
-                      </ul>
-                      <Addreview
-                        productDetail={productDetail}
-                        averageRating={averageRating}
-                        id={id}
-                        handleProductDetails={handleProductDetails}
+                      <MyTimer
+                        dataDays={1}
+                        dataHours={1}
+                        dataMinutes={2}
+                        dataSeconds={3}
                       />
-                    </div>
-                    <div className="right-sidebar-box">
-                      <div className="vendor-box">
-                        <div className="verndor-contain">
-                          <div className="vendor-image">
-                            <img
-                              src={
-                                productDetail
-                                  ? productDetail?.brand_Id?.brandPic
-                                  : "../assets/images/product/vendor.png"
-                              }
-                              className="lazyload"
-                              alt=""
-                            />
-                          </div>
-                          <div className="vendor-name">
-                            <h5 className="fw-500">
-                              {" "}
-                              {productDetail
-                                ? productDetail?.brand_Id?.brandName_en
-                                : "Brand Not Available"}{" "}
-                            </h5>
-                            <div className="product-rating mt-1">
-                              <ul className="rating">
-                                <Star />
-                              </ul>
-                              <span>(0 Reviews)</span>
-                            </div>
+
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="note-box product-packege">
+                            {selectedVariantData?.stockQuantity <= 0 ? (
+                              <div className="cart_qty qty-box product-qty">
+                                <div className="input-group">
+                                  <button
+                                    type="button"
+                                    className="qty-left-minus"
+                                    data-type="minus"
+                                    data-field=""
+                                    style={{ cursor: "not-allowed" }}
+                                    disabled
+                                  >
+                                    <i
+                                      className="fa fa-minus"
+                                      aria-hidden="true"
+                                    />
+                                  </button>
+                                  <input
+                                    className="form-control input-number qty-input"
+                                    type="text"
+                                    name="quantity"
+                                    value={count}
+                                  />
+
+                                  <button
+                                    type="button"
+                                    className="qty-right-plus"
+                                    data-type="plus"
+                                    data-field=""
+                                    disabled
+                                    style={{ cursor: "not-allowed" }}
+                                  >
+                                    <i
+                                      className="fa fa-plus"
+                                      aria-hidden="true"
+                                    />
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="cart_qty qty-box product-qty">
+                                <div className="input-group">
+                                  <button
+                                    type="button"
+                                    className="qty-left-minus"
+                                    data-type="minus"
+                                    data-field=""
+                                    onClick={() => setCount(count - 1)}
+                                    disabled={count <= 1}
+                                  >
+                                    <i
+                                      className="fa fa-minus"
+                                      aria-hidden="true"
+                                    />
+                                  </button>
+                                  <input
+                                    className="form-control input-number qty-input"
+                                    type="text"
+                                    name="quantity"
+                                    value={count}
+                                  />
+
+                                  <button
+                                    type="button"
+                                    className="qty-right-plus"
+                                    data-type="plus"
+                                    data-field=""
+                                    onClick={() => setCount(count + 1)}
+                                    disabled={
+                                      count ===
+                                      selectedVariantData?.stockQuantity
+                                    }
+                                    title={`${
+                                      count ===
+                                      selectedVariantData?.stockQuantity
+                                        ? "Items Limited"
+                                        : ""
+                                    }`}
+                                  >
+                                    <i
+                                      className="fa fa-plus"
+                                      aria-hidden="true"
+                                    />
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+
+                            {isItemInCart ? (
+                              <Link
+                                to="/cart"
+                                className="btn btn-md bg-dark cart-button text-white w-100"
+                              >
+                                Go to Cart
+                              </Link>
+                            ) : (
+                              <Link
+                                // to="/cart"
+                                className="btn btn-md bg-dark cart-button text-white w-100"
+                                onClick={() =>
+                                  selectedVariantData?.stockQuantity <= 0
+                                    ? toast.error("Out Of Stock")
+                                    : handleAddToCart()
+                                }
+                              >
+                                Add to Cart
+                              </Link>
+                            )}
                           </div>
                         </div>
-                        {/* <p className="vendor-detail">
-                          Noodles &amp; Company is an American fast-casual
-                          restaurant that offers international and American
-                          noodle dishes and pasta.
-                        </p> */}
-                        <div className="vendor-list">
-                          <ul>
+                      </div>
+                      <div className="buy-box">
+                        {productDetail?.like === "false" ? (
+                          <Link
+                            to="#"
+                            title="Add To Wishlist"
+                            onClick={() => handleWishClick(id)}
+                          >
+                            {/* <i data-feather="heart" /> */}
+                            <FontAwesomeIcon
+                              icon={faHeart}
+                              style={{
+                                fontSize: "20px",
+                                color: "black",
+                              }}
+                              data-tip="Add to Wishlist"
+                              data-for="wishlist-tooltip"
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.color = "red";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.color = "black";
+                              }}
+                            />
+                            <span>Add To Wishlist</span>
+                          </Link>
+                        ) : (
+                          <Link
+                            to="/wishlist"
+                            title="Wishlist"
+                            // onClick={() => handleWishClick(id)}
+                          >
+                            {/* <i data-feather="heart" /> */}
+                            <FontAwesomeIcon
+                              icon={faHeart}
+                              style={{
+                                fontSize: "20px",
+                                color: "red",
+                              }}
+                              // data-tip="Add to Wishlist"
+                              // data-for="wishlist-tooltip"
+                            />
+                            <span>Added To Wishlist</span>
+                          </Link>
+                        )}
+
+                        {isCompareItems ? (
+                          <Link
+                            to="/compare"
+                            // onClick={() => handleCompareClick(id)}
+                          >
+                            <i data-feather="shuffle" />
+                            <span>Add To Compare</span>
+                          </Link>
+                        ) : (
+                          <Link to="#" onClick={() => handleCompareClick(id)}>
+                            <i data-feather="shuffle" />
+                            <span>Add To Compare</span>
+                          </Link>
+                        )}
+                      </div>
+                      <div className="pickup-box">
+                        {area ? (
+                          <div className="procuct-contain">
+                            <div className="product-title">
+                              <h4>Description</h4>
+                            </div>
+                            <p>
+                              {productDetail?.Description?.slice(0, 140)}
+                              <strong>...</strong>
+                            </p>
+                            <Link
+                              to=""
+                              className="blog-button"
+                              onClick={handleExpand}
+                            >
+                              Read More
+                              <i className="fa-solid fa-right-long ms-2" />
+                            </Link>
+                          </div>
+                        ) : (
+                          <div className="procuct-contain">
+                            <div className="product-title">
+                              <h4>Description</h4>
+                            </div>
+                            <p>{productDetail?.Description}</p>
+                            <Link
+                              to=""
+                              className="blog-button"
+                              onClick={handleCompress}
+                            >
+                              Hide More
+                              <i className="fa-solid fa-right-long ms-2" />
+                            </Link>
+                          </div>
+                        )}
+
+                        <div className="product-info">
+                          <ul className="product-info-list product-info-list-2">
                             <li>
-                              <div className="address-contact">
-                                <i data-feather="map-pin" />
-                                <h5>
-                                  Address:{" "}
-                                  <span className="text-content">
-                                    1288 Franklin Avenue
-                                  </span>
-                                </h5>
-                              </div>
+                              Type :{" "}
+                              <Link to="#">{productDetail?.productType}</Link>
                             </li>
                             <li>
-                              <div className="address-contact">
-                                <i data-feather="headphones" />
-                                <h5>
-                                  Contact Seller:{" "}
-                                  <span className="text-content">
-                                    (+1)-123-456-789
-                                  </span>
-                                </h5>
-                              </div>
+                              SKU :{" "}
+                              <Link to="#">{selectedVariantData?.SKU}</Link>
+                            </li>
+                            <li>
+                              MFG :{" "}
+                              <Link to="#">
+                                {" "}
+                                {productDetail?.publishDate?.slice(0, 10)}{" "}
+                              </Link>
+                            </li>
+                            <li>
+                              Stock :{" "}
+                              <Link to="#">
+                                {" "}
+                                {selectedVariantData?.stockQuantity}{" "}
+                              </Link>
                             </li>
                           </ul>
                         </div>
                       </div>
-                      {/* <TrendingProductDetails /> */}
+                      <div className="paymnet-option">
+                        <div className="product-title">
+                          <h4>Guaranteed Safe Checkout</h4>
+                        </div>
+                        <ul>
+                          <li>
+                            <a href="javascript:void(0)">
+                              <img
+                                src="../assets/images/product/payment/1.svg"
+                                className=" lazyload"
+                                alt=""
+                              />
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)">
+                              <img
+                                src="../assets/images/product/payment/2.svg"
+                                className="lazyload"
+                                alt=""
+                              />
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)">
+                              <img
+                                src="../assets/images/product/payment/3.svg"
+                                className="lazyload"
+                                alt=""
+                              />
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)">
+                              <img
+                                src="../assets/images/product/payment/4.svg"
+                                className="lazyload"
+                                alt=""
+                              />
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)">
+                              <img
+                                src="../assets/images/product/payment/5.svg"
+                                className="lazyload"
+                                alt=""
+                              />
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="product-section-box ">
+                        <ul
+                          className="nav nav-tabs custom-nav"
+                          id="myTab"
+                          role="tablist"
+                        >
+                          <li className="nav-item" role="presentation">
+                            <button
+                              className="nav-link active"
+                              id="review-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#review"
+                              type="button"
+                              role="tab"
+                              aria-controls="review"
+                              aria-selected="false"
+                            >
+                              Review
+                            </button>
+                          </li>
+                          <li className="nav-item" role="presentation">
+                            <button
+                              className="nav-link"
+                              id="description-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#description"
+                              type="button"
+                              role="tab"
+                              aria-controls="description"
+                              aria-selected="true"
+                            >
+                              Description
+                            </button>
+                          </li>
+                          <li className="nav-item" role="presentation">
+                            <button
+                              className="nav-link"
+                              id="info-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#info"
+                              type="button"
+                              role="tab"
+                              aria-controls="info"
+                              aria-selected="false"
+                            >
+                              Additional info
+                            </button>
+                          </li>
+                          <li className="nav-item" role="presentation">
+                            <button
+                              className="nav-link"
+                              id="care-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#care"
+                              type="button"
+                              role="tab"
+                              aria-controls="care"
+                              aria-selected="false"
+                            >
+                              Care Instuctions
+                            </button>
+                          </li>
+                        </ul>
+                        <Addreview
+                          productDetail={productDetail}
+                          averageRating={averageRating}
+                          id={id}
+                          handleProductDetails={handleProductDetails}
+                        />
+                      </div>
+                      <div className="right-sidebar-box">
+                        <div className="vendor-box">
+                          <div className="verndor-contain">
+                            <div className="vendor-image">
+                              <img
+                                src={
+                                  productDetail
+                                    ? productDetail?.brand_Id?.brandPic
+                                    : "../assets/images/product/vendor.png"
+                                }
+                                className="lazyload"
+                                alt=""
+                              />
+                            </div>
+                            <div className="vendor-name">
+                              <h5 className="fw-500">
+                                {" "}
+                                {productDetail
+                                  ? productDetail?.brand_Id?.brandName_en
+                                  : "Brand Not Available"}{" "}
+                              </h5>
+                              <div className="product-rating mt-1">
+                                <ul className="rating">
+                                  <Star />
+                                </ul>
+                                <span>(0 Reviews)</span>
+                              </div>
+                            </div>
+                          </div>
+                          {/* <p className="vendor-detail">
+                          Noodles &amp; Company is an American fast-casual
+                          restaurant that offers international and American
+                          noodle dishes and pasta.
+                        </p> */}
+                          <div className="vendor-list">
+                            <ul>
+                              <li>
+                                <div className="address-contact">
+                                  <i data-feather="map-pin" />
+                                  <h5>
+                                    Address:{" "}
+                                    <span className="text-content">
+                                      1288 Franklin Avenue
+                                    </span>
+                                  </h5>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="address-contact">
+                                  <i data-feather="headphones" />
+                                  <h5>
+                                    Contact Seller:{" "}
+                                    <span className="text-content">
+                                      (+1)-123-456-789
+                                    </span>
+                                  </h5>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                        {/* <TrendingProductDetails /> */}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
       <TrendingProductHome />
-      {/* Product Left Sidebar End */}
       <RelatedProductSlider id={productDetail?.category_Id?._id} />
-      {/* Footer Section Start */}
       <Footer />
-      {/* Footer Section End */}
-      {/* Quick View Modal Box Start */}
       <div
         className="modal fade theme-modal view-modal"
         id="view"
@@ -1116,8 +1113,6 @@ function Products(props) {
           </div>
         </div>
       </div>
-      {/* Quick View Modal Box End */}
-      {/* Location Modal Start */}
       <div
         className="modal location-modal fade theme-modal"
         id="locationModal"
