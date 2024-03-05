@@ -36,7 +36,11 @@ function Blog({ blogList }) {
   };
   return (
     <>
-      <div className="title section-t-space">
+      <div
+        className={`title section-t-space ${
+          blogList?.length > 0 ? "" : "d-none"
+        }`}
+      >
         <h2>Featured Blog</h2>
         <span className="title-leaf">
           <svg className="icon-width">

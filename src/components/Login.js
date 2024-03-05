@@ -246,11 +246,11 @@ function Login() {
                             required: "Mobile Number is Required*",
                             maxLength: {
                               value: 10,
-                              message: "maximium 10 Charcarters",
+                              message: "maximum 10 Charcarters",
                             },
                             minLength: {
                               value: 10,
-                              message: "minimium 10 Charcarters",
+                              message: "minimum 10 Charcarters",
                             },
                           })}
                         />

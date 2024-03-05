@@ -247,6 +247,10 @@ function Header({ Dash }) {
       "loginId",
       "mobileNumber",
       "userName",
+      "varificationMobile",
+      "varificationOtp",
+      "profileComleted",
+      "productSearch",
     ];
 
     itemsToRemove.forEach((item) => {
@@ -709,7 +713,7 @@ function Header({ Dash }) {
                             )}
 
                             {ecommercetoken ? null : (
-                              <li className="product-box-contain">
+                              <li className="product-box-contain d-none">
                                 <Link to="/sign-up">Register</Link>
                               </li>
                             )}

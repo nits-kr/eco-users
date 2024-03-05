@@ -18,6 +18,7 @@ import {
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import classNames from "classnames";
+import { toast } from "react-toastify";
 
 function UpdateProfilessection(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
@@ -148,17 +149,21 @@ function UpdateProfilessection(props) {
         formdataall,
         ecommercetoken,
       });
-      console.log("Contact created successfully:", res);
-      Swal.fire({
-        title: "Profile Updated!",
-        text: "Your profile has been updated successfully.",
-        icon: "success",
-        confirmButtonText: "OK",
-        timer: 2000,
-        timerProgressBar: true,
-      }).then(() => {
-        navigate("/");
-      });
+
+      if (res?.data?.message === "Success") {
+        Swal.fire({
+          title: "Profile Updated!",
+          text: "Your profile has been updated successfully.",
+          icon: "success",
+          confirmButtonText: "OK",
+          timer: 2000,
+          timerProgressBar: true,
+        }).then(() => {
+          navigate("/");
+        });
+      } else {
+        toast.error(res.data.message);
+      }
     } catch (error) {
       console.error("Error creating contact:", error);
     }
@@ -605,7 +610,7 @@ function UpdateProfilessection(props) {
                         )}
                       </div>
                     </div>
-                    <div className="col-xxl-6 col-lg-12 col-sm-6">
+                    <div className="col-xxl-6 col-lg-12 col-sm-6 d-none">
                       <div className="mb-md-4 mb-3 custom-form">
                         <label htmlFor="zipcode" className="form-label">
                           Pin Code
@@ -640,7 +645,7 @@ function UpdateProfilessection(props) {
                         )}
                       </div>
                     </div>
-                    <div className="col-xxl-6 col-lg-12 col-sm-6">
+                    <div className="col-xxl-6 col-lg-12 col-sm-6 d-none">
                       <div className="mb-md-4 mb-3 custom-form">
                         <label htmlFor="dob" className="form-label">
                           D.O.B
@@ -668,7 +673,7 @@ function UpdateProfilessection(props) {
                         )}
                       </div>
                     </div>
-                    <div className="col-xxl-12 col-lg-12 col-sm-6">
+                    <div className="col-xxl-12 col-lg-12 col-sm-6 d-none">
                       <div className="mb-md-4 mb-3 custom-form">
                         <label htmlFor="address1" className="form-label">
                           Address1
@@ -694,7 +699,7 @@ function UpdateProfilessection(props) {
                         )}
                       </div>
                     </div>
-                    <div className="col-xxl-12 col-lg-12 col-sm-6">
+                    <div className="col-xxl-12 col-lg-12 col-sm-6 d-none">
                       <div className="mb-md-4 mb-3 custom-form">
                         <label htmlFor="address2" className="form-label">
                           Address2
