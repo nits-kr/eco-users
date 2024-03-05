@@ -639,7 +639,9 @@ function IndexGrocary(props) {
                   )}
                 </div>
                 <h5 className="price">
-                  <span className="theme-color">${item?.varient?.Price}</span>{" "}
+                  <span className="theme-color">
+                    ${item?.varient?.Price * count[index]}
+                  </span>{" "}
                   <del>${item?.varient?.oldPrice} </del>
                 </h5>
 

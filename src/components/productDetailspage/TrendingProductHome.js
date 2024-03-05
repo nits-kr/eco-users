@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Spinners2 from "../Spinners2";
 import {
+  useAddCompareMutation,
   useAddToCartMutation,
   useAddToWislistListMutation,
   useGetCartListheaderMutation,
   useGetTrendingProductQuery,
 } from "../../services/Post";
-import { AddCompare, AddToCart } from "../HttpServices";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -25,12 +25,12 @@ function TrendingProductHome(props) {
   const [cartListQuery] = useGetCartListheaderMutation();
   const [loading, setLoading] = useState(false);
   const trendingProduct = useGetTrendingProductQuery({ ecommercetoken });
-  const [wishAdd, res] = useAddToWislistListMutation();
+  const [wishAdd] = useAddToWislistListMutation();
+  const [compare] = useAddCompareMutation();
   const [addtocart] = useAddToCartMutation();
   const [cartListItems, setCartListItems] = useState([]);
   const [trendingList, setTrendingList] = useState([]);
-  const [CreateWishItems, setCreateWishItems] = useState([]);
-  const [addCompareItems, setAddCompareItems] = useState([]);
+
   const [count, setCount] = useState([]);
 
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ function TrendingProductHome(props) {
 
       console.log("respone cart", respone);
 
-      setCartListItems(respone?.data?.carts);
+      setCartListItems(respone?.data?.results?.cart?.products?.[0]?.products);
     } catch (error) {
       console.log(error);
     }
@@ -105,12 +105,6 @@ function TrendingProductHome(props) {
       return;
     }
     try {
-      const editAddress = {
-        product_Id: item?._id,
-        userId: userId,
-        like: true,
-      };
-
       const res = await wishAdd({
         ecommercetoken,
         ecomUserId: item?._id,
@@ -118,20 +112,11 @@ function TrendingProductHome(props) {
       if (res) {
         navigate("/wishlist");
       }
-      // if (error) {
-      //   console.log(error);
-      //   return;
-      // }
-      // const newCreateWishItems = [...CreateWishItems, data];
-      // setCreateWishItems(newCreateWishItems);
-      // setTimeout(() => {
-      //   window?.location?.reload();
-      // }, 500);
     } catch (error) {
       console.log(error);
     }
   };
-  const handleCompareClick = async (item) => {
+  const handleCompareClick = async (id) => {
     if (!ecommercetoken) {
       Swal.fire({
         title: "Login Required",
@@ -151,14 +136,14 @@ function TrendingProductHome(props) {
       });
       return;
     }
+    const data = {
+      product_Id: id,
+      ecommercetoken: ecommercetoken,
+    };
     try {
-      const { data, error } = await AddCompare(item._id);
-      if (error) {
-        console.log(error);
-        return;
-      }
-      const newCreateCompareItems = [...addCompareItems, data];
-      setAddCompareItems(newCreateCompareItems);
+      const res = await compare(data);
+
+      navigate("/compare");
     } catch (error) {
       console.log(error);
     }
@@ -232,7 +217,7 @@ function TrendingProductHome(props) {
       const averageRating =
         totalRatings / item?.productDetails?.[0]?.ratings?.length;
       const isItemInCart = cartListItems?.some(
-        (cartItem) => cartItem?.product_Id?._id === item?._id
+        (cartItem) => cartItem?.productId?._id === item?._id
       );
 
       const imageUrl = item?.varient?.product_Pic[0];
@@ -274,7 +259,7 @@ function TrendingProductHome(props) {
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
                     title="Compare"
-                    onClick={() => handleCompareClick(item)}
+                    onClick={() => handleCompareClick(item?._id)}
                   >
                     <Link to="/compare">
                       <FontAwesomeIcon icon={faArrowsRotate} />
@@ -450,7 +435,9 @@ function TrendingProductHome(props) {
                   )}
                 </div>
                 <h5 className="price">
-                  <span className="theme-color">${item?.varient?.Price}</span>{" "}
+                  <span className="theme-color">
+                    ${item?.varient?.Price * count[index]}
+                  </span>{" "}
                   <del>${item?.varient?.oldPrice} </del>
                 </h5>
 
