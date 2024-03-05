@@ -112,18 +112,7 @@ export const PostApi = createApi({
         },
       }),
     }),
-    // getRelatedProduct: builder.query({
-    //   query: (name) => ({
-    //     url: `user/product/product/releted-product/647eb680062001009e254fca`,
-    //     method: "patch",
-    //   }),
-    // }),
-    // getProductList: builder.query({
-    //   query: (name) => ({
-    //     url: `user/product/product/list`,
-    //     method: "PATCH",
-    //   }),
-    // }),
+
     getProductList: builder.mutation({
       query: ({ ecommercetoken }) => {
         return {
@@ -142,13 +131,7 @@ export const PostApi = createApi({
         body: area,
       }),
     }),
-    // proceedToPay: builder.query({
-    //   query: (area) => ({
-    //     url: "user/carts/carts/proceedToBuy ",
-    //     method: "PATCH",
-    //     body: area,
-    //   }),
-    // }),
+
     proceedToPay: builder.mutation({
       query: (body) => {
         const { ecommercetoken, ...data } = body;
@@ -169,12 +152,7 @@ export const PostApi = createApi({
         method: "post",
       }),
     }),
-    // getProductListDetails: builder.query({
-    //   query: (id) => ({
-    //     url: `user/product/product/details/${id}`,
-    //     method: "post",
-    //   }),
-    // }),
+
     getWishListDetails: builder.mutation({
       query: ({ ecomUserId, ecommercetoken }) => {
         return {
@@ -197,29 +175,21 @@ export const PostApi = createApi({
         };
       },
     }),
+
     getOrderList: builder.mutation({
-      query: ({ ecomUserId, ecommercetoken }) => {
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
         return {
-          url: `user/order/order/order-list/${ecomUserId}`,
-          method: "post",
+          url: "user/order/order/order-list",
+          method: "PATCH",
+          body: data,
           headers: {
             "x-auth-token-user": ecommercetoken,
           },
         };
       },
     }),
-    // getOrderList: builder.query({
-    //   query: (name) => ({
-    //     url: `user/order/order/order-list/${userId}`,
-    //     method: "post",
-    //   }),
-    // }),
-    // getCardList: builder.query({
-    //   query: (name) => ({
-    //     url: `user/carts/carts/saveCarts-list`,
-    //     method: "post",
-    //   }),
-    // }),
 
     getCardList: builder.mutation({
       query: ({ ecomUserId, ecommercetoken }) => {
@@ -232,15 +202,7 @@ export const PostApi = createApi({
         };
       },
     }),
-    // getCartList: builder.query({
-    //   query: ({ ecommercetoken, ecomuserId }) => ({
-    //     url: `user/carts/carts/carts-list/${userId}`,
-    //     method: "post",
-    //     headers: {
-    //       "x-auth-token-user": ecommercetoken,
-    //     },
-    //   }),
-    // }),
+
     getCartListheader: builder.mutation({
       query: ({ ecomUserId, ecommercetoken }) => {
         return {
@@ -252,17 +214,7 @@ export const PostApi = createApi({
         };
       },
     }),
-    // getWishList: builder.mutation({
-    //   query: ({ ecomUserId, ecommercetoken }) => {
-    //     return {
-    //       url: `user/wish/wish/wish-List/${ecomUserId}`,
-    //       method: "post",
-    //       headers: {
-    //         "x-auth-token-user": ecommercetoken,
-    //       },
-    //     };
-    //   },
-    // }),
+
     getCartListSummery: builder.mutation({
       query: ({ ecomUserId, ecommercetoken }) => {
         return {
@@ -297,12 +249,6 @@ export const PostApi = createApi({
       },
     }),
 
-    // getAddressList: builder.query({
-    //   query: (name) => ({
-    //     url: `/user/address/address/address-list/${userId}`,
-    //     method: "post",
-    //   }),
-    // }),
     getCompareList: builder.query({
       query: (body) => ({
         url: `user/compare/compare/compare-list`,
@@ -409,13 +355,6 @@ export const PostApi = createApi({
         },
       }),
     }),
-    // createCard: builder.mutation({
-    //   query: (body) => ({
-    //     url: `user/carts/carts/create-carts`,
-    //     method: "post",
-    //     body,
-    //   }),
-    // }),
 
     createOrder: builder.mutation({
       query: (body) => {
@@ -455,16 +394,6 @@ export const PostApi = createApi({
       },
     }),
 
-    // addToCart: builder.mutation({
-    //   query: (body) => ({
-    //     url: "user/carts/carts/add-cart",
-    //     method: "post",
-    //     body,
-    //     headers: {
-    //       "x-auth-token-user": ecommercetoken,
-    //     },
-    //   }),
-    // }),
     addToCart: builder.mutation({
       query: (body) => {
         const { ecommercetoken, ...data } = body;
@@ -524,12 +453,7 @@ export const PostApi = createApi({
         },
       }),
     }),
-    // deleteCard: builder.mutation({
-    //   query: (id) => ({
-    //     url: `user/carts/carts/saveCarts-delete/${id}`,
-    //     method: "DELETE",
-    //   }),
-    // }),
+
     deleteCompare: builder.mutation({
       query: (id) => ({
         url: `user/compare/compare/compare-delete/${id}`,
@@ -564,13 +488,14 @@ export const PostApi = createApi({
     }),
     orderDetails: builder.mutation({
       query: (body) => {
-        console.log("update address", body);
-        const { id } = body;
-        console.log("update address body data", id);
+        const { ecommercetoken, id } = body;
+
         return {
-          url: `/user/order/order/order-Details/${id}`,
+          url: `user/order/order/order-Details/${id}`,
           method: "post",
-          // body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
         };
       },
     }),
@@ -598,28 +523,7 @@ export const PostApi = createApi({
         };
       },
     }),
-    // applyCoupan: builder.mutation({
-    //   query: (body) => {
-    //     console.log("update address", body);
-    //     const { id, ...data } = body;
-    //     console.log("update address body data", data);
-    //     return {
-    //       url: `/user/carts/carts/apply-coupan/${id}`,
-    //       method: "post",
-    //       body: data,
-    //     };
-    //   },
-    // }),
-    // applyCoupan: builder.mutation({
-    //   query: (body) => ({
-    //     url: "user/carts/carts/checkValidCoupon",
-    //     method: "PATCH",
-    //     body,
-    //     headers: {
-    //       "x-auth-token-user": ecommercetoken,
-    //     },
-    //   }),
-    // }),
+
     applyCoupan: builder.mutation({
       query: (body) => {
         const { ecommercetoken, ...data } = body;
@@ -753,16 +657,6 @@ export const PostApi = createApi({
       },
     }),
 
-    // addReview: builder.mutation({
-    //   query: (body) => {
-    //     console.log("update login data", body);
-    //     return {
-    //       url: "/user/product/product/product-rating",
-    //       method: "post",
-    //       body,
-    //     };
-    //   },
-    // }),
     userSignUp: builder.mutation({
       query: (body) => {
         console.log("update login data", body);
@@ -813,16 +707,7 @@ export const PostApi = createApi({
         };
       },
     }),
-    // varifyOtp: builder.mutation({
-    //   query: (body) => {
-    //     console.log("update login data", body);
-    //     return {
-    //       url: `user/user/user/verify-otp`,
-    //       method: "post",
-    //       body,
-    //     };
-    //   },
-    // }),
+
     varifyOtpLogin: builder.mutation({
       query: (body) => {
         return {
@@ -835,8 +720,6 @@ export const PostApi = createApi({
   }),
 });
 
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
 export const {
   useGetAllPostQuery,
   useGetTrendingProductQuery,

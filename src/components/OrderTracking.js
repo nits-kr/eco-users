@@ -8,8 +8,10 @@ import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import Header from "./Header";
 import Footer from "./Footer";
 import { useOrderDetailsMutation } from "../services/Post";
+import { useSelector } from "react-redux";
 
 function OrderTracking({ orderStatus }) {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const { id } = useParams();
   const [orderDetails, respone] = useOrderDetailsMutation();
   const order = respone?.data?.results?.order;
@@ -19,6 +21,7 @@ function OrderTracking({ orderStatus }) {
     const handleOrderDetails = () => {
       const newAddress = {
         id,
+        ecommercetoken,
       };
       orderDetails(newAddress);
     };

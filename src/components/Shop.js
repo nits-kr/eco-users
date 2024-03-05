@@ -1009,7 +1009,7 @@ function Shop(props) {
                                     <Link
                                       // to="/product-details-page"
                                       // state={{ id: item?._id }}
-                                      to={`/product-details-page/${item?.productId?._id}`}
+                                      to={`/product-details-page/${item?._id}`}
                                       // data-bs-toggle="modal"
                                       // data-bs-target="#view"
                                       // onClick={() => handleViewClick(item)}

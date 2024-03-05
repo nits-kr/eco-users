@@ -240,9 +240,7 @@ function CheckOutNew() {
           icon: "success",
         }).then((result) => {
           if (result.isConfirmed) {
-            navigate("/shop");
-            // window?.location?.reload();
-            // localStorage?.removeItem("varient_Id");
+            navigate("/order-success");
             dispatch(setvarientId(""));
           }
         });

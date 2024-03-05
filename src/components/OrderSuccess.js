@@ -39,7 +39,7 @@ function OrderSuccess() {
     try {
       const respone = await orderLists(datas);
 
-      setNewOrder(respone?.data?.results?.carts?.slice().reverse() ?? []);
+      setNewOrder(respone?.data?.results?.order);
     } catch (error) {
       console.log(error);
     }
@@ -235,27 +235,27 @@ function OrderSuccess() {
                 >
                   <table className="table mb-0">
                     <tbody>
-                      {newOrder
-                        ?.slice()
-                        ?.reverse()
-                        ?.map((item, index) => {
-                          return (
-                            <tr key={index}>
-                              <td className="product-detail">
-                                <div className="product border-0">
-                                  <Link
-                                    to="/product.left-sidebar"
-                                    className="product-image"
-                                  >
-                                    <img
-                                      src={item?.varient?.product_Pic[0]}
-                                      className="img-fluid  lazyload"
-                                      alt=""
-                                    />
-                                  </Link>
-                                  <div className="product-detail">
-                                    <ul>
-                                      {/* <li className="name">
+                      {newOrder?.map((item, index) => {
+                        return (
+                          <tr key={index}>
+                            <td className="product-detail">
+                              <div className="product border-0">
+                                <Link
+                                  to="/product.left-sidebar"
+                                  className="product-image"
+                                >
+                                  <img
+                                    src={
+                                      item?.products?.[0]?.varient_Id
+                                        ?.product_Pic[0]
+                                    }
+                                    className="img-fluid  lazyload"
+                                    alt=""
+                                  />
+                                </Link>
+                                <div className="product-detail">
+                                  <ul>
+                                    {/* <li className="name">
                                       <Link to="/product">
                                         {" "}
                                         {
@@ -264,107 +264,117 @@ function OrderSuccess() {
                                         }{" "}
                                       </Link>
                                     </li> */}
-                                      <li className="name">
-                                        <Link to="/product">
-                                          {" "}
-                                          {trimProductName(
-                                            item?.products[0]?.product_Id
-                                              ?.productName_en
-                                          )}{" "}
-                                        </Link>
-                                      </li>
+                                    <li className="name">
+                                      <Link to="/product">
+                                        {" "}
+                                        {trimProductName(
+                                          item?.products?.[0]?.varient_Id
+                                            ?.productId?.productName_en
+                                        )}{" "}
+                                      </Link>
+                                    </li>
 
-                                      <li className="text-content">
-                                        {item?.products?.productName_en}
-                                      </li>
-                                      {/* <li className="text-content">
+                                    <li className="text-content">
+                                      {item?.products?.[0]?.varient_Id?.SKU}
+                                    </li>
+                                    {/* <li className="text-content">
                                         Quantity - {item?.quantity}
                                       </li> */}
-                                    </ul>
-                                  </div>
+                                  </ul>
                                 </div>
-                              </td>
-                              <td className="price">
-                                <h4 className="table-title text-content">
-                                  Price
-                                </h4>
-                                <h6 className="theme-color">
-                                  ${" "}
-                                  {item?.cartsTotal?.toFixed(2) /
-                                    item?.quantity}
-                                </h6>
-                              </td>
-                              <td className="quantity">
-                                <h4 className="table-title text-content">
-                                  Qty
-                                </h4>
-                                <h4 className="text-title">{item?.quantity}</h4>
-                              </td>
-                              <td className="subtotal">
-                                <h4 className="table-title text-content">
-                                  Total (after Discount)
-                                </h4>
-                                <h5>${item?.cartsTotal?.toFixed(2)} </h5>
-                              </td>
-                              <td className="subtotal">
-                                <h4 className="table-title text-content">
-                                  <Link to={`/order-tracking/${item?._id}`}>
-                                    <strong className="">Track Order</strong>
-                                  </Link>
-                                </h4>
-                                {item?.orderStatus === "Cancelled" ||
-                                item?.orderStatus === "Pending" ||
-                                item?.orderStatus === "Packed" ||
-                                item?.orderStatus === "Approved" ||
-                                item?.orderStatus === "Inprogress" ||
-                                item?.orderStatus === "Shipped" ? (
-                                  <Link
-                                    className={
-                                      item?.orderStatus === "Cancelled"
-                                        ? "text-danger"
-                                        : item?.orderStatus === "Pending"
-                                        ? "text-warning"
-                                        : item?.orderStatus === "Packed"
-                                        ? "text-info"
-                                        : item?.orderStatus === "Approved"
-                                        ? "text-success"
-                                        : item?.orderStatus === "Inprogress"
-                                        ? "text-primary"
-                                        : "text-secondary"
-                                    }
-                                    style={{
-                                      cursor: "not-allowed",
-                                      filter: "blur(0.5px)",
-                                      background: "#e6ebe8",
-                                      color: "darkgray",
-                                    }}
-                                    disabled
-                                  >
-                                    <strong>{item?.orderStatus}</strong>{" "}
-                                  </Link>
-                                ) : item?.orderStatus === "Delivered" ? (
-                                  <Link
-                                    to={`/product-details-page/${item?.products?._id}`}
-                                    className="text-primary"
-                                  >
-                                    <div className="text-danger">Delivered</div>
-                                    <FontAwesomeIcon icon={faStar} />
-                                    Rate Product{" "}
-                                  </Link>
-                                ) : (
-                                  <Link
-                                    className="text-danger"
-                                    onClick={() => {
-                                      handleCancelOrder(item?._id);
-                                    }}
-                                  >
-                                    Cancel Order{" "}
-                                  </Link>
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })}
+                              </div>
+                            </td>
+                            <td className="price">
+                              <h4 className="table-title text-content">
+                                Price
+                              </h4>
+                              <h6 className="theme-color">
+                                $ {item?.products?.[0]?.varient_Id?.Price}
+                              </h6>
+                            </td>
+                            <td className="quantity">
+                              <h4 className="table-title text-content">Qty</h4>
+                              <h4 className="text-title">
+                                {item?.products?.[0]?.quantity}
+                              </h4>
+                            </td>
+                            <td className="subtotal">
+                              <h4 className="table-title text-content">
+                                Total
+                              </h4>
+                              <h5>${item?.totalAmount} </h5>
+                            </td>
+                            <td className="subtotal">
+                              <h4 className="table-title text-content">
+                                Discount
+                              </h4>
+                              <h5>${item?.discount} </h5>
+                            </td>
+                            <td className="subtotal">
+                              <h4 className="table-title text-content">
+                                Grand Total
+                              </h4>
+                              <h5>${item?.grandTotal} </h5>
+                            </td>
+                            <td className="subtotal">
+                              <h4 className="table-title text-content">
+                                <Link to={`/order-tracking/${item?._id}`}>
+                                  <strong className="">Track Order</strong>
+                                </Link>
+                              </h4>
+                              {item?.orderStatus === "Cancelled" ||
+                              item?.orderStatus === "Pending" ||
+                              item?.orderStatus === "Packed" ||
+                              item?.orderStatus === "Approved" ||
+                              item?.orderStatus === "Inprogress" ||
+                              item?.orderStatus === "Shipped" ? (
+                                <Link
+                                  className={
+                                    item?.orderStatus === "Cancelled"
+                                      ? "text-danger"
+                                      : item?.orderStatus === "Pending"
+                                      ? "text-warning"
+                                      : item?.orderStatus === "Packed"
+                                      ? "text-info"
+                                      : item?.orderStatus === "Approved"
+                                      ? "text-success"
+                                      : item?.orderStatus === "Inprogress"
+                                      ? "text-primary"
+                                      : "text-secondary"
+                                  }
+                                  style={{
+                                    cursor: "not-allowed",
+                                    filter: "blur(0.5px)",
+                                    background: "#e6ebe8",
+                                    color: "darkgray",
+                                  }}
+                                  disabled
+                                >
+                                  <strong>{item?.orderStatus}</strong>{" "}
+                                </Link>
+                              ) : item?.orderStatus === "Delivered" ? (
+                                <Link
+                                  to={`/product-details-page/${item?.products?._id}`}
+                                  className="text-primary"
+                                >
+                                  <div className="text-danger">Delivered</div>
+                                  <FontAwesomeIcon icon={faStar} />
+                                  Rate Product{" "}
+                                </Link>
+                              ) : (
+                                <Link
+                                  className="text-danger"
+                                  onClick={() => {
+                                    handleCancelOrder(item?._id);
+                                  }}
+                                >
+                                  Cancel Order{" "}
+                                </Link>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
