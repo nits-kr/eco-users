@@ -473,7 +473,7 @@ export const PostApi = createApi({
     cancelOrder: builder.mutation({
       query: ({ ecommercetoken, orderId }) => ({
         url: `user/order/order/user-cancelled-order/${orderId}`,
-        method: "DELETE",
+        method: "post",
         headers: {
           "x-auth-token-user": ecommercetoken,
         },

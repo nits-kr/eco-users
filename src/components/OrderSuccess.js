@@ -61,8 +61,7 @@ function OrderSuccess() {
       if (result.isConfirmed) {
         cancelOrder({ ecommercetoken, orderId })
           .then(() => {
-            const updatedList = newOrder.filter((card) => card._id !== orderId);
-            setNewOrder(updatedList);
+            handleOrderList();
           })
           .catch((error) => {});
       }
@@ -322,23 +321,23 @@ function OrderSuccess() {
                                   <strong className="">Track Order</strong>
                                 </Link>
                               </h4>
-                              {item?.orderStatus === "Cancelled" ||
-                              item?.orderStatus === "Pending" ||
-                              item?.orderStatus === "Packed" ||
-                              item?.orderStatus === "Approved" ||
-                              item?.orderStatus === "Inprogress" ||
-                              item?.orderStatus === "Shipped" ? (
+                              {item?.status === "Cancelled" ||
+                              item?.status === "Pending" ||
+                              item?.status === "Packed" ||
+                              item?.status === "Approved" ||
+                              item?.status === "Inprogress" ||
+                              item?.status === "Shipped" ? (
                                 <Link
                                   className={
-                                    item?.orderStatus === "Cancelled"
+                                    item?.status === "Cancelled"
                                       ? "text-danger"
-                                      : item?.orderStatus === "Pending"
+                                      : item?.status === "Pending"
                                       ? "text-warning"
-                                      : item?.orderStatus === "Packed"
+                                      : item?.status === "Packed"
                                       ? "text-info"
-                                      : item?.orderStatus === "Approved"
+                                      : item?.status === "Approved"
                                       ? "text-success"
-                                      : item?.orderStatus === "Inprogress"
+                                      : item?.status === "Inprogress"
                                       ? "text-primary"
                                       : "text-secondary"
                                   }
@@ -350,9 +349,9 @@ function OrderSuccess() {
                                   }}
                                   disabled
                                 >
-                                  <strong>{item?.orderStatus}</strong>{" "}
+                                  <strong>{item?.status}</strong>{" "}
                                 </Link>
-                              ) : item?.orderStatus === "Delivered" ? (
+                              ) : item?.status === "Delivered" ? (
                                 <Link
                                   to={`/product-details-page/${item?.products?._id}`}
                                   className="text-primary"
