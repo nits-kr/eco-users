@@ -654,7 +654,11 @@ function Shop(props) {
       </section>
 
       {/* <CategoryTop subCategoryListData={subCategoryListData} /> */}
-      <section className="product-list-section ">
+      <section
+        className={`product-list-section ${
+          subCategoryListData?.length > 5 ? "" : "d-none"
+        }`}
+      >
         <div className="container-fluid-lg">
           <Slider {...settings1}>{slidersTop()}</Slider>
         </div>

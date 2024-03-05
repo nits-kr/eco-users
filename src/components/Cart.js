@@ -330,15 +330,17 @@ function Cart() {
       type: item ? "Single" : "All",
       ...(ecommercetoken && { ecommercetoken: ecommercetoken }),
     };
-    setLoader(true);
+    setLoader(item ? false : true);
+    setLoadings(item ? true : false);
     const res = await proceedToPay(data);
     console.log("res payment", res);
     if (res) {
-      navigate(item ? "" : "/check-outall");
+      navigate(item ? "/check-outall" : "/check-outall");
       dispatch(setPaymentData(res?.data?.results?.cart?.calculateTotal[0]));
       setCartTotal(res?.data?.results?.cart?.calculateTotal[0]);
     }
     setLoader(false);
+    setLoadings(false);
   };
 
   return (
@@ -609,16 +611,24 @@ function Cart() {
                                       justifyContent: "center",
                                     }}
                                   >
-                                    <Link
-                                      to="#"
+                                    <button
                                       className="btn btn-animation proceed-btn fw-bold me-2"
-                                      style={{ height: "35px", width: "35px" }}
+                                      style={{
+                                        height: "35px",
+                                        width: "35px",
+                                        cursor: loadings
+                                          ? "not-allowed"
+                                          : "pointer",
+                                      }}
                                       onClick={(e) => {
-                                        handlePay(e, item);
+                                        if (!loadings) {
+                                          handlePay(e, item);
+                                        }
                                       }}
                                     >
                                       Buy
-                                    </Link>
+                                    </button>
+
                                     <Link
                                       to="#"
                                       className="btn btn-animation proceed-btn fw-bold"
@@ -671,7 +681,7 @@ function Cart() {
                   handleShopping(e);
                 }}
                 className="btn btn-light shopping-button text-dark w-25 mt-3"
-                style={{backgroundColor:"#f8f9fa", height:"50px"}}
+                style={{ backgroundColor: "#f8f9fa", height: "50px" }}
               >
                 <i className="fa-solid fa-arrow-left-long" />
                 Return To Shopping
