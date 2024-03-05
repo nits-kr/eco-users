@@ -8,24 +8,30 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { OrderSummary } from "./HttpServices";
 import {
+  useApplyCoupanMutation,
   useCreateOrderMutation,
   useGetAddressListMutation,
   useGetCartListSummeryMutation,
 } from "../services/Post";
 import { useGetAddressListQuery } from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
-import { setvarientId } from "../app/slice/localSlice";
+import { setCoupanIdlocal, setvarientId } from "../app/slice/localSlice";
+import { toast } from "react-toastify";
 
 function CheckOutNew() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const payType = useSelector((data) => data?.local?.payType);
   const varient_Id = useSelector((data) => data?.local?.varient_Id);
   console.log("varient_Id", varient_Id);
-  const coupanId = useSelector((data) => data?.local?.coupanId);
+  // const coupanId = useSelector((data) => data?.local?.coupanId);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const paymentData = JSON.parse(
     useSelector((data) => data?.local?.paymentData)
   );
+  const [applyCoupan] = useApplyCoupanMutation();
+
+  const [coupanId, setCoupanId] = useState("");
+
   const [addressList] = useGetAddressListMutation();
   const [OrderSummarys] = useGetCartListSummeryMutation();
   const [orderItemSummary, setOrderItemSummary] = useState([]);
@@ -35,6 +41,8 @@ function CheckOutNew() {
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const userId = localStorage.getItem("loginId");
   const [coupan, setCoupan] = useState([]);
+  const [coupanCode, setCoupanCode] = useState("");
+  const [coupanDetails, setCoupanIdDetails] = useState("");
 
   const [items, setItems] = useState("");
   const [items2, setItems2] = useState([]);
@@ -50,6 +58,49 @@ function CheckOutNew() {
 
   window.onbeforeunload = function () {
     localStorage.removeItem("buyItem");
+  };
+
+  const applyCoupanCode = async () => {
+    if (!coupanCode) {
+      toast.error("😒 Please enter a coupon code.");
+      return;
+    }
+
+    try {
+      const createNewOrder = await applyCoupan({
+        coupanCode: coupanCode,
+        ecommercetoken,
+      });
+
+      console.log("create coupan", createNewOrder);
+      if (createNewOrder?.data?.results?.validCoupan === true) {
+        setCoupanId(createNewOrder?.data?.results?._id);
+        setCoupanIdDetails(createNewOrder?.data?.results);
+        dispatch(setCoupanIdlocal(createNewOrder?.data?.results?._id));
+        toast.success(`Wow🤩🤩! coupan applied `);
+      } else {
+        toast.error(`😒Invalid Coupan`);
+      }
+
+      // setCoupanresponse(createNewOrder?.data?.results?.DiscountType);
+      let totalPrice = 0;
+      createNewOrder?.data?.results.product.forEach((product) => {
+        totalPrice += parseInt(product.Price);
+      });
+
+      const discountPercentage =
+        createNewOrder?.data?.results.DiscountType[0] || 0;
+      const discountedPrice =
+        totalPrice - (totalPrice * discountPercentage) / 100;
+
+      setCoupan({
+        ...createNewOrder?.data?.results,
+        cartsTotalSum: discountedPrice,
+      });
+      console.log(createNewOrder);
+    } catch (error) {
+      console.error("An error occurred while applying coupan.");
+    }
   };
 
   useEffect(() => {
@@ -1040,6 +1091,28 @@ function CheckOutNew() {
 
                   <ul className="summery-contain"></ul>
                   <ul className="summery-total">
+                    <div className="summery-contain">
+                      <div className="coupon-cart">
+                        <h6 className="text-content mb-2">Coupon Apply</h6>
+                        <div className="mb-3 coupon-box input-group">
+                          <input
+                            type="email"
+                            className="form-control"
+                            id="exampleFormControlInput1"
+                            placeholder="Enter Coupon Code Here..."
+                            value={coupanCode}
+                            onChange={(e) => setCoupanCode(e.target.value)}
+                          />
+                          <button
+                            className="btn-apply"
+                            onClick={() => applyCoupanCode()}
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
                     <li>
                       <h4>Subtotal</h4>
                       <h4 className="price">${paymentData?.totalAmount}</h4>
@@ -1058,7 +1131,10 @@ function CheckOutNew() {
                     <li>
                       <h4>Discount</h4>
 
-                      <h4 className="price">${paymentData?.discountAmount}</h4>
+                      <h4 className="price">
+                        {coupanDetails?.discount}
+                        {coupanDetails?.DiscountType === "Fixed" ? "" : "%"}
+                      </h4>
                     </li>
                     <li>
                       <h4>Tax</h4>
@@ -1069,13 +1145,22 @@ function CheckOutNew() {
                           : 0}
                       </h4>
                     </li>
-                    <li>
+                    {/* <li>
                       <h4>Coupon/Code</h4>
                       <h4 className="price">Apply Coupan</h4>
-                    </li>
+                    </li> */}
                     <li className="list-total">
                       <h4>Total (USD)</h4>
-                      <h4 className="price">${paymentData?.grandTotal}</h4>
+                      {/* <h4 className="price">${paymentData?.grandTotal}</h4> */}
+                      <h4 className="price">
+                        $
+                        {coupanId
+                          ? coupanDetails?.DiscountType === "Fixed"
+                            ? paymentData?.grandTotal - coupanDetails?.discount
+                            : paymentData?.grandTotal *
+                              (1 - coupanDetails?.discount / 100)
+                          : paymentData?.grandTotal}
+                      </h4>
                     </li>
                   </ul>
                 </div>

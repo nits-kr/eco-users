@@ -43,10 +43,11 @@ function Products(props) {
   const [addtocart] = useAddToCartMutation();
   const [loading, setLoading] = useState(false);
   const [wishAdd] = useAddToWislistListMutation();
-  const relatedProduct = useGetRelatedProductQuery();
   const compareItems = useGetCompareListQuery();
 
   const [productDetail, setProductDetail] = useState("");
+
+  console.log("productDetail", productDetail);
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [cartListItems, setCartListItems] = useState([]);
   const [CreateWishItems, setCreateWishItems] = useState([]);
@@ -988,7 +989,7 @@ function Products(props) {
       </section>
       <TrendingProductHome />
       {/* Product Left Sidebar End */}
-      <RelatedProductSlider id={id} />
+      <RelatedProductSlider id={productDetail?.category_Id?._id} />
       {/* Footer Section Start */}
       <Footer />
       {/* Footer Section End */}

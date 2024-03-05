@@ -16,6 +16,7 @@ import {
   useGetCardListMutation,
   useGetOrderListMutation,
   useGetProfileDetailsMutation,
+  useGetWishListDetailsMutation,
   useGetWishListMutation,
   useUpdateProfileMutation,
 } from "../services/Post";
@@ -35,7 +36,7 @@ function UserDashboard() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [updateProfile] = useUpdateProfileMutation();
-  const [wishLists] = useGetWishListMutation();
+  const [wishLists] = useGetWishListDetailsMutation();
   const [orderLists] = useGetOrderListMutation();
   const [deleteWishList] = useDeleteWishListMutation();
   const [profileDetails] = useGetProfileDetailsMutation();
@@ -308,9 +309,9 @@ function UserDashboard() {
       country: country ? country : item?.country,
       pinCode: pinCode ? pinCode : item?.pinCode,
       state: state ? state : item?.state,
-      mobileNumber: mobileNumber ? mobileNumber : item?.mobileNumber,
+      phoneNumber: mobileNumber ? mobileNumber : item?.mobileNumber,
       id: itemId ? itemId : null,
-      user_Id: storedId,
+      user_Id: ecomUserId,
       ecommercetoken: ecommercetoken,
     };
 
@@ -1358,7 +1359,7 @@ function UserDashboard() {
                                         </tr>
                                         <tr>
                                           <td>Phone :</td>
-                                          <td> {item?.mobileNumber} </td>
+                                          <td> {item?.phoneNumber} </td>
                                         </tr>
                                       </tbody>
                                     </table>

@@ -112,12 +112,12 @@ export const PostApi = createApi({
         },
       }),
     }),
-    getRelatedProduct: builder.query({
-      query: (name) => ({
-        url: `user/product/product/releted-product/647eb680062001009e254fca`,
-        method: "post",
-      }),
-    }),
+    // getRelatedProduct: builder.query({
+    //   query: (name) => ({
+    //     url: `user/product/product/releted-product/647eb680062001009e254fca`,
+    //     method: "patch",
+    //   }),
+    // }),
     // getProductList: builder.query({
     //   query: (name) => ({
     //     url: `user/product/product/list`,

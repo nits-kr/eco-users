@@ -407,7 +407,7 @@ function Cart() {
           <div className="row g-sm-5 g-3">
             <div
               className={`col-xxl-${
-                cartListItems && cartListItems.length > 0 ? "9" : "12"
+                cartListItems && cartListItems.length > 0 ? "12" : "12"
               }`}
             >
               {cartListItems?.length > 0 ? (
@@ -663,35 +663,28 @@ function Cart() {
               )}
             </div>
             <div
-              className="button-group cart-button"
+              className="button-group cart-button d-flex justify-content-between"
               style={{ display: cartListItems?.length > 0 ? "" : "none" }}
             >
-              <ul>
-                <li className="d-flex align-items-end justify-content-end">
-                  <button
-                    // to={checkoutUrl}
-                    className="btn btn-animation proceed-btn fw-bold mt-5 w-25"
-                    onClick={(e) => handlePay(e)}
-                  >
-                    {loader ? <Spinner /> : "Process To Checkout"}
-                  </button>
-                </li>
-                <li className="d-flex align-items-end justify-content-end">
-                  <button
-                    onClick={(e) => {
-                      handleShopping(e);
-                      // handlePay(e);
-                    }}
-                    className="btn btn-light shopping-button text-dark w-25"
-                  >
-                    <i className="fa-solid fa-arrow-left-long" />
-                    Return To Shopping
-                  </button>
-                </li>
-              </ul>
+              <button
+                onClick={(e) => {
+                  handleShopping(e);
+                }}
+                className="btn btn-light shopping-button text-dark w-25 mt-3"
+                style={{backgroundColor:"#f8f9fa", height:"50px"}}
+              >
+                <i className="fa-solid fa-arrow-left-long" />
+                Return To Shopping
+              </button>
+              <button
+                className="btn btn-animation proceed-btn fw-bold mt-3 w-25"
+                onClick={(e) => handlePay(e)}
+              >
+                {loader ? <Spinner /> : "Process To Checkout"}
+              </button>
             </div>
             {cartListItems?.length > 0 ? (
-              <div className="col-xxl-3">
+              <div className="col-xxl-3 d-none">
                 <div className="summery-box p-sticky">
                   <div className="summery-header">
                     <h3>Cart Total</h3>

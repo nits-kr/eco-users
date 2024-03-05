@@ -6,36 +6,54 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper/modules";
-import {
-  useGetRelatedProductQuery,
-  useRelatedProductDetailsMutation,
-} from "../../services/Post";
+import { useGetBannerMutation } from "../../services/Post";
 import { Link } from "react-router-dom";
 import Star from "../Star";
 import Slider from "react-slick";
+import { useSelector } from "react-redux";
 
 function RelatedProductSlider({ id }) {
-  const [relatedDetails, respons] = useRelatedProductDetailsMutation();
-  const relatedProduct = useGetRelatedProductQuery();
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+  const [relatedDetails, respons] = useGetBannerMutation();
   const [relatedProductItems, setRelatedProductItems] = useState([]);
 
   useEffect(() => {
-    if (relatedProduct?.data?.results?.productData) {
-      setRelatedProductItems(relatedProduct?.data?.results?.productData);
+    if (id) {
+      handleGetBanners(id);
     }
-  });
-
-  useEffect(() => {
-    related();
   }, [id]);
-  const relatedProductDetail = respons?.data?.results?.productData;
 
-  const related = () => {
-    const newAddress = {
-      id: id,
+  const handleGetBanners = async (cateid) => {
+    window.scrollTo(0, 0);
+    const data = {
+      category: cateid,
+
+      ecommercetoken: ecommercetoken,
     };
-    relatedDetails(newAddress);
+
+    console.log(data);
+
+    try {
+      const res = await relatedDetails(data);
+
+      setRelatedProductItems(res?.data?.results?.products);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  // useEffect(() => {
+  //   related();
+  // }, [id]);
+  // const relatedProductDetail = respons?.data?.results?.productData;
+
+  // const related = () => {
+  //   const newAddress = {
+  //     id: id,
+  //   };
+  //   relatedDetails(newAddress);
+  // };
   var w = window.innerWidth;
   var settings = {
     dots: false,
@@ -47,7 +65,7 @@ function RelatedProductSlider({ id }) {
   };
 
   const sliders2 = () => {
-    return relatedProductDetail?.map((item, index) => (
+    return relatedProductItems?.map((item, index) => (
       <div key={index}>
         <div className="product-box-3 wow fadeInUp">
           <div className="product-header">
@@ -151,7 +169,7 @@ function RelatedProductSlider({ id }) {
     <>
       <section
         className="product-list-section section-b-space"
-        style={{ display: relatedProductDetail?.length > 0 ? "" : "none" }}
+        style={{ display: relatedProductItems?.length > 0 ? "" : "none" }}
       >
         <div className="container-fluid-lg">
           <div className="title">

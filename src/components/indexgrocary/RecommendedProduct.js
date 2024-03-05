@@ -459,7 +459,7 @@ function RecommendedProduct() {
     <>
       <div
         className="col-12 wow fadeInUp"
-        style={{ display: topDiscount?.length > 2 ? "" : "none" }}
+        style={{ display: topDiscount?.length > 3 ? "" : "none" }}
       >
         <h3 className="mb-3">
           <strong>Recommended Products</strong>{" "}
