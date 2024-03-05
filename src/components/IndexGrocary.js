@@ -952,7 +952,7 @@ function IndexGrocary(props) {
               </div>
             </div>
             <div className="col-xxl-9 col-xl-8">
-              {trendingList?.length > 0 ? (
+              {trendingList?.length > 2 ? (
                 <>
                   <div className="title title-flex">
                     <div>
