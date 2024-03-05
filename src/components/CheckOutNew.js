@@ -390,12 +390,12 @@ function CheckOutNew() {
                                         />
                                       </div>
                                       <div className="label">
-                                        <label> {item?.title} </label>
+                                        <label> {item?.type} </label>
                                       </div>
                                       <ul className="delivery-address-detail">
                                         <li>
                                           <h4 className="fw-500">
-                                            {storeUser}
+                                            {item?.fullName_en}
                                           </h4>
                                         </li>
                                         <li>
@@ -451,7 +451,7 @@ function CheckOutNew() {
                                             <span className="text-title">
                                               Phone :
                                             </span>{" "}
-                                            {item?.mobileNumber}
+                                            {item?.phoneNumber}
                                           </h6>
                                         </li>
                                       </ul>

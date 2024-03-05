@@ -42,6 +42,7 @@ function UserDashboard() {
   const [profileDetails] = useGetProfileDetailsMutation();
   const [wishList, setWishList] = useState([]);
   const [title, setTitle] = useState("");
+
   const [fullName, setFullName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [address, setAddress] = useState("");
@@ -301,8 +302,8 @@ function UserDashboard() {
 
   const handleSaveChanges = async () => {
     const newAddressData = {
-      title: title ? title : item?.title,
-      fullName: fullName ? fullName : item?.fullName,
+      type: title ? title : item?.title,
+      fullName_en: fullName ? fullName : item?.fullName,
       address: address ? address : item?.address,
       locality: locality ? locality : item?.locality,
       city: city ? city : item?.city,
@@ -1973,17 +1974,22 @@ function UserDashboard() {
             </div>
             <div className="modal-body">
               <form>
-                <div className="form-floating mb-4 theme-form-floating">
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="title"
-                    name="title"
-                    placeholder="Enter Title Name"
-                    defaultValue={item?.title}
+                <div className="form-floating theme-form-floating mb-4">
+                  <select
+                    className="form-select"
+                    id="type"
+                    aria-label="Floating label select example"
+                    defaultValue={item?.type}
                     onChange={(e) => setTitle(e.target.value)}
-                  />
-                  <label htmlFor="fname">Title (Home/Work)</label>
+                  >
+                    <option value="" disabled>
+                      Select Type
+                    </option>
+                    <option value="Home">Home</option>
+                    <option value="Office">Office</option>
+                    <option value="Others">Others</option>
+                  </select>
+                  <label htmlFor="type">Type</label>
                 </div>
               </form>
               <form>
@@ -1994,7 +2000,7 @@ function UserDashboard() {
                     id="fullName"
                     name="fullName"
                     placeholder="Enter Full Name"
-                    defaultValue={item?.fullName}
+                    defaultValue={item?.fullName_en}
                     onChange={(e) => setFullName(e.target.value)}
                   />
                   <label htmlFor="fname">Full Name</label>
