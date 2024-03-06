@@ -82,10 +82,10 @@ function Middlebanner() {
                 ...(bannerList[1]?.URLType === "Subcategory" && {
                   subCategory_Id: bannerList[1]?.subCategory_Id,
                 }),
-                ...(bannerList[1]?.URLType === "subSubcategory" && {
+                ...(bannerList[1]?.URLType === "SubSubCategory" && {
                   subSubCategory_Id: bannerList[1]?.subSubCategory_Id,
                 }),
-                ...(bannerList[1]?.URLType === "product" && {
+                ...(bannerList[1]?.URLType === "Product" && {
                   product_Id: bannerList[1]?.product_Id,
                 }),
               }}

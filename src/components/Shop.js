@@ -183,10 +183,10 @@ function Shop(props) {
       handleGetBanners(subCategory_Id);
     } else if (URLType === "Category") {
       handleGetBanners(category_Id);
-    } else if (URLType === "subCategory") {
+    } else if (URLType === "Subcategory") {
       handleGetBanners(subCategory_Id);
     } else if (selector || searchQuery) {
-    } else if (URLType === "subSubCategory") {
+    } else if (URLType === "SubSubCategory") {
       handleGetBanners(subSubCategory_Id);
     } else if (selector || searchQuery) {
       handleSearch(selector || searchQuery);

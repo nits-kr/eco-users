@@ -29,10 +29,10 @@ function Bottombanner() {
               ...(item.URLType === "Subcategory" && {
                 subCategory_Id: item.subCategory_Id,
               }),
-              ...(item.URLType === "subSubcategory" && {
+              ...(item.URLType === "SubSubCategory" && {
                 subSubCategory_Id: item.subSubCategory_Id,
               }),
-              ...(item.URLType === "product" && {
+              ...(item.URLType === "Product" && {
                 product_Id: item.product_Id,
               }),
             }}

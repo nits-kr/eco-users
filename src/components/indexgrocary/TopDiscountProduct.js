@@ -224,7 +224,11 @@ function TopDiscountProduct() {
             <div className="product-header">
               <div className="product-image">
                 <Link to={`/product-details-page/${item?._id}`}>
-                  <img src={imageUrl} className="img-fluid  lazyload" alt="" />
+                  <img
+                    src={imageUrl}
+                    className="img-fluid  lazyload mb-2"
+                    alt=""
+                  />
                 </Link>
                 <ul className="product-option">
                   <li

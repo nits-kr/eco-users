@@ -26,10 +26,10 @@ function Sidebanner() {
             ...(bannerList[0]?.URLType === "Subcategory" && {
               subCategory_Id: bannerList[0]?.subCategory_Id,
             }),
-            ...(bannerList[0]?.URLType === "subSubcategory" && {
+            ...(bannerList[0]?.URLType === "SubSubCategory" && {
               subSubCategory_Id: bannerList[0]?.subSubCategory_Id,
             }),
-            ...(bannerList[0]?.URLType === "product" && {
+            ...(bannerList[0]?.URLType === "Product" && {
               product_Id: bannerList[0]?.product_Id,
             }),
           }}
