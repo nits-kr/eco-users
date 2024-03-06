@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faPhoneVolume } from "@fortawesome/free-solid-svg-icons";
 import { ProductSearch } from "./HttpServices";
 import {
+  useDealTodayListQuery,
   useDeleteCartItemsMutation,
   useGetAddressListMutation,
   useGetCartListheaderMutation,
@@ -43,6 +44,7 @@ function Header({ Dash }) {
   const [proceedToPay] = useProceedToPayMutation();
   const [searchProduct] = useSearchProductHeaderMutation();
   const { data: trendingProduct } = useGetTrendingProductQuery();
+  const { data: dealToday } = useDealTodayListQuery();
 
   const [trendingList, setTrendingList] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);

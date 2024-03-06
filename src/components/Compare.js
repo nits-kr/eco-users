@@ -84,7 +84,7 @@ function Compare() {
           className="compare-image"
         >
           <img
-            src={item?.product_Id?.addVarient[0]?.product_Pic[0]}
+            src={item?.product_Pic?.[0]}
             className="img-fluid lazyload"
             alt=""
           />
