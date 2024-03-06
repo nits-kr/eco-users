@@ -32,6 +32,7 @@ function CheckOutNew() {
   const [applyCoupan] = useApplyCoupanMutation();
   const [coupanlist] = useGetUserCoupanListMutation();
 
+  const [coupancodes, setCoupancodes] = useState("");
   const [coupanId, setCoupanId] = useState("");
 
   const [addressList] = useGetAddressListMutation();
@@ -316,6 +317,33 @@ function CheckOutNew() {
     const month = date.toLocaleString("default", { month: "short" });
     return `${day}${suffix} ${month}`;
   }
+
+  const copyToClipboard = async (text) => {
+    if (navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(text);
+        setCoupancodes(text);
+        if (text) {
+          toast.info(
+            <>
+              Copied To Clipboard:
+              <strong>{`Your Coupan Code is: ${text}`}</strong>
+            </>,
+            {
+              position: "bottom-right",
+            }
+          );
+        }
+        return true;
+      } catch (error) {
+        console.error("Error copying to clipboard:", error);
+        return false;
+      }
+    } else {
+      console.error("Clipboard API is not supported.");
+      return false;
+    }
+  };
 
   useEffect(() => {
     feather.replace();
@@ -1232,7 +1260,16 @@ function CheckOutNew() {
                   <ul className="offer-detail">
                     {coupanList?.map((coupon, ind) => {
                       return (
-                        <li key={ind}>
+                        <li
+                          key={ind}
+                          style={{
+                            // backgroundColor: "transparent",
+                            transition: "background-color 0.3s",
+                            cursor: "pointer",
+                          }}
+                          title={`Click to copy the coupan code: ${coupon.coupanCode}`}
+                          onClick={() => copyToClipboard(coupon.coupanCode)}
+                        >
                           <p>
                             Apply Coupon Code:{" "}
                             <strong>{coupon.coupanCode}</strong> and get flat{" "}

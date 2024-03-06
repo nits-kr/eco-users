@@ -31051,3 +31051,11 @@ button:not(:disabled) {
   background: linear-gradient(to right, #ff8800, #0da487) !important;
 
 }
+
+.checkout-offer ul.offer-detail li:hover {
+  /* background-color: red; */
+  /* color: #ffffff !important;  */
+  border-radius: 5px;
+  padding: 2px;
+}
+
