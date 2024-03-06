@@ -18,6 +18,19 @@ import Star from "../Star";
 import Slider from "react-slick";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import "swiper/swiper-bundle.css";
+import { Swiper, SwiperSlide } from "swiper/react";
+import {
+  Navigation,
+  Pagination,
+  Scrollbar,
+  A11y,
+  Autoplay,
+} from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
 
 function TrendingProductHome(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
@@ -223,10 +236,11 @@ function TrendingProductHome(props) {
       const imageUrl = item?.varient?.product_Pic[0];
 
       return (
-        <div key={index}>
+        <SwiperSlide>
           <div
             className="product-box-3 h-100 wow fadeInUp my-2"
-            style={{ width: "270px", height: "270px" }}
+            // style={{ width: "270px", height: "270px" }}
+            key={index}
           >
             <div className="product-header">
               <div className="product-image">
@@ -477,7 +491,7 @@ function TrendingProductHome(props) {
               </div>
             </div>
           </div>
-        </div>
+        </SwiperSlide>
       );
     });
   };
@@ -500,11 +514,42 @@ function TrendingProductHome(props) {
                   </svg>
                 </span>
               </div>
-              <div className="col-12 wow fadeInUp">
-                <div className="row g-sm-4 g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 product-list-section heading11">
-                  <div className="heading11 mb-5">
-                    <Slider {...settings1}>{sliders2()}</Slider>
-                  </div>
+            </div>
+            <div className="col-12 wow fadeInUp mx-3">
+              <div className="row g-sm-4 g-3 row-cols-xxl-4 ms-2 pe-5 row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 product-list-section heading11">
+                <div className="heading11 mb-5">
+                  {/* <Slider {...settings1}>{sliders2()}</Slider> */}
+                  <Swiper
+                    className="mySwiper"
+                    spaceBetween={35}
+                    // slidesPerView={5}
+                    breakpoints={{
+                      640: {
+                        slidesPerView: 2,
+                        // spaceBetween: 20,
+                      },
+                      768: {
+                        slidesPerView: 3,
+                        // spaceBetween: 40,
+                      },
+                      1024: {
+                        slidesPerView: 5,
+                        // spaceBetween: 50,
+                      },
+                    }}
+                    autoplay={{
+                      delay: 2500,
+                      disableOnInteraction: false,
+                    }}
+                    navigation={{ clickable: true }}
+                    // pagination={{ clickable: true }}
+                    modules={[Pagination, Navigation, Autoplay]}
+                    onSlideChange={() => console.log("slide change")}
+                    onSwiper={(swiper) => console.log(swiper)}
+                    loop={true}
+                  >
+                    {sliders2()}
+                  </Swiper>
                 </div>
               </div>
             </div>

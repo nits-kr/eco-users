@@ -31,7 +31,18 @@ function Topbanner() {
                       to="/shop"
                       state={{
                         URLType: item.URLType,
-                        category_Id: item.category_Id,
+                        ...(item?.URLType === "Category" && {
+                          category_Id: item?.category_Id,
+                        }),
+                        ...(item?.URLType === "SubCategory" && {
+                          subCategory_Id: item?.subCategory_Id,
+                        }),
+                        ...(item?.URLType === "SubSubCategory" && {
+                          subSubCategory_Id: item?.subSubCategory_Id,
+                        }),
+                        ...(item?.URLType === "Product" && {
+                          product_Id: item?.product_Id,
+                        }),
                       }}
                     >
                       <div

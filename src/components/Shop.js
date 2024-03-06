@@ -95,10 +95,12 @@ function Shop(props) {
   // let id = location.state?.id;
   // let banner = location.state?.banner;
 
+  console.log("state", state);
   console.log("state id", id);
   console.log("URLType", URLType);
   console.log("category_Id", category_Id);
   console.log("sub category_Id", subCategory_Id);
+  console.log("sub sub category_Id", subSubCategory_Id);
 
   const navigate = useNavigate();
 
@@ -183,9 +185,8 @@ function Shop(props) {
       handleGetBanners(subCategory_Id);
     } else if (URLType === "Category") {
       handleGetBanners(category_Id);
-    } else if (URLType === "Subcategory") {
+    } else if (URLType === "SubCategory") {
       handleGetBanners(subCategory_Id);
-    } else if (selector || searchQuery) {
     } else if (URLType === "SubSubCategory") {
       handleGetBanners(subSubCategory_Id);
     } else if (selector || searchQuery) {
@@ -200,9 +201,9 @@ function Shop(props) {
     window.scrollTo(0, 0);
     const data = {
       ...(URLType === "subcate" && { subCategory: id }),
-      ...(URLType === "subCategory" && { subCategory: id }),
+      ...(URLType === "SubCategory" && { subCategory: id }),
       ...(URLType === "Category" && { category: id }),
-      ...(URLType === "subSubCategory" && { subSubCategory: id }),
+      ...(URLType === "SubSubCategory" && { subSubCategory: id }),
       // ...(brand && { brand: "65278d0a2d1d5fafea17183c" }),
       ecommercetoken: ecommercetoken,
     };

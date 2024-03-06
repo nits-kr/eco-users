@@ -6963,7 +6963,19 @@ footer .main-footer {
 
   .row-cols-xxl-4>* {
     flex: 0 0 auto;
-    width: 50% !important;
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 767px) {
+  footer .main-footer {
+    border: none;
+    padding-top: 0;
+  }
+
+  .row-cols-xxl-4>* {
+    flex: 0 0 auto;
+    width: 100% !important;
   }
 }
 
@@ -31059,3 +31071,9 @@ button:not(:disabled) {
   padding: 2px;
 }
 
+
+.swiper-button-prev,
+.swiper-button-next {
+
+  color: #0da487 !important;
+}

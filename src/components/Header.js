@@ -44,13 +44,15 @@ function Header({ Dash }) {
   const [proceedToPay] = useProceedToPayMutation();
   const [searchProduct] = useSearchProductHeaderMutation();
   const { data: trendingProduct } = useGetTrendingProductQuery();
-  const { data: dealToday } = useDealTodayListQuery();
+  const { data: dealToday } = useDealTodayListQuery({ ecommercetoken });
 
   const [trendingList, setTrendingList] = useState([]);
+  const [dealList, setDealList] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
 
   console.log("categoryListData", categoryListData);
+  console.log("dealToday", dealList);
 
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSale, setShowSale] = useState(true);
@@ -140,6 +142,11 @@ function Header({ Dash }) {
       setTrendingList(trendingProduct?.data?.results?.productlist);
     }
   }, [trendingProduct?.data?.results?.productlist]);
+  useEffect(() => {
+    if (dealToday) {
+      setDealList(dealToday?.results?.dealsDay);
+    }
+  }, [dealToday]);
 
   useEffect(() => {
     const reversedList =
@@ -1006,11 +1013,11 @@ function Header({ Dash }) {
                 <i className="fa-solid fa-xmark" />
               </button>
             </div>
-            {trendingList?.length > 0 ? (
+            {dealList?.length > 0 ? (
               <div className="modal-body">
                 <div className="deal-offer-box">
                   <ul className="deal-offer-list">
-                    {trendingList?.map((item, index) => {
+                    {dealList?.map((item, index) => {
                       return (
                         <li className={`list-${index + 1}`} key={index}>
                           <div className="deal-offer-contain">
@@ -1025,10 +1032,7 @@ function Header({ Dash }) {
                               />
                             </Link>
                             <Link to="/shop" className="deal-contain">
-                              <h5>
-                                {" "}
-                                {item?.productDetails?.[0]?.productName_en}{" "}
-                              </h5>
+                              <h5> {item?.product_Id?.productName_en} </h5>
                               <h6>
                                 $
                                 {item?.productDetails?.[0]?.addVarient?.[0]?.Price?.toFixed(

@@ -5,6 +5,8 @@ import { useGetBannerListQuery } from "../../services/Post";
 function Middlebanner() {
   const [bannerList, setBannerList] = useState([]);
 
+  console.log("middlebannerList", bannerList[0]?.subSubCategory_Id);
+
   const { data: categoryBanner } = useGetBannerListQuery({
     area: "Middle Banner",
   });
@@ -28,13 +30,13 @@ function Middlebanner() {
                 ...(bannerList[0]?.URLType === "Category" && {
                   category_Id: bannerList[0]?.category_Id,
                 }),
-                ...(bannerList[0]?.URLType === "Subcategory" && {
+                ...(bannerList[0]?.URLType === "SubCategory" && {
                   subCategory_Id: bannerList[0]?.subCategory_Id,
                 }),
-                ...(bannerList[0]?.URLType === "subSubcategory" && {
+                ...(bannerList[0]?.URLType === "SubSubCategory" && {
                   subSubCategory_Id: bannerList[0]?.subSubCategory_Id,
                 }),
-                ...(bannerList[0]?.URLType === "product" && {
+                ...(bannerList[0]?.URLType === "Product" && {
                   product_Id: bannerList[0]?.product_Id,
                 }),
               }}
@@ -79,7 +81,7 @@ function Middlebanner() {
                 ...(bannerList[1]?.URLType === "Category" && {
                   category_Id: bannerList[1]?.category_Id,
                 }),
-                ...(bannerList[1]?.URLType === "Subcategory" && {
+                ...(bannerList[1]?.URLType === "SubCategory" && {
                   subCategory_Id: bannerList[1]?.subCategory_Id,
                 }),
                 ...(bannerList[1]?.URLType === "SubSubCategory" && {
