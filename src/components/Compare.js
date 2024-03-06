@@ -11,11 +11,13 @@ import { useGetCompareListQuery } from "../services/Post";
 import { useDeleteCompareMutation } from "../services/Post";
 import { useAddToCartMutation } from "../services/Post";
 import Star from "./Star";
+import { useSelector } from "react-redux";
 function Compare() {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const [deleteCompare] = useDeleteCompareMutation();
   const [newCompare, setNewCompare] = useState([]);
 
-  const compareItems = useGetCompareListQuery();
+  const compareItems = useGetCompareListQuery({ ecommercetoken });
   const [addToCart] = useAddToCartMutation();
 
   useEffect(() => {

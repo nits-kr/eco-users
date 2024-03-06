@@ -11,6 +11,7 @@ import {
   useGetAddressListMutation,
   useGetCartListheaderMutation,
   useGetCategoryListQuery,
+  useProceedToPayMutation,
   useSearchProductHeaderMutation,
   useTopBannerListMutation,
 } from "../services/Post";
@@ -20,17 +21,29 @@ import { useDispatch, useSelector } from "react-redux";
 import { searchQuerydata } from "../app/slice/SearchSlice";
 import Swal from "sweetalert2";
 import HeaderSwiper from "./HeaderSwiper";
-import { setEcomWebToken } from "../app/slice/localSlice";
+import {
+  setEcomWebToken,
+  setPayType,
+  setPaymentData,
+  setvarientId,
+} from "../app/slice/localSlice";
+import { Spinner } from "react-bootstrap";
 
 function Header({ Dash }) {
+  const [loader, setLoader] = useState(false);
+  const [loadings, setLoadings] = useState(false);
+
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
+
   const categoryListItems = useGetCategoryListQuery();
   const [subCategoryList] = useSubCategoryListMutation();
   const [bannerList] = useTopBannerListMutation();
   const [deletecart] = useDeleteCartItemsMutation();
+  const [proceedToPay] = useProceedToPayMutation();
   const [searchProduct] = useSearchProductHeaderMutation();
-  const trendingProduct = useGetTrendingProductQuery();
+  const { data: trendingProduct } = useGetTrendingProductQuery();
+
   const [trendingList, setTrendingList] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
@@ -66,6 +79,7 @@ function Header({ Dash }) {
   const [addressList] = useGetAddressListMutation();
 
   const [newAddress, setNewAddress] = useState([]);
+  const [total, setTotal] = useState("");
 
   const navigate = useNavigate();
 
@@ -89,6 +103,7 @@ function Header({ Dash }) {
       const respone = await cartListQuery(datas);
 
       setCartListItems(respone?.data?.results?.cart?.products?.[0]?.products);
+      setTotal(respone?.data?.results?.cart?.calculateTotal?.[0]);
     } catch (error) {
       console.log(error);
     }
@@ -213,6 +228,31 @@ function Header({ Dash }) {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handlePay = async (e, item) => {
+    if (item) {
+      dispatch(setPayType("Single"));
+      dispatch(setvarientId(item?.varient_Id));
+    }
+    e.preventDefault();
+
+    const data = {
+      // ...(coupanId && { couponId: coupanId }),
+      ...(item?.varient_Id && { varient_Id: item?.varient_Id }),
+      type: item ? "Single" : "All",
+      ...(ecommercetoken && { ecommercetoken: ecommercetoken }),
+    };
+    setLoader(item ? false : true);
+    setLoadings(item ? true : false);
+    const res = await proceedToPay(data);
+    console.log("res payment", res);
+    if (res) {
+      navigate(item ? "/check-outall" : "/check-outall");
+      dispatch(setPaymentData(res?.data?.results?.cart?.calculateTotal[0]));
+    }
+    setLoader(false);
+    setLoadings(false);
   };
 
   const handleCartButtonClick = () => {
@@ -618,9 +658,12 @@ function Header({ Dash }) {
                                     key={index}
                                   >
                                     <div className="drop-cart">
-                                      <Link className="drop-image">
+                                      <Link
+                                        className="drop-image"
+                                        to={`/product-details-page/${item?.productId?._id}`}
+                                      >
                                         <img
-                                          src={item?.varient?.product_Pic[0]}
+                                          src={item?.product_Pic[0]}
                                           className="img-fluid  lazyload"
                                           alt=""
                                         />
@@ -629,11 +672,11 @@ function Header({ Dash }) {
                                         <div>
                                           <h5>
                                             <Link
-                                              to={`/product/${item?.productId?._id}`}
+                                              to={`/product-details-page/${item?.productId?._id}`}
                                               key={index}
                                             >
                                               <strong>
-                                                {item?.productName_en
+                                                {item?.productId?.productName_en
                                                   ?.split(" ")
                                                   ?.slice(0, 3)
                                                   ?.join(" ")}{" "}
@@ -669,7 +712,7 @@ function Header({ Dash }) {
                             <div className="price-box">
                               <h5>Total :</h5>
                               <h4 className="theme-color fw-bold">
-                                ${totalSubtotal}{" "}
+                                ${total?.totalAmount}{" "}
                               </h4>
                             </div>
                             <div className="button-group">
@@ -679,13 +722,14 @@ function Header({ Dash }) {
                               >
                                 View Cart
                               </Link>
-                              <Link
-                                to="/check-outall"
+                              <button
+                                to="#"
                                 className="btn btn-sm cart-button theme-bg-color
                                        text-white"
+                                onClick={(e) => handlePay(e)}
                               >
-                                Checkout
-                              </Link>
+                                {loader ? <Spinner /> : "Checkout"}
+                              </button>
                             </div>
                           </div>
                         </div>

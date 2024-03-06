@@ -214,6 +214,17 @@ export const PostApi = createApi({
         };
       },
     }),
+    getUserCoupanList: builder.mutation({
+      query: ({ ecomUserId, ecommercetoken }) => {
+        return {
+          url: "user/carts/carts/getCoupons ",
+          method: "get",
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
 
     getCartListSummery: builder.mutation({
       query: ({ ecomUserId, ecommercetoken }) => {
@@ -250,9 +261,12 @@ export const PostApi = createApi({
     }),
 
     getCompareList: builder.query({
-      query: (body) => ({
+      query: ({ ecommercetoken }) => ({
         url: `user/compare/compare/compare-list`,
         method: "post",
+        headers: {
+          "x-auth-token-user": ecommercetoken,
+        },
       }),
     }),
     createAddress: builder.mutation({
@@ -794,4 +808,5 @@ export const {
   useDeleteWishMutation,
   useGetBannerMutation,
   useSingleProductOrderMutation,
+  useGetUserCoupanListMutation,
 } = PostApi;

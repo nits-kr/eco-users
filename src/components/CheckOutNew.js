@@ -12,6 +12,7 @@ import {
   useCreateOrderMutation,
   useGetAddressListMutation,
   useGetCartListSummeryMutation,
+  useGetUserCoupanListMutation,
 } from "../services/Post";
 import { useGetAddressListQuery } from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +30,7 @@ function CheckOutNew() {
     useSelector((data) => data?.local?.paymentData)
   );
   const [applyCoupan] = useApplyCoupanMutation();
+  const [coupanlist] = useGetUserCoupanListMutation();
 
   const [coupanId, setCoupanId] = useState("");
 
@@ -58,6 +60,24 @@ function CheckOutNew() {
 
   window.onbeforeunload = function () {
     localStorage.removeItem("buyItem");
+  };
+
+  useEffect(() => {
+    handleCoupanlist();
+  }, []);
+
+  const [coupanList, setCoupanList] = useState([]);
+
+  const handleCoupanlist = async () => {
+    const res = await coupanlist({ ecommercetoken });
+
+    if (res?.data?.message === "Coupons") {
+      setCoupanList(res?.data?.results?.coupons);
+    } else {
+      toast.error("Error Occured in fetching coupans!");
+    }
+
+    console.log("res coupan", res);
   };
 
   const applyCoupanCode = async () => {
@@ -271,6 +291,31 @@ function CheckOutNew() {
     const subtotal = (cart?.varient?.Price || 0) * (cart?.quantity || 1);
     totalSubtotal += subtotal;
   });
+
+  function formatDate(date) {
+    const day = date.getDate();
+    let suffix = "";
+    switch (day) {
+      case 1:
+      case 21:
+      case 31:
+        suffix = "st";
+        break;
+      case 2:
+      case 22:
+        suffix = "nd";
+        break;
+      case 3:
+      case 23:
+        suffix = "rd";
+        break;
+      default:
+        suffix = "th";
+        break;
+    }
+    const month = date.toLocaleString("default", { month: "short" });
+    return `${day}${suffix} ${month}`;
+  }
 
   useEffect(() => {
     feather.replace();
@@ -1089,7 +1134,11 @@ function CheckOutNew() {
 
                   <ul className="summery-contain"></ul>
                   <ul className="summery-total">
-                    <div className="summery-contain">
+                    <div
+                      className={`summery-contain ${
+                        coupanlist?.length > 0 ? "" : "d-none"
+                      }`}
+                    >
                       <div className="coupon-cart">
                         <h6 className="text-content mb-2">Coupon Apply</h6>
                         <div className="mb-3 coupon-box input-group">
@@ -1163,7 +1212,11 @@ function CheckOutNew() {
                   </ul>
                 </div>
 
-                <div className="checkout-offer">
+                <div
+                  className={`checkout-offer ${
+                    coupanList?.length > 0 ? "" : "d-none"
+                  }`}
+                >
                   <div className="offer-title">
                     <div className="offer-icon">
                       <img
@@ -1177,18 +1230,44 @@ function CheckOutNew() {
                     </div>
                   </div>
                   <ul className="offer-detail">
-                    <li>
-                      <p>
-                        Combo: BB Royal Almond/Badam Californian, Extra Bold 100
-                        gm...
-                      </p>
-                    </li>
-                    <li>
-                      <p>
-                        combo: Royal Cashew Californian, Extra Bold 100 gm + BB
-                        Royal Honey 500 gm
-                      </p>
-                    </li>
+                    {coupanList?.map((coupon, ind) => {
+                      return (
+                        <li key={ind}>
+                          <p>
+                            Apply Coupon Code:{" "}
+                            <strong>{coupon.coupanCode}</strong> and get flat{" "}
+                            <strong>
+                              {coupon.DiscountType === "Fixed"
+                                ? `$${coupon.discount}`
+                                : `${coupon.discount}%`}
+                            </strong>
+                            {coupon.DiscountType === "Fixed" ? "" : " off"}.{" "}
+                            <div>
+                              {" "}
+                              <strong>Hurry Up!</strong> ,Offer only valid up
+                              to:{" "}
+                              <strong className="text-danger">
+                                {formatDate(new Date(coupon.enddate))}
+                              </strong>
+                            </div>
+                          </p>
+
+                          {/* <p>
+                            Coupon Code: {coupon.coupanCode}
+                            <br />
+                            Discount Type: {coupon.DiscountType}
+                            <br />
+                            Discount Amount: {coupon.discount}
+                            <br />
+                            Start Date:{" "}
+                            {new Date(coupon.startdate).toLocaleDateString()}
+                            <br />
+                            End Date:{" "}
+                            {new Date(coupon.enddate).toLocaleDateString()}
+                          </p> */}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
                 <button

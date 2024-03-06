@@ -40,35 +40,24 @@ function Cart() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [cartListQuery] = useGetCartListheaderMutation();
-  const [applyCoupan] = useApplyCoupanMutation();
-  const [applyCoupan2, response2] = useApplyCoupan2Mutation();
+
   const [deletecart] = useDeleteCartItemsMutation();
   const [proceedToPay] = useProceedToPayMutation();
   const [coupanId, setCoupanId] = useState("");
-  const [coupanDetails, setCoupanIdDetails] = useState("");
 
   const [cartListItems, setCartListItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
   console.log("cartTotal", cartTotal);
 
-  const [cartCount, setCartCount] = useState([]);
-  const [wishAdd] = useAddToWislistListMutation();
   const [updateQuantity] = useUpdateQuantityMutation();
-  const [coupan, setCoupan] = useState([]);
-
-  const [coupanCode, setCoupanCode] = useState("");
-
-  const coupanCode2 = coupanCode || "";
 
   const cart = useSelector((state) => state?.cart?.carts);
 
   const dispatch = useDispatch();
-  const [singleItemPrice, setSingleItemPrice] = useState([]);
 
   localStorage?.setItem("cartTotal", cartTotal);
   const navigate = useNavigate();
 
-  const [count1, setCount1] = useState();
   const [coupanresponse, setCoupanresponse] = useState("");
 
   localStorage?.setItem("coupanresponse", coupanresponse);
@@ -241,58 +230,6 @@ function Cart() {
 
   localStorage?.setItem("totalSubtotal", totalSubtotal);
 
-  const applyCoupanCode = async () => {
-    if (!coupanCode2) {
-      toast.error("😒 Please enter a coupon code.");
-      return;
-    }
-
-    try {
-      const createNewOrder = await applyCoupan({
-        coupanCode: coupanCode2,
-        ecommercetoken,
-      });
-
-      console.log("createNewOrder", createNewOrder);
-      if (createNewOrder?.data?.results?.validCoupan === true) {
-        setCoupanId(createNewOrder?.data?.results?._id);
-        setCoupanIdDetails(createNewOrder?.data?.results);
-        dispatch(setCoupanIdlocal(createNewOrder?.data?.results?._id));
-        toast.success(`Wow🤩🤩! coupan applied `);
-      } else {
-        toast.error(`😒Invalid Coupan`);
-      }
-
-      setCoupanresponse(createNewOrder?.data?.results?.DiscountType);
-      let totalPrice = 0;
-      createNewOrder?.data?.results.product.forEach((product) => {
-        totalPrice += parseInt(product.Price);
-      });
-
-      const discountPercentage =
-        createNewOrder?.data?.results.DiscountType[0] || 0;
-      const discountedPrice =
-        totalPrice - (totalPrice * discountPercentage) / 100;
-
-      setCoupan({
-        ...createNewOrder?.data?.results,
-        cartsTotalSum: discountedPrice || cartTotal,
-      });
-      console.log(createNewOrder);
-    } catch (error) {
-      console.error("An error occurred while applying coupan.");
-    }
-  };
-  const handlePrice = (item) => {
-    localStorage.removeItem("allCartItems");
-    setSingleItemPrice(item);
-    localStorage?.setItem("buyItem", encodeURIComponent(JSON.stringify(item)));
-    window.onbeforeunload = function () {
-      localStorage.removeItem("allCartItems");
-    };
-    console.log("cart subtotal", item);
-  };
-
   const deleteCartItem = async (id) => {
     try {
       const response = await deletecart({ ecommercetoken, id });
@@ -305,13 +242,10 @@ function Cart() {
       console.log(error);
     }
   };
-  const userId = localStorage?.getItem("loginId");
 
   useEffect(() => {
     feather.replace();
   }, []);
-
-  const checkoutUrl = "/check-outall";
 
   const handleShopping = () => {
     navigate("/shop");
@@ -321,6 +255,8 @@ function Cart() {
     if (item) {
       dispatch(setPayType("Single"));
       dispatch(setvarientId(item?.varient_Id));
+    } else {
+      dispatch(setPayType(""));
     }
     e.preventDefault();
 
@@ -403,7 +339,7 @@ function Cart() {
           </div>
         </div>
       </section>
-      {/* Cart Section Start */}
+
       <section className="cart-section section-b-space">
         <div className="container-fluid-lg">
           <div className="row g-sm-5 g-3">
@@ -683,141 +619,23 @@ function Cart() {
                 className="btn btn-light shopping-button text-dark w-25 mt-3"
                 style={{ backgroundColor: "#f8f9fa", height: "50px" }}
               >
-                <i className="fa-solid fa-arrow-left-long" />
+                <i className="fa-solid fa-arrow-left-long me-2" />
                 Return To Shopping
               </button>
               <button
                 className="btn btn-animation proceed-btn fw-bold mt-3 w-25"
                 onClick={(e) => handlePay(e)}
               >
-                {loader ? <Spinner /> : "Process To Checkout"}
+                {loader ? (
+                  <Spinner />
+                ) : (
+                  <span>
+                    Process To Checkout
+                    <i className="fa-solid fa-arrow-right-long ms-2" />
+                  </span>
+                )}
               </button>
             </div>
-            {cartListItems?.length > 0 ? (
-              <div className="col-xxl-3 d-none">
-                <div className="summery-box p-sticky">
-                  <div className="summery-header">
-                    <h3>Cart Total</h3>
-                  </div>
-                  <div className="summery-contain">
-                    {singleItemPrice.length !== 0 ? (
-                      <div className="coupon-cart">
-                        <h6 className="text-content mb-2">Coupon Apply</h6>
-                        <div className="mb-3 coupon-box input-group">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="coupanCode"
-                            name="coupanCode"
-                            placeholder="Enter Coupon Code Here..."
-                            value={coupanCode}
-                            onChange={(e) => setCoupanCode(e.target.value)}
-                          />
-                          <button
-                            className="btn-apply"
-                            onClick={() => applyCoupanCode()}
-                          >
-                            Apply
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="coupon-cart">
-                        <h6 className="text-content mb-2">Coupon Apply</h6>
-                        <div className="mb-3 coupon-box input-group">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="coupanCode"
-                            name="coupanCode"
-                            placeholder="Enter Coupon Code Here..."
-                            value={coupanCode}
-                            onChange={(e) => setCoupanCode(e.target.value)}
-                          />
-                          <button
-                            className="btn-apply"
-                            onClick={() => applyCoupanCode()}
-                          >
-                            Apply
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    <ul style={{ display: coupanId ? "" : "none" }}>
-                      <li>
-                        <h4>Subtotal</h4>
-                        <h4 className="price">
-                          $
-                          {cartTotal
-                            ? cartTotal?.totalAmount
-                            : total?.totalAmount}
-                        </h4>
-                      </li>
-                      <li>
-                        <h4>Coupon Discount</h4>
-                        <h4 className="price">
-                          {" "}
-                          {coupanDetails?.discount}
-                          {coupanDetails?.DiscountType === "Fixed"
-                            ? ""
-                            : "%"}{" "}
-                        </h4>
-                      </li>
-                    </ul>
-                  </div>
-                  <ul className="summery-total">
-                    <li className="list-total border-top-0">
-                      <h4>Total (USD)</h4>
-
-                      <h4 className="price theme-color">
-                        $
-                        {cartTotal
-                          ? !coupanId
-                            ? cartTotal.grandTotal
-                            : cartTotal.grandTotal -
-                              (coupanDetails.DiscountType === "Fixed"
-                                ? coupanDetails.discount
-                                : cartTotal.grandTotal *
-                                  (coupanDetails.discount / 100))
-                          : !coupanId
-                          ? total.totalAmount
-                          : total.totalAmount -
-                            (coupanDetails.DiscountType === "Fixed"
-                              ? coupanDetails.discount
-                              : total.totalAmount *
-                                (coupanDetails.discount / 100))}
-                      </h4>
-                    </li>
-                  </ul>
-                  <div className="button-group cart-button">
-                    <ul>
-                      <li>
-                        <button
-                          // to={checkoutUrl}
-                          className="btn btn-animation proceed-btn fw-bold"
-                          onClick={(e) => handlePay(e)}
-                        >
-                          {loader ? <Spinner /> : "Process To Checkout"}
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          onClick={(e) => {
-                            handleShopping(e);
-                            // handlePay(e);
-                          }}
-                          className="btn btn-light shopping-button text-dark"
-                        >
-                          <i className="fa-solid fa-arrow-left-long" />
-                          Return To Shopping
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            ) : null}
           </div>
         </div>
       </section>
