@@ -128,7 +128,7 @@ function Shop(props) {
 
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
 
-  console.log("selectedSubcategories",selectedSubcategories);
+  console.log("selectedSubcategories", selectedSubcategories);
 
   useEffect(() => {
     if (ecomUserId) {
@@ -692,7 +692,7 @@ function Shop(props) {
       {/* <CategoryTop subCategoryListData={subCategoryListData} /> */}
       <section
         className={`product-list-section ${
-          subCategoryListData?.length > 0 ? "" : "d-none"
+          subCategoryListData?.length > 5 ? "" : "d-none"
         }`}
       >
         <div className="container-fluid-lg">
