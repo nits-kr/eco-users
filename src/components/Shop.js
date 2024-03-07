@@ -53,6 +53,19 @@ import { default as ReactSelect } from "react-select";
 import Pagination from "./shopping/Pagination";
 import CategoryTop from "./shopping/CategoryTop";
 import { toast } from "react-toastify";
+import "swiper/swiper-bundle.css";
+import { Swiper, SwiperSlide } from "swiper/react";
+import {
+  Navigation,
+  // Pagination,
+  Scrollbar,
+  A11y,
+  Autoplay,
+} from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
 
 function Shop(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
@@ -115,6 +128,8 @@ function Shop(props) {
 
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
 
+  console.log("selectedSubcategories",selectedSubcategories);
+
   useEffect(() => {
     if (ecomUserId) {
       handleCartList(ecomUserId);
@@ -139,7 +154,7 @@ function Shop(props) {
   const handleSaveChanges1 = async (categoryId) => {
     setSelectedSubcategories((prevSelected) => {
       if (prevSelected.includes(categoryId)) {
-        return prevSelected.filter((id) => id !== categoryId);
+        return prevSelected?.filter((id) => id !== categoryId);
       } else {
         return [...prevSelected, categoryId];
       }
@@ -181,6 +196,8 @@ function Shop(props) {
     if (id) {
       handleSubSubProduct(id);
       localStorage?.removeItem("searchQuerymain");
+    } else if (URLType === "cate") {
+      handleGetBanners(category_Id);
     } else if (URLType === "subcate") {
       handleGetBanners(subCategory_Id);
     } else if (URLType === "Category") {
@@ -203,6 +220,7 @@ function Shop(props) {
       ...(URLType === "subcate" && { subCategory: id }),
       ...(URLType === "SubCategory" && { subCategory: id }),
       ...(URLType === "Category" && { category: id }),
+      ...(URLType === "cate" && { category: id }),
       ...(URLType === "SubSubCategory" && { subSubCategory: id }),
       // ...(brand && { brand: "65278d0a2d1d5fafea17183c" }),
       ecommercetoken: ecommercetoken,
@@ -541,25 +559,42 @@ function Shop(props) {
     };
   }, []);
 
+  console.log(
+    "currentItems?.Subcategory_Id",
+    currentItems?.Subcategory_Id?._id
+  );
+
   const slidersTop = () => {
-    const filteredList = subCategoryListData?.filter(
-      (item) => !selectedSubcategories.includes(item?._id)
+    const selectedSubcategoryIds = currentItems.map(
+      (item) => item?.Subcategory_Id?._id
     );
-    return filteredList?.map((item, index) => {
+
+    const filteredList = subCategoryListData?.filter(
+      (item) => !selectedSubcategoryIds.includes(item?._id)
+    );
+    return subCategoryListData?.map((item, index) => {
       return (
-        <div key={index}>
-          <div
+        <SwiperSlide>
+          <Link
+            to="/shop"
+            state={{
+              URLType: "subcate",
+              ...{
+                subCategory_Id: item?._id,
+              },
+            }}
+            onClick={() => {
+              window.scrollTo(0, 0);
+            }}
             className="shop-category-box d-flex align-items-center justify-content-center"
             style={{
               backgroundColor: "#e0e0e0",
               padding: "5px",
               borderRadius: "5px",
             }}
+            key={index}
           >
-            <Link
-              to="#"
-              onClick={() => handleSaveChanges1(item?.category_Id?._id)}
-            >
+            <div>
               <div className="shop-category-image d-flex align-items-center justify-content-center">
                 <img
                   src={
@@ -583,9 +618,9 @@ function Shop(props) {
                   </strong>{" "}
                 </h6>
               </div>
-            </Link>
-          </div>
-        </div>
+            </div>
+          </Link>
+        </SwiperSlide>
       );
     });
   };
@@ -657,11 +692,42 @@ function Shop(props) {
       {/* <CategoryTop subCategoryListData={subCategoryListData} /> */}
       <section
         className={`product-list-section ${
-          subCategoryListData?.length > 5 ? "" : "d-none"
+          subCategoryListData?.length > 0 ? "" : "d-none"
         }`}
       >
         <div className="container-fluid-lg">
-          <Slider {...settings1}>{slidersTop()}</Slider>
+          {/* <Slider {...settings1}>{slidersTop()}</Slider> */}
+          <Swiper
+            className="mySwiper"
+            spaceBetween={15}
+            // slidesPerView={5}
+            breakpoints={{
+              640: {
+                slidesPerView: 2,
+                // spaceBetween: 20,
+              },
+              768: {
+                slidesPerView: 3,
+                // spaceBetween: 40,
+              },
+              1024: {
+                slidesPerView: 4,
+                // spaceBetween: 50,
+              },
+            }}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            navigation={{ clickable: true }}
+            // pagination={{ clickable: true }}
+            modules={[Navigation, Autoplay]}
+            onSlideChange={() => console.log("slide change")}
+            onSwiper={(swiper) => console.log(swiper)}
+            loop={true}
+          >
+            {slidersTop()}
+          </Swiper>
         </div>
       </section>
 
@@ -928,7 +994,7 @@ function Shop(props) {
                       </ul>
                     </div>
                   </div>
-                  <div className="grid-option d-none d-md-block">
+                  {/* <div className="grid-option d-none d-md-block">
                     <ul>
                       <li className="three-grid">
                         <Link to="#">
@@ -963,7 +1029,7 @@ function Shop(props) {
                         </Link>
                       </li>
                     </ul>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               {loading ? (

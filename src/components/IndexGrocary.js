@@ -393,29 +393,6 @@ function IndexGrocary(props) {
     HandleOkButtonClick();
   };
 
-  const sliders = () => {
-    return blogList?.map((item, index) => (
-      <div key={index}>
-        <div className="blog-box">
-          <div className="product-header">
-            <div className="blog-box-image">
-              <Link to="/blog" className="blog-image">
-                <img
-                  src="../../assets/images/vegetable/blog/1.jpg"
-                  className="bg-img  lazyload"
-                  alt=""
-                />
-              </Link>
-            </div>
-            <Link to="/blog" className="blog-detail">
-              <h6>20 March, 2022</h6>
-              <h5>Fresh Vegetable Online</h5>
-            </Link>
-          </div>
-        </div>
-      </div>
-    ));
-  };
   const totalRatings = selectedProduct?.ratings?.reduce(
     (sum, rating) => sum + rating.star,
     0
@@ -1093,20 +1070,27 @@ function IndexGrocary(props) {
                 <Slider {...settings}>
                   {categoryListData?.map((item, index) => {
                     return (
-                      <div>
-                        <Link to="/shop" className="category-box category-dark">
-                          <div className="heading12">
-                            <div key={index}>
-                              <img
-                                src={item?.categoryPic}
-                                className=" lazyload"
-                                alt=""
-                              />
-                              <h5> {item?.categoryName_en} </h5>
-                            </div>
+                      <Link
+                        to="/shop"
+                        state={{
+                          URLType: "cate",
+                          ...{
+                            category_Id: item?._id,
+                          },
+                        }}
+                        className="category-box category-dark"
+                      >
+                        <div className="heading12">
+                          <div key={index}>
+                            <img
+                              src={item?.categoryPic}
+                              className=" lazyload"
+                              alt=""
+                            />
+                            <h5> {item?.categoryName_en} </h5>
                           </div>
-                        </Link>
-                      </div>
+                        </div>
+                      </Link>
                     );
                   })}
                 </Slider>
