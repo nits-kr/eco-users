@@ -10,23 +10,11 @@ import "react-input-range/lib/css/index.css";
 import "jquery-ui-dist/jquery-ui";
 import Header from "./Header";
 import Footer from "./Footer";
-import {
-  AddToCart,
-  CreateWish,
-  ProductDetails,
-  ProductList,
-  // CartList,
-  LowPriceProduct,
-  HighPriceProduct,
-  AscendingProduct,
-  DescendingProduct,
-  TrandingProduct,
-  DiscountProduct,
-  AddCompare,
-} from "./HttpServices";
+
 import {
   useAddCompareMutation,
   useAddToCartMutation,
+  useFilteredProductMutation,
   useGetBannerMutation,
   useGetCartListheaderMutation,
   useGetProductListMutation,
@@ -70,31 +58,35 @@ import "swiper/css/scrollbar";
 function Shop(props) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
-  const urlType = useSelector((data) => data?.local?.urlType);
-  const subcateId = useSelector((data) => data?.local?.subcateId);
+
   const [cartListQuery] = useGetCartListheaderMutation();
+  const [ProductListItems] = useGetProductListMutation();
   const [addtocart] = useAddToCartMutation();
   const [compare] = useAddCompareMutation();
   const [searchProduct] = useSearchProductHeaderMutation();
   const [productListItems, setProductListItems] = useState([]);
   console.log("productListItems", productListItems);
-  const [subCategoryProduct] = useSubCategoryProductListMutation();
+  const [subCategoryProduct] = useFilteredProductMutation();
   const [banners] = useGetBannerMutation();
 
   const subCategoryListItems = useGetSubCategoryListQuery();
   const [subCategoryListData, setSubCategoryListData] = useState([]);
-  const [wishAdd, res] = useAddToWislistListMutation();
-  const [productListDetails, setProductListDetails] = useState([]);
+  const [wishAdd] = useAddToWislistListMutation();
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [CreateWishItems, setCreateWishItems] = useState([]);
-  const [addCompareItems, setAddCompareItems] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
+  const [subcategoryList, setSubCategoryList] = useState([]);
+  const [subSubcategoryList, setSubSubCategoryList] = useState([]);
+  const [brandList, setBrandList] = useState([]);
+
   const [cartListItems, setCartListItems] = useState([]);
   const [selectedWeight, setSelectedWeight] = useState("");
   const [loading, setLoading] = useState(false);
   const [subSubProduct, r] = useSubSubProductMutation();
   const [filterProduct, re] = useFilterPriceMutation();
-  const [quantity, setQuantity] = useState([]);
-  const [selectedProductId, setSelectedProductId] = useState("");
+
+  const [selectOptions1, setSelectOptions1] = useState([]);
+
+  console.log("selectOptions1", selectOptions1);
   const location = useLocation();
   const { state } = location;
   // const { id, URLType, category_Id } = state;
@@ -124,9 +116,9 @@ function Shop(props) {
     const initialCounts = productListItems?.map(() => 1);
     setCount(initialCounts);
   }, [productListItems]);
-  const [subCategoryProductItems, setSubCategoryProductItems] = useState([]);
 
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
+  const [selectedSubcategories2, setSelectedSubcategories2] = useState([]);
 
   console.log("selectedSubcategories", selectedSubcategories);
 
@@ -160,21 +152,59 @@ function Shop(props) {
       }
     });
   };
+  const handleSaveChanges2 = async (categoryId) => {
+    setSelectedSubcategories2((prevSelected) => {
+      if (prevSelected.includes(categoryId)) {
+        return prevSelected?.filter((id) => id !== categoryId);
+      } else {
+        return [...prevSelected, categoryId];
+      }
+    });
+  };
+
+  // useEffect(() => {
+  //   fetchProductsForSelectedSubcategories();
+  // }, [selectedSubcategories]);
+
+  // const fetchProductsForSelectedSubcategories = async () => {
+  //   const selectedProducts = await Promise.all(
+  //     selectedSubcategories.map(async (categoryId) => {
+  //       const result = await subCategoryProduct({ id: categoryId });
+  //       setProductListItems(result?.data?.results?.listData);
+  //       return result?.data?.results?.listData;
+  //     })
+  //   );
+  //   const flattenedProducts = selectedProducts.flat();
+  //   // setProductListItems(flattenedProducts);
+  // };
 
   useEffect(() => {
-    fetchProductsForSelectedSubcategories();
-  }, [selectedSubcategories]);
+    // handleFilteredPrduct(selectOptions1);
+    if (URLType === "cate") {
+      handleFilteredPrduct(category_Id);
+    } else if (URLType === "Category") {
+      handleFilteredPrduct(category_Id);
+    } else {
+      handleFilteredPrduct();
+    }
+  }, []);
 
-  const fetchProductsForSelectedSubcategories = async () => {
-    const selectedProducts = await Promise.all(
-      selectedSubcategories.map(async (categoryId) => {
-        const result = await subCategoryProduct({ id: categoryId });
-        setProductListItems(result?.data?.results?.listData);
-        return result?.data?.results?.listData;
-      })
-    );
-    const flattenedProducts = selectedProducts.flat();
-    // setProductListItems(flattenedProducts);
+  const handleFilteredPrduct = async (id) => {
+    const data = {
+      ...(URLType === "Category" && { category: id }),
+      ...(URLType === "cate" && { category: id }),
+      // ...(URLType === "SubSubCategory" && { subSubCategory: id }),
+      // ...(brand && { brand: "65278d0a2d1d5fafea17183c" }),
+
+      ecommercetoken: ecommercetoken,
+    };
+
+    const res = await subCategoryProduct(data);
+
+    setCategoryList(res?.data?.results?.filters?.[0]?.categories);
+    setSubCategoryList(res?.data?.results?.filters?.[0]?.subCategories);
+    setSubSubCategoryList(res?.data?.results?.filters?.[0]?.subSubCategories);
+    setBrandList(res?.data?.results?.filters?.[0]?.brand);
   };
 
   const handleCountChange = (index, newCount) => {
@@ -190,7 +220,6 @@ function Shop(props) {
     0
   );
   const averageRating = totalRatings / selectedProduct?.ratings?.length;
-  const searchdata = useSelector((data) => data?.search?.query);
 
   useEffect(() => {
     if (id) {
@@ -237,6 +266,38 @@ function Shop(props) {
     }
   };
 
+  const handleLowToHigh = async () => {
+    const res = await banners({ sortByPrice: "-1" });
+    setProductListItems(res?.data?.results?.products);
+  };
+  const handleHighToLow = async () => {
+    const res = await banners({ sortByPrice: "1" });
+    setProductListItems(res?.data?.results?.products);
+  };
+  const handleAscending = async () => {
+    const res = await banners({ sortByName: "-1" });
+    setProductListItems(res?.data?.results?.products);
+  };
+  const handleDescending = async () => {
+    const res = await banners({ sortByName: "1" });
+    setProductListItems(res?.data?.results?.products);
+  };
+
+  useEffect(() => {
+    if (selectedSubcategories || selectedSubcategories2) {
+      handleCategoryFilter(selectedSubcategories || selectedSubcategories2);
+    }
+  }, [selectedSubcategories, selectedSubcategories2]);
+
+  const handleCategoryFilter = async (selectedSubcategories) => {
+    const data = {
+      filterIds: selectedSubcategories,
+      // filterIds: selectedSubcategories?.map((item) => item?.value),
+    };
+    const res = await banners(data);
+    setProductListItems(res?.data?.results?.products);
+  };
+
   const handleSubSubProduct = async (id) => {
     try {
       const { data, error } = await subSubProduct(id);
@@ -254,35 +315,27 @@ function Shop(props) {
     setCurrentValue(newValue);
     document.getElementById("rangeValue").textContent = `$0 - $${newValue}`;
 
-    const newAddress = {
-      min: "0",
-      max: newValue.toString(),
+    const data = {
+      minPrice: 0,
+      maxPrice: newValue,
+      ecommercetoken: ecommercetoken,
     };
 
     try {
-      const result = await filterProduct(newAddress);
-      setProductListItems(result.data?.results?.list);
+      const res = await banners(data);
+      setProductListItems(res?.data?.results?.products);
     } catch (error) {
       console.error("Error filtering products:", error);
     }
   };
 
-  // const { data: ProductListItems } = useGetProductListQuery();
-  const [ProductListItems] = useGetProductListMutation();
-
-  // useEffect(() => {
-  // fetchData();
-  // }, []);
-
   const fetchData = async () => {
-    console.log("lllllyyyyyyyllll");
-
     try {
       props.setProgress(10);
       setLoading(true);
       const data = await ProductListItems({ ecommercetoken });
       setProductListItems(data?.data?.results?.list);
-      console.log("lllllllll", data);
+
       props.setProgress(100);
       setLoading(false);
     } catch (error) {
@@ -290,9 +343,6 @@ function Shop(props) {
     }
   };
 
-  const handleViewClick = (item) => {
-    setSelectedProduct(item);
-  };
   const handleWishClick = async (item) => {
     if (!ecommercetoken) {
       Swal.fire({
@@ -403,78 +453,7 @@ function Shop(props) {
       console.log(error);
     }
   };
-  const handleTranding = async () => {
-    try {
-      const { data, error } = await TrandingProduct();
-      if (error) {
-        console.log(error);
-        return;
-      }
-      setProductListItems(data?.results?.productlist || []);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const handleLowToHigh = async () => {
-    try {
-      const { data, error } = await LowPriceProduct();
-      if (error) {
-        console.log(error);
-        return;
-      }
-      setProductListItems(data?.results?.productlist);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const handleHighToLow = async () => {
-    try {
-      const { data, error } = await HighPriceProduct();
-      if (error) {
-        console.log(error);
-        return;
-      }
-      setProductListItems(data?.results?.productList || []);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const handleAscending = async () => {
-    try {
-      const { data, error } = await AscendingProduct();
-      if (error) {
-        console.log(error);
-        return;
-      }
-      setProductListItems(data?.results?.productList || []);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const handleDescending = async () => {
-    try {
-      const { data, error } = await DescendingProduct();
-      if (error) {
-        console.log(error);
-        return;
-      }
-      setProductListItems(data?.results?.productList || []);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const handleDiscount = async () => {
-    try {
-      const { data, error } = await DiscountProduct();
-      if (error) {
-        console.log(error);
-        return;
-      }
-      setProductListItems(data?.results?.productData);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   var w = window.innerWidth;
   useEffect(() => {
     feather.replace();
@@ -515,15 +494,13 @@ function Shop(props) {
     setSubCategoryListData(reversedList);
   }, [subCategoryListItems]);
 
-  const [selectOptions1, setSelectOptions1] = useState([]);
-
   const handleChange1 = (selected) => {
     setSelectOptions1(selected);
 
-    if (selected.length > 0) {
-      const selectedItemId = selected[selected.length - 1].value;
-      handleSaveChanges1(selectedItemId);
-    }
+    // if (selected.length > 0) {
+    //   const selectedItemId = selected[selected.length - 1].value;
+    //   handleSaveChanges1(selectedItemId);
+    // }
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -565,13 +542,13 @@ function Shop(props) {
   );
 
   const slidersTop = () => {
-    const selectedSubcategoryIds = currentItems.map(
-      (item) => item?.Subcategory_Id?._id
-    );
+    // const selectedSubcategoryIds = currentItems?.map(
+    //   (item) => item?.Subcategory_Id?._id
+    // );
 
-    const filteredList = subCategoryListData?.filter(
-      (item) => !selectedSubcategoryIds.includes(item?._id)
-    );
+    // const filteredList = subCategoryListData?.filter(
+    //   (item) => !selectedSubcategoryIds?.includes(item?._id)
+    // );
     return subCategoryListData?.map((item, index) => {
       return (
         <SwiperSlide>
@@ -692,7 +669,7 @@ function Shop(props) {
       {/* <CategoryTop subCategoryListData={subCategoryListData} /> */}
       <section
         className={`product-list-section ${
-          subCategoryListData?.length > 5 ? "" : "d-none"
+          subCategoryListData?.length > 5 ? "d-none" : "d-none"
         }`}
       >
         <div className="container-fluid-lg">
@@ -745,7 +722,7 @@ function Shop(props) {
                   <div className="filter-category">
                     <div className="filter-title">
                       <h2>Filters</h2>
-                      <Link to="#">Clear All</Link>
+                      {/* <Link to="#">Clear All</Link> */}
                     </div>
 
                     <ReactSelect
@@ -789,7 +766,7 @@ function Shop(props) {
                         aria-labelledby="panelsStayOpen-headingOne"
                       >
                         <div className="accordion-body">
-                          <div className="form-floating theme-form-floating-2 search-box">
+                          <div className="form-floating theme-form-floating-2 search-box d-none">
                             <input
                               type="search"
                               className="form-control"
@@ -801,7 +778,7 @@ function Shop(props) {
                             <label htmlFor="search">Search</label>
                           </div>
                           <ul className="category-list pe-3 custom-height">
-                            {subCategoryListData?.map((item, index) => {
+                            {categoryList?.map((item, index) => {
                               return (
                                 <li key={index}>
                                   <div className="form-check ps-0 m-0 category-list-box">
@@ -821,9 +798,117 @@ function Shop(props) {
                                       htmlFor={`checkbox_${item?._id}`}
                                     >
                                       <span className="name">
-                                        {item?.subCategoryName_en}
+                                        {item?.categoryName_en}
                                       </span>
                                       {/* <span className="number">({productListItems?.length})</span> */}
+                                    </label>
+                                  </div>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="accordion-item">
+                      <h2
+                        className="accordion-header"
+                        id="panelsStayOpen-headingOne"
+                      >
+                        <button
+                          className="accordion-button"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseTwo"
+                          aria-expanded="true"
+                          aria-controls="collapseTwo"
+                        >
+                          <span>Sub Categories</span>
+                        </button>
+                      </h2>
+                      <div
+                        id="collapseTwo"
+                        className="accordion-collapse collapse show"
+                        aria-labelledby="panelsStayOpen-headingOne"
+                      >
+                        <div className="accordion-body">
+                          <ul className="category-list pe-3 custom-height">
+                            {subcategoryList?.map((item, index) => {
+                              return (
+                                <li key={index}>
+                                  <div className="form-check ps-0 m-0 category-list-box">
+                                    <input
+                                      className="checkbox_animated"
+                                      type="checkbox"
+                                      id={`checkbox_${item?._id}`}
+                                      defaultChecked={selectedSubcategories2.includes(
+                                        item?._id
+                                      )}
+                                      onChange={() =>
+                                        handleSaveChanges2(item?._id)
+                                      }
+                                    />
+                                    <label
+                                      className="form-check-label"
+                                      htmlFor={`checkbox_${item?._id}`}
+                                    >
+                                      <span className="name">
+                                        {item?.subCategoryName_en}
+                                      </span>
+                                    </label>
+                                  </div>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="accordion-item">
+                      <h2
+                        className="accordion-header"
+                        id="panelsStayOpen-headingOne"
+                      >
+                        <button
+                          className="accordion-button"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseThree"
+                          aria-expanded="true"
+                          aria-controls="collapseThree"
+                        >
+                          <span>All Brands</span>
+                        </button>
+                      </h2>
+                      <div
+                        id="collapseThree"
+                        className="accordion-collapse collapse show"
+                        aria-labelledby="panelsStayOpen-headingOne"
+                      >
+                        <div className="accordion-body">
+                          <ul className="category-list pe-3 custom-height">
+                            {brandList?.map((item, index) => {
+                              return (
+                                <li key={index}>
+                                  <div className="form-check ps-0 m-0 category-list-box">
+                                    <input
+                                      className="checkbox_animated"
+                                      type="checkbox"
+                                      id={`checkbox_${item?._id}`}
+                                      defaultChecked={selectedSubcategories.includes(
+                                        item?._id
+                                      )}
+                                      onChange={() =>
+                                        handleSaveChanges1(item?._id)
+                                      }
+                                    />
+                                    <label
+                                      className="form-check-label"
+                                      htmlFor={`checkbox_${item?._id}`}
+                                    >
+                                      <span className="name">
+                                        {item?.brandName_en}
+                                      </span>
                                     </label>
                                   </div>
                                 </li>
@@ -843,15 +928,15 @@ function Shop(props) {
                           className="accordion-button collapsed"
                           type="button"
                           data-bs-toggle="collapse"
-                          data-bs-target="#collapseThree"
+                          data-bs-target="#collapseFour"
                           aria-expanded="false"
-                          aria-controls="collapseThree"
+                          aria-controls="collapseFour"
                         >
                           <span>Price</span>
                         </button>
                       </h2>
                       <div
-                        id="collapseThree"
+                        id="collapseFour"
                         className="accordion-collapse collapse show"
                         aria-labelledby="panelsStayOpen-headingThree"
                       >
@@ -931,7 +1016,7 @@ function Shop(props) {
                             className="dropdown-item"
                             id="pop"
                             to="#"
-                            onClick={() => handleTranding()}
+                            // onClick={() => handleTranding()}
                           >
                             Popularity
                           </Link>

@@ -271,8 +271,8 @@ export const PostApi = createApi({
     }),
     dealTodayList: builder.query({
       query: ({ ecommercetoken }) => ({
-        url: "user/product/product/deals-of-day",
-        method: "post",
+        url: "user/deals-of-day",
+        method: "get",
         headers: {
           "x-auth-token-user": ecommercetoken,
         },
@@ -335,6 +335,20 @@ export const PostApi = createApi({
 
         return {
           url: "user/product/product/search-product",
+          method: "PATCH",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
+    filteredProduct: builder.mutation({
+      query: (body) => {
+        const { ecommercetoken, ...data } = body;
+
+        return {
+          url: "user/filterOptions",
           method: "PATCH",
           body: data,
           headers: {
@@ -819,4 +833,5 @@ export const {
   useSingleProductOrderMutation,
   useGetUserCoupanListMutation,
   useDealTodayListQuery,
+  useFilteredProductMutation,
 } = PostApi;

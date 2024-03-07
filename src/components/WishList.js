@@ -209,7 +209,7 @@ function WishList() {
               return (
                 <div
                   className="col-xxl-2 col-lg-3 col-md-4 col-6 product-box-contain"
-                  style={{ width: "32vh" }}
+                  // style={{ width: "32vh" }}
                   key={index}
                 >
                   <div className="product-box-3 h-100">
@@ -218,7 +218,7 @@ function WishList() {
                         <Link to="/product">
                           <img
                             src={item?.product_Id?.varient?.product_Pic[0]}
-                            className="img-fluid  lazyload"
+                            className="img-fluid  lazyload mb-3"
                             alt=""
                           />
                         </Link>
