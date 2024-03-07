@@ -609,21 +609,29 @@ function Cart() {
               )}
             </div>
             <div
-              className="button-group cart-button d-flex justify-content-between"
-              style={{ display: cartListItems?.length > 0 ? "" : "none" }}
+              className={`button-group cart-button ${
+                cartListItems?.length > 0 ? "d-flex" : "d-none"
+              }  justify-content-between `}
+              style={{
+                flexDirection: window.innerWidth <= 768 ? "column" : "row",
+              }}
             >
               <button
                 onClick={(e) => {
                   handleShopping(e);
                 }}
-                className="btn btn-light shopping-button text-dark w-25 mt-3"
+                className={`btn btn-light shopping-button text-dark ${
+                  window.innerWidth <= 768 ? "w-100" : "w-25"
+                } mt-3`}
                 style={{ backgroundColor: "#f8f9fa", height: "50px" }}
               >
                 <i className="fa-solid fa-arrow-left-long me-2" />
                 Return To Shopping
               </button>
               <button
-                className="btn btn-animation proceed-btn fw-bold mt-3 w-25"
+                className={`btn btn-animation shopping-button text-light ${
+                  window.innerWidth <= 768 ? "w-100" : "w-25"
+                } mt-3`}
                 onClick={(e) => handlePay(e)}
               >
                 {loader ? (

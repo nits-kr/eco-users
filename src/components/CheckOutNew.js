@@ -6,15 +6,12 @@ import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Header from "./Header";
 import Footer from "./Footer";
-import { OrderSummary } from "./HttpServices";
 import {
   useApplyCoupanMutation,
   useCreateOrderMutation,
   useGetAddressListMutation,
-  useGetCartListSummeryMutation,
   useGetUserCoupanListMutation,
 } from "../services/Post";
-import { useGetAddressListQuery } from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
 import { setCoupanIdlocal, setvarientId } from "../app/slice/localSlice";
 import { toast } from "react-toastify";
@@ -23,8 +20,7 @@ function CheckOutNew() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const payType = useSelector((data) => data?.local?.payType);
   const varient_Id = useSelector((data) => data?.local?.varient_Id);
-  console.log("varient_Id", varient_Id);
-  // const coupanId = useSelector((data) => data?.local?.coupanId);
+
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const paymentData = JSON.parse(
     useSelector((data) => data?.local?.paymentData)
@@ -32,32 +28,19 @@ function CheckOutNew() {
   const [applyCoupan] = useApplyCoupanMutation();
   const [coupanlist] = useGetUserCoupanListMutation();
 
-  const [coupancodes, setCoupancodes] = useState("");
   const [coupanId, setCoupanId] = useState("");
 
   const [addressList] = useGetAddressListMutation();
-  const [OrderSummarys] = useGetCartListSummeryMutation();
-  const [orderItemSummary, setOrderItemSummary] = useState([]);
-  const [orderItemSummaryPrice, setOrderItemSummaryPrice] = useState([]);
+
   const [createOrder] = useCreateOrderMutation();
   const [newAddress, setNewAddress] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
-  const userId = localStorage.getItem("loginId");
-  const [coupan, setCoupan] = useState([]);
+
   const [coupanCode, setCoupanCode] = useState("");
   const [coupanDetails, setCoupanIdDetails] = useState("");
 
-  const [items, setItems] = useState("");
-  const [items2, setItems2] = useState([]);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const { coupan2 } = useParams();
-  const storeUser = localStorage?.getItem("userName");
-  const [totalPrice, setTotalPrice] = useState([]);
-
-  const coupanresponse = localStorage?.getItem("coupanresponse");
 
   window.onbeforeunload = function () {
     localStorage.removeItem("buyItem");
@@ -103,50 +86,18 @@ function CheckOutNew() {
         toast.error(`😒Invalid Coupan`);
       }
 
-      // setCoupanresponse(createNewOrder?.data?.results?.DiscountType);
       let totalPrice = 0;
       createNewOrder?.data?.results.product.forEach((product) => {
         totalPrice += parseInt(product.Price);
       });
-
-      const discountPercentage =
-        createNewOrder?.data?.results.DiscountType[0] || 0;
-      const discountedPrice =
-        totalPrice - (totalPrice * discountPercentage) / 100;
-
-      setCoupan({
-        ...createNewOrder?.data?.results,
-        cartsTotalSum: discountedPrice,
-      });
-      console.log(createNewOrder);
     } catch (error) {
       console.error("An error occurred while applying coupan.");
     }
   };
 
   useEffect(() => {
-    const buyItem = localStorage.getItem("buyItem");
-    if (buyItem) {
-      const decodedBuyItem = JSON.parse(decodeURIComponent(buyItem));
-      setItems(decodedBuyItem);
-    } else {
-      console.log("buyItem not found in localStorage");
-    }
-  }, []);
-  useEffect(() => {
-    const buyAllItem = localStorage.getItem("allCartItems");
-    if (buyAllItem) {
-      const decodedBuyAllItem = JSON.parse(decodeURIComponent(buyAllItem));
-      setItems2(decodedBuyAllItem);
-    } else {
-      console.log("buyItem not found in localStorage");
-    }
-  }, []);
-
-  useEffect(() => {
     if (ecomUserId) {
       handleAddressList(ecomUserId);
-      handleCartSummery(ecomUserId);
     }
   }, [ecomUserId]);
 
@@ -160,35 +111,6 @@ function CheckOutNew() {
       const respone = await addressList(datas);
 
       setNewAddress(respone?.data?.results?.addressData?.slice().reverse());
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const handleCartSummery = async () => {
-    const datas = {
-      ecomUserId,
-      ecommercetoken,
-    };
-
-    try {
-      const respone = await OrderSummarys(datas);
-
-      console.log("respone summery", respone);
-
-      setOrderItemSummary(respone?.data?.results?.carts?.slice().reverse());
-      const items = respone?.data?.results?.carts || [];
-      let total = 0;
-
-      items.forEach((item) => {
-        item.forEach((product) => {
-          if (product.Price) {
-            total += product.Price;
-          }
-        });
-      });
-
-      setOrderItemSummaryPrice(respone?.data.results);
-      setTotalPrice(total);
     } catch (error) {
       console.log(error);
     }
@@ -275,23 +197,9 @@ function CheckOutNew() {
     }
   };
 
-  useEffect(() => {
-    if (coupan2) {
-      const decodedItem = JSON.parse(decodeURIComponent(coupan2));
-      setCoupan(decodedItem);
-    }
-  }, [coupan2]);
-
   const handleAddressSelection = (addressId) => {
     setSelectedAddressId(addressId);
   };
-
-  let totalSubtotal = 0;
-
-  orderItemSummary?.forEach((cart) => {
-    const subtotal = (cart?.varient?.Price || 0) * (cart?.quantity || 1);
-    totalSubtotal += subtotal;
-  });
 
   function formatDate(date) {
     const day = date.getDate();
@@ -322,7 +230,7 @@ function CheckOutNew() {
     if (navigator.clipboard) {
       try {
         await navigator.clipboard.writeText(text);
-        setCoupancodes(text);
+
         if (text) {
           toast.info(
             <>
@@ -352,8 +260,7 @@ function CheckOutNew() {
   return (
     <>
       <Header />
-      {/* Header End */}
-      {/* mobile fix menu start */}
+
       <div className="mobile-menu d-md-none d-block mobile-cart">
         <ul>
           <li className="active">
@@ -388,8 +295,7 @@ function CheckOutNew() {
           </li>
         </ul>
       </div>
-      {/* mobile fix menu end */}
-      {/* Breadcrumb Section Start */}
+
       <section className="breadscrumb-section pt-0">
         <div className="container-fluid-lg">
           <div className="row">
@@ -413,8 +319,7 @@ function CheckOutNew() {
           </div>
         </div>
       </section>
-      {/* Breadcrumb Section End */}
-      {/* Checkout section Start */}
+
       <section className="checkout-section-2 section-b-space">
         <div className="container-fluid-lg">
           <div className="row g-sm-4 g-3">
@@ -1113,54 +1018,7 @@ function CheckOutNew() {
                   <div className="summery-header">
                     <h3>Order Summery</h3>
                   </div>
-                  <ul className="summery-contain">
-                    {items ? (
-                      <li>
-                        <img
-                          src={items.varient?.product_Pic[0] || ""}
-                          className="img-fluid lazyloaded checkout-image"
-                          alt=""
-                        />
-                        <h4>
-                          {items?.product_Id?.productName_en
-                            .split(" ")
-                            .slice(0, 3)
-                            .join(" ")}{" "}
-                          <span>X {items?.quantity}</span>
-                        </h4>
-                        <h4 className="price">
-                          {" "}
-                          <span>
-                            ${items?.varient?.Price * items?.quantity}
-                          </span>{" "}
-                        </h4>
-                      </li>
-                    ) : (
-                      <ul className="summery-contain">
-                        {orderItemSummary?.map((order, index) => (
-                          <li key={index}>
-                            <img
-                              src={order?.varient?.product_Pic[0] || ""}
-                              className="img-fluid lazyloaded checkout-image"
-                              alt=""
-                            />
-                            <h4>
-                              {order?.product?.productName_en
-                                ?.split(" ")
-                                ?.slice(0, 3)
-                                ?.join(" ")}{" "}
-                              <span>X {order.quantity}</span>
-                            </h4>
-                            <h4 className="price">
-                              ${order?.varient?.Price * order.quantity}
-                            </h4>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </ul>
 
-                  <ul className="summery-contain"></ul>
                   <ul className="summery-total">
                     <div
                       className={`summery-contain ${
@@ -1196,12 +1054,7 @@ function CheckOutNew() {
                     <li>
                       <h4>Shipping</h4>
 
-                      <h4 className="price">
-                        $
-                        {orderItemSummaryPrice?.shipping !== undefined
-                          ? orderItemSummaryPrice?.shipping
-                          : 0}
-                      </h4>
+                      <h4 className="price">${0}</h4>
                     </li>
                     <li>
                       <h4>Discount</h4>
@@ -1213,20 +1066,12 @@ function CheckOutNew() {
                     </li>
                     <li>
                       <h4>Tax</h4>
-                      <h4 className="price">
-                        $
-                        {orderItemSummaryPrice?.Tax !== undefined
-                          ? orderItemSummaryPrice?.Tax
-                          : 0}
-                      </h4>
+                      <h4 className="price">${"0"}</h4>
                     </li>
-                    {/* <li>
-                      <h4>Coupon/Code</h4>
-                      <h4 className="price">Apply Coupan</h4>
-                    </li> */}
+
                     <li className="list-total">
                       <h4>Total (USD)</h4>
-                      {/* <h4 className="price">${paymentData?.grandTotal}</h4> */}
+
                       <h4 className="price">
                         $
                         {coupanId
@@ -1288,20 +1133,6 @@ function CheckOutNew() {
                               </strong>
                             </div>
                           </p>
-
-                          {/* <p>
-                            Coupon Code: {coupon.coupanCode}
-                            <br />
-                            Discount Type: {coupon.DiscountType}
-                            <br />
-                            Discount Amount: {coupon.discount}
-                            <br />
-                            Start Date:{" "}
-                            {new Date(coupon.startdate).toLocaleDateString()}
-                            <br />
-                            End Date:{" "}
-                            {new Date(coupon.enddate).toLocaleDateString()}
-                          </p> */}
                         </li>
                       );
                     })}
@@ -1318,11 +1149,9 @@ function CheckOutNew() {
           </div>
         </div>
       </section>
-      {/* Checkout section End */}
-      {/* Footer Section Start */}
+
       <Footer />
-      {/* Footer Section End */}
-      {/* Location Modal Start */}
+
       <div
         className="modal location-modal fade theme-modal"
         id="locationModal"

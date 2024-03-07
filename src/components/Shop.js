@@ -679,7 +679,7 @@ function Shop(props) {
                       </Link>
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
-                      {URLType ? URLType : "Shop"}
+                      {"Shop"}
                     </li>
                   </ol>
                 </nav>

@@ -285,7 +285,7 @@ function OrderSuccess() {
                                 </div>
                               </div>
                             </td>
-                            <td className="price">
+                            {/* <td className="price">
                               <h4 className="table-title text-content">
                                 Price
                               </h4>
@@ -298,7 +298,7 @@ function OrderSuccess() {
                               <h4 className="text-title">
                                 {item?.products?.[0]?.quantity}
                               </h4>
-                            </td>
+                            </td> */}
                             <td className="subtotal">
                               <h4 className="table-title text-content">
                                 Total
