@@ -66,9 +66,6 @@ function TopDiscountProduct() {
     }
   };
 
-  console.log("topDiscount", topDiscount);
-  console.log("topDiscountedProduct", topDiscountedProduct);
-
   useEffect(() => {
     if (topDiscountedProduct) {
       setTopDiscount(topDiscountedProduct?.results?.productList);
@@ -512,8 +509,8 @@ function TopDiscountProduct() {
               // navigation={{ clickable: true }}
               // pagination={{ clickable: true }}
               modules={[Pagination, Navigation, Autoplay]}
-              onSlideChange={() => console.log("slide change")}
-              onSwiper={(swiper) => console.log(swiper)}
+              // onSlideChange={() => console.log("slide change")}
+              // onSwiper={(swiper) => console.log(swiper)}
               loop={true}
             >
               {sliders2()}

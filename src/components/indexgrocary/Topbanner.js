@@ -14,10 +14,6 @@ function Topbanner() {
     }
   }, [categoryBanner]);
 
-  const filteredBanners = bannerList?.banners?.filter(
-    (banner) => banner.area === "Top Banner"
-  );
-
   return (
     <>
       <section className="home-section pt-2">

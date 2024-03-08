@@ -684,7 +684,7 @@ export const PostApi = createApi({
         const { ecommercetoken, ...data } = body;
 
         return {
-          url: "user/product/product/create-rating",
+          url: "user/review/review/add-review",
           method: "post",
           body: data,
           headers: {

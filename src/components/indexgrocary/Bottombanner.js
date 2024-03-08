@@ -14,7 +14,6 @@ function Bottombanner() {
     }
   }, [categoryBanner]);
 
-  console.log("bottom banner", bannerList);
   return (
     <>
       <div className="section-t-space">

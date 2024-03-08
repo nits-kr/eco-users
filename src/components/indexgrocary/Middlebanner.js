@@ -5,8 +5,6 @@ import { useGetBannerListQuery } from "../../services/Post";
 function Middlebanner() {
   const [bannerList, setBannerList] = useState([]);
 
-  console.log("middlebannerList", bannerList[0]?.subSubCategory_Id);
-
   const { data: categoryBanner } = useGetBannerListQuery({
     area: "Middle Banner",
   });
@@ -16,7 +14,6 @@ function Middlebanner() {
     }
   }, [categoryBanner]);
 
-  console.log("middle banner", bannerList);
   return (
     <>
       <div className="section-t-space section-b-space">

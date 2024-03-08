@@ -13,6 +13,9 @@ import { toast } from "react-toastify";
 
 function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const varificationMobile = useSelector(
+    (data) => data?.local?.varificationMobile
+  );
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const updatedRating = useSelector((data) => data?.local?.updateRating);
 
@@ -118,7 +121,7 @@ function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
     }
 
     const newContactData = {
-      Name: name,
+      // Name: varificationMobile,
       email: email,
       user_Id: ecomUserId,
       comment: comment,
@@ -306,13 +309,12 @@ function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
                         className="form-control"
                         id="name"
                         placeholder="Name"
-                        required
-                        onChange={(e) => setName(e.target.value)}
+                        // required
+                        // onChange={(e) => setName(e.target.value)}
+                        defaultValue={varificationMobile}
+                        readOnly
                       />
-                      <label htmlFor="name">
-                        Your Name
-                        <span className="required-field text-danger">*</span>
-                      </label>
+                      <label htmlFor="name">Your Name</label>
                     </div>
                   </div>
                   <div className="col-md-6">

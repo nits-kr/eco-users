@@ -2568,7 +2568,7 @@ input[type="number"]::-webkit-outer-spin-button {
   width: 100%;
 }
 
-.deal-modal .modal-dialog .modal-content .modal-body .deal-offer-box .deal-offer-list li.list-1 .deal-offer-contain::before {
+/* .deal-modal .modal-dialog .modal-content .modal-body .deal-offer-box .deal-offer-list li.list-1 .deal-offer-contain::before {
   background-color: var(--theme-color);
 }
 
@@ -2578,7 +2578,20 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .deal-modal .modal-dialog .modal-content .modal-body .deal-offer-box .deal-offer-list li.list-3 .deal-offer-contain::before {
   background-color: #ffa53b;
+} */
+
+.deal-modal .modal-dialog .modal-content .modal-body .deal-offer-box .deal-offer-list li:nth-child(3n+1) .deal-offer-contain::before {
+  background-color: var(--theme-color);
 }
+
+.deal-modal .modal-dialog .modal-content .modal-body .deal-offer-box .deal-offer-list li:nth-child(3n+2) .deal-offer-contain::before {
+  background-color: #ff4f4f;
+}
+
+.deal-modal .modal-dialog .modal-content .modal-body .deal-offer-box .deal-offer-list li:nth-child(3n+3) .deal-offer-contain::before {
+  background-color: #ffa53b;
+}
+
 
 .deal-modal .modal-dialog .modal-content .modal-body .deal-offer-box .deal-offer-list li .deal-offer-contain {
   display: -webkit-box;

@@ -67,9 +67,6 @@ function RecommendedProduct() {
     }
   };
 
-  console.log("toprecommended", topDiscount);
-  console.log("recommended", recommended);
-
   useEffect(() => {
     if (recommended) {
       setTopDiscount(recommended?.results?.products);
@@ -514,8 +511,8 @@ function RecommendedProduct() {
               // navigation={{ clickable: true }}
               // pagination={{ clickable: true }}
               modules={[Pagination, Navigation, Autoplay]}
-              onSlideChange={() => console.log("slide change")}
-              onSwiper={(swiper) => console.log(swiper)}
+              // onSlideChange={() => console.log("slide change")}
+              // onSwiper={(swiper) => console.log(swiper)}
               loop={true}
             >
               {sliders2()}

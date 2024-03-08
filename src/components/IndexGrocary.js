@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import feather from "feather-icons";
-import axios from "axios";
 import "font-awesome/css/font-awesome.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Slider from "react-slick";
@@ -12,13 +11,11 @@ import {
   useAddCompareMutation,
   useAddToCartMutation,
   useGetBannerListQuery,
-  useGetBannerMutation,
   useGetCartListheaderMutation,
   useGetTrendingProductQuery,
-  useTopBannerListMutation,
 } from "../services/Post";
 // import Spinner from "./Spinner";
-import { ProductDetails, DiscountProduct } from "./HttpServices";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye,
@@ -29,8 +26,7 @@ import Star from "./Star";
 import { useGetCategoryListQuery } from "../services/Post";
 import { useGetAllPostQuery } from "../services/Post";
 import { useAddToWislistListMutation } from "../services/Post";
-import BestSeller from "./indexgrocary/BestSeller";
-import Foodcupboard from "./indexgrocary/Foodcupboard";
+
 import Blog from "./indexgrocary/Blog";
 import Topbanner from "./indexgrocary/Topbanner";
 import Middlebanner from "./indexgrocary/Middlebanner";
@@ -64,25 +60,21 @@ function IndexGrocary(props) {
   const categoryListItems = useGetCategoryListQuery();
   const trendingProduct = useGetTrendingProductQuery({ ecommercetoken });
   const [cartListQuery] = useGetCartListheaderMutation();
-  const [banners] = useGetBannerMutation();
+
   const [addtocart] = useAddToCartMutation();
   const [compare] = useAddCompareMutation();
   const { data: categoryBanner } = useGetBannerListQuery();
   const [trendingList, setTrendingList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [discountProduct, setDiscountProduct] = useState([]);
-  const [productListDetails, setProductListDetails] = useState([]);
+
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [CreateWishItems, setCreateWishItems] = useState([]);
 
   const [cartListItems, setCartListItems] = useState([]);
 
   const [categoryListData, setCategoryListData] = useState([]);
   const [wishAdd] = useAddToWislistListMutation();
   const [count, setCount] = useState([]);
-  const [items, setItems] = useState([]);
 
-  const [bannerListnew] = useTopBannerListMutation();
   const [bannerList, setBannerList] = useState([]);
 
   const navigate = useNavigate();
@@ -104,36 +96,6 @@ function IndexGrocary(props) {
   const blog = useGetAllPostQuery();
 
   const [blogList, setBlogList] = useState();
-  axios.defaults.headers.common["x-auth-token-user"] =
-    localStorage.getItem("token");
-  const buyItem = localStorage?.getItem("bannerItems");
-
-  const handleBannerChanges = async (categoryId) => {
-    const editAddress = {
-      id: categoryId,
-    };
-    const result = await bannerListnew(editAddress);
-    if (result) {
-      localStorage?.setItem(
-        "bannerItems",
-        encodeURIComponent(JSON.stringify(result?.data?.results?.topBanner))
-      );
-      // setBannerItems(result?.data?.results?.banner);
-    }
-  };
-
-  useEffect(() => {
-    if (buyItem) {
-      try {
-        const decodedBuyItem = JSON.parse(decodeURIComponent(buyItem));
-        setItems(decodedBuyItem);
-      } catch (error) {
-        console.error("Error parsing buyItem:", error);
-      }
-    } else {
-      console.log("buyItem not found in localStorage");
-    }
-  }, [buyItem]);
 
   useEffect(() => {
     feather.replace();
@@ -155,7 +117,6 @@ function IndexGrocary(props) {
 
   useEffect(() => {
     if (ecomUserId) {
-      console.log("ecomUserId useeffect", ecomUserId);
       cartData(ecomUserId);
     }
   }, [ecomUserId]);
@@ -169,63 +130,10 @@ function IndexGrocary(props) {
     }
   };
 
-  const handleGetBanners = async () => {
-    const data = {
-      subCategory: "64f1be58475d18dd5edff13a",
-      category: "64f1bb51475d18dd5edff0e3",
-      // "subSubCategory": "",
-      // "brand": "65278d0a2d1d5fafea17183c"}
-    };
-    try {
-      const res = await banners({ ecomUserId, ecommercetoken });
-
-      setCartListItems(res?.data?.carts);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
-  const fetchData = async () => {
-    try {
-      props.setProgress(10);
-      setLoading(true);
-      const { data, error } = await DiscountProduct();
-
-      setDiscountProduct(data?.results?.productData);
-      setLoading(true);
-      props.setProgress(50);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    if (discountProduct?.length > 0) {
-      getData();
-    }
-  }, [discountProduct]);
-  const getData = async () => {
-    try {
-      props.setProgress(70);
-      setLoading(true);
-      const ids = discountProduct.map((item) => item._id);
-      const promises = ids.map((id) => ProductDetails(id));
-      const results = await Promise.all(promises);
-
-      const details = results.map((result) => result?.data?.results?.details);
-      setProductListDetails(details);
-      props.setProgress(100);
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const handleViewClick = (item) => {
     setSelectedProduct(item);
   };
 
-  const userId = localStorage?.getItem("loginId");
   const handleWishClick = async (item) => {
     if (!ecommercetoken) {
       Swal.fire({
@@ -365,23 +273,7 @@ function IndexGrocary(props) {
     slidesToScroll: 1,
     arrows: false,
   };
-  const settings1 = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    autoplay: true,
-    arrows: false,
-  };
-  const settings2 = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-  };
+
   useEffect(() => {
     feather.replace();
   }, []);
@@ -858,7 +750,15 @@ function IndexGrocary(props) {
                                     <div>
                                       <div className="text-title">
                                         <h6 className="name">
-                                          {item?.varient?.productName_en}
+                                          <strong>
+                                            {item?.productName_en?.slice(
+                                              0,
+                                              20
+                                            ) +
+                                              (item?.productName_en.length > 20
+                                                ? "..."
+                                                : "")}
+                                          </strong>
                                         </h6>
                                       </div>
                                       <span>
@@ -912,7 +812,7 @@ function IndexGrocary(props) {
                     </>
                   )}
                 </div>
-                <div className="section-t-space">
+                <div className="section-t-space d-none">
                   <div className="category-menu">
                     <h3>Customer Comment</h3>
                     <div className="review-box">
@@ -1033,8 +933,8 @@ function IndexGrocary(props) {
                               navigation={{ clickable: true }}
                               // pagination={{ clickable: true }}
                               modules={[Pagination, Navigation, Autoplay]}
-                              onSlideChange={() => console.log("slide change")}
-                              onSwiper={(swiper) => console.log(swiper)}
+                              // onSlideChange={() => console.log("slide change")}
+                              // onSwiper={(swiper) => console.log(swiper)}
                               loop={true}
                             >
                               {sliders2()}

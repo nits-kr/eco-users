@@ -119,8 +119,19 @@ function Shop(props) {
 
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
   const [selectedSubcategories2, setSelectedSubcategories2] = useState([]);
+  const [selectedBrands, setSelectedbrands] = useState([]);
 
   console.log("selectedSubcategories", selectedSubcategories);
+  console.log("selectedSubcategories2", selectedSubcategories2);
+  console.log("selectedBrands", selectedBrands);
+
+  const selectedIds = [
+    ...selectedBrands,
+    ...selectedSubcategories2,
+    ...selectedSubcategories,
+  ];
+
+  console.log("selectedIds", selectedIds);
 
   useEffect(() => {
     if (ecomUserId) {
@@ -161,6 +172,15 @@ function Shop(props) {
       }
     });
   };
+  const handleSaveChanges3 = async (categoryId) => {
+    setSelectedbrands((prevSelected) => {
+      if (prevSelected.includes(categoryId)) {
+        return prevSelected?.filter((id) => id !== categoryId);
+      } else {
+        return [...prevSelected, categoryId];
+      }
+    });
+  };
 
   // useEffect(() => {
   //   fetchProductsForSelectedSubcategories();
@@ -184,6 +204,12 @@ function Shop(props) {
       handleFilteredPrduct(category_Id);
     } else if (URLType === "Category") {
       handleFilteredPrduct(category_Id);
+    } else if (URLType === "SubSubCategory") {
+      handleFilteredPrduct(subSubCategory_Id);
+    } else if (URLType === "SubCategory") {
+      handleFilteredPrduct(subCategory_Id);
+    } else if (URLType === "subcate") {
+      handleFilteredPrduct(subCategory_Id);
     } else {
       handleFilteredPrduct();
     }
@@ -193,7 +219,9 @@ function Shop(props) {
     const data = {
       ...(URLType === "Category" && { category: id }),
       ...(URLType === "cate" && { category: id }),
-      // ...(URLType === "SubSubCategory" && { subSubCategory: id }),
+      ...(URLType === "SubSubCategory" && { subSubCategory: id }),
+      ...(URLType === "SubCategory" && { subCategory: id }),
+      ...(URLType === "subcate" && { subCategory: id }),
       // ...(brand && { brand: "65278d0a2d1d5fafea17183c" }),
 
       ecommercetoken: ecommercetoken,
@@ -251,6 +279,7 @@ function Shop(props) {
       ...(URLType === "Category" && { category: id }),
       ...(URLType === "cate" && { category: id }),
       ...(URLType === "SubSubCategory" && { subSubCategory: id }),
+      // ...(selectedIds && { filterIds: id }),
       // ...(brand && { brand: "65278d0a2d1d5fafea17183c" }),
       ecommercetoken: ecommercetoken,
     };
@@ -264,6 +293,32 @@ function Shop(props) {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  useEffect(() => {
+    if (selectedIds?.length > 0) {
+      handleCategoryFilter();
+    }
+  }, [selectedSubcategories, selectedSubcategories2, selectedBrands]);
+
+  const handleCategoryFilter = async () => {
+    const data = {};
+
+    if (selectedSubcategories?.length > 0) {
+      data.filterByCategory = selectedSubcategories;
+    }
+
+    if (selectedSubcategories2?.length > 0) {
+      data.filterBySubCategory = selectedSubcategories2;
+    }
+
+    if (selectedBrands?.length > 0) {
+      data.filterByBrand = selectedBrands;
+    }
+
+    // filterIds: selectedSubcategories?.map((item) => item?.value),
+    const res = await banners(data);
+    setProductListItems(res?.data?.results?.products);
   };
 
   const handleLowToHigh = async () => {
@@ -280,21 +335,6 @@ function Shop(props) {
   };
   const handleDescending = async () => {
     const res = await banners({ sortByName: "1" });
-    setProductListItems(res?.data?.results?.products);
-  };
-
-  useEffect(() => {
-    if (selectedSubcategories || selectedSubcategories2) {
-      handleCategoryFilter(selectedSubcategories || selectedSubcategories2);
-    }
-  }, [selectedSubcategories, selectedSubcategories2]);
-
-  const handleCategoryFilter = async (selectedSubcategories) => {
-    const data = {
-      filterIds: selectedSubcategories,
-      // filterIds: selectedSubcategories?.map((item) => item?.value),
-    };
-    const res = await banners(data);
     setProductListItems(res?.data?.results?.products);
   };
 
@@ -320,6 +360,36 @@ function Shop(props) {
       maxPrice: newValue,
       ecommercetoken: ecommercetoken,
     };
+    if (selectedSubcategories?.length > 0) {
+      data.filterByCategory = selectedSubcategories;
+    }
+
+    if (selectedSubcategories2?.length > 0) {
+      data.filterBySubCategory = selectedSubcategories2;
+    }
+
+    if (selectedBrands?.length > 0) {
+      data.filterByBrand = selectedBrands;
+    }
+    if (URLType === "subcate" && subCategory_Id) {
+      data.subCategory = subCategory_Id;
+    }
+
+    if (URLType === "SubCategory" && subCategory_Id) {
+      data.subCategory = subCategory_Id;
+    }
+
+    if (URLType === "Category" && category_Id) {
+      data.category = category_Id;
+    }
+
+    if (URLType === "cate" && category_Id) {
+      data.category = category_Id;
+    }
+
+    if (URLType === "SubSubCategory" && subSubCategory_Id) {
+      data.subSubCategory = subSubCategory_Id;
+    }
 
     try {
       const res = await banners(data);
@@ -895,11 +965,11 @@ function Shop(props) {
                                       className="checkbox_animated"
                                       type="checkbox"
                                       id={`checkbox_${item?._id}`}
-                                      defaultChecked={selectedSubcategories.includes(
+                                      defaultChecked={selectedBrands.includes(
                                         item?._id
                                       )}
                                       onChange={() =>
-                                        handleSaveChanges1(item?._id)
+                                        handleSaveChanges3(item?._id)
                                       }
                                     />
                                     <label
@@ -959,13 +1029,13 @@ function Shop(props) {
                                 display: "inline-block",
                               }}
                             >
-                              $11000
+                              $510000
                             </span>
                             <input
                               type="range"
                               className="form-range text-success"
                               min={0}
-                              max={11000}
+                              max={510000}
                               step="1"
                               id="customRange3"
                               value={currentValue}
@@ -974,7 +1044,7 @@ function Shop(props) {
                             <div
                               className="mb-4 form-control border-success"
                               id="rangeValue"
-                              placeholder="$0 - $10000"
+                              placeholder="$0 - $510000"
                             ></div>
                           </>
                         </div>
@@ -1136,9 +1206,6 @@ function Shop(props) {
                         (cartItem) => cartItem?.productId?._id === item._id
                       );
 
-                      const totalPrice =
-                        (item?.addVarient?.[0]?.Price || 0) *
-                        (count[index] || 1);
                       return (
                         <div key={index}>
                           <div className="product-box-3 h-100 wow fadeInUp">

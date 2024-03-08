@@ -51,9 +51,6 @@ function Header({ Dash }) {
   const [categoryListData, setCategoryListData] = useState([]);
   const [cartListItems, setCartListItems] = useState([]);
 
-  console.log("categoryListData", categoryListData);
-  console.log("dealToday", dealList);
-
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSale, setShowSale] = useState(true);
 
@@ -62,18 +59,16 @@ function Header({ Dash }) {
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(function (position) {
-      console.log("Latitude is :", position.coords.latitude);
-      console.log("Longitude is :", position.coords.longitude);
+      // console.log("Latitude is :", position.coords.latitude);
+      // console.log("Longitude is :", position.coords.longitude);
       setLatitude(position.coords.latitude);
       setLongitude(position.coords.longitude);
     });
   }, []);
-  console.log(longitude);
-  console.log(latitude);
+  // console.log(longitude);
+  // console.log(latitude);
 
   const [subCategoryItems, setSubCategoryItems] = useState([]);
-
-  console.log("subCategoryItems", subCategoryItems);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -183,8 +178,6 @@ function Header({ Dash }) {
 
   const selector = useSelector((data) => data?.search?.query);
 
-  console.log("selector", selector);
-
   useEffect(() => {
     if (searchQuery) {
       searchData();
@@ -192,7 +185,6 @@ function Header({ Dash }) {
   }, [searchQuery]);
 
   const searchData = async () => {
-    console.log("data", selector);
     try {
       const response = await searchProduct({
         search: selector,
@@ -222,8 +214,6 @@ function Header({ Dash }) {
     const inputValue = e.target.value;
     setSearchQuery(inputValue);
     dispatch(searchQuerydata(inputValue));
-
-    console.log("inputValue", inputValue);
   };
 
   const deleteCartItem = async (id) => {
@@ -255,7 +245,7 @@ function Header({ Dash }) {
     setLoader(item ? false : true);
     setLoadings(item ? true : false);
     const res = await proceedToPay(data);
-    console.log("res payment", res);
+
     if (res) {
       navigate(item ? "/check-outall" : "/check-outall");
       dispatch(setPaymentData(res?.data?.results?.cart?.calculateTotal[0]));
@@ -1009,6 +999,7 @@ function Header({ Dash }) {
                 className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
+                id="dealclose"
               >
                 <i className="fa-solid fa-xmark" />
               </button>
@@ -1020,35 +1011,34 @@ function Header({ Dash }) {
                     {dealList?.map((item, index) => {
                       return (
                         <li className={`list-${index + 1}`} key={index}>
-                          <div className="deal-offer-contain">
-                            <Link to="/shop" className="deal-image">
+                          <Link
+                            to={`/product-details-page/${item?.product_Id?._id}`}
+                            className="deal-offer-contain"
+                            onClick={() =>
+                              document?.getElementById("dealclose")?.click()
+                            }
+                          >
+                            <div className="deal-image">
                               <img
-                                src={
-                                  item?.productDetails?.[0]?.addVarient?.[0]
-                                    ?.product_Pic[0]
-                                }
+                                src={item?.product_Id?.varient?.product_Pic[0]}
                                 className=" lazyload"
                                 alt=""
                               />
-                            </Link>
-                            <Link to="/shop" className="deal-contain">
+                            </div>
+                            <div className="deal-contain">
                               <h5> {item?.product_Id?.productName_en} </h5>
                               <h6>
-                                $
-                                {item?.productDetails?.[0]?.addVarient?.[0]?.Price?.toFixed(
-                                  2
-                                )}{" "}
+                                ${item?.product_Id?.varient?.Price?.toFixed(2)}{" "}
                                 <del>
                                   {" "}
                                   $
-                                  {
-                                    item?.productDetails?.[0]?.addVarient?.[0]
-                                      ?.oldPrice
-                                  }
+                                  {item?.product_Id?.varient?.oldPrice?.toFixed(
+                                    2
+                                  )}
                                 </del>{" "}
                               </h6>
-                            </Link>
-                          </div>
+                            </div>
+                          </Link>
                         </li>
                       );
                     })}
