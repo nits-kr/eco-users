@@ -371,17 +371,31 @@ export const PostApi = createApi({
         };
       },
     }),
-
     updateProfile: builder.mutation({
-      query: ({ ecomUserId, formData, ecommercetoken }) => ({
-        url: `user/user/user/edit-profile/${ecomUserId}`,
-        method: "POST",
-        body: formData,
-        headers: {
-          "x-auth-token-user": ecommercetoken,
-        },
-      }),
+      query: (body) => {
+        const { ecommercetoken, ecomUserId, ...data } = body;
+
+        return {
+          url: `user/user/user/updateProfile/${ecomUserId}`,
+          method: "post",
+          body: data,
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
     }),
+
+    // updateProfile: builder.mutation({
+    //   query: ({ ecomUserId, formdata, ecommercetoken }) => ({
+    //     url: `user/user/user/updateProfile/${ecomUserId}`,
+    //     method: "POST",
+    //     body: formdata,
+    //     headers: {
+    //       "x-auth-token-user": ecommercetoken,
+    //     },
+    //   }),
+    // }),
     updateProfilelogin: builder.mutation({
       query: ({ formdataall, ecommercetoken }) => ({
         url: "user/user/user/edit-profile",

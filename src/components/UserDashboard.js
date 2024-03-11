@@ -452,55 +452,48 @@ function UserDashboard() {
     toast.success("Profile Pic Updated!");
   };
   const handleOnSave = async (data) => {
-    const formdata = new FormData();
-    // if (addressId !== undefined || addressId !== null) {
-    //   data.append("address_Id", addressId);
-    // }
+    const formData = {};
 
-    // data.append("password", "userEmail");
+    if (data.userName) {
+      formData.userName = data.userName;
+    }
+    if (data.userEmail) {
+      formData.userEmail = data.userEmail;
+    }
     if (data.pincode) {
-      formdata.append("pincode", data.pincode);
+      formData.pincode = data.pincode;
     }
     if (selectedGender) {
-      formdata.append("gender", selectedGender);
+      formData.gender = selectedGender;
     }
     if (data.dob) {
-      formdata.append("birthDay", data.dob);
+      formData.birthDay = data.dob;
     }
 
-    if (formData.uploadImage) {
-      formdata.append("profile_Pic", formData.uploadImage);
+    formData.ecommercetoken = ecommercetoken;
+    formData.ecomUserId = ecomUserId;
+
+    try {
+      const response = await updateProfile(formData);
+
+      console.log("Response after update:", response);
+
+      localStorage.setItem(
+        "profilePic",
+        response?.data?.results?.profile?.profile_Pic
+      );
+
+      if (response?.error?.data?.message === "Failed") {
+        toast.error("Profile Update Failed");
+      } else {
+        toast.success("Profile Updated!");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("An error occurred while updating profile.");
     }
-
-    const response = await updateProfile({
-      formData: formdata,
-      ecommercetoken,
-      ecomUserId,
-    });
-
-    console.log("response update", response);
-    localStorage.setItem(
-      "profilePic",
-      response?.data?.results?.profile?.profile_Pic
-    );
-    if (response?.error?.data?.message === "Failed") {
-      toast.error("Profile Update Failed");
-    } else {
-      toast.success("Profile Updated!");
-    }
-
-    // Swal.fire({
-    //   title: "Profile Updated!",
-    //   text: "Your Profile has been updated successfully.",
-    //   icon: "success",
-    //   confirmButtonColor: "#3085d6",
-    //   confirmButtonText: "OK",
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     // navigate("/dashboard");
-    //   }
-    // });
   };
+
   return (
     <>
       {/* Loader End */}
@@ -979,7 +972,7 @@ function UserDashboard() {
                                       <Link to="/product">
                                         <img
                                           src={
-                                            item?.product_Id?.addVarient[0]
+                                            item?.product_Id?.addVarient?.[0]
                                               ?.product_Pic[0]
                                           }
                                           className="img-fluid  lazyload"
@@ -1328,9 +1321,9 @@ function UserDashboard() {
                                     />
                                   </div>
                                   <div className="label">
-                                    <label> {item?.title} </label>
+                                    <label> {item?.type} </label>
                                   </div>
-                                  <div className="table-responsive address-table">
+                                  <div className="table-responsive address-table mt-4">
                                     <table className="table">
                                       <tbody>
                                         <tr>
@@ -2014,7 +2007,7 @@ function UserDashboard() {
                     id="mobileNumber"
                     name="mobileNumber"
                     placeholder="Enter mobile number"
-                    defaultValue={item?.mobileNumber}
+                    defaultValue={item?.phoneNumber}
                     onChange={(e) => setMobileNumber(e.target.value)}
                   />
                   <label htmlFor="mobileNumber">Mobile Number</label>
@@ -2267,9 +2260,9 @@ function UserDashboard() {
                           type="text"
                           className="form-control"
                           id="pname"
-                          placeholder="fullname"
+                          placeholder="userName"
                           defaultValue={profileDetail?.userName}
-                          {...register("fullname", {
+                          {...register("userName", {
                             // required: "Enter Your Full Name*",
                             pattern: {
                               value: /^[A-Za-z\s]+$/,
@@ -2281,12 +2274,38 @@ function UserDashboard() {
                             },
                           })}
                         />
-                        <label htmlFor="fullname">Full Name</label>
+                        <label htmlFor="userName">Full Name</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-xxl-6">
+                    <div>
+                      <div className="form-floating theme-form-floating">
+                        <input
+                          type="email"
+                          className="form-control"
+                          id="userEmail"
+                          placeholder="Enter your email..."
+                          defaultValue={profileDetail?.userEmail}
+                          {...register("userEmail", {
+                            // required: "Enter Your Full Name*",
+                            pattern: {
+                              value:
+                                /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                              message: "Invalid email address",
+                            },
+                            minLength: {
+                              value: 3,
+                              message: "minimium 3 Charcarters",
+                            },
+                          })}
+                        />
+                        <label htmlFor="userEmail">Email</label>
                       </div>
                     </div>
                   </div>
 
-                  <div className="col-xxl-6">
+                  <div className="col-xxl-6 d-none">
                     <div>
                       <div className="form-floating theme-form-floating">
                         <select
@@ -2301,7 +2320,10 @@ function UserDashboard() {
                           //   },
                           // })}
                         >
-                          <option value="India">Choose Your Country</option>
+                          <option value="India" disabled>
+                            Choose Your Country
+                          </option>
+                          <option value="India">India</option>
                           <option value="United kindom">United Kingdom</option>
                           <option value="Unitedstates">United States</option>
                           <option value="France">France</option>
@@ -2329,7 +2351,7 @@ function UserDashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="col-xxl-6">
+                  <div className="col-xxl-6 d-none">
                     <div>
                       <div className="form-floating theme-form-floating">
                         <select
@@ -2378,10 +2400,10 @@ function UserDashboard() {
                     <div>
                       <div className="form-floating theme-form-floating">
                         <input
-                          type="text"
+                          type="date"
                           className="form-control"
                           id="address3"
-                          defaultValue={94080}
+                          defaultValue=""
                           {...register("dob", {
                             // required: "Enter Your Full Name*",
                             // pattern: {
@@ -2405,7 +2427,8 @@ function UserDashboard() {
                           type="text"
                           className="form-control"
                           id="pincode"
-                          defaultValue={94080}
+                          placeholder="Enter pin code"
+                          defaultValue=""
                           {...register("pincode")}
                         />
                         <label htmlFor="pincode">Pin Code</label>
