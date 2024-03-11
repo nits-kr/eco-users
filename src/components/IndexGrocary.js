@@ -395,7 +395,7 @@ function IndexGrocary(props) {
               </div>
               <div className="product-footer">
                 <div className="product-detail">
-                  <Link to="/product">
+                  <Link to={`/product-details-page/${item?._id}`}>
                     <h5 className="name">
                       {item?.productName_en?.slice(0, 20) +
                         (item?.productName_en.length > 20 ? "..." : "")}

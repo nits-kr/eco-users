@@ -502,7 +502,7 @@ function TrendingProductHome(props) {
       ) : (
         <>
           <section
-            className="product-list-section section-b-space"
+            className="product-list-section section-b-space pb-2"
             style={{ display: trendingList?.length > 0 ? "" : "none" }}
           >
             <div className="container-fluid-lg">

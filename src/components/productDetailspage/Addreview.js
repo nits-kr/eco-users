@@ -122,12 +122,12 @@ function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
 
     const newContactData = {
       // Name: varificationMobile,
-      email: email,
+      title: title,
       user_Id: ecomUserId,
       comment: comment,
-      ratings: userRating,
-      website: website,
-      star: userRating,
+      rating: userRating,
+
+      // star: userRating,
       product_Id: id,
       ecommercetoken: ecommercetoken,
     };
@@ -302,51 +302,7 @@ function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
                 </div>
 
                 <div className="row g-4">
-                  <div className="col-md-6">
-                    <div className="form-floating theme-form-floating">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="name"
-                        placeholder="Name"
-                        // required
-                        // onChange={(e) => setName(e.target.value)}
-                        defaultValue={varificationMobile}
-                        readOnly
-                      />
-                      <label htmlFor="name">Your Name</label>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="form-floating theme-form-floating">
-                      <input
-                        type="email"
-                        className="form-control"
-                        id="email"
-                        placeholder="Email Address"
-                        required
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                      <label htmlFor="email">
-                        Email Address
-                        <span className="required-field text-danger">*</span>
-                      </label>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="form-floating theme-form-floating">
-                      <input
-                        type="url"
-                        className="form-control"
-                        id="website"
-                        placeholder="Website"
-                        // required
-                        onChange={(e) => setWebsite(e.target.value)}
-                      />
-                      <label htmlFor="website">Website</label>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
+                  <div className="col-md-12">
                     <div className="form-floating theme-form-floating">
                       <input
                         type="text"

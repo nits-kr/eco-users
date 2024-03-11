@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { FaStar } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUpdateRating } from "../app/slice/localSlice";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const GetStar = ({ totalStars = 5 }) => {
+  const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const [rating, setRating] = useState(0);
 
-  const diaspatch = useDispatch();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // localStorage?.setItem("userRating", rating);
   const [hover, setHover] = useState(0);
@@ -29,13 +33,42 @@ const GetStar = ({ totalStars = 5 }) => {
           const ratingValue = i + 1;
           return (
             <label key={i} title={starTitles[ratingValue - 1]}>
-              <input
+              {/* <input
                 type="radio"
                 name="rating"
                 value={ratingValue}
                 onClick={() => {
                   setRating(ratingValue);
-                  diaspatch(setUpdateRating(ratingValue));
+                  dispatch(setUpdateRating(ratingValue));
+                }}
+              /> */}
+              <input
+                type="radio"
+                name="rating"
+                value={ratingValue}
+                onClick={() => {
+                  if (!ecommercetoken) {
+                    Swal.fire({
+                      title: "Login Required",
+                      text: "Please log in before creating a review.",
+                      icon: "info",
+                      showCancelButton: true,
+                      confirmButtonColor: "#0da487",
+                      confirmButtonText: "Login",
+                      cancelButtonText: "Cancel",
+                      customClass: {
+                        confirmButton: "custom-confirm-button-class me-3",
+                      },
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        navigate("/login");
+                      }
+                    });
+                    return;
+                  } else {
+                    setRating(ratingValue);
+                    dispatch(setUpdateRating(ratingValue));
+                  }
                 }}
               />
               <div style={{ marginTop: "-25px", marginLeft: "-7px" }}>

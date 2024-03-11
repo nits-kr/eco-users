@@ -314,8 +314,11 @@ function RecommendedProduct() {
               </div>
               <div className="product-footer">
                 <div className="product-detail">
-                  <Link to="/product">
-                    <h5 className="name">{item?.productName_en}</h5>
+                  <Link to={`/product-details-page/${item?._id}`}>
+                    <h5 className="name">
+                      {item?.productName_en?.slice(0, 20) +
+                        (item?.productName_en.length > 20 ? "..." : "")}
+                    </h5>
                   </Link>
                   <p className="text-content mt-1 mb-2 product-content">
                     Cheesy feet cheesy grin brie. Mascarpone cheese and wine
