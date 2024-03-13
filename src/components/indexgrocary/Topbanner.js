@@ -60,21 +60,34 @@ function Topbanner() {
                           style={{ height: "555px" }}
                         />
                       </div>
+                      <div className="home-detail p-center-left w-75">
+                        <div style={{ marginTop: "400px" }}>
+                          <Link
+                            to="/shop"
+                            state={{
+                              URLType: item.URLType,
+                              ...(item?.URLType === "Category" && {
+                                category_Id: item?.category_Id,
+                              }),
+                              ...(item?.URLType === "SubCategory" && {
+                                subCategory_Id: item?.subCategory_Id,
+                              }),
+                              ...(item?.URLType === "SubSubCategory" && {
+                                subSubCategory_Id: item?.subSubCategory_Id,
+                              }),
+                              ...(item?.URLType === "Product" && {
+                                product_Id: item?.product_Id,
+                              }),
+                            }}
+                            className="btn btn-animation mt-xxl-4 mt-2 home-button mend-auto"
+                          >
+                            Shop Now{" "}
+                            <i className="fa-solid fa-right-long icon" />
+                          </Link>
+                        </div>
+                      </div>
                     </Link>
                   ))}
-                </div>
-
-                <div className="home-detail p-center-left w-75">
-                  <div style={{ marginTop: "400px" }}>
-                    <button
-                      onClick={() => {
-                        window.location.href = "/shop/:id";
-                      }}
-                      className="btn btn-animation mt-xxl-4 mt-2 home-button mend-auto"
-                    >
-                      Shop Now <i className="fa-solid fa-right-long icon" />
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -127,7 +140,25 @@ function Topbanner() {
                               <p className="w-75">
                                 We deliver organic vegetables &amp; fruits
                               </p>
-                              <Link to="shop" className="shop-button">
+                              <Link
+                                to="/shop"
+                                state={{
+                                  URLType: item.URLType,
+                                  ...(item.URLType === "Category" && {
+                                    category_Id: item.category_Id,
+                                  }),
+                                  ...(item.URLType === "SubCategory" && {
+                                    subCategory_Id: item.subCategory_Id,
+                                  }),
+                                  ...(item.URLType === "SubSubCategory" && {
+                                    subSubCategory_Id: item.subSubCategory_Id,
+                                  }),
+                                  ...(item.URLType === "Product" && {
+                                    product_Id: item.product_Id,
+                                  }),
+                                }}
+                                className="shop-button"
+                              >
                                 Shop Now{" "}
                                 <i className="fa-solid fa-right-long" />
                               </Link>

@@ -640,21 +640,32 @@ function IndexGrocary(props) {
                     {categoryListData?.map((item, index) => {
                       return (
                         <li key={index}>
-                          <div className="category-list">
+                          <div className="category-list mb-2">
                             <img
                               src={item?.categoryPic}
                               className=" lazyload"
                               alt=""
                             />
                             <h5>
-                              <Link to="/shop"> {item?.categoryName_en} </Link>
+                              <Link
+                                to="/shop"
+                                state={{
+                                  URLType: "cate",
+                                  ...{
+                                    category_Id: item?._id,
+                                  },
+                                }}
+                              >
+                                {" "}
+                                {item?.categoryName_en}{" "}
+                              </Link>
                             </h5>
                           </div>
                         </li>
                       );
                     })}
                   </ul>
-                  <ul className="value-list">
+                  <ul className="value-list d-none">
                     <li>
                       <div className="category-list">
                         <h5 className="ms-0 text-title">

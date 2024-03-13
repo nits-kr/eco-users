@@ -54,14 +54,27 @@ function Sidebanner() {
                   Vegetables
                 </h2>
                 <p className="mb-3">Super Offer to 50% Off</p>
-                <button
-                  onClick={() => {
-                    window.location.href = "/shop";
+                <Link
+                  to="/shop"
+                  state={{
+                    URLType: bannerList[0]?.URLType,
+                    ...(bannerList[0]?.URLType === "Category" && {
+                      category_Id: bannerList[0]?.category_Id,
+                    }),
+                    ...(bannerList[0]?.URLType === "Subcategory" && {
+                      subCategory_Id: bannerList[0]?.subCategory_Id,
+                    }),
+                    ...(bannerList[0]?.URLType === "SubSubCategory" && {
+                      subSubCategory_Id: bannerList[0]?.subSubCategory_Id,
+                    }),
+                    ...(bannerList[0]?.URLType === "Product" && {
+                      product_Id: bannerList[0]?.product_Id,
+                    }),
                   }}
-                  className="btn btn-animation btn-md mend-auto"
+                  className="btn btn-animation btn-md mend-auto w-75"
                 >
                   Shop Now <i className="fa-solid fa-arrow-right icon" />
-                </button>
+                </Link>
               </div>
             </div>
           </div>

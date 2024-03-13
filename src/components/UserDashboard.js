@@ -17,8 +17,7 @@ import {
   useGetOrderListMutation,
   useGetProfileDetailsMutation,
   useGetWishListDetailsMutation,
-  useGetWishListMutation,
-  useUpdateProfileMutation,
+  useUpdateProfileloginMutation,
 } from "../services/Post";
 import { useDeleteAddressMutation } from "../services/Post";
 import { useUpdateAddressMutation } from "../services/Post";
@@ -28,18 +27,28 @@ import { useGetPendingOrderQuery } from "../services/Post";
 import { AddToCart } from "./HttpServices";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
+import { useGetStatesQuery } from "../services/Country";
+import { setEcomWebToken } from "../app/slice/localSlice";
 
 function UserDashboard() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
-  const [updateProfile] = useUpdateProfileMutation();
+
+  const [updateProfile] = useUpdateProfileloginMutation();
   const [wishLists] = useGetWishListDetailsMutation();
   const [orderLists] = useGetOrderListMutation();
   const [deleteWishList] = useDeleteWishListMutation();
   const [profileDetails] = useGetProfileDetailsMutation();
+  // const { data: getState, error, isLoading } = useGetStatesQuery();
+
+  // console.log("getState", getState);
+
+  // if (isLoading) return <div>Loading...</div>;
+  // if (error) return <div>Error: {error.message}</div>;
+
   const [wishList, setWishList] = useState([]);
   const [title, setTitle] = useState("");
 
@@ -93,21 +102,23 @@ function UserDashboard() {
   const storeUser = localStorage?.getItem("userName");
   const storeUserEmail = localStorage?.getItem("userEmail");
   const [isEditMode, setIsEditMode] = useState(false);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   console.log("item address", item);
 
   const [count, setCount] = useState([]);
   useEffect(() => {
-    if (ecomUserId) {
-      handleProfileDetails(ecomUserId);
+    if (ecommercetoken) {
+      handleProfileDetails();
     }
-  }, [ecomUserId]);
+  }, [ecommercetoken]);
 
-  const handleProfileDetails = async (ecomUserId) => {
-    const response = await profileDetails({ ecomUserId, ecommercetoken });
+  const handleProfileDetails = async () => {
+    const response = await profileDetails({ ecommercetoken });
     console.log("response profile", response);
-    setProfileDetail(response?.data?.results?.details);
+    setProfileDetail(response?.data?.results?.user);
   };
 
   const {
@@ -258,8 +269,7 @@ function UserDashboard() {
       if (result.isConfirmed) {
         deleteCard({ ecommercetoken, cardId })
           .then(() => {
-            const updatedList = newCard.filter((card) => card._id !== cardId);
-            setNewCard(updatedList);
+            handleCardList();
           })
           .catch((error) => {
             console.log(error);
@@ -284,9 +294,25 @@ function UserDashboard() {
       if (result.isConfirmed) {
         deleteAccount({ ecomUserId, ecommercetoken })
           .then(() => {
-            // const updatedList = newCard.filter((card) => card._id !== cardId);
-            // setNewCard(updatedList);
+            dispatch(setEcomWebToken(null));
+            const itemsToRemove = [
+              "ecomWebtoken",
+              "userEmail",
+              "ecomUserId",
+              "loginId",
+              "mobileNumber",
+              "userName",
+              "varificationMobile",
+              "varificationOtp",
+              "profileComleted",
+              "productSearch",
+            ];
+
+            itemsToRemove.forEach((item) => {
+              localStorage.removeItem(item);
+            });
             navigate("/");
+            window?.location?.reload();
           })
           .catch((error) => {
             console.log(error);
@@ -294,7 +320,6 @@ function UserDashboard() {
       }
     });
   };
-
   // localStorage?.setItem("addressId", newAddress[0]?._id);
   const addressId = localStorage?.getItem("addressId");
 
@@ -434,16 +459,15 @@ function UserDashboard() {
   console.log("formData.uploadImage", formData.uploadImage);
 
   const handleOnSave2 = async (data) => {
-    const formdata = new FormData();
+    const formdataall = new FormData();
 
     if (formData.uploadImage) {
-      formdata.append("profile_Pic", formData.uploadImage);
+      formdataall.append("profile_Pic", formData.uploadImage);
     }
 
     const response = await updateProfile({
-      formData: formdata,
+      formdataall,
       ecommercetoken,
-      ecomUserId,
     });
     localStorage.setItem(
       "profilePic",
@@ -452,36 +476,34 @@ function UserDashboard() {
     toast.success("Profile Pic Updated!");
   };
   const handleOnSave = async (data) => {
-    const formData = {};
+    const formdataall = new FormData();
 
     if (data.userName) {
-      formData.userName = data.userName;
+      formdataall.append("userName", data.userName);
     }
     if (data.userEmail) {
-      formData.userEmail = data.userEmail;
+      formdataall.append("userEmail", data.userEmail);
     }
     if (data.pincode) {
-      formData.pincode = data.pincode;
+      formdataall.append("pinCode", data.pincode);
     }
     if (selectedGender) {
-      formData.gender = selectedGender;
+      formdataall.append("gender", selectedGender);
     }
     if (data.dob) {
-      formData.birthDay = data.dob;
+      formdataall.append("birthDay", data.dob);
     }
 
-    formData.ecommercetoken = ecommercetoken;
-    formData.ecomUserId = ecomUserId;
+    // formdataall.append("ecommercetoken", ecommercetoken);
+    // formData.append("ecomUserId", ecomUserId);
 
     try {
-      const response = await updateProfile(formData);
+      const response = await updateProfile({
+        formdataall,
+        ecommercetoken,
+      });
 
       console.log("Response after update:", response);
-
-      localStorage.setItem(
-        "profilePic",
-        response?.data?.results?.profile?.profile_Pic
-      );
 
       if (response?.error?.data?.message === "Failed") {
         toast.error("Profile Update Failed");
@@ -652,7 +674,7 @@ function UserDashboard() {
                       DashBoard
                     </button>
                   </li>
-                  <li className="nav-item" role="presentation">
+                  <li className="nav-item d-none" role="presentation">
                     <button
                       className="nav-link"
                       id="pills-order-tab"
@@ -667,7 +689,7 @@ function UserDashboard() {
                       Order
                     </button>
                   </li>
-                  <li className="nav-item" role="presentation">
+                  <li className="nav-item d-none" role="presentation">
                     <button
                       className="nav-link"
                       id="pills-wishlist-tab"
@@ -1572,11 +1594,13 @@ function UserDashboard() {
                                 <tbody>
                                   <tr>
                                     <td>Gender :</td>
-                                    <td>Female</td>
+                                    <td>{profileDetail?.gender}</td>
                                   </tr>
                                   <tr>
                                     <td>Birthday :</td>
-                                    <td>21/05/1997</td>
+                                    <td>
+                                      {profileDetail?.birthDay?.slice(0, 10)}
+                                    </td>
                                   </tr>
                                   <tr>
                                     <td>Phone Number :</td>
@@ -1587,19 +1611,19 @@ function UserDashboard() {
                                       </Link>
                                     </td>
                                   </tr>
-                                  <tr>
+                                  {/* <tr>
                                     <td>Address :</td>
                                     <td>
                                       549 Sulphur Springs Road, Downers, IL
                                     </td>
-                                  </tr>
+                                  </tr> */}
                                 </tbody>
                               </table>
                             </div>
-                            <div className="dashboard-title mb-3">
+                            <div className="dashboard-title mb-3 d-none">
                               <h3>Login Details</h3>
                             </div>
-                            <div className="table-responsive">
+                            <div className="table-responsive d-none">
                               <table className="table">
                                 <tbody>
                                   <tr>
@@ -1757,7 +1781,7 @@ function UserDashboard() {
                         </div>
                         <button
                           className="btn theme-bg-color btn-md fw-bold mt-4 text-white"
-                          onClick={() => handleDeleteAccount(userId)}
+                          onClick={() => handleDeleteAccount(ecomUserId)}
                         >
                           Delete My Account
                         </button>
@@ -2042,6 +2066,66 @@ function UserDashboard() {
                 </div>
               </form>
 
+              <div className="col-xxl-12 mb-3 d-none">
+                <div>
+                  <div className="form-floating theme-form-floating">
+                    <select
+                      className="form-select"
+                      id="floatingSelect1"
+                      aria-label="Floating label select example"
+                      defaultValue={item?.country}
+                      onChange={(e) => setCountry(e.target.value)}
+                    >
+                      <option value="India">Choose Your Country</option>
+                      <option value="India">India</option>
+                      <option value="United kindom">United Kingdom</option>
+                      <option value="Unitedstates">United States</option>
+                      <option value="France">France</option>
+                      <option value="china">China</option>
+                      <option value="Spain">Spain</option>
+                      <option value="Italy">Italy</option>
+                      <option value="Turkey">Turkey</option>
+                      <option value="Germany">Germany</option>
+                      <option value="Russian Federation">
+                        Russian Federation
+                      </option>
+                      <option value="Malaysia">Malaysia</option>
+                      <option value="Mexico">Mexico</option>
+                      <option value="Austria">Austria</option>
+                      <option value="Hong Kong SAR, China">
+                        Hong Kong SAR, China
+                      </option>
+                      <option value="Ukraine">Ukraine</option>
+                      <option value="Thailand">Thailand</option>
+                      <option value="Saudi Arabia">Saudi Arabia</option>
+                      <option value="Canada">Canada</option>
+                      <option value="Singapore">Singapore</option>
+                    </select>
+                    <label htmlFor="country">Country</label>
+                  </div>
+                </div>
+              </div>
+              <div className="col-xxl-12 mb-3 d-none">
+                <div>
+                  <div className="form-floating theme-form-floating">
+                    <select
+                      className="form-select"
+                      id="floatingSelect"
+                      defaultValue={item?.city}
+                      onChange={(e) => setCity(e.target.value)}
+                    >
+                      <option value="">Choose Your City</option>
+                      <option value="kindom">kindom</option>
+                      <option value="Canada">Canada</option>
+                      <option value="Dubai">Dubai</option>
+                      <option value="Los Angeles">Los Angeles</option>
+                      <option value="Thailand">Thailand</option>
+                    </select>
+                    <label htmlFor="floatingSelect">City</label>
+                  </div>
+                </div>
+              </div>
+
               <form>
                 <div className="form-floating mb-4 theme-form-floating">
                   <input
@@ -2305,84 +2389,13 @@ function UserDashboard() {
                     </div>
                   </div>
 
-                  <div className="col-xxl-6 d-none">
-                    <div>
-                      <div className="form-floating theme-form-floating">
-                        <select
-                          className="form-select"
-                          id="floatingSelect1"
-                          aria-label="Floating label select example"
-                          defaultValue=" "
-                          // {...register("country", {
-
-                          //   onChange: (e) => {
-                          //     handleCountry(e.target.value);
-                          //   },
-                          // })}
-                        >
-                          <option value="India" disabled>
-                            Choose Your Country
-                          </option>
-                          <option value="India">India</option>
-                          <option value="United kindom">United Kingdom</option>
-                          <option value="Unitedstates">United States</option>
-                          <option value="France">France</option>
-                          <option value="china">China</option>
-                          <option value="Spain">Spain</option>
-                          <option value="Italy">Italy</option>
-                          <option value="Turkey">Turkey</option>
-                          <option value="Germany">Germany</option>
-                          <option value="Russian Federation">
-                            Russian Federation
-                          </option>
-                          <option value="Malaysia">Malaysia</option>
-                          <option value="Mexico">Mexico</option>
-                          <option value="Austria">Austria</option>
-                          <option value="Hong Kong SAR, China">
-                            Hong Kong SAR, China
-                          </option>
-                          <option value="Ukraine">Ukraine</option>
-                          <option value="Thailand">Thailand</option>
-                          <option value="Saudi Arabia">Saudi Arabia</option>
-                          <option value="Canada">Canada</option>
-                          <option value="Singapore">Singapore</option>
-                        </select>
-                        <label htmlFor="country">Country</label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-xxl-6 d-none">
-                    <div>
-                      <div className="form-floating theme-form-floating">
-                        <select
-                          className="form-select"
-                          id="floatingSelect"
-                          defaultValue=""
-                          // {...register("city", {
-                          //   required: "City is Required*",
-                          //   onChange: (e) => {
-                          //     handleCities(e.target.value);
-                          //   },
-                          // })}
-                        >
-                          <option value="">Choose Your City</option>
-                          <option value="kindom">kindom</option>
-                          <option value="Canada">Canada</option>
-                          <option value="Dubai">Dubai</option>
-                          <option value="Los Angeles">Los Angeles</option>
-                          <option value="Thailand">Thailand</option>
-                        </select>
-                        <label htmlFor="floatingSelect">City</label>
-                      </div>
-                    </div>
-                  </div>
                   <div className="col-xxl-6">
                     <div>
                       <div className="form-floating theme-form-floating">
                         <select
                           className="form-select"
                           id="floatingSelect"
-                          defaultValue=""
+                          defaultValue={profileDetail?.gender}
                           onChange={(e) => setSelectedGender(e.target.value)}
                         >
                           <option value="" disabled>
@@ -2403,7 +2416,7 @@ function UserDashboard() {
                           type="date"
                           className="form-control"
                           id="address3"
-                          defaultValue=""
+                          defaultValue={profileDetail?.birthDay?.slice(0, 10)}
                           {...register("dob", {
                             // required: "Enter Your Full Name*",
                             // pattern: {
@@ -2417,21 +2430,6 @@ function UserDashboard() {
                           })}
                         />
                         <label htmlFor="dob">Date Of Birth</label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-xxl-6">
-                    <div>
-                      <div className="form-floating theme-form-floating">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="pincode"
-                          placeholder="Enter pin code"
-                          defaultValue=""
-                          {...register("pincode")}
-                        />
-                        <label htmlFor="pincode">Pin Code</label>
                       </div>
                     </div>
                   </div>

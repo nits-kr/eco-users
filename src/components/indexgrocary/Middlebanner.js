@@ -56,14 +56,27 @@ function Middlebanner() {
                     In publishing and graphic design, Lorem ipsum is a
                     placeholder text commonly used to demonstrate.
                   </p>
-                  <button
-                    onClick={() => {
-                      window.location.href = `/Banner-list/${bannerList?.middleBanner?.[2]?.category_Id?._id}`;
+                  <Link
+                    to="/shop"
+                    state={{
+                      URLType: bannerList[0]?.URLType,
+                      ...(bannerList[0]?.URLType === "Category" && {
+                        category_Id: bannerList[0]?.category_Id,
+                      }),
+                      ...(bannerList[0]?.URLType === "SubCategory" && {
+                        subCategory_Id: bannerList[0]?.subCategory_Id,
+                      }),
+                      ...(bannerList[0]?.URLType === "SubSubCategory" && {
+                        subSubCategory_Id: bannerList[0]?.subSubCategory_Id,
+                      }),
+                      ...(bannerList[0]?.URLType === "Product" && {
+                        product_Id: bannerList[0]?.product_Id,
+                      }),
                     }}
-                    className="btn btn-animation btn-sm mend-auto"
+                    className="btn btn-animation btn-sm mend-auto w-25"
                   >
                     Shop Now <i className="fa-solid fa-arrow-right icon" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </Link>

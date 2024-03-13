@@ -194,7 +194,7 @@ export const PostApi = createApi({
     getCardList: builder.mutation({
       query: ({ ecomUserId, ecommercetoken }) => {
         return {
-          url: `user/carts/carts/saveCarts-list/${ecomUserId}`,
+          url: `user/cards/cards/saveCarts-list/${ecomUserId}`,
           method: "post",
           headers: {
             "x-auth-token-user": ecommercetoken,
@@ -207,6 +207,17 @@ export const PostApi = createApi({
       query: ({ ecomUserId, ecommercetoken }) => {
         return {
           url: `user/carts/carts/carts-list`,
+          method: "get",
+          headers: {
+            "x-auth-token-user": ecommercetoken,
+          },
+        };
+      },
+    }),
+    getLink: builder.mutation({
+      query: ({ ecommercetoken }) => {
+        return {
+          url: "user/user/user/getlink",
           method: "get",
           headers: {
             "x-auth-token-user": ecommercetoken,
@@ -249,10 +260,10 @@ export const PostApi = createApi({
       },
     }),
     getProfileDetails: builder.mutation({
-      query: ({ ecomUserId, ecommercetoken }) => {
+      query: ({ ecommercetoken }) => {
         return {
-          url: `user/user/user/about-profile/${ecomUserId}`,
-          method: "post",
+          url: "user/user/user/get-user",
+          method: "get",
           headers: {
             "x-auth-token-user": ecommercetoken,
           },
@@ -306,7 +317,7 @@ export const PostApi = createApi({
         const { ecommercetoken, ...data } = body;
 
         return {
-          url: "user/carts/carts/create-carts",
+          url: "user/cards/cards/create-carts",
           method: "post",
           body: data,
           headers: {
@@ -479,7 +490,7 @@ export const PostApi = createApi({
     }),
     deleteCard: builder.mutation({
       query: ({ ecommercetoken, cardId }) => ({
-        url: `user/carts/carts/saveCarts-delete/${cardId}`,
+        url: `user/cards/cards/saveCarts-delete/${cardId}`,
         method: "DELETE",
         headers: {
           "x-auth-token-user": ecommercetoken,
@@ -640,12 +651,11 @@ export const PostApi = createApi({
     }),
     updateCard: builder.mutation({
       query: (body) => {
-        console.log("update address", body);
         const { ecommercetoken, id, ...data } = body;
-        console.log("update address body data", data);
+
         return {
-          url: `user/carts/carts/saveCarts-update/${id}`,
-          method: "post",
+          url: `user/cards/cards/saveCarts-update/${id}`,
+          method: "PATCH",
           body: data,
           headers: {
             "x-auth-token-user": ecommercetoken,
@@ -848,4 +858,5 @@ export const {
   useGetUserCoupanListMutation,
   useDealTodayListQuery,
   useFilteredProductMutation,
+  useGetLinkMutation,
 } = PostApi;

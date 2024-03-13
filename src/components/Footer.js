@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   useGetCategoryListQuery,
+  useGetLinkMutation,
   useSubCategoryListMutation,
 } from "../services/Post";
 import { useSelector } from "react-redux";
@@ -10,14 +11,26 @@ function Footer() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const categoryListItems = useGetCategoryListQuery();
-  const [subCategoryList] = useSubCategoryListMutation();
-  const [subCategoryItems, setSubCategoryItems] = useState([]);
+  const [links] = useGetLinkMutation();
+  const [link, setLink] = useState([]);
   const [categoryListData, setCategoryListData] = useState([]);
   useEffect(() => {
     const reversedList =
       categoryListItems?.data?.results?.list?.slice().reverse() ?? [];
     setCategoryListData(reversedList);
   }, [categoryListItems]);
+
+  useEffect(() => {
+    if (ecommercetoken) {
+      handleLinks();
+    }
+  }, [ecommercetoken]);
+
+  const handleLinks = async () => {
+    const res = await links({ ecommercetoken });
+    console.log("res", res);
+    setLink(res?.data?.results?.details);
+  };
   return (
     <>
       <footer className="section-t-space">
@@ -118,7 +131,17 @@ function Footer() {
                     {categoryListData?.map((item, index) => {
                       return (
                         <li key={index}>
-                          <Link to="/shop/:id" className="text-content">
+                          <Link
+                            to="/shop"
+                            state={{
+                              URLType: "cate",
+                              ...{
+                                category_Id: item?._id,
+                              },
+                            }}
+                            onClick={() => window.scrollTo(0, 0)}
+                            className="text-content"
+                          >
                             {item?.categoryName_en}
                           </Link>
                         </li>
@@ -134,7 +157,11 @@ function Footer() {
                 <div className="footer-contain">
                   <ul>
                     <li>
-                      <Link to="/indexgrocery" className="text-content">
+                      <Link
+                        to="/"
+                        className="text-content"
+                        onClick={() => window.scrollTo(0, 0)}
+                      >
                         Home
                       </Link>
                     </li>
@@ -149,7 +176,11 @@ function Footer() {
                       </Link>
                     </li>
                     <li>
-                      <Link to="/blog" className="text-content">
+                      <Link
+                        to="https://www.techgropse.com/"
+                        target="_blank"
+                        className="text-content"
+                      >
                         Blog
                       </Link>
                     </li>
@@ -205,7 +236,7 @@ function Footer() {
                   <h4>Contact Us</h4>
                 </div>
                 <div className="footer-contact">
-                  <ul>
+                  {/* <ul>
                     <li>
                       <div className="footer-number">
                         <i data-feather="phone" />
@@ -257,6 +288,53 @@ function Footer() {
                         </li>
                       </ul>
                     </li>
+                  </ul> */}
+                  <ul>
+                    <li>
+                      <div className="footer-number">
+                        <i data-feather="phone" />
+                        <div className="contact-number">
+                          <h6 className="text-content">Hotline 24/7 :</h6>
+                          <a href={`tel:${link.mobileNumber}`}>
+                            <h5>{link.mobileNumber}</h5>
+                          </a>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div className="footer-number">
+                        <i data-feather="mail" />
+                        <div className="contact-number">
+                          <h6 className="text-content">Email Address :</h6>
+                          <a href={`mailto:${link.email}`}>
+                            <h5>{link.email}</h5>
+                          </a>
+                        </div>
+                      </div>
+                    </li>
+                    <li className="social-app mb-0">
+                      <h5 className="mb-2 text-content">Download App :</h5>
+                      <ul>
+                        <li className="mb-0">
+                          <a href={link.playStoreLink} target="_blank">
+                            <img
+                              src="../../assets/images/playstore.svg"
+                              className="lazyload"
+                              alt=""
+                            />
+                          </a>
+                        </li>
+                        <li className="mb-0">
+                          <a href={link.appStoreLink} target="_blank">
+                            <img
+                              src="../../assets/images/appstore.svg"
+                              className="lazyload"
+                              alt=""
+                            />
+                          </a>
+                        </li>
+                      </ul>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -277,7 +355,7 @@ function Footer() {
             </div>
             <div className="social-link">
               <h6 className="text-content">Stay connected :</h6>
-              <ul>
+              {/* <ul>
                 <li>
                   <Link to="https://www.facebook.com/" target="_blank">
                     <i className="fa-brands fa-facebook-f" />
@@ -298,6 +376,38 @@ function Footer() {
                     <i className="fa-brands fa-pinterest-p" />
                   </Link>
                 </li>
+              </ul> */}
+              <ul>
+                <li>
+                  <a href={link.facebookLink} target="_blank">
+                    <i className="fa-brands fa-facebook-f" />
+                  </a>
+                </li>
+                <li>
+                  <a href={link.twitterLink} target="_blank">
+                    <i className="fa-brands fa-twitter" />
+                  </a>
+                </li>
+                <li>
+                  <a href={link.linkedInLink} target="_blank">
+                    <i className="fa-brands fa-linkedin-in" />
+                  </a>
+                </li>
+                <li>
+                  <a href={link.youtubeLink} target="_blank">
+                    <i className="fa-brands fa-youtube" />
+                  </a>
+                </li>
+                <li>
+                  <a href={link.instagramLink} target="_blank">
+                    <i className="fa-brands fa-instagram" />
+                  </a>
+                </li>
+                {/* <li>
+                  <a href={link.pinterestLink} target="_blank">
+                    <i className="fa-brands fa-pinterest-p" />
+                  </a>
+                </li> */}
               </ul>
             </div>
           </div>

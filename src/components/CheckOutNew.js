@@ -11,6 +11,7 @@ import {
   useCreateOrderMutation,
   useGetAddressListMutation,
   useGetUserCoupanListMutation,
+  useProceedToPayMutation,
 } from "../services/Post";
 import { useDispatch, useSelector } from "react-redux";
 import { setCoupanIdlocal, setvarientId } from "../app/slice/localSlice";
@@ -27,6 +28,7 @@ function CheckOutNew() {
   );
   const [applyCoupan] = useApplyCoupanMutation();
   const [coupanlist] = useGetUserCoupanListMutation();
+  const [proceedToPay] = useProceedToPayMutation();
 
   const [coupanId, setCoupanId] = useState("");
 
@@ -38,6 +40,7 @@ function CheckOutNew() {
 
   const [coupanCode, setCoupanCode] = useState("");
   const [coupanDetails, setCoupanIdDetails] = useState("");
+  const [applyCoupanDetails, setApplyCoupanDetails] = useState("");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -51,6 +54,24 @@ function CheckOutNew() {
   }, []);
 
   const [coupanList, setCoupanList] = useState([]);
+
+  useEffect(() => {
+    if (coupanId) {
+      handleProceedToPay();
+    }
+  }, [coupanId]);
+
+  const handleProceedToPay = async () => {
+    const data = {
+      ...(coupanId && { couponId: coupanId }),
+      ...(varient_Id && { varient_Id: varient_Id }),
+      // type: item ? "Single" : "All",
+      ...(ecommercetoken && { ecommercetoken: ecommercetoken }),
+    };
+    const res = await proceedToPay(data);
+    console.log("res", res?.data?.results?.cart?.calculateTotal?.[0]);
+    setApplyCoupanDetails(res?.data?.results?.cart?.calculateTotal?.[0]);
+  };
 
   const handleCoupanlist = async () => {
     const res = await coupanlist({ ecommercetoken });
@@ -1076,7 +1097,12 @@ function CheckOutNew() {
                         $
                         {coupanId
                           ? coupanDetails?.DiscountType === "Fixed"
-                            ? paymentData?.grandTotal - coupanDetails?.discount
+                            ? paymentData?.grandTotal -
+                                coupanDetails?.discount >
+                              0
+                              ? paymentData?.grandTotal -
+                                coupanDetails?.discount
+                              : 0
                             : paymentData?.grandTotal *
                               (1 - coupanDetails?.discount / 100)
                           : paymentData?.grandTotal}
