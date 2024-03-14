@@ -510,7 +510,7 @@ function Shop(props) {
     const data = {
       product_Id: item._id,
       quantity: count[index],
-      Price: price * count[index],
+      Price: price,
       varient_Id: variantId,
       user_Id: ecomUserId,
       ecommercetoken: ecommercetoken,

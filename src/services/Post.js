@@ -443,10 +443,10 @@ export const PostApi = createApi({
 
     updateProductRating: builder.mutation({
       query: (body) => {
-        const { ecommercetoken, ...data } = body;
+        const { ecommercetoken, id, ...data } = body;
 
         return {
-          url: "user/product/product/updateRating",
+          url: `user/review/review/editReview/${id}`,
           method: "post",
           body: data,
           headers: {

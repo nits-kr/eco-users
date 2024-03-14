@@ -69,7 +69,7 @@ function WishList() {
     const data = {
       product_Id: item?.product_Id?._id,
       quantity: count[index],
-      Price: price * count[index],
+      Price: price,
       varient_Id: variantId,
       user_Id: ecomUserId,
       ecommercetoken: ecommercetoken,
@@ -121,17 +121,6 @@ function WishList() {
   }, []);
   return (
     <>
-      {/* Loader Start */}
-      {/* <div className="fullpage-loader">
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-         </div> */}
-      {/* Loader End */}
-      {/* Header Start */}
       <Header />
       {/* Header End */}
       {/* mobile fix menu start */}
@@ -215,7 +204,9 @@ function WishList() {
                   <div className="product-box-3 h-100">
                     <div className="product-header">
                       <div className="product-image">
-                        <Link to="/product">
+                        <Link
+                          to={`/product-details-page/${item?.product_Id?._id}`}
+                        >
                           <img
                             src={item?.product_Id?.varient?.product_Pic[0]}
                             className="img-fluid  lazyload mb-3"
@@ -235,7 +226,9 @@ function WishList() {
                       </div>
                     </div>
                     <div className="product-footer">
-                      <Link to="/product">
+                      <Link
+                        to={`/product-details-page/${item?.product_Id?._id}`}
+                      >
                         <h5 className="name">
                           <strong>{item?.product_Id?.productName_en}</strong>
                         </h5>
@@ -322,7 +315,7 @@ function WishList() {
                         </div>
                         <h5 className="price">
                           <span className="theme-color">
-                            ${item?.product_Id?.varient?.Price}{" "}
+                            ${item?.product_Id?.varient?.Price * count[index]}{" "}
                           </span>
                           <del>${item?.product_Id?.varient?.oldPrice}</del>
                         </h5>
@@ -379,6 +372,11 @@ function WishList() {
             })}
           </div>
         </div>
+        {wishList?.length === 0 ? (
+          <div className="d-flex align-items-center justify-content-center text-danger">
+            <strong>No wishlist found</strong>
+          </div>
+        ) : null}
       </section>
       {/* Wishlist Section End */}
       {/* Footer Section Start */}

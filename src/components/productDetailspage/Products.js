@@ -129,11 +129,11 @@ function Products(props) {
     }
   };
 
-  const totalRatings = productDetail?.ratings?.reduce(
-    (sum, rating) => sum + rating.star,
-    0
-  );
-  const averageRating = totalRatings / productDetail?.ratings?.length;
+  // const totalRatings = productDetail?.ratings?.reduce(
+  //   (sum, rating) => sum + rating.star,
+  //   0
+  // );
+  const averageRating = productDetail?.totalRating / productDetail?.reviewCount;
 
   const variants = productDetail?.varients || [];
 
@@ -190,7 +190,7 @@ function Products(props) {
     const data = {
       product_Id: id,
       quantity: count,
-      Price: price,
+      Price: price / count,
       varient_Id: variantId,
       user_Id: ecomUserId,
       ecommercetoken: ecommercetoken,
@@ -327,6 +327,14 @@ function Products(props) {
       return;
     }
   };
+
+  const reviewIds = [];
+
+  productDetail?.reviews?.forEach((review) => {
+    if (review.user_Id === ecomUserId) {
+      reviewIds.push(review._id);
+    }
+  });
 
   useEffect(() => {
     feather.replace();
@@ -513,7 +521,7 @@ function Products(props) {
                           <Star rating={averageRating} />
                           <span className="ms-1">
                             {" "}
-                            {productDetail?.ratings?.length} reviews{" "}
+                            {productDetail?.reviewCount} reviews{" "}
                           </span>
                         </div>
                       </div>
@@ -915,6 +923,7 @@ function Products(props) {
                           averageRating={averageRating}
                           id={id}
                           handleProductDetails={handleProductDetails}
+                          reviewsid={reviewIds}
                         />
                       </div>
                       <div className="right-sidebar-box">

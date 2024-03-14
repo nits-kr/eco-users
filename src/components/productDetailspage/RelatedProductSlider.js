@@ -201,7 +201,7 @@ function RelatedProductSlider({ id }) {
     const data = {
       product_Id: item._id,
       quantity: count[index],
-      Price: price * count[index],
+      Price: price,
       varient_Id: variantId,
       user_Id: ecomUserId,
       ecommercetoken: ecommercetoken,
@@ -227,12 +227,7 @@ function RelatedProductSlider({ id }) {
 
   const sliders2 = () => {
     return relatedProductItems?.map((item, index) => {
-      const totalRatings = item?.productDetails?.[0]?.ratings?.reduce(
-        (sum, rating) => sum + rating?.star,
-        0
-      );
-      const averageRating =
-        totalRatings / item?.productDetails?.[0]?.ratings?.length;
+      const averageRating = item?.totalRating / item?.reviewCount;
       const isItemInCart = cartListItems?.some(
         (cartItem) => cartItem?.productId?._id === item?._id
       );
@@ -346,9 +341,9 @@ function RelatedProductSlider({ id }) {
                 <div className="product-rating mt-2">
                   <Star
                     rating={averageRating || 0}
-                    totalRating={item.totalRating}
+                    totalRating={item?.totalRating}
                   />
-                  <span> {item?.ratings?.length} reviews </span>
+                  <span> {item?.reviewCount} reviews </span>
                 </div>
                 <div
                   style={{

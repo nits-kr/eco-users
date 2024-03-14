@@ -11,7 +11,13 @@ import {
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
+function Addreview({
+  averageRating,
+  productDetail,
+  id,
+  handleProductDetails,
+  reviewsid,
+}) {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
   const varificationMobile = useSelector(
     (data) => data?.local?.varificationMobile
@@ -38,7 +44,7 @@ function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
 
   const navigate = useNavigate();
 
-  const ratings = productDetail?.ratings;
+  const ratings = productDetail?.reviews;
 
   console.log("averageRating update", averageRating);
 
@@ -46,7 +52,7 @@ function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
   let starCounts = [0, 0, 0, 0, 0];
 
   ratings?.forEach((rating) => {
-    starCounts[rating?.star - 1]++;
+    starCounts[rating?.rating - 1]++;
   });
 
   const percentages = starCounts?.map((count) => (count / totalRating) * 100);
@@ -61,8 +67,8 @@ function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
 
   console.log("userRating", userRating);
 
-  const userExists = productDetail?.ratings
-    ?.map((item) => item?.postedby)
+  const userExists = productDetail?.reviews
+    ?.map((item) => item?.user_Id)
     ?.includes(ecomUserId);
 
   console.log("User exists:", userExists);
@@ -76,10 +82,13 @@ function Addreview({ averageRating, productDetail, id, handleProductDetails }) {
   const handleUpdateRating = async (e) => {
     e.preventDefault();
     const data = {
-      user_Id: userId,
-      star: updatedRating,
-      product_Id: id,
+      // product_Id: id,
       ecommercetoken: ecommercetoken,
+      id: reviewsid,
+      title: title,
+      user_Id: ecomUserId,
+      comment: comment,
+      rating: updatedRating,
     };
     const response = await updateRating(data);
     console.log("respons update rateing", response);
