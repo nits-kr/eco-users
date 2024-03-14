@@ -21,10 +21,8 @@ function Footer() {
   }, [categoryListItems]);
 
   useEffect(() => {
-    if (ecommercetoken) {
-      handleLinks();
-    }
-  }, [ecommercetoken]);
+    handleLinks();
+  }, []);
 
   const handleLinks = async () => {
     const res = await links({ ecommercetoken });
