@@ -789,7 +789,7 @@ function Shop(props) {
                       <i className="fa-solid fa-arrow-left" /> Back
                     </h3>
                   </div>
-                  <div className="filter-category">
+                  <div className="filter-category d-none">
                     <div className="filter-title">
                       <h2>Filters</h2>
                       {/* <Link to="#">Clear All</Link> */}
