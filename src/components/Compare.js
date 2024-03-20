@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import feather from "feather-icons";
 import "font-awesome/css/font-awesome.min.css";
@@ -14,29 +14,20 @@ import Star from "./Star";
 import { useSelector } from "react-redux";
 function Compare() {
   const ecommercetoken = useSelector((data) => data?.local?.ecomWebtoken);
+  const ecomUserId = useSelector((data) => data?.local?.ecomUserid);
   const [deleteCompare] = useDeleteCompareMutation();
   const [newCompare, setNewCompare] = useState([]);
 
   const compareItems = useGetCompareListQuery({ ecommercetoken });
-  const [addToCart] = useAddToCartMutation();
+  const [addtocart] = useAddToCartMutation();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (compareItems) {
       setNewCompare(compareItems?.data?.results?.comparelist);
     }
   }, [compareItems]);
-
-  const handleSaveChanges = (id, stockQuantity) => {
-    const newAddress = {
-      carts: [
-        {
-          product_Id: id,
-          quantity: stockQuantity,
-        },
-      ],
-    };
-    addToCart(newAddress);
-  };
 
   const handleRemoveAddress = (addressId) => {
     Swal.fire({
@@ -64,15 +55,58 @@ function Compare() {
     });
   };
 
+  const handleAddToCart = async (e, item, price, variantId) => {
+    if (!ecommercetoken) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login before add to cart.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#0da487",
+        confirmButtonText: "Login",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "custom-confirm-button-class me-3",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
+    console.log("item added id", item?._id);
+    e.preventDefault();
+    const data = {
+      product_Id: item._id,
+      quantity: "1",
+      Price: price,
+      varient_Id: variantId,
+      user_Id: ecomUserId,
+      ecommercetoken: ecommercetoken,
+    };
+
+    try {
+      const response = await addtocart(data);
+      if (response) {
+        navigate("/cart");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const columnData = [
     {
       header: "Product",
       accessor: (item) => (
         <Link
           className="text-title"
-          to={`/product-details-page/${item?.product_Id?._id}`}
+          to={`/product-details-page/${item?.product_Id}`}
         >
-          {item?.product_Id?.productName_en}
+          {/* {item?.products?.productName_en} */}
+          {item?.products?.productName_en?.slice(0, 20) +
+            (item?.products?.productName_en.length > 20 ? "..." : "")}
         </Link>
       ),
     },
@@ -80,11 +114,11 @@ function Compare() {
       header: "Images",
       accessor: (item) => (
         <Link
-          to={`/product-details-page/${item?.product_Id?._id}`}
+          to={`/product-details-page/${item?.product_Id}`}
           className="compare-image"
         >
           <img
-            src={item?.product_Pic?.[0]}
+            src={item?.varients?.[0]?.product_Pic?.[0]}
             className="img-fluid lazyload"
             alt=""
           />
@@ -95,7 +129,9 @@ function Compare() {
       header: "Brand Name",
       accessor: (item) => (
         <span className="text-content">
-          {item?.product_Id?.brand_Id?.brandName_en}
+          {item?.brands?.[0]?.brandName_en
+            ? item?.brands?.[0]?.brandName_en
+            : "No brand"}
         </span>
       ),
     },
@@ -117,7 +153,7 @@ function Compare() {
       header: "Price",
       accessor: (item) => (
         <span className="price text-content">
-          ${item?.product_Id?.addVarient?.[0]?.Price}
+          ${item?.varients?.[0]?.Price}
         </span>
       ),
     },
@@ -125,7 +161,7 @@ function Compare() {
       header: "Availability",
       accessor: (item) => {
         const stockStatus =
-          item?.product_Id?.stockQuantity > 0 ? "In Stock" : "Out Of Stock";
+          item?.varients?.[0]?.stockQuantity > 0 ? "In Stock" : "Out Of Stock";
         const backgroundColor =
           stockStatus === "In Stock" ? "success" : "danger";
         return (
@@ -146,17 +182,20 @@ function Compare() {
           (sum, rating) => sum + rating.star,
           0
         );
-        const averageRating = totalRatings / item?.product_Id?.ratings?.length;
+        const averageRating = item?.reviews?.[0]?.rating / item?.reviewsCount;
         return (
           <div className="compare-rating">
             <ul className="rating">
               <Star
                 rating={averageRating || 0}
-                totalRating={item.totalRating}
+                totalRating={item?.reviews?.[0]?.rating}
               />
             </ul>
-            <span className="text-content">
-              {item?.product_Id?.ratings?.length}
+            <span
+              className="text-content"
+              style={{ display: item?.reviewsCount > 0 ? "" : "d-none" }}
+            >
+              ({item?.reviewsCount})
             </span>
           </div>
         );
@@ -175,10 +214,12 @@ function Compare() {
           <Link
             to="/cart"
             className="btn btn-animation btn-sm w-60 "
-            onClick={() =>
-              handleSaveChanges(
-                item?.product_Id?._id,
-                item?.product_Id?.stockQuantity
+            onClick={(e) =>
+              handleAddToCart(
+                e,
+                item,
+                item?.varients?.[0]?.Price,
+                item?.varients?.[0]?._id
               )
             }
           >

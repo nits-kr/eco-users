@@ -470,7 +470,7 @@ function Header({ Dash }) {
                             <strong>
                               Deliver to:{" "}
                               {newAddress?.length > 0
-                                ? newAddress?.[0]?.fullName?.split(" ")[0]
+                                ? newAddress?.[0]?.fullName_en?.split(" ")[0]
                                 : ""}
                             </strong>
                           </div>

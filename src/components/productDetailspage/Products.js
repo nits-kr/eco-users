@@ -438,7 +438,11 @@ function Products(props) {
                                 className={index === 0 ? "active" : ""}
                                 aria-label={`Slide ${index + 1}`}
                               >
-                                <img src={image} alt={`Product ${index + 1}`} />
+                                <img
+                                  src={image}
+                                  alt={`Product ${index + 1}`}
+                                  style={{ objectFit: "contain" }}
+                                />
                               </button>
                             ))}
                         </div>
@@ -456,6 +460,7 @@ function Products(props) {
                                   <img
                                     src={image}
                                     alt={`Product ${index + 1}`}
+                                    style={{ objectFit: "none" }}
                                   />
                                 </div>
                               </div>
